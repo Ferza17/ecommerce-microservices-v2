@@ -1,0 +1,44 @@
+version: v2
+
+# (optional) wipe out gen/ before each run
+clean: true
+
+managed:
+  enabled: true
+  override:
+    - file_option: go_package_prefix
+      value: github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb
+
+plugins:
+  # generate the protobuf messages
+  - remote: buf.build/protocolbuffers/go
+    out: model/pb
+    opt:
+      - paths=source_relative
+
+#Generate the protobuf service
+  - remote: buf.build/grpc/go
+    out: model/pb
+    opt:
+      - paths=source_relative
+      - require_unimplemented_servers=false
+
+
+# GORM annotations
+  - local: protoc-gen-gorm
+    out: model/pb
+    opt:
+      - paths=source_relative
+      - enums=string
+      - gateway=true
+      - model/pb
+
+
+  # generate the gRPC service stubs // for client side
+#  - remote: buf.build/connectrpc/go
+#    out: model/pb
+#    opt:
+#      - paths=source_relative
+
+inputs:
+  - directory: model/proto

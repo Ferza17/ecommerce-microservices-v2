@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"database/sql"
+	pgsql "github.com/ferza17/ecommerce-microservices-v2/product-service/connector/postgresql"
 	"github.com/pressly/goose/v3"
 	"github.com/spf13/cobra"
 	"log"
@@ -11,16 +12,18 @@ var migrationCommand = &cobra.Command{
 	Use:   "migration",
 	Short: "Migration database",
 	Run: func(cmd *cobra.Command, args []string) {
+
+		pqConn := pgsql.NewPostgres()
 		if len(args) == 0 {
 			log.Fatalf("please insert argument up or down")
 			return
 		} else if args[0] == "up" {
-			if err := Up(sqlDB); err != nil {
+			if err := Up(pqConn.SqlDB); err != nil {
 				log.Fatalf(err.Error())
 				return
 			}
 		} else if args[0] == "down" {
-			if err := Down(sqlDB); err != nil {
+			if err := Down(pqConn.SqlDB); err != nil {
 				log.Fatalf(err.Error())
 				return
 			}
