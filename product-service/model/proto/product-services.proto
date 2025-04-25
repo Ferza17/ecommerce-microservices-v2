@@ -1,0 +1,9 @@
+syntax = "proto3";
+package model;
+option go_package = "/model/pb";
+import "product-message.proto";
+
+service ProductService{
+  rpc FindProductsWithPagination(FindProductsWithPaginationRequest) returns(FindProductsWithPaginationResponse);
+  rpc FindProductById(FindProductByIdRequest) returns (Product);
+}
