@@ -6,5 +6,10 @@ import (
 )
 
 func (p *ProductGrpcPresenter) FindProductsWithPagination(ctx context.Context, req *pb.FindProductsWithPaginationRequest) (*pb.FindProductsWithPaginationResponse, error) {
+
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+	
 	return nil, nil
 }

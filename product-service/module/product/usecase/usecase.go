@@ -8,7 +8,9 @@ import (
 
 type (
 	IProductUseCase interface {
-		FindProductById(ctx context.Context, req *pb.FindProductByIdRequest) (res *pb.Product, err error)
+		FindProductById(ctx context.Context, req *pb.FindProductByIdRequest) (*pb.Product, error)
+		FindProductsWithPagination(ctx context.Context, req *pb.FindProductsWithPaginationRequest) (*pb.FindProductsWithPaginationResponse, error)
+		CreateProduct(ctx context.Context, req *pb.CreateProductRequest) (*pb.CreateProductResponse, error)
 	}
 
 	ProductUseCase struct {
@@ -16,7 +18,7 @@ type (
 	}
 )
 
-func NewProductUseCase(productPgsqlRepo *productRepo.ProductPostgresqlRepository) *ProductUseCase {
+func NewProductUseCase(productPgsqlRepo productRepo.IProductPostgresqlRepository) IProductUseCase {
 	return &ProductUseCase{
 		ProductPgsqlRepository: productPgsqlRepo,
 	}

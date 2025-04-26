@@ -2,19 +2,22 @@ package grpc
 
 import (
 	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/connector/postgresql"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
 )
 
 type (
 	Server struct {
-		address    string
-		port       string
-		listener   *net.Listener
-		grpcServer *grpc.Server
-		logger     *zap.Logger
+		address             string
+		port                string
+		listener            *net.Listener
+		grpcServer          *grpc.Server
+		logger              *zap.Logger
+		postgresqlConnector *postgresql.PostgresqlConnector
 	}
 
 	Option func(server *Server)
@@ -32,6 +35,14 @@ func NewServer(address, port string, option ...Option) *Server {
 	return s
 }
 
+func (srv *Server) Serve() {
+	// Enable Reflection to Evans grpc client
+	reflection.Register(srv.grpcServer)
+	if err := srv.grpcServer.Serve(*srv.listener); err != nil {
+		log.Fatalln(err)
+	}
+}
+
 func (srv *Server) setup() {
 	listen, err := net.Listen("tcp", fmt.Sprintf("%s:%s", srv.address, srv.port))
 	if err != nil {
@@ -41,17 +52,10 @@ func (srv *Server) setup() {
 		//grpc.ChainUnaryInterceptor(
 		//grpcMiddleware.ChainUnaryServer(
 		//	otgrpc.OpenTracingServerInterceptor(srv.tracer),
-		//	middleware.UnaryRegisterTracerContext(srv.tracer),
-		//	middleware.UnaryRegisterRedisContext(srv.redisClient),
-		//	middleware.UnaryRegisterPostgresSQLContext(srv.postgresClient),
-		//	middleware.UnaryRegisterCassandraDBContext(srv.cassandraSession),
-		//	middleware.UnaryRegisterRabbitMQAmqpContext(srv.rabbitMQConnection),
-		//	middleware.UnaryRegisterElasticsearchContext(srv.elasticsearchClient),
-		//	product.UnaryRegisterProductUseCaseContext(),
 		//),
 		//),
 	}
 	srv.grpcServer = grpc.NewServer(opts...)
 	srv.listener = &listen
-	//srv.RegisterService()
+	srv.RegisterService()
 }

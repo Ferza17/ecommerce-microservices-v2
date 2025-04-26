@@ -1,0 +1,23 @@
+structname: '{{.InterfaceNameCamel}}'
+pkgname: mocks
+template: testify
+template-data:
+  with-expecter: true
+packages:
+  github.com/ferza17/ecommerce-microservices-v2/product-service:
+    config:
+      all: true
+    interfaces:
+      ReplaceGeneric:
+        config: {}
+      RequesterVariadic:
+        config:
+          template-data:
+            with-expecter: false
+        configs:
+          - structname: RequesterVariadicOneArgument
+            template-data:
+              unroll-variadic: true
+          - structname: RequesterVariadic
+            template-data:
+              unroll-variadic: true

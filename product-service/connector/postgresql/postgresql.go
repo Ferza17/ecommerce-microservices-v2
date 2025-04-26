@@ -17,7 +17,7 @@ type PostgresqlConnector struct {
 	SqlDB  *sql.DB
 }
 
-func NewPostgres() *PostgresqlConnector {
+func NewPostgresqlConnector() *PostgresqlConnector {
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		config.Get().PostgresHost,
 		config.Get().PostgresPort,
@@ -46,16 +46,16 @@ func NewPostgres() *PostgresqlConnector {
 
 	gormdb, err := gorm.Open(pgDialect, &gormConfig)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("could not open gorm %s:", err))
+		log.Fatal(fmt.Sprintf("could not open dao %s:", err))
 	}
 
 	gormSqlDB, err := gormdb.DB()
 	if err != nil {
-		log.Fatal(fmt.Sprintf("could not get gorm DB %s:", err))
+		log.Fatal(fmt.Sprintf("could not get dao DB %s:", err))
 	}
 
 	if err = gormSqlDB.Ping(); err != nil {
-		log.Fatal(fmt.Sprintf("could not gorm db ping %s:", err))
+		log.Fatal(fmt.Sprintf("could not dao db ping %s:", err))
 	}
 	gormSqlDB.SetMaxOpenConns(10)
 	gormSqlDB.SetMaxIdleConns(5)

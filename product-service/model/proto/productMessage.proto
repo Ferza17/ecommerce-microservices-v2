@@ -2,27 +2,33 @@ syntax = "proto3";
 package model;
 import "google/protobuf/timestamp.proto";
 
+option go_package = "github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb";
 
+import "validate.proto";
+import "gorm.proto";
 
 message Product {
-  int64 id = 1 ;
-  string name = 2;
-  string description = 3;
-  string uom = 4;
-  string image = 5;
-  double price = 6;
-  int64 stock = 7;
-  google.protobuf.Timestamp createdAt = 8;
-  google.protobuf.Timestamp updatedAt = 9;
-  google.protobuf.Timestamp discardedAt = 10;
+  option (gorm.opts) = {
+    ormable: true,
+  };
+  string id = 1 [(gorm.field).tag = {column:"id" primary_key: true}];
+  string name = 2 [(gorm.field).tag = {column:"name"}];
+  string description = 3 [(gorm.field).tag = {column:"description"}];
+  string uom = 4 [(gorm.field).tag = {column:"uom"}];
+  string image = 5 [(gorm.field).tag = {column:"image"}];
+  double price = 6 [(gorm.field).tag = {column:"price"}];
+  int64 stock = 7 [(gorm.field).tag = {column:"stock"}];
+  google.protobuf.Timestamp createdAt = 8 [(gorm.field).tag = {column:"created_at"}];
+  google.protobuf.Timestamp updatedAt = 9 [(gorm.field).tag = {column:"updated_at"}];
+  google.protobuf.Timestamp discardedAt = 10 [(gorm.field).tag = {column:"discarded_at"}];
 }
 
 // Find Products With Paginate
 message FindProductsWithPaginationRequest {
   repeated string ids = 1;
   repeated string name = 2;
-  int32 page = 3;
-  int32 limit = 4;
+  int32 page = 3 [(validate.rules).int32 = {gt: 0}];
+  int32 limit = 4 [(validate.rules).int32 = {gt: 0}];
 }
 
 message FindProductsWithPaginationResponse {
@@ -32,5 +38,18 @@ message FindProductsWithPaginationResponse {
 }
 
 message FindProductByIdRequest {
-  string id = 1;
+  string id = 1 [(validate.rules).string = {ignore_empty: true}];
+}
+
+message CreateProductRequest {
+  string name = 1 [(validate.rules).string = {ignore_empty: true}];
+  string description = 2 [(validate.rules).string = {ignore_empty: true}];
+  string uom = 3 [(validate.rules).string = {ignore_empty: true}];
+  string image = 4 [(validate.rules).string = {ignore_empty: true}];
+  double price = 5 [(validate.rules).double = {gt:0}];
+  int64 stock = 6 [(validate.rules).int64 = {gt: 0}];
+}
+
+message CreateProductResponse {
+  string  id = 1;
 }

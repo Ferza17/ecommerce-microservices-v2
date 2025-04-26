@@ -2,7 +2,12 @@ syntax = "proto3";
 package model;
 import "productMessage.proto";
 
+option go_package = "github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb";
+
+
+
 service ProductService{
   rpc FindProductsWithPagination(FindProductsWithPaginationRequest) returns(FindProductsWithPaginationResponse);
   rpc FindProductById(FindProductByIdRequest) returns (Product);
+  rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse);
 }

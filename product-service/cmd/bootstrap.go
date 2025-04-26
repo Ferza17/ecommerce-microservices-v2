@@ -5,18 +5,21 @@ package cmd
 import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
+	pgsql "github.com/ferza17/ecommerce-microservices-v2/product-service/connector/postgresql"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"log"
 )
 
 var (
-	logger *zap.Logger
+	logger    *zap.Logger
+	pgsqlConn *pgsql.PostgresqlConnector
 )
 
 func init() {
 	config.SetConfig(".")
 	logger = NewLogger()
+	pgsqlConn = pgsql.NewPostgresqlConnector()
 }
 
 func Shutdown(ctx context.Context) (err error) {
