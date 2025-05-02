@@ -17,6 +17,7 @@ type (
 		listener            *net.Listener
 		grpcServer          *grpc.Server
 		logger              pkg.IZapLogger
+		mongoDBConnector    *connector.MongodbConnector
 		postgresqlConnector *connector.PostgresqlConnector
 	}
 

@@ -1,4 +1,4 @@
-package grpc
+package amqp
 
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/connector"

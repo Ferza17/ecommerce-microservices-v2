@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/amqp"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/connector"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/grpc"
@@ -9,11 +10,15 @@ import (
 	"log"
 )
 
+type Bootstrap struct {
+}
+
 var (
 	logger      pkg.IZapLogger
 	pgsqlConn   *connector.PostgresqlConnector
 	grpcServer  *grpc.Server
 	mongoDBConn *connector.MongodbConnector
+	amqpServer  *amqp.Server
 )
 
 func init() {
@@ -22,6 +27,7 @@ func init() {
 	pgsqlConn = connector.NewPostgresqlConnector()
 	mongoDBConn = connector.NewMongodbConnector()
 	grpcServer = NewGrpcServer()
+	amqpServer = NewAmqpServer()
 }
 
 func Shutdown(ctx context.Context) (err error) {
@@ -34,7 +40,7 @@ func Shutdown(ctx context.Context) (err error) {
 	if err = mongoDBConn.Close(ctx); err != nil {
 		return err
 	}
-	
+
 	log.Println("Shutdown...")
 	return
 }
@@ -45,5 +51,14 @@ func NewGrpcServer() (srv *grpc.Server) {
 		config.Get().RpcPort,
 		grpc.NewLogger(logger),
 		grpc.NewPostgresConnector(pgsqlConn),
+		grpc.NewMongoDBConnector(mongoDBConn),
+	)
+}
+
+func NewAmqpServer() (srv *amqp.Server) {
+	return amqp.NewServer(
+		amqp.NewLogger(logger),
+		amqp.NewPostgresConnector(pgsqlConn),
+		amqp.NewMongoDBConnector(mongoDBConn),
 	)
 }
