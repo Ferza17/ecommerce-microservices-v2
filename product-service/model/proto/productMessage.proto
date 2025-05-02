@@ -1,26 +1,24 @@
 syntax = "proto3";
-package model;
+package proto;
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb";
 
 import "validate.proto";
-import "gorm.proto";
+import "google/protobuf/wrappers.proto";
+
 
 message Product {
-  option (gorm.opts) = {
-    ormable: true,
-  };
-  string id = 1 [(gorm.field).tag = {column:"id" primary_key: true}];
-  string name = 2 [(gorm.field).tag = {column:"name"}];
-  string description = 3 [(gorm.field).tag = {column:"description"}];
-  string uom = 4 [(gorm.field).tag = {column:"uom"}];
-  string image = 5 [(gorm.field).tag = {column:"image"}];
-  double price = 6 [(gorm.field).tag = {column:"price"}];
-  int64 stock = 7 [(gorm.field).tag = {column:"stock"}];
-  google.protobuf.Timestamp createdAt = 8 [(gorm.field).tag = {column:"created_at"}];
-  google.protobuf.Timestamp updatedAt = 9 [(gorm.field).tag = {column:"updated_at"}];
-  google.protobuf.Timestamp discardedAt = 10 [(gorm.field).tag = {column:"discarded_at"}];
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string uom = 4;
+  string image = 5;
+  double price = 6;
+  int64 stock = 7;
+  google.protobuf.Timestamp createdAt = 8;
+  google.protobuf.Timestamp updatedAt = 9;
+  google.protobuf.Timestamp discardedAt = 10;
 }
 
 // Find Products With Paginate
@@ -32,7 +30,7 @@ message FindProductsWithPaginationRequest {
 }
 
 message FindProductsWithPaginationResponse {
-  map <string, Product> products = 1;
+    map <string, Product> products = 1;
   int32 limit = 2;
   int32 page = 3;
 }
@@ -53,3 +51,22 @@ message CreateProductRequest {
 message CreateProductResponse {
   string  id = 1;
 }
+
+message UpdateProductByIdRequest {
+  string id = 1 [(validate.rules).string = {ignore_empty: true}];
+  optional string name = 2;
+  optional string description = 3;
+  optional string uom = 4;
+  optional string image = 5;
+  optional double price = 6;
+  optional int64 stock = 7;
+}
+
+message DeleteProductByIdRequest {
+  string id = 1 [(validate.rules).string = {ignore_empty: true}];
+}
+
+message DeleteProductByIdResponse {
+  string message = 1;
+}
+

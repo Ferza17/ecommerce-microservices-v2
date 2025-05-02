@@ -2,11 +2,11 @@ package postgresql
 
 import (
 	"context"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/orm"
 	"gorm.io/gorm"
 )
 
-func (r *ProductPostgresqlRepository) CreateProduct(ctx context.Context, product *pb.ProductORM, tx *gorm.DB) (string, error) {
+func (r *ProductPostgresqlRepository) CreateProduct(ctx context.Context, product *orm.Product, tx *gorm.DB) (string, error) {
 
 	if err := tx.WithContext(ctx).
 		Table("products").
@@ -15,5 +15,5 @@ func (r *ProductPostgresqlRepository) CreateProduct(ctx context.Context, product
 		return "", err
 	}
 
-	return product.Id, nil
+	return product.ID, nil
 }

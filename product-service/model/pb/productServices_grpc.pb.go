@@ -19,9 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ProductService_FindProductsWithPagination_FullMethodName = "/model.ProductService/FindProductsWithPagination"
-	ProductService_FindProductById_FullMethodName            = "/model.ProductService/FindProductById"
-	ProductService_CreateProduct_FullMethodName              = "/model.ProductService/CreateProduct"
+	ProductService_FindProductsWithPagination_FullMethodName = "/proto.ProductService/FindProductsWithPagination"
+	ProductService_FindProductById_FullMethodName            = "/proto.ProductService/FindProductById"
+	ProductService_CreateProduct_FullMethodName              = "/proto.ProductService/CreateProduct"
+	ProductService_UpdateProductById_FullMethodName          = "/proto.ProductService/UpdateProductById"
+	ProductService_DeleteProductById_FullMethodName          = "/proto.ProductService/DeleteProductById"
 )
 
 // ProductServiceClient is the client API for ProductService service.
@@ -31,6 +33,8 @@ type ProductServiceClient interface {
 	FindProductsWithPagination(ctx context.Context, in *FindProductsWithPaginationRequest, opts ...grpc.CallOption) (*FindProductsWithPaginationResponse, error)
 	FindProductById(ctx context.Context, in *FindProductByIdRequest, opts ...grpc.CallOption) (*Product, error)
 	CreateProduct(ctx context.Context, in *CreateProductRequest, opts ...grpc.CallOption) (*CreateProductResponse, error)
+	UpdateProductById(ctx context.Context, in *UpdateProductByIdRequest, opts ...grpc.CallOption) (*Product, error)
+	DeleteProductById(ctx context.Context, in *DeleteProductByIdRequest, opts ...grpc.CallOption) (*DeleteProductByIdResponse, error)
 }
 
 type productServiceClient struct {
@@ -71,6 +75,26 @@ func (c *productServiceClient) CreateProduct(ctx context.Context, in *CreateProd
 	return out, nil
 }
 
+func (c *productServiceClient) UpdateProductById(ctx context.Context, in *UpdateProductByIdRequest, opts ...grpc.CallOption) (*Product, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Product)
+	err := c.cc.Invoke(ctx, ProductService_UpdateProductById_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) DeleteProductById(ctx context.Context, in *DeleteProductByIdRequest, opts ...grpc.CallOption) (*DeleteProductByIdResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteProductByIdResponse)
+	err := c.cc.Invoke(ctx, ProductService_DeleteProductById_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProductServiceServer is the server API for ProductService service.
 // All implementations should embed UnimplementedProductServiceServer
 // for forward compatibility.
@@ -78,6 +102,8 @@ type ProductServiceServer interface {
 	FindProductsWithPagination(context.Context, *FindProductsWithPaginationRequest) (*FindProductsWithPaginationResponse, error)
 	FindProductById(context.Context, *FindProductByIdRequest) (*Product, error)
 	CreateProduct(context.Context, *CreateProductRequest) (*CreateProductResponse, error)
+	UpdateProductById(context.Context, *UpdateProductByIdRequest) (*Product, error)
+	DeleteProductById(context.Context, *DeleteProductByIdRequest) (*DeleteProductByIdResponse, error)
 }
 
 // UnimplementedProductServiceServer should be embedded to have
@@ -95,6 +121,12 @@ func (UnimplementedProductServiceServer) FindProductById(context.Context, *FindP
 }
 func (UnimplementedProductServiceServer) CreateProduct(context.Context, *CreateProductRequest) (*CreateProductResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateProduct not implemented")
+}
+func (UnimplementedProductServiceServer) UpdateProductById(context.Context, *UpdateProductByIdRequest) (*Product, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateProductById not implemented")
+}
+func (UnimplementedProductServiceServer) DeleteProductById(context.Context, *DeleteProductByIdRequest) (*DeleteProductByIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteProductById not implemented")
 }
 func (UnimplementedProductServiceServer) testEmbeddedByValue() {}
 
@@ -170,11 +202,47 @@ func _ProductService_CreateProduct_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductService_UpdateProductById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateProductByIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).UpdateProductById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_UpdateProductById_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).UpdateProductById(ctx, req.(*UpdateProductByIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_DeleteProductById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteProductByIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).DeleteProductById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_DeleteProductById_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).DeleteProductById(ctx, req.(*DeleteProductByIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProductService_ServiceDesc is the grpc.ServiceDesc for ProductService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ProductService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "model.ProductService",
+	ServiceName: "proto.ProductService",
 	HandlerType: (*ProductServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -188,6 +256,14 @@ var ProductService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateProduct",
 			Handler:    _ProductService_CreateProduct_Handler,
+		},
+		{
+			MethodName: "UpdateProductById",
+			Handler:    _ProductService_UpdateProductById_Handler,
+		},
+		{
+			MethodName: "DeleteProductById",
+			Handler:    _ProductService_DeleteProductById_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

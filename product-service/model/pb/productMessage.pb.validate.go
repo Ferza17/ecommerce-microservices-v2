@@ -865,3 +865,343 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CreateProductResponseValidationError{}
+
+// Validate checks the field values on UpdateProductByIdRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdateProductByIdRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateProductByIdRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UpdateProductByIdRequestMultiError, or nil if none found.
+func (m *UpdateProductByIdRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateProductByIdRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.GetId() != "" {
+
+	}
+
+	if m.Name != nil {
+		// no validation rules for Name
+	}
+
+	if m.Description != nil {
+		// no validation rules for Description
+	}
+
+	if m.Uom != nil {
+		// no validation rules for Uom
+	}
+
+	if m.Image != nil {
+		// no validation rules for Image
+	}
+
+	if m.Price != nil {
+		// no validation rules for Price
+	}
+
+	if m.Stock != nil {
+		// no validation rules for Stock
+	}
+
+	if len(errors) > 0 {
+		return UpdateProductByIdRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdateProductByIdRequestMultiError is an error wrapping multiple validation
+// errors returned by UpdateProductByIdRequest.ValidateAll() if the designated
+// constraints aren't met.
+type UpdateProductByIdRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateProductByIdRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateProductByIdRequestMultiError) AllErrors() []error { return m }
+
+// UpdateProductByIdRequestValidationError is the validation error returned by
+// UpdateProductByIdRequest.Validate if the designated constraints aren't met.
+type UpdateProductByIdRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateProductByIdRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateProductByIdRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateProductByIdRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateProductByIdRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateProductByIdRequestValidationError) ErrorName() string {
+	return "UpdateProductByIdRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateProductByIdRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateProductByIdRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateProductByIdRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateProductByIdRequestValidationError{}
+
+// Validate checks the field values on DeleteProductByIdRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DeleteProductByIdRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeleteProductByIdRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DeleteProductByIdRequestMultiError, or nil if none found.
+func (m *DeleteProductByIdRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteProductByIdRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.GetId() != "" {
+
+	}
+
+	if len(errors) > 0 {
+		return DeleteProductByIdRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeleteProductByIdRequestMultiError is an error wrapping multiple validation
+// errors returned by DeleteProductByIdRequest.ValidateAll() if the designated
+// constraints aren't met.
+type DeleteProductByIdRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteProductByIdRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteProductByIdRequestMultiError) AllErrors() []error { return m }
+
+// DeleteProductByIdRequestValidationError is the validation error returned by
+// DeleteProductByIdRequest.Validate if the designated constraints aren't met.
+type DeleteProductByIdRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteProductByIdRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteProductByIdRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteProductByIdRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteProductByIdRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteProductByIdRequestValidationError) ErrorName() string {
+	return "DeleteProductByIdRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteProductByIdRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteProductByIdRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteProductByIdRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteProductByIdRequestValidationError{}
+
+// Validate checks the field values on DeleteProductByIdResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DeleteProductByIdResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeleteProductByIdResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DeleteProductByIdResponseMultiError, or nil if none found.
+func (m *DeleteProductByIdResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteProductByIdResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Message
+
+	if len(errors) > 0 {
+		return DeleteProductByIdResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeleteProductByIdResponseMultiError is an error wrapping multiple validation
+// errors returned by DeleteProductByIdResponse.ValidateAll() if the
+// designated constraints aren't met.
+type DeleteProductByIdResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteProductByIdResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteProductByIdResponseMultiError) AllErrors() []error { return m }
+
+// DeleteProductByIdResponseValidationError is the validation error returned by
+// DeleteProductByIdResponse.Validate if the designated constraints aren't met.
+type DeleteProductByIdResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteProductByIdResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteProductByIdResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteProductByIdResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteProductByIdResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteProductByIdResponseValidationError) ErrorName() string {
+	return "DeleteProductByIdResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteProductByIdResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteProductByIdResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteProductByIdResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteProductByIdResponseValidationError{}

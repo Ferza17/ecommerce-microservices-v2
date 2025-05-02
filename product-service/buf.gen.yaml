@@ -18,8 +18,3 @@ plugins:
       - lang=go
       - paths=source_relative
 
-  - plugin: gorm
-    out: model/pb
-    opt:
-      - paths=source_relative,enums=string,gateway=true:/model/pb
-

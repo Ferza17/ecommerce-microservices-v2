@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/orm"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
 	"github.com/google/uuid"
 	"time"
@@ -12,8 +13,8 @@ func (u *ProductUseCase) CreateProduct(ctx context.Context, req *pb.CreateProduc
 	tx := u.ProductPgsqlRepository.OpenTransactionWithContext(ctx)
 	now := time.Now().UTC()
 
-	result, err := u.ProductPgsqlRepository.CreateProduct(ctx, &pb.ProductORM{
-		Id:          uuid.NewString(),
+	result, err := u.ProductPgsqlRepository.CreateProduct(ctx, &orm.Product{
+		ID:          uuid.NewString(),
 		Name:        req.GetName(),
 		Price:       req.GetPrice(),
 		Stock:       req.GetStock(),

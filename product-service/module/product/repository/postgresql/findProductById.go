@@ -2,13 +2,13 @@ package postgresql
 
 import (
 	"context"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/orm"
 	"gorm.io/gorm"
 	"log"
 )
 
-func (r *ProductPostgresqlRepository) FindProductById(ctx context.Context, id string, tx *gorm.DB) (*pb.ProductORM, error) {
-	product := new(pb.ProductORM)
+func (r *ProductPostgresqlRepository) FindProductById(ctx context.Context, id string, tx *gorm.DB) (*orm.Product, error) {
+	product := new(orm.Product)
 
 	if err := tx.WithContext(ctx).
 		Table("products").

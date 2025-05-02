@@ -2,7 +2,7 @@ package grpc
 
 import (
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/connector/postgresql"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/connector"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -17,7 +17,7 @@ type (
 		listener            *net.Listener
 		grpcServer          *grpc.Server
 		logger              *zap.Logger
-		postgresqlConnector *postgresql.PostgresqlConnector
+		postgresqlConnector *connector.PostgresqlConnector
 	}
 
 	Option func(server *Server)
@@ -39,8 +39,12 @@ func (srv *Server) Serve() {
 	// Enable Reflection to Evans grpc client
 	reflection.Register(srv.grpcServer)
 	if err := srv.grpcServer.Serve(*srv.listener); err != nil {
-		log.Fatalln(err)
+		srv.logger.Error("failed to serve", zap.Error(err))
 	}
+}
+
+func (srv *Server) GracefulStop() {
+	srv.grpcServer.GracefulStop()
 }
 
 func (srv *Server) setup() {

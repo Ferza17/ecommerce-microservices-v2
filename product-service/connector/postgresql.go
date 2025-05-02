@@ -1,4 +1,4 @@
-package postgresql
+package connector
 
 import (
 	"database/sql"
@@ -68,4 +68,8 @@ func NewPostgresqlConnector() *PostgresqlConnector {
 		GormDB: gormdb,
 		SqlDB:  sqldb,
 	}
+}
+
+func (p *PostgresqlConnector) Close() error {
+	return p.SqlDB.Close()
 }

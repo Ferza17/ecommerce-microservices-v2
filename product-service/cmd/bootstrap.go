@@ -5,34 +5,39 @@ package cmd
 import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
-	pgsql "github.com/ferza17/ecommerce-microservices-v2/product-service/connector/postgresql"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/connector"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/grpc"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"log"
 )
 
 var (
-	logger    *zap.Logger
-	pgsqlConn *pgsql.PostgresqlConnector
+	logger      *zap.Logger
+	pgsqlConn   *connector.PostgresqlConnector
+	grpcServer  *grpc.Server
+	mongoDBConn *connector.MongodbConnector
 )
 
 func init() {
 	config.SetConfig(".")
 	logger = NewLogger()
-	pgsqlConn = pgsql.NewPostgresqlConnector()
+	pgsqlConn = connector.NewPostgresqlConnector()
+	mongoDBConn = connector.NewMongodbConnector()
+	grpcServer = NewGrpcServer()
 }
 
 func Shutdown(ctx context.Context) (err error) {
-	//cassandraSession.Close()
-	//if err = postgresSQlClient.Close(); err != nil {
-	//	return
-	//}
-	//if err = redisClient.Close(); err != nil {
-	//	return
-	//}
-	//if err = rabbitMQConnection.Close(); err != nil {
-	//	return
-	//}
+	grpcServer.GracefulStop()
+
+	if err = pgsqlConn.Close(); err != nil {
+		return err
+	}
+	if err = mongoDBConn.Close(ctx); err != nil {
+		return err
+	}
+
+	log.Println("Shutdown...")
 	return
 }
 
@@ -56,4 +61,13 @@ func NewLogger() (logger *zap.Logger) {
 	}
 	log.Println("LOGGER registered")
 	return
+}
+
+func NewGrpcServer() (srv *grpc.Server) {
+	return grpc.NewServer(
+		config.Get().RpcHost,
+		config.Get().RpcPort,
+		grpc.NewLogger(logger),
+		grpc.NewPostgresConnector(pgsqlConn),
+	)
 }

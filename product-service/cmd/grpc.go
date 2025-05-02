@@ -3,10 +3,12 @@
 package cmd
 
 import (
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/grpc"
+	"context"
 	"github.com/spf13/cobra"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 var rpcCommand = &cobra.Command{
@@ -14,11 +16,18 @@ var rpcCommand = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("========== Starting RPC Server ==========")
 
-		grpc.NewServer(
-			config.Get().RpcHost,
-			config.Get().RpcPort,
-			grpc.NewLogger(logger),
-			grpc.NewPostgresConnector(pgsqlConn),
-		).Serve()
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
+		go func() {
+			grpcServer.Serve()
+		}()
+
+		<-quit
+
+		if err := Shutdown(context.Background()); err != nil {
+			log.Fatalln(err)
+			return
+		}
 	},
 }
