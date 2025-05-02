@@ -12,28 +12,19 @@ import (
 var runCommand = &cobra.Command{
 	Use: "run",
 	Run: func(cmd *cobra.Command, args []string) {
-		chClose := make(chan os.Signal, 2)
-		signal.Notify(chClose, syscall.SIGINT, syscall.SIGTERM)
+		quit := make(chan os.Signal, 2)
+		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
 		go func() {
 			log.Println("========== Starting RPC Server ==========")
-			//grpc.NewServer(
-			//	os.Getenv("RPC_HOST"),
-			//	os.Getenv("RPC_PORT"),
-			//	//grpc.NewTracer(tracer),
-			//	grpc.NewLogger(logger),
-			//	//grpc.NewRedisClient(redisClient),
-			//	//grpc.NewRabbitMQConnection(rabbitMQConnection),
-			//	//grpc.NewElasticsearchClient(esClient),
-			//	//grpc.NewPostgresClient(postgresSQlClient),
-			//	//grpc.NewCassandraSession(cassandraSession),
-			//).Serve()
+			grpcServer.Serve()
 		}()
 		go func() {
-			//TODO:
-			// 1. Add Consumer Server
+			log.Println("========== Starting AMQP Server ==========")
+			amqpServer.Serve()
 		}()
 
-		<-chClose
+		<-quit
 		if err := Shutdown(context.Background()); err != nil {
 			log.Fatalln(err)
 			return

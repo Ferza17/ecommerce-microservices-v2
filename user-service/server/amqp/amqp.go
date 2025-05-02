@@ -12,7 +12,7 @@ import (
 	eventStoreRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/userEventStore/repository/mongodb"
 	eventStoreUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/userEventStore/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
-	rabbitMQ "github.com/rabbitmq/amqp091-go"
+	"github.com/rabbitmq/amqp091-go"
 	"go.uber.org/zap"
 	"log"
 	"os"
@@ -22,7 +22,7 @@ import (
 
 type (
 	Server struct {
-		amqpConn *rabbitMQ.Connection
+		amqpConn *amqp091.Connection
 
 		logger              pkg.IZapLogger
 		postgresqlConnector *connector.PostgresqlConnector
@@ -34,7 +34,7 @@ type (
 
 func NewServer(option ...Option) *Server {
 
-	amqpConn, err := rabbitMQ.Dial(
+	amqpConn, err := amqp091.Dial(
 		fmt.Sprintf("amqp://%s:%s@%s:%s/",
 			config.Get().RabbitMQUsername,
 			config.Get().RabbitMQPassword,
@@ -67,7 +67,7 @@ func (srv *Server) Serve() {
 		true,    // durable
 		false,   // auto-delete
 		false,
-		false,
+		true,
 		nil,
 	); err != nil {
 		srv.logger.Error(fmt.Sprintf("failed to serve", zap.Error(err)))
@@ -80,7 +80,7 @@ func (srv *Server) Serve() {
 
 	newUserPostgresqlRepository := userPostgresqlRepository.NewUserPostgresqlRepository(srv.postgresqlConnector, srv.logger)
 	newUserUseCase := userUseCase.NewUserUseCase(newUserPostgresqlRepository, newUserEventStoreUseCase, srv.logger)
-	newUserConsumer := userConsumer.NewUserConsumer(newUserUseCase, amqpChannel, srv.logger)
+	newUserConsumer := userConsumer.NewUserConsumer(amqpChannel, newUserUseCase, srv.logger)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {

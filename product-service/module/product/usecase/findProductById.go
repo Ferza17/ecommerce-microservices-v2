@@ -6,10 +6,10 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/utils"
 )
 
-func (u *ProductUseCase) FindProductById(ctx context.Context, req *pb.FindProductByIdRequest) (*pb.Product, error) {
-	tx := u.ProductPgsqlRepository.OpenTransactionWithContext(ctx)
+func (u *productUseCase) FindProductById(ctx context.Context, requestId string, req *pb.FindProductByIdRequest) (*pb.Product, error) {
+	tx := u.productPgsqlRepository.OpenTransactionWithContext(ctx)
 
-	fetchProduct, err := u.ProductPgsqlRepository.FindProductById(ctx, req.GetId(), tx)
+	fetchProduct, err := u.productPgsqlRepository.FindProductById(ctx, req.GetId(), tx)
 	if err != nil {
 		tx.Rollback()
 		return nil, err

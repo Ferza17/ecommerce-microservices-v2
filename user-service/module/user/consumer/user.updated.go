@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-func (c *UserConsumer) UserUpdated(ctx context.Context) error {
+func (c *userConsumer) UserUpdated(ctx context.Context) error {
 	q, err := c.amqpChannel.QueueDeclare(
 		enum.USER_UPDATED.String(),
 		true,
@@ -18,7 +18,7 @@ func (c *UserConsumer) UserUpdated(ctx context.Context) error {
 		nil,
 	)
 	if err != nil {
-		c.Logger.Error(fmt.Sprintf("failed to serve queue ", zap.Error(err)))
+		c.logger.Error(fmt.Sprintf("failed to serve queue ", zap.Error(err)))
 		return err
 	}
 

@@ -3,7 +3,6 @@ syntax = "proto3";
 package proto;
 
 import "google/protobuf/timestamp.proto";
-import "userMessage.proto";
 option go_package = "github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb";
 
 message CreateUserEventStoreRequest {

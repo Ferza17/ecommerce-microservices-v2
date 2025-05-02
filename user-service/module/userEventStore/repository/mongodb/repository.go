@@ -14,7 +14,7 @@ type (
 		CreateUserEventStoreWithSession(ctx context.Context, requestId string, event *bson.Event, session mongo.Session) (string, error)
 
 		// Session
-		StartSession(ctx context.Context) (mongo.Session, error)
+		StartSession() (mongo.Session, error)
 	}
 
 	userEventStoreRepository struct {
@@ -22,10 +22,6 @@ type (
 		logger    pkg.IZapLogger
 	}
 )
-
-func (r *userEventStoreRepository) StartSession(ctx context.Context) (mongo.Session, error) {
-	return r.connector.MongoClient.StartSession()
-}
 
 const (
 	databaseEventStore  = "event-store"
@@ -37,4 +33,8 @@ func NewEventStoreRepository(connector *connector.MongodbConnector, logger pkg.I
 		connector: connector,
 		logger:    logger,
 	}
+}
+
+func (r *userEventStoreRepository) StartSession() (mongo.Session, error) {
+	return r.connector.MongoClient.StartSession()
 }

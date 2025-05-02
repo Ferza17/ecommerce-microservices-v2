@@ -10,7 +10,7 @@ import (
 )
 
 type MongodbConnector struct {
-	mongoClient *mongo.Client
+	MongoClient *mongo.Client
 }
 
 func NewMongodbConnector() *MongodbConnector {
@@ -38,10 +38,10 @@ func NewMongodbConnector() *MongodbConnector {
 	}
 	log.Println("MongoDB connected")
 	return &MongodbConnector{
-		mongoClient: conn,
+		MongoClient: conn,
 	}
 }
 
 func (m *MongodbConnector) Close(ctx context.Context) error {
-	return m.mongoClient.Disconnect(ctx)
+	return m.MongoClient.Disconnect(ctx)
 }

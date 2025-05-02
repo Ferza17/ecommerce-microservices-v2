@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/connector"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/orm"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
 	"gorm.io/gorm"
 )
 
@@ -20,12 +21,14 @@ type (
 
 	ProductPostgresqlRepository struct {
 		connector *connector.PostgresqlConnector
+		logger    pkg.IZapLogger
 	}
 )
 
-func NewProductPostgresqlRepository(connector *connector.PostgresqlConnector) IProductPostgresqlRepository {
+func NewProductPostgresqlRepository(connector *connector.PostgresqlConnector, logger pkg.IZapLogger) IProductPostgresqlRepository {
 	return &ProductPostgresqlRepository{
 		connector: connector,
+		logger:    logger,
 	}
 }
 

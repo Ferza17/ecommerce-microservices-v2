@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"context"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/amqp"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/connector"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/grpc"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
+	amqp "github.com/ferza17/ecommerce-microservices-v2/user-service/server/amqp"
+	grpc "github.com/ferza17/ecommerce-microservices-v2/user-service/server/grpc"
 	"log"
 )
 

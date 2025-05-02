@@ -31,6 +31,11 @@ type Config struct {
 	MongoPort         string `mapstructure:"MONGO_PORT"`
 	MongoDatabaseName string `mapstructure:"MONGO_DATABASE_NAME"`
 
+	RabbitMQUsername string `mapstructure:"RABBITMQ_USERNAME"`
+	RabbitMQPassword string `mapstructure:"RABBITMQ_PASSWORD"`
+	RabbitMQHost     string `mapstructure:"RABBITMQ_HOST"`
+	RabbitMQPort     string `mapstructure:"RABBITMQ_PORT"`
+
 	RpcHost string `mapstructure:"RPC_HOST"`
 	RpcPort string `mapstructure:"RPC_PORT"`
 }
@@ -102,6 +107,25 @@ func SetConfig(path string) {
 
 	if c.MongoDatabaseName == "" {
 		log.Fatalf("SetConfig | MONGO_DATABASE_NAME is required")
+	}
+
+	if c.MongoDatabaseName == "" {
+		log.Fatalf("SetConfig | MONGO_DATABASE_NAME is required")
+	}
+
+	if c.RabbitMQUsername == "" {
+		log.Fatalf("SetConfig | RABBITMQ_USERNAME is required")
+	}
+	if c.RabbitMQPassword == "" {
+		log.Fatalf("SetConfig | RABBITMQ_PASSWORD is required")
+	}
+
+	if c.RabbitMQHost == "" {
+		log.Fatalf("SetConfig | RABBITMQ_HOST is required")
+	}
+
+	if c.RabbitMQPort == "" {
+		log.Fatalf("SetConfig | RABBITMQ_PORT is required")
 	}
 
 	viper.WatchConfig()

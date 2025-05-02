@@ -5,7 +5,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
 )
 
-func (u *ProductUseCase) UpdateProductById(ctx context.Context, req *pb.UpdateProductByIdRequest) (*pb.Product, error) {
+func (u *productUseCase) UpdateProductById(ctx context.Context, requestId string, req *pb.UpdateProductByIdRequest) (*pb.Product, error) {
 	//TODO implement me
 	panic("implement me")
 }

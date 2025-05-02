@@ -17,7 +17,7 @@ func (u *userEventStoreUseCase) CreateUserEventStoreWithTransaction(ctx context.
 		now    = time.Now().UTC()
 	)
 
-	session, err := u.userEventStoreRepository.StartSession(ctx)
+	session, err := u.userEventStoreRepository.StartSession()
 	if err != nil {
 		u.logger.Error(err.Error())
 		return nil, err

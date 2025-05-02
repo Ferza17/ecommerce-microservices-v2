@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func (c *UserConsumer) UserCreated(ctx context.Context) error {
+func (c *userConsumer) UserCreated(ctx context.Context) error {
 	var (
 		request   *pb.CreateUserRequest
 		requestId string
@@ -25,7 +25,7 @@ func (c *UserConsumer) UserCreated(ctx context.Context) error {
 		nil,
 	)
 	if err != nil {
-		c.Logger.Error(fmt.Sprintf("failed to serve queue : %v", zap.Error(err)))
+		c.logger.Error(fmt.Sprintf("failed to serve queue : %v", zap.Error(err)))
 		return err
 	}
 
@@ -44,18 +44,18 @@ func (c *UserConsumer) UserCreated(ctx context.Context) error {
 		defer cancel()
 	messages:
 		for d := range msgs {
-			if requestId, ok = d.Headers[enum.X_REQUEST_ID.String()].(string); !ok {
-				c.Logger.Error("failed to get request id")
+			if requestId, ok = d.Headers[enum.XRequestId.String()].(string); !ok {
+				c.logger.Error("failed to get request id")
 				continue messages
 			}
 
 			if err = json.Unmarshal(d.Body, &request); err != nil {
-				c.Logger.Error(fmt.Sprintf("requsetID : %s , failed to unmarshal request : %v", requestId, zap.Error(err)))
+				c.logger.Error(fmt.Sprintf("requsetID : %s , failed to unmarshal request : %v", requestId, zap.Error(err)))
 				continue messages
 			}
 
-			if _, err = c.UserUseCase.CreateUser(ctx, requestId, request); err != nil {
-				c.Logger.Error(fmt.Sprintf("failed to create user : %v", zap.Error(err)))
+			if _, err = c.userUseCase.CreateUser(ctx, requestId, request); err != nil {
+				c.logger.Error(fmt.Sprintf("failed to create user : %v", zap.Error(err)))
 				continue messages
 			}
 		}

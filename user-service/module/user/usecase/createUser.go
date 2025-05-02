@@ -62,6 +62,7 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 	}
 
 	createUserEventStoreReq.EntityId = result
+	createUserEventStoreReq.Payload.Id = &result
 	if _, err = u.userEventStoreUseCase.CreateUserEventStore(ctx, requestId, createUserEventStoreReq); err != nil {
 		u.logger.Error(fmt.Sprintf("requestId : %s , error creating userEventStore event: %v", requestId, err))
 		return nil, err

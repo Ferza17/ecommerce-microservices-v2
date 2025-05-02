@@ -1,30 +1,30 @@
-// Bootstaping The Service
-
 package cmd
 
 import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/connector"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/grpc"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/server/amqp"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/server/grpc"
 	"log"
 )
 
 var (
-	logger      *zap.Logger
+	logger      pkg.IZapLogger
 	pgsqlConn   *connector.PostgresqlConnector
 	grpcServer  *grpc.Server
 	mongoDBConn *connector.MongodbConnector
+	amqpServer  *amqp.Server
 )
 
 func init() {
 	config.SetConfig(".")
-	logger = NewLogger()
+	logger = pkg.NewZapLogger()
 	pgsqlConn = connector.NewPostgresqlConnector()
 	mongoDBConn = connector.NewMongodbConnector()
 	grpcServer = NewGrpcServer()
+	amqpServer = NewAmqpServer()
 }
 
 func Shutdown(ctx context.Context) (err error) {
@@ -41,33 +41,20 @@ func Shutdown(ctx context.Context) (err error) {
 	return
 }
 
-func NewLogger() (logger *zap.Logger) {
-	var err error
-	logConfig := zap.Config{
-		OutputPaths: []string{"stdout"},
-		Level:       zap.NewAtomicLevelAt(zap.InfoLevel),
-		Encoding:    "json",
-		EncoderConfig: zapcore.EncoderConfig{
-			LevelKey:     "level",
-			TimeKey:      "time",
-			MessageKey:   "msg",
-			EncodeTime:   zapcore.ISO8601TimeEncoder,
-			EncodeLevel:  zapcore.LowercaseLevelEncoder,
-			EncodeCaller: zapcore.ShortCallerEncoder,
-		},
-	}
-	if logger, err = logConfig.Build(); err != nil {
-		log.Fatalf("error when register logger: %v\n", err)
-	}
-	log.Println("LOGGER registered")
-	return
-}
-
 func NewGrpcServer() (srv *grpc.Server) {
 	return grpc.NewServer(
 		config.Get().RpcHost,
 		config.Get().RpcPort,
 		grpc.NewLogger(logger),
 		grpc.NewPostgresConnector(pgsqlConn),
+		grpc.NewMongoDBConnector(mongoDBConn),
+	)
+}
+
+func NewAmqpServer() (srv *amqp.Server) {
+	return amqp.NewServer(
+		amqp.NewLogger(logger),
+		amqp.NewPostgresConnector(pgsqlConn),
+		amqp.NewMongoDBConnector(mongoDBConn),
 	)
 }
