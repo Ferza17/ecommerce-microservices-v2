@@ -10,9 +10,6 @@ import (
 	"log"
 )
 
-type Bootstrap struct {
-}
-
 var (
 	logger      pkg.IZapLogger
 	pgsqlConn   *connector.PostgresqlConnector
