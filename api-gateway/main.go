@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/cmd"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/cmd"
 	"runtime"
 )
 

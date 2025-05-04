@@ -8,9 +8,10 @@ import (
 
 type (
 	IZapLogger interface {
-		Info(msg string)
+		Info(msg string, fields ...zap.Field)
 		Error(msg string)
 		Debug(msg string)
+		SetFields(fields ...zap.Field) *zap.Logger
 	}
 
 	zapLogger struct {
@@ -36,14 +37,13 @@ func NewZapLogger() IZapLogger {
 	if err != nil {
 		log.Fatalf("error when register logger: %v\n", err)
 	}
-	log.Println("LOGGER registered")
 	return &zapLogger{
 		logger: logger,
 	}
 }
 
-func (z *zapLogger) Info(msg string) {
-	z.logger.Info(msg)
+func (z *zapLogger) Info(msg string, fields ...zap.Field) {
+	z.logger.Info(msg, fields...)
 }
 
 func (z *zapLogger) Error(msg string) {
@@ -52,4 +52,8 @@ func (z *zapLogger) Error(msg string) {
 
 func (z *zapLogger) Debug(msg string) {
 	z.logger.Debug(msg)
+}
+
+func (z *zapLogger) SetFields(fields ...zap.Field) *zap.Logger {
+	return z.logger.With(fields...)
 }

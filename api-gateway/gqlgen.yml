@@ -1,0 +1,44 @@
+schema:
+  - model/graph/schema/*.graphqls
+
+exec:
+  package: gen
+  layout: follow-schema
+  dir: model/graph/gen
+  filename_template: "{name}.generated.go"
+  worker_limit: 1000
+
+model:
+  filename: model/graph/gen/models_gen.go
+  package: gen
+
+resolver:
+  package: resolver
+  layout: follow-schema
+  dir: server/graphql/resolver
+  filename_template: "{name}.resolvers.go"
+
+call_argument_directives_with_null: true
+
+autobind:
+#  - github.com/ferza17/ecommerce-microservices-v2/model/rpc/pb
+# This section declares type mapping between the GraphQL and go type systems
+#
+# The first line in each type will be used as defaults for resolver arguments and
+# modelgen, the others will be allowed when binding to fields. Configure them to
+# your liking
+models:
+  Int:
+    model:
+      - github.com/99designs/gqlgen/graphql.Int
+      - github.com/99designs/gqlgen/graphql.Int64
+      - github.com/99designs/gqlgen/graphql.Int32
+  Float:
+    model:
+      - github.com/99designs/gqlgen/graphql.Float
+      - github.com/99designs/gqlgen/graphql.Float64
+      - github.com/99designs/gqlgen/graphql.Float32
+  Time:
+    model:
+      - github.com/99designs/gqlgen/graphql.Time
+

@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/connector"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure"
 	userConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/consumer"
 	userPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/postgresql"
 	userUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/usecase"
@@ -25,8 +25,8 @@ type (
 		amqpConn *amqp091.Connection
 
 		logger              pkg.IZapLogger
-		postgresqlConnector *connector.PostgresqlConnector
-		mongoDBConnector    *connector.MongodbConnector
+		postgresqlConnector *infrastructure.PostgresqlConnector
+		mongoDBConnector    *infrastructure.MongodbConnector
 	}
 
 	Option func(server *Server)

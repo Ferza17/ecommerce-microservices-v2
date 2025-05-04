@@ -1,4 +1,4 @@
-package connector
+package infrastructure
 
 import (
 	"context"
@@ -9,17 +9,11 @@ import (
 	"log"
 )
 
-type (
-	IMongodbConnector interface {
-		Close(ctx context.Context) error
-	}
+type MongodbConnector struct {
+	MongoClient *mongo.Client
+}
 
-	MongodbConnector struct {
-		MongoClient *mongo.Client
-	}
-)
-
-func NewMongodbConnector() IMongodbConnector {
+func NewMongodbConnector() *MongodbConnector {
 	conn, err := mongo.Connect(
 		context.Background(),
 		options.

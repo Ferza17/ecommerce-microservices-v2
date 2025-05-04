@@ -257,27 +257,9 @@ func (m *FindProductsWithPaginationRequest) validate(all bool) error {
 
 	var errors []error
 
-	if m.GetPage() <= 0 {
-		err := FindProductsWithPaginationRequestValidationError{
-			field:  "Page",
-			reason: "value must be greater than 0",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
+	// no validation rules for Page
 
-	if m.GetLimit() <= 0 {
-		err := FindProductsWithPaginationRequestValidationError{
-			field:  "Limit",
-			reason: "value must be greater than 0",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
+	// no validation rules for Limit
 
 	if len(errors) > 0 {
 		return FindProductsWithPaginationRequestMultiError(errors)
@@ -538,9 +520,7 @@ func (m *FindProductByIdRequest) validate(all bool) error {
 
 	var errors []error
 
-	if m.GetId() != "" {
-
-	}
+	// no validation rules for Id
 
 	if len(errors) > 0 {
 		return FindProductByIdRequestMultiError(errors)
@@ -644,43 +624,17 @@ func (m *CreateProductRequest) validate(all bool) error {
 
 	var errors []error
 
-	if m.GetName() != "" {
+	// no validation rules for Name
 
-	}
+	// no validation rules for Description
 
-	if m.GetDescription() != "" {
+	// no validation rules for Uom
 
-	}
+	// no validation rules for Image
 
-	if m.GetUom() != "" {
+	// no validation rules for Price
 
-	}
-
-	if m.GetImage() != "" {
-
-	}
-
-	if m.GetPrice() <= 0 {
-		err := CreateProductRequestValidationError{
-			field:  "Price",
-			reason: "value must be greater than 0",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if m.GetStock() <= 0 {
-		err := CreateProductRequestValidationError{
-			field:  "Stock",
-			reason: "value must be greater than 0",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
+	// no validation rules for Stock
 
 	if len(errors) > 0 {
 		return CreateProductRequestMultiError(errors)
@@ -888,9 +842,7 @@ func (m *UpdateProductByIdRequest) validate(all bool) error {
 
 	var errors []error
 
-	if m.GetId() != "" {
-
-	}
+	// no validation rules for Id
 
 	if m.Name != nil {
 		// no validation rules for Name
@@ -1018,9 +970,7 @@ func (m *DeleteProductByIdRequest) validate(all bool) error {
 
 	var errors []error
 
-	if m.GetId() != "" {
-
-	}
+	// no validation rules for Id
 
 	if len(errors) > 0 {
 		return DeleteProductByIdRequestMultiError(errors)

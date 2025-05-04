@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/connector"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
 	amqp "github.com/ferza17/ecommerce-microservices-v2/user-service/server/amqp"
 	grpc "github.com/ferza17/ecommerce-microservices-v2/user-service/server/grpc"
@@ -12,17 +12,17 @@ import (
 
 var (
 	logger      pkg.IZapLogger
-	pgsqlConn   *connector.PostgresqlConnector
+	pgsqlConn   *infrastructure.PostgresqlConnector
 	grpcServer  *grpc.Server
-	mongoDBConn *connector.MongodbConnector
+	mongoDBConn *infrastructure.MongodbConnector
 	amqpServer  *amqp.Server
 )
 
 func init() {
 	config.SetConfig(".")
 	logger = pkg.NewZapLogger()
-	pgsqlConn = connector.NewPostgresqlConnector()
-	mongoDBConn = connector.NewMongodbConnector()
+	pgsqlConn = infrastructure.NewPostgresqlConnector()
+	mongoDBConn = infrastructure.NewMongodbConnector()
 	grpcServer = NewGrpcServer()
 	amqpServer = NewAmqpServer()
 }

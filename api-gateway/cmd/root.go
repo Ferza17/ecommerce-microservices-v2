@@ -1,6 +1,11 @@
 package cmd
 
 import (
+	"context"
+	"fmt"
+	bootstrap2 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/bootstrap"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/config"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/server/graphql"
 	"github.com/spf13/cobra"
 	"log"
 )
@@ -19,3 +24,39 @@ func Run() {
 		log.Panic(err)
 	}
 }
+
+var (
+	bootstrap     *bootstrap2.Bootstrap
+	graphQLServer *graphql.Server
+)
+
+func init() {
+	config.SetConfig(".")
+	bootstrap = bootstrap2.NewBootstrap()
+	graphQLServer = graphql.NewServer(
+		config.Get().HttpHost,
+		config.Get().HttpPort,
+		graphql.NewBootstrap(bootstrap),
+	)
+}
+
+func Shutdown(ctx context.Context) (err error) {
+	if err = bootstrap.RabbitMQInfrastructure.Close(); err != nil {
+		bootstrap.Logger.Error(fmt.Sprintf("Failed to close a connection: %v", err))
+		return err
+	}
+
+	if err = bootstrap.MongoDBInfrastructure.Close(ctx); err != nil {
+		bootstrap.Logger.Error(fmt.Sprintf("Failed to close a connection: %v", err))
+		return err
+	}
+
+	if err = bootstrap.RpcClientInfrastructure.Close(); err != nil {
+		bootstrap.Logger.Error(fmt.Sprintf("Failed to close a connection: %v", err))
+	}
+
+	bootstrap.Logger.Info("Exit...")
+	return
+}
+
+//func NewGraphQLServer()  (srv *graphql.Server){}

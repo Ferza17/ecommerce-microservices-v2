@@ -2,7 +2,7 @@ package grpc
 
 import (
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/connector"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -17,8 +17,8 @@ type (
 		listener            *net.Listener
 		grpcServer          *grpc.Server
 		logger              pkg.IZapLogger
-		mongoDBConnector    *connector.MongodbConnector
-		postgresqlConnector *connector.PostgresqlConnector
+		mongoDBConnector    *infrastructure.MongodbConnector
+		postgresqlConnector *infrastructure.PostgresqlConnector
 	}
 
 	Option func(server *Server)

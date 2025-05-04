@@ -29,6 +29,9 @@ type Config struct {
 	RabbitMQHost     string `mapstructure:"RABBITMQ_HOST"`
 	RabbitMQPort     string `mapstructure:"RABBITMQ_PORT"`
 
+	ProductServiceURL string `mapstructure:"PRODUCT_SERVICE_URL"`
+	UserServiceURL    string `mapstructure:"USER_SERVICE_URL"`
+
 	HttpHost string `mapstructure:"HTTP_HOST"`
 	HttpPort string `mapstructure:"HTTP_PORT"`
 }
@@ -53,7 +56,7 @@ func SetConfig(path string) {
 	if c.ServiceName == "" {
 		log.Fatalf("SetConfig | SERVICE_NAME is required")
 	}
-	
+
 	if c.HttpHost == "" {
 		log.Fatalf("SetConfig | HTTP_HOST is required")
 	}
@@ -95,6 +98,14 @@ func SetConfig(path string) {
 
 	if c.RabbitMQPort == "" {
 		log.Fatalf("SetConfig | RABBITMQ_PORT is required")
+	}
+
+	if c.ProductServiceURL == "" {
+		log.Fatalf("SetConfig | PRODUCT_SERVICE_URL is required")
+	}
+
+	if c.UserServiceURL == "" {
+		log.Fatalf("SetConfig | USER_SERVICE_URL is required")
 	}
 
 	viper.WatchConfig()

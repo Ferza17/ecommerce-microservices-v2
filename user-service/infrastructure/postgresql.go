@@ -1,4 +1,4 @@
-package connector
+package infrastructure
 
 import (
 	"database/sql"

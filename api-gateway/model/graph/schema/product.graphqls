@@ -1,0 +1,54 @@
+scalar Time
+
+type Product {
+    id: ID!
+    name: String!
+    description: String!
+    uom: String!
+    image: String!
+    price: Float!
+    stock: Int!
+    createdAt: Time
+    updatedAt: Time
+    discardedAt: Time
+}
+
+type FindProductsWithPaginationResponse {
+    products: [Product!]!
+    limit: Int!
+    page: Int!
+}
+
+type DeleteProductByIdResponse {
+    message: String!
+}
+
+input CreateProductRequest {
+    name: String!
+    description: String!
+    uom: String!
+    image: String!
+    price: Float!
+    stock: Int!
+}
+
+input UpdateProductRequest {
+    id: ID!
+    name: String
+    description: String
+    uom: String
+    image: String
+    price: Float
+    stock: Int
+}
+
+input FindProductsWithPaginationRequest {
+    ids: [ID!]
+    name: [String!]
+    page: Int!
+    limit: Int!
+}
+
+type CreateProductResponse {
+    id: ID!
+}

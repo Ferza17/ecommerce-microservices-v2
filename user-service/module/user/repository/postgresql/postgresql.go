@@ -2,7 +2,7 @@ package postgresql
 
 import (
 	"context"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/connector"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/orm"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
 	"gorm.io/gorm"
@@ -20,14 +20,14 @@ type (
 	}
 
 	userPostgresqlRepository struct {
-		connector *connector.PostgresqlConnector
+		connector *infrastructure.PostgresqlConnector
 		logger    pkg.IZapLogger
 	}
 )
 
 const userTable = "users"
 
-func NewUserPostgresqlRepository(connector *connector.PostgresqlConnector, logger pkg.IZapLogger) IUserPostgresqlRepository {
+func NewUserPostgresqlRepository(connector *infrastructure.PostgresqlConnector, logger pkg.IZapLogger) IUserPostgresqlRepository {
 	return &userPostgresqlRepository{
 		connector: connector,
 		logger:    logger,

@@ -1,0 +1,28 @@
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    password: String
+    createdAt: Time
+    updatedAt: Time
+    discardedAt: Time
+}
+
+input FindUserByIdRequest {
+    id: ID!
+}
+
+input CreateUserRequest {
+    name: String!
+    email: String!
+    password: String!
+}
+
+input FindUserByEmailAndPasswordRequest {
+    email: String!
+    password: String!
+}
+
+type CreateUserPayload {
+    id: ID!
+}

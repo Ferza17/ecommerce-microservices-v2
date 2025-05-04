@@ -2,7 +2,7 @@ package mongodb
 
 import (
 	"context"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/connector"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/bson"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -18,7 +18,7 @@ type (
 	}
 
 	userEventStoreRepository struct {
-		connector *connector.MongodbConnector
+		connector *infrastructure.MongodbConnector
 		logger    pkg.IZapLogger
 	}
 )
@@ -28,7 +28,7 @@ const (
 	collectionUserEvent = "event-store-user-event"
 )
 
-func NewEventStoreRepository(connector *connector.MongodbConnector, logger pkg.IZapLogger) IUserEventStoreRepository {
+func NewEventStoreRepository(connector *infrastructure.MongodbConnector, logger pkg.IZapLogger) IUserEventStoreRepository {
 	return &userEventStoreRepository{
 		connector: connector,
 		logger:    logger,
