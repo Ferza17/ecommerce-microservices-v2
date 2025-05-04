@@ -1,19 +1,21 @@
 package rabbitmq
 
 import (
+	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/config"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/pkg"
 	"github.com/rabbitmq/amqp091-go"
 )
 
 type (
 	IRabbitMQInfrastructure interface {
+		Publish(ctx context.Context, requestId string, exchange enum.Exchange, event enum.Event, message []byte) error
 		Close() error
 	}
 	RabbitMQInfrastructure struct {
 		amqpConn *amqp091.Connection
-		amqpChan *amqp091.Channel
 		logger   pkg.IZapLogger
 	}
 )
@@ -30,14 +32,8 @@ func NewRabbitMQInfrastructure(logger pkg.IZapLogger) IRabbitMQInfrastructure {
 		logger.Error(fmt.Sprintf("Failed to connect to RabbitMQ: %v", err))
 	}
 
-	amqpChannel, err := amqpConn.Channel()
-	if err != nil {
-		logger.Error(fmt.Sprintf("Failed to create a channel: %v", err))
-	}
-
 	return &RabbitMQInfrastructure{
 		amqpConn: amqpConn,
-		amqpChan: amqpChannel,
 		logger:   logger,
 	}
 }
@@ -45,11 +41,6 @@ func NewRabbitMQInfrastructure(logger pkg.IZapLogger) IRabbitMQInfrastructure {
 func (c *RabbitMQInfrastructure) Close() error {
 	if err := c.amqpConn.Close(); err != nil {
 		c.logger.Error(fmt.Sprintf("Failed to close a connection: %v", err))
-		return err
-	}
-
-	if err := c.amqpChan.Close(); err != nil {
-		c.logger.Error(fmt.Sprintf("Failed to close a channel: %v", err))
 		return err
 	}
 

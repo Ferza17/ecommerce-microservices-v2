@@ -12,11 +12,21 @@ import (
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
 	"github.com/vektah/gqlparser/v2/ast"
 	"golang.org/x/sync/semaphore"
 )
 
 // region    ************************** generated!.gotpl **************************
+
+type FindProductsWithPaginationResponseResolver interface {
+	Products(ctx context.Context, obj *pb.FindProductsWithPaginationResponse) ([]*pb.Product, error)
+}
+type ProductResolver interface {
+	CreatedAt(ctx context.Context, obj *pb.Product) (*time.Time, error)
+	UpdatedAt(ctx context.Context, obj *pb.Product) (*time.Time, error)
+	DiscardedAt(ctx context.Context, obj *pb.Product) (*time.Time, error)
+}
 
 // endregion ************************** generated!.gotpl **************************
 
@@ -30,7 +40,7 @@ import (
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _CreateProductResponse_id(ctx context.Context, field graphql.CollectedField, obj *CreateProductResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _CreateProductResponse_id(ctx context.Context, field graphql.CollectedField, obj *pb.CreateProductResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CreateProductResponse_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -44,7 +54,7 @@ func (ec *executionContext) _CreateProductResponse_id(ctx context.Context, field
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
+		return obj.Id, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -74,7 +84,7 @@ func (ec *executionContext) fieldContext_CreateProductResponse_id(_ context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _DeleteProductByIdResponse_message(ctx context.Context, field graphql.CollectedField, obj *DeleteProductByIDResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _DeleteProductByIdResponse_message(ctx context.Context, field graphql.CollectedField, obj *pb.DeleteProductByIdResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_DeleteProductByIdResponse_message(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -118,7 +128,7 @@ func (ec *executionContext) fieldContext_DeleteProductByIdResponse_message(_ con
 	return fc, nil
 }
 
-func (ec *executionContext) _FindProductsWithPaginationResponse_products(ctx context.Context, field graphql.CollectedField, obj *FindProductsWithPaginationResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _FindProductsWithPaginationResponse_products(ctx context.Context, field graphql.CollectedField, obj *pb.FindProductsWithPaginationResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_FindProductsWithPaginationResponse_products(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -132,7 +142,7 @@ func (ec *executionContext) _FindProductsWithPaginationResponse_products(ctx con
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Products, nil
+		return ec.resolvers.FindProductsWithPaginationResponse().Products(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -144,17 +154,17 @@ func (ec *executionContext) _FindProductsWithPaginationResponse_products(ctx con
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*Product)
+	res := resTmp.([]*pb.Product)
 	fc.Result = res
-	return ec.marshalNProduct2ᚕᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐProductᚄ(ctx, field.Selections, res)
+	return ec.marshalNProduct2ᚕᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐProductᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_FindProductsWithPaginationResponse_products(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "FindProductsWithPaginationResponse",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -184,7 +194,7 @@ func (ec *executionContext) fieldContext_FindProductsWithPaginationResponse_prod
 	return fc, nil
 }
 
-func (ec *executionContext) _FindProductsWithPaginationResponse_limit(ctx context.Context, field graphql.CollectedField, obj *FindProductsWithPaginationResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _FindProductsWithPaginationResponse_limit(ctx context.Context, field graphql.CollectedField, obj *pb.FindProductsWithPaginationResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_FindProductsWithPaginationResponse_limit(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -210,9 +220,9 @@ func (ec *executionContext) _FindProductsWithPaginationResponse_limit(ctx contex
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(int32)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNInt2int32(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_FindProductsWithPaginationResponse_limit(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -228,7 +238,7 @@ func (ec *executionContext) fieldContext_FindProductsWithPaginationResponse_limi
 	return fc, nil
 }
 
-func (ec *executionContext) _FindProductsWithPaginationResponse_page(ctx context.Context, field graphql.CollectedField, obj *FindProductsWithPaginationResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _FindProductsWithPaginationResponse_page(ctx context.Context, field graphql.CollectedField, obj *pb.FindProductsWithPaginationResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_FindProductsWithPaginationResponse_page(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -254,9 +264,9 @@ func (ec *executionContext) _FindProductsWithPaginationResponse_page(ctx context
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(int32)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNInt2int32(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_FindProductsWithPaginationResponse_page(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -272,7 +282,7 @@ func (ec *executionContext) fieldContext_FindProductsWithPaginationResponse_page
 	return fc, nil
 }
 
-func (ec *executionContext) _Product_id(ctx context.Context, field graphql.CollectedField, obj *Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_id(ctx context.Context, field graphql.CollectedField, obj *pb.Product) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Product_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -286,7 +296,7 @@ func (ec *executionContext) _Product_id(ctx context.Context, field graphql.Colle
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
+		return obj.Id, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -316,7 +326,7 @@ func (ec *executionContext) fieldContext_Product_id(_ context.Context, field gra
 	return fc, nil
 }
 
-func (ec *executionContext) _Product_name(ctx context.Context, field graphql.CollectedField, obj *Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_name(ctx context.Context, field graphql.CollectedField, obj *pb.Product) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Product_name(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -360,7 +370,7 @@ func (ec *executionContext) fieldContext_Product_name(_ context.Context, field g
 	return fc, nil
 }
 
-func (ec *executionContext) _Product_description(ctx context.Context, field graphql.CollectedField, obj *Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_description(ctx context.Context, field graphql.CollectedField, obj *pb.Product) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Product_description(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -404,7 +414,7 @@ func (ec *executionContext) fieldContext_Product_description(_ context.Context, 
 	return fc, nil
 }
 
-func (ec *executionContext) _Product_uom(ctx context.Context, field graphql.CollectedField, obj *Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_uom(ctx context.Context, field graphql.CollectedField, obj *pb.Product) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Product_uom(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -448,7 +458,7 @@ func (ec *executionContext) fieldContext_Product_uom(_ context.Context, field gr
 	return fc, nil
 }
 
-func (ec *executionContext) _Product_image(ctx context.Context, field graphql.CollectedField, obj *Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_image(ctx context.Context, field graphql.CollectedField, obj *pb.Product) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Product_image(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -492,7 +502,7 @@ func (ec *executionContext) fieldContext_Product_image(_ context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _Product_price(ctx context.Context, field graphql.CollectedField, obj *Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_price(ctx context.Context, field graphql.CollectedField, obj *pb.Product) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Product_price(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -536,7 +546,7 @@ func (ec *executionContext) fieldContext_Product_price(_ context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _Product_stock(ctx context.Context, field graphql.CollectedField, obj *Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_stock(ctx context.Context, field graphql.CollectedField, obj *pb.Product) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Product_stock(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -562,9 +572,9 @@ func (ec *executionContext) _Product_stock(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(int64)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNInt2int64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Product_stock(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -580,7 +590,7 @@ func (ec *executionContext) fieldContext_Product_stock(_ context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _Product_createdAt(ctx context.Context, field graphql.CollectedField, obj *Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_createdAt(ctx context.Context, field graphql.CollectedField, obj *pb.Product) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Product_createdAt(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -594,7 +604,7 @@ func (ec *executionContext) _Product_createdAt(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.CreatedAt, nil
+		return ec.resolvers.Product().CreatedAt(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -612,8 +622,8 @@ func (ec *executionContext) fieldContext_Product_createdAt(_ context.Context, fi
 	fc = &graphql.FieldContext{
 		Object:     "Product",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Time does not have child fields")
 		},
@@ -621,7 +631,7 @@ func (ec *executionContext) fieldContext_Product_createdAt(_ context.Context, fi
 	return fc, nil
 }
 
-func (ec *executionContext) _Product_updatedAt(ctx context.Context, field graphql.CollectedField, obj *Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_updatedAt(ctx context.Context, field graphql.CollectedField, obj *pb.Product) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Product_updatedAt(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -635,7 +645,7 @@ func (ec *executionContext) _Product_updatedAt(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.UpdatedAt, nil
+		return ec.resolvers.Product().UpdatedAt(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -653,8 +663,8 @@ func (ec *executionContext) fieldContext_Product_updatedAt(_ context.Context, fi
 	fc = &graphql.FieldContext{
 		Object:     "Product",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Time does not have child fields")
 		},
@@ -662,7 +672,7 @@ func (ec *executionContext) fieldContext_Product_updatedAt(_ context.Context, fi
 	return fc, nil
 }
 
-func (ec *executionContext) _Product_discardedAt(ctx context.Context, field graphql.CollectedField, obj *Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_discardedAt(ctx context.Context, field graphql.CollectedField, obj *pb.Product) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Product_discardedAt(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -676,7 +686,7 @@ func (ec *executionContext) _Product_discardedAt(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.DiscardedAt, nil
+		return ec.resolvers.Product().DiscardedAt(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -694,8 +704,8 @@ func (ec *executionContext) fieldContext_Product_discardedAt(_ context.Context, 
 	fc = &graphql.FieldContext{
 		Object:     "Product",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Time does not have child fields")
 		},
@@ -707,8 +717,8 @@ func (ec *executionContext) fieldContext_Product_discardedAt(_ context.Context, 
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputCreateProductRequest(ctx context.Context, obj any) (CreateProductRequest, error) {
-	var it CreateProductRequest
+func (ec *executionContext) unmarshalInputCreateProductRequest(ctx context.Context, obj any) (pb.CreateProductRequest, error) {
+	var it pb.CreateProductRequest
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -758,7 +768,7 @@ func (ec *executionContext) unmarshalInputCreateProductRequest(ctx context.Conte
 			it.Price = data
 		case "stock":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("stock"))
-			data, err := ec.unmarshalNInt2int(ctx, v)
+			data, err := ec.unmarshalNInt2int64(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -769,8 +779,8 @@ func (ec *executionContext) unmarshalInputCreateProductRequest(ctx context.Conte
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputFindProductsWithPaginationRequest(ctx context.Context, obj any) (FindProductsWithPaginationRequest, error) {
-	var it FindProductsWithPaginationRequest
+func (ec *executionContext) unmarshalInputFindProductsWithPaginationRequest(ctx context.Context, obj any) (pb.FindProductsWithPaginationRequest, error) {
+	var it pb.FindProductsWithPaginationRequest
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -799,14 +809,14 @@ func (ec *executionContext) unmarshalInputFindProductsWithPaginationRequest(ctx 
 			it.Name = data
 		case "page":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("page"))
-			data, err := ec.unmarshalNInt2int(ctx, v)
+			data, err := ec.unmarshalNInt2int32(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.Page = data
 		case "limit":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
-			data, err := ec.unmarshalNInt2int(ctx, v)
+			data, err := ec.unmarshalNInt2int32(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -817,8 +827,8 @@ func (ec *executionContext) unmarshalInputFindProductsWithPaginationRequest(ctx 
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputUpdateProductRequest(ctx context.Context, obj any) (UpdateProductRequest, error) {
-	var it UpdateProductRequest
+func (ec *executionContext) unmarshalInputUpdateProductByIdRequest(ctx context.Context, obj any) (pb.UpdateProductByIdRequest, error) {
+	var it pb.UpdateProductByIdRequest
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -837,7 +847,7 @@ func (ec *executionContext) unmarshalInputUpdateProductRequest(ctx context.Conte
 			if err != nil {
 				return it, err
 			}
-			it.ID = data
+			it.Id = data
 		case "name":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -875,7 +885,7 @@ func (ec *executionContext) unmarshalInputUpdateProductRequest(ctx context.Conte
 			it.Price = data
 		case "stock":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("stock"))
-			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint64(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -896,7 +906,7 @@ func (ec *executionContext) unmarshalInputUpdateProductRequest(ctx context.Conte
 
 var createProductResponseImplementors = []string{"CreateProductResponse"}
 
-func (ec *executionContext) _CreateProductResponse(ctx context.Context, sel ast.SelectionSet, obj *CreateProductResponse) graphql.Marshaler {
+func (ec *executionContext) _CreateProductResponse(ctx context.Context, sel ast.SelectionSet, obj *pb.CreateProductResponse) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, createProductResponseImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -935,7 +945,7 @@ func (ec *executionContext) _CreateProductResponse(ctx context.Context, sel ast.
 
 var deleteProductByIdResponseImplementors = []string{"DeleteProductByIdResponse"}
 
-func (ec *executionContext) _DeleteProductByIdResponse(ctx context.Context, sel ast.SelectionSet, obj *DeleteProductByIDResponse) graphql.Marshaler {
+func (ec *executionContext) _DeleteProductByIdResponse(ctx context.Context, sel ast.SelectionSet, obj *pb.DeleteProductByIdResponse) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, deleteProductByIdResponseImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -974,7 +984,7 @@ func (ec *executionContext) _DeleteProductByIdResponse(ctx context.Context, sel 
 
 var findProductsWithPaginationResponseImplementors = []string{"FindProductsWithPaginationResponse"}
 
-func (ec *executionContext) _FindProductsWithPaginationResponse(ctx context.Context, sel ast.SelectionSet, obj *FindProductsWithPaginationResponse) graphql.Marshaler {
+func (ec *executionContext) _FindProductsWithPaginationResponse(ctx context.Context, sel ast.SelectionSet, obj *pb.FindProductsWithPaginationResponse) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, findProductsWithPaginationResponseImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -984,19 +994,50 @@ func (ec *executionContext) _FindProductsWithPaginationResponse(ctx context.Cont
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("FindProductsWithPaginationResponse")
 		case "products":
-			out.Values[i] = ec._FindProductsWithPaginationResponse_products(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._FindProductsWithPaginationResponse_products(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
 			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "limit":
 			out.Values[i] = ec._FindProductsWithPaginationResponse_limit(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "page":
 			out.Values[i] = ec._FindProductsWithPaginationResponse_page(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -1023,7 +1064,7 @@ func (ec *executionContext) _FindProductsWithPaginationResponse(ctx context.Cont
 
 var productImplementors = []string{"Product"}
 
-func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, obj *Product) graphql.Marshaler {
+func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, obj *pb.Product) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, productImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -1035,44 +1076,137 @@ func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, 
 		case "id":
 			out.Values[i] = ec._Product_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "name":
 			out.Values[i] = ec._Product_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "description":
 			out.Values[i] = ec._Product_description(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "uom":
 			out.Values[i] = ec._Product_uom(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "image":
 			out.Values[i] = ec._Product_image(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "price":
 			out.Values[i] = ec._Product_price(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "stock":
 			out.Values[i] = ec._Product_stock(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "createdAt":
-			out.Values[i] = ec._Product_createdAt(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Product_createdAt(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "updatedAt":
-			out.Values[i] = ec._Product_updatedAt(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Product_updatedAt(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "discardedAt":
-			out.Values[i] = ec._Product_discardedAt(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Product_discardedAt(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -1100,16 +1234,16 @@ func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, 
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) unmarshalNCreateProductRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐCreateProductRequest(ctx context.Context, v any) (CreateProductRequest, error) {
+func (ec *executionContext) unmarshalNCreateProductRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐCreateProductRequest(ctx context.Context, v any) (pb.CreateProductRequest, error) {
 	res, err := ec.unmarshalInputCreateProductRequest(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNCreateProductResponse2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐCreateProductResponse(ctx context.Context, sel ast.SelectionSet, v CreateProductResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNCreateProductResponse2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐCreateProductResponse(ctx context.Context, sel ast.SelectionSet, v pb.CreateProductResponse) graphql.Marshaler {
 	return ec._CreateProductResponse(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCreateProductResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐCreateProductResponse(ctx context.Context, sel ast.SelectionSet, v *CreateProductResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNCreateProductResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐCreateProductResponse(ctx context.Context, sel ast.SelectionSet, v *pb.CreateProductResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -1119,11 +1253,11 @@ func (ec *executionContext) marshalNCreateProductResponse2ᚖgithubᚗcomᚋferz
 	return ec._CreateProductResponse(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNDeleteProductByIdResponse2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐDeleteProductByIDResponse(ctx context.Context, sel ast.SelectionSet, v DeleteProductByIDResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNDeleteProductByIdResponse2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐDeleteProductByIdResponse(ctx context.Context, sel ast.SelectionSet, v pb.DeleteProductByIdResponse) graphql.Marshaler {
 	return ec._DeleteProductByIdResponse(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNDeleteProductByIdResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐDeleteProductByIDResponse(ctx context.Context, sel ast.SelectionSet, v *DeleteProductByIDResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNDeleteProductByIdResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐDeleteProductByIdResponse(ctx context.Context, sel ast.SelectionSet, v *pb.DeleteProductByIdResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -1133,16 +1267,16 @@ func (ec *executionContext) marshalNDeleteProductByIdResponse2ᚖgithubᚗcomᚋ
 	return ec._DeleteProductByIdResponse(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNFindProductsWithPaginationRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐFindProductsWithPaginationRequest(ctx context.Context, v any) (FindProductsWithPaginationRequest, error) {
+func (ec *executionContext) unmarshalNFindProductsWithPaginationRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐFindProductsWithPaginationRequest(ctx context.Context, v any) (pb.FindProductsWithPaginationRequest, error) {
 	res, err := ec.unmarshalInputFindProductsWithPaginationRequest(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNFindProductsWithPaginationResponse2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐFindProductsWithPaginationResponse(ctx context.Context, sel ast.SelectionSet, v FindProductsWithPaginationResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNFindProductsWithPaginationResponse2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐFindProductsWithPaginationResponse(ctx context.Context, sel ast.SelectionSet, v pb.FindProductsWithPaginationResponse) graphql.Marshaler {
 	return ec._FindProductsWithPaginationResponse(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNFindProductsWithPaginationResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐFindProductsWithPaginationResponse(ctx context.Context, sel ast.SelectionSet, v *FindProductsWithPaginationResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNFindProductsWithPaginationResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐFindProductsWithPaginationResponse(ctx context.Context, sel ast.SelectionSet, v *pb.FindProductsWithPaginationResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -1152,11 +1286,11 @@ func (ec *executionContext) marshalNFindProductsWithPaginationResponse2ᚖgithub
 	return ec._FindProductsWithPaginationResponse(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNProduct2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐProduct(ctx context.Context, sel ast.SelectionSet, v Product) graphql.Marshaler {
+func (ec *executionContext) marshalNProduct2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐProduct(ctx context.Context, sel ast.SelectionSet, v pb.Product) graphql.Marshaler {
 	return ec._Product(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNProduct2ᚕᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐProductᚄ(ctx context.Context, sel ast.SelectionSet, v []*Product) graphql.Marshaler {
+func (ec *executionContext) marshalNProduct2ᚕᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐProductᚄ(ctx context.Context, sel ast.SelectionSet, v []*pb.Product) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	sm := semaphore.NewWeighted(1000)
@@ -1184,7 +1318,7 @@ func (ec *executionContext) marshalNProduct2ᚕᚖgithubᚗcomᚋferza17ᚋecomm
 					wg.Done()
 				}()
 			}
-			ret[i] = ec.marshalNProduct2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐProduct(ctx, sel, v[i])
+			ret[i] = ec.marshalNProduct2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐProduct(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -1208,7 +1342,7 @@ func (ec *executionContext) marshalNProduct2ᚕᚖgithubᚗcomᚋferza17ᚋecomm
 	return ret
 }
 
-func (ec *executionContext) marshalNProduct2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐProduct(ctx context.Context, sel ast.SelectionSet, v *Product) graphql.Marshaler {
+func (ec *executionContext) marshalNProduct2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐProduct(ctx context.Context, sel ast.SelectionSet, v *pb.Product) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -1218,8 +1352,8 @@ func (ec *executionContext) marshalNProduct2ᚖgithubᚗcomᚋferza17ᚋecommerc
 	return ec._Product(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNUpdateProductRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐUpdateProductRequest(ctx context.Context, v any) (UpdateProductRequest, error) {
-	res, err := ec.unmarshalInputUpdateProductRequest(ctx, v)
+func (ec *executionContext) unmarshalNUpdateProductByIdRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐUpdateProductByIdRequest(ctx context.Context, v any) (pb.UpdateProductByIdRequest, error) {
+	res, err := ec.unmarshalInputUpdateProductByIdRequest(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

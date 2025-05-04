@@ -21,7 +21,7 @@ resolver:
 call_argument_directives_with_null: true
 
 autobind:
-#  - github.com/ferza17/ecommerce-microservices-v2/model/rpc/pb
+  - github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb
 # This section declares type mapping between the GraphQL and go type systems
 #
 # The first line in each type will be used as defaults for resolver arguments and

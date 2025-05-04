@@ -3,7 +3,7 @@ package enum
 type headers string
 
 const (
-	XRequestId headers = "X-REQUEST-ID"
+	XRequestId headers = "X-Request-Id"
 )
 
 func (h headers) String() string {

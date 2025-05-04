@@ -8,15 +8,15 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/graph/gen"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
 )
 
 // FindUserByID is the resolver for the findUserById field.
-func (r *queryResolver) FindUserByID(ctx context.Context, input gen.FindUserByIDRequest) (*gen.User, error) {
+func (r *queryResolver) FindUserByID(ctx context.Context, id string) (*pb.User, error) {
 	panic(fmt.Errorf("not implemented: FindUserByID - findUserById"))
 }
 
 // FindUserByEmailAndPassword is the resolver for the findUserByEmailAndPassword field.
-func (r *queryResolver) FindUserByEmailAndPassword(ctx context.Context, input gen.FindUserByEmailAndPasswordRequest) (*gen.User, error) {
+func (r *queryResolver) FindUserByEmailAndPassword(ctx context.Context, input pb.FindUserByEmailAndPasswordRequest) (*pb.User, error) {
 	panic(fmt.Errorf("not implemented: FindUserByEmailAndPassword - findUserByEmailAndPassword"))
 }

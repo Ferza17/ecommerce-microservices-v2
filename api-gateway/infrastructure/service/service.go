@@ -1,4 +1,4 @@
-package rpcclient
+package service
 
 import (
 	"fmt"
@@ -10,14 +10,17 @@ import (
 )
 
 type (
-	IRpcClient interface {
+	Service interface {
 		Close() error
+		GetProductService() pb.ProductServiceClient
+		GetUserService() pb.UserServiceClient
 	}
 
-	RpcClient struct {
-		User    pb.UserServiceClient
-		Product pb.ProductServiceClient
+	service struct {
+		user    pb.UserServiceClient
+		product pb.ProductServiceClient
 
+		// For Closing purpose
 		productClient *grpc.ClientConn
 		userClient    *grpc.ClientConn
 
@@ -25,7 +28,7 @@ type (
 	}
 )
 
-func NewRpcClient(logger pkg.IZapLogger) IRpcClient {
+func NewRpcClient(logger pkg.IZapLogger) Service {
 
 	insecureCredentials := grpc.WithTransportCredentials(insecure.NewCredentials()) // For Local Development
 
@@ -41,16 +44,16 @@ func NewRpcClient(logger pkg.IZapLogger) IRpcClient {
 		return nil
 	}
 
-	return &RpcClient{
-		Product:       pb.NewProductServiceClient(productClient),
+	return &service{
+		product:       pb.NewProductServiceClient(productClient),
 		productClient: productClient,
-		User:          pb.NewUserServiceClient(userClient),
+		user:          pb.NewUserServiceClient(userClient),
 		userClient:    userClient,
 		logger:        logger,
 	}
 }
 
-func (c *RpcClient) Close() error {
+func (c *service) Close() error {
 	if err := c.productClient.Close(); err != nil {
 		c.logger.Error(fmt.Sprintf("Failed to close a product client: %v", err))
 		return err
@@ -62,4 +65,12 @@ func (c *RpcClient) Close() error {
 	}
 
 	return nil
+}
+
+func (c *service) GetProductService() pb.ProductServiceClient {
+	return c.product
+}
+
+func (c *service) GetUserService() pb.UserServiceClient {
+	return c.user
 }

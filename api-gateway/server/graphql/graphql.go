@@ -64,6 +64,7 @@ func (srv *Server) Serve() {
 	})
 	server.AddTransport(transport.Options{})
 	server.AddTransport(transport.GET{})
+	server.AddTransport(transport.POST{})
 	server.AddTransport(transport.MultipartForm{})
 	server.Use(extension.Introspection{})
 

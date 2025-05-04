@@ -7,22 +7,23 @@ package resolver
 import (
 	"context"
 	"fmt"
-
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/graph/gen"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
 )
 
 // CreateProduct is the resolver for the createProduct field.
-func (r *mutationResolver) CreateProduct(ctx context.Context, input gen.CreateProductRequest) (*gen.CreateProductResponse, error) {
-	panic(fmt.Errorf("not implemented: CreateProduct - createProduct"))
+func (r *mutationResolver) CreateProduct(ctx context.Context, input pb.CreateProductRequest) (*pb.CreateProductResponse, error) {
+	return r.ProductUseCase.CreateProduct(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &input)
 }
 
 // UpdateProductByID is the resolver for the updateProductById field.
-func (r *mutationResolver) UpdateProductByID(ctx context.Context, input gen.UpdateProductRequest) (*gen.Product, error) {
+func (r *mutationResolver) UpdateProductByID(ctx context.Context, input pb.UpdateProductByIdRequest) (*pb.Product, error) {
 	panic(fmt.Errorf("not implemented: UpdateProductByID - updateProductById"))
 }
 
 // DeleteProductByID is the resolver for the deleteProductById field.
-func (r *mutationResolver) DeleteProductByID(ctx context.Context, id string) (*gen.DeleteProductByIDResponse, error) {
+func (r *mutationResolver) DeleteProductByID(ctx context.Context, id string) (*pb.DeleteProductByIdResponse, error) {
 	panic(fmt.Errorf("not implemented: DeleteProductByID - deleteProductById"))
 }
 

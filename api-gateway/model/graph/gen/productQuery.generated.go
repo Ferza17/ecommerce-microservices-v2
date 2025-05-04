@@ -10,16 +10,17 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
 // region    ************************** generated!.gotpl **************************
 
 type QueryResolver interface {
-	FindProductsWithPagination(ctx context.Context, filter FindProductsWithPaginationRequest) (*FindProductsWithPaginationResponse, error)
-	FindProductByID(ctx context.Context, id string) (*Product, error)
-	FindUserByID(ctx context.Context, input FindUserByIDRequest) (*User, error)
-	FindUserByEmailAndPassword(ctx context.Context, input FindUserByEmailAndPasswordRequest) (*User, error)
+	FindProductsWithPagination(ctx context.Context, filter pb.FindProductsWithPaginationRequest) (*pb.FindProductsWithPaginationResponse, error)
+	FindProductByID(ctx context.Context, id string) (*pb.Product, error)
+	FindUserByID(ctx context.Context, id string) (*pb.User, error)
+	FindUserByEmailAndPassword(ctx context.Context, input pb.FindUserByEmailAndPasswordRequest) (*pb.User, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -65,7 +66,7 @@ func (ec *executionContext) field_Query_findProductById_argsID(
 ) (string, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 	if tmp, ok := rawArgs["id"]; ok {
-		return ec.unmarshalNID2string(ctx, tmp)
+		return ec.unmarshalNString2string(ctx, tmp)
 	}
 
 	var zeroVal string
@@ -85,13 +86,13 @@ func (ec *executionContext) field_Query_findProductsWithPagination_args(ctx cont
 func (ec *executionContext) field_Query_findProductsWithPagination_argsFilter(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (FindProductsWithPaginationRequest, error) {
+) (pb.FindProductsWithPaginationRequest, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
 	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalNFindProductsWithPaginationRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐFindProductsWithPaginationRequest(ctx, tmp)
+		return ec.unmarshalNFindProductsWithPaginationRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐFindProductsWithPaginationRequest(ctx, tmp)
 	}
 
-	var zeroVal FindProductsWithPaginationRequest
+	var zeroVal pb.FindProductsWithPaginationRequest
 	return zeroVal, nil
 }
 
@@ -108,36 +109,36 @@ func (ec *executionContext) field_Query_findUserByEmailAndPassword_args(ctx cont
 func (ec *executionContext) field_Query_findUserByEmailAndPassword_argsInput(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (FindUserByEmailAndPasswordRequest, error) {
+) (pb.FindUserByEmailAndPasswordRequest, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNFindUserByEmailAndPasswordRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐFindUserByEmailAndPasswordRequest(ctx, tmp)
+		return ec.unmarshalNFindUserByEmailAndPasswordRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐFindUserByEmailAndPasswordRequest(ctx, tmp)
 	}
 
-	var zeroVal FindUserByEmailAndPasswordRequest
+	var zeroVal pb.FindUserByEmailAndPasswordRequest
 	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_findUserById_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_Query_findUserById_argsInput(ctx, rawArgs)
+	arg0, err := ec.field_Query_findUserById_argsID(ctx, rawArgs)
 	if err != nil {
 		return nil, err
 	}
-	args["input"] = arg0
+	args["id"] = arg0
 	return args, nil
 }
-func (ec *executionContext) field_Query_findUserById_argsInput(
+func (ec *executionContext) field_Query_findUserById_argsID(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (FindUserByIDRequest, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNFindUserByIdRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐFindUserByIDRequest(ctx, tmp)
+) (string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["id"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
 	}
 
-	var zeroVal FindUserByIDRequest
+	var zeroVal string
 	return zeroVal, nil
 }
 
@@ -163,7 +164,7 @@ func (ec *executionContext) _Query_findProductsWithPagination(ctx context.Contex
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().FindProductsWithPagination(rctx, fc.Args["filter"].(FindProductsWithPaginationRequest))
+		return ec.resolvers.Query().FindProductsWithPagination(rctx, fc.Args["filter"].(pb.FindProductsWithPaginationRequest))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -175,9 +176,9 @@ func (ec *executionContext) _Query_findProductsWithPagination(ctx context.Contex
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*FindProductsWithPaginationResponse)
+	res := resTmp.(*pb.FindProductsWithPaginationResponse)
 	fc.Result = res
-	return ec.marshalNFindProductsWithPaginationResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐFindProductsWithPaginationResponse(ctx, field.Selections, res)
+	return ec.marshalNFindProductsWithPaginationResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐFindProductsWithPaginationResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_findProductsWithPagination(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -238,9 +239,9 @@ func (ec *executionContext) _Query_findProductById(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*Product)
+	res := resTmp.(*pb.Product)
 	fc.Result = res
-	return ec.marshalNProduct2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐProduct(ctx, field.Selections, res)
+	return ec.marshalNProduct2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐProduct(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_findProductById(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -303,7 +304,7 @@ func (ec *executionContext) _Query_findUserById(ctx context.Context, field graph
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().FindUserByID(rctx, fc.Args["input"].(FindUserByIDRequest))
+		return ec.resolvers.Query().FindUserByID(rctx, fc.Args["id"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -312,9 +313,9 @@ func (ec *executionContext) _Query_findUserById(ctx context.Context, field graph
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*User)
+	res := resTmp.(*pb.User)
 	fc.Result = res
-	return ec.marshalOUser2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐUser(ctx, field.Selections, res)
+	return ec.marshalOUser2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_findUserById(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -371,7 +372,7 @@ func (ec *executionContext) _Query_findUserByEmailAndPassword(ctx context.Contex
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().FindUserByEmailAndPassword(rctx, fc.Args["input"].(FindUserByEmailAndPasswordRequest))
+		return ec.resolvers.Query().FindUserByEmailAndPassword(rctx, fc.Args["input"].(pb.FindUserByEmailAndPasswordRequest))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -380,9 +381,9 @@ func (ec *executionContext) _Query_findUserByEmailAndPassword(ctx context.Contex
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*User)
+	res := resTmp.(*pb.User)
 	fc.Result = res
-	return ec.marshalOUser2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐUser(ctx, field.Selections, res)
+	return ec.marshalOUser2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_findUserByEmailAndPassword(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {

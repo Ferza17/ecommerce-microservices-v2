@@ -8,21 +8,17 @@ type User {
     discardedAt: Time
 }
 
-input FindUserByIdRequest {
-    id: ID!
-}
-
 input CreateUserRequest {
     name: String!
     email: String!
     password: String!
 }
 
+type CreateUserResponse {
+    id : String!
+}
+
 input FindUserByEmailAndPasswordRequest {
     email: String!
     password: String!
-}
-
-type CreateUserPayload {
-    id: ID!
 }

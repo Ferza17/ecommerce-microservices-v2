@@ -9,16 +9,17 @@ import (
 	"sync/atomic"
 
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
 // region    ************************** generated!.gotpl **************************
 
 type MutationResolver interface {
-	CreateProduct(ctx context.Context, input CreateProductRequest) (*CreateProductResponse, error)
-	UpdateProductByID(ctx context.Context, input UpdateProductRequest) (*Product, error)
-	DeleteProductByID(ctx context.Context, id string) (*DeleteProductByIDResponse, error)
-	CreateUser(ctx context.Context, input CreateUserRequest) (*CreateUserPayload, error)
+	CreateProduct(ctx context.Context, input pb.CreateProductRequest) (*pb.CreateProductResponse, error)
+	UpdateProductByID(ctx context.Context, input pb.UpdateProductByIdRequest) (*pb.Product, error)
+	DeleteProductByID(ctx context.Context, id string) (*pb.DeleteProductByIdResponse, error)
+	CreateUser(ctx context.Context, input pb.CreateUserRequest) (*pb.CreateUserResponse, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -38,13 +39,13 @@ func (ec *executionContext) field_Mutation_createProduct_args(ctx context.Contex
 func (ec *executionContext) field_Mutation_createProduct_argsInput(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (CreateProductRequest, error) {
+) (pb.CreateProductRequest, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNCreateProductRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐCreateProductRequest(ctx, tmp)
+		return ec.unmarshalNCreateProductRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐCreateProductRequest(ctx, tmp)
 	}
 
-	var zeroVal CreateProductRequest
+	var zeroVal pb.CreateProductRequest
 	return zeroVal, nil
 }
 
@@ -61,13 +62,13 @@ func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, 
 func (ec *executionContext) field_Mutation_createUser_argsInput(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (CreateUserRequest, error) {
+) (pb.CreateUserRequest, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNCreateUserRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐCreateUserRequest(ctx, tmp)
+		return ec.unmarshalNCreateUserRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐCreateUserRequest(ctx, tmp)
 	}
 
-	var zeroVal CreateUserRequest
+	var zeroVal pb.CreateUserRequest
 	return zeroVal, nil
 }
 
@@ -107,13 +108,13 @@ func (ec *executionContext) field_Mutation_updateProductById_args(ctx context.Co
 func (ec *executionContext) field_Mutation_updateProductById_argsInput(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (UpdateProductRequest, error) {
+) (pb.UpdateProductByIdRequest, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNUpdateProductRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐUpdateProductRequest(ctx, tmp)
+		return ec.unmarshalNUpdateProductByIdRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐUpdateProductByIdRequest(ctx, tmp)
 	}
 
-	var zeroVal UpdateProductRequest
+	var zeroVal pb.UpdateProductByIdRequest
 	return zeroVal, nil
 }
 
@@ -139,7 +140,7 @@ func (ec *executionContext) _Mutation_createProduct(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateProduct(rctx, fc.Args["input"].(CreateProductRequest))
+		return ec.resolvers.Mutation().CreateProduct(rctx, fc.Args["input"].(pb.CreateProductRequest))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -151,9 +152,9 @@ func (ec *executionContext) _Mutation_createProduct(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*CreateProductResponse)
+	res := resTmp.(*pb.CreateProductResponse)
 	fc.Result = res
-	return ec.marshalNCreateProductResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐCreateProductResponse(ctx, field.Selections, res)
+	return ec.marshalNCreateProductResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐCreateProductResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createProduct(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -198,7 +199,7 @@ func (ec *executionContext) _Mutation_updateProductById(ctx context.Context, fie
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateProductByID(rctx, fc.Args["input"].(UpdateProductRequest))
+		return ec.resolvers.Mutation().UpdateProductByID(rctx, fc.Args["input"].(pb.UpdateProductByIdRequest))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -210,9 +211,9 @@ func (ec *executionContext) _Mutation_updateProductById(ctx context.Context, fie
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*Product)
+	res := resTmp.(*pb.Product)
 	fc.Result = res
-	return ec.marshalNProduct2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐProduct(ctx, field.Selections, res)
+	return ec.marshalNProduct2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐProduct(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateProductById(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -287,9 +288,9 @@ func (ec *executionContext) _Mutation_deleteProductById(ctx context.Context, fie
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*DeleteProductByIDResponse)
+	res := resTmp.(*pb.DeleteProductByIdResponse)
 	fc.Result = res
-	return ec.marshalNDeleteProductByIdResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐDeleteProductByIDResponse(ctx, field.Selections, res)
+	return ec.marshalNDeleteProductByIdResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐDeleteProductByIdResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_deleteProductById(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -334,7 +335,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateUser(rctx, fc.Args["input"].(CreateUserRequest))
+		return ec.resolvers.Mutation().CreateUser(rctx, fc.Args["input"].(pb.CreateUserRequest))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -346,9 +347,9 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*CreateUserPayload)
+	res := resTmp.(*pb.CreateUserResponse)
 	fc.Result = res
-	return ec.marshalNCreateUserPayload2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐCreateUserPayload(ctx, field.Selections, res)
+	return ec.marshalNCreateUserResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐCreateUserResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -360,9 +361,9 @@ func (ec *executionContext) fieldContext_Mutation_createUser(ctx context.Context
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
-				return ec.fieldContext_CreateUserPayload_id(ctx, field)
+				return ec.fieldContext_CreateUserResponse_id(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type CreateUserPayload", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type CreateUserResponse", field.Name)
 		},
 	}
 	defer func() {

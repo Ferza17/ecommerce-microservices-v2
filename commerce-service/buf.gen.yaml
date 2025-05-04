@@ -1,0 +1,14 @@
+version: v1
+plugins:
+  - plugin: buf.build/bufbuild/connect-es
+    out: src/model/rpc/pb
+    opt:
+      - target=ts
+
+  - plugin: buf.build/community/stephenh-ts-proto
+    out: src/model/rpc/pb
+    opt:
+      - outputServices=...
+      - useExactTypes=...
+
+

@@ -52,7 +52,8 @@ message CreateProductResponse {
 }
 
 message UpdateProductByIdRequest {
-  string id = 1;optional string name = 2;
+  string id = 1;
+  optional string name = 2;
   optional string description = 3;
   optional string uom = 4;
   optional string image = 5;

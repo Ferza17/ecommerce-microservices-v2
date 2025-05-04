@@ -32,7 +32,7 @@ input CreateProductRequest {
     stock: Int!
 }
 
-input UpdateProductRequest {
+input UpdateProductByIdRequest {
     id: ID!
     name: String
     description: String

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/connector"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
 	productConsumer "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/consumer"
 	productpgRepo "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/repository/postgresql"
 	productUseCase "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/usecase"
@@ -58,18 +57,6 @@ func NewServer(option ...Option) *Server {
 func (srv *Server) Serve() {
 	amqpChannel, err := srv.amqpConn.Channel()
 	if err != nil {
-		srv.logger.Error(fmt.Sprintf("failed to serve", zap.Error(err)))
-	}
-
-	if err := amqpChannel.ExchangeDeclare(
-		enum.ProductExchange.String(),
-		"topic", // type
-		true,    // durable
-		false,   // auto-delete
-		false,
-		true,
-		nil,
-	); err != nil {
 		srv.logger.Error(fmt.Sprintf("failed to serve", zap.Error(err)))
 	}
 

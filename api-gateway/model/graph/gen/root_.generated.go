@@ -10,6 +10,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -32,8 +33,11 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	FindProductsWithPaginationResponse() FindProductsWithPaginationResponseResolver
 	Mutation() MutationResolver
+	Product() ProductResolver
 	Query() QueryResolver
+	User() UserResolver
 }
 
 type DirectiveRoot struct {
@@ -41,11 +45,11 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	CreateProductResponse struct {
-		ID func(childComplexity int) int
+		Id func(childComplexity int) int
 	}
 
-	CreateUserPayload struct {
-		ID func(childComplexity int) int
+	CreateUserResponse struct {
+		Id func(childComplexity int) int
 	}
 
 	DeleteProductByIdResponse struct {
@@ -59,17 +63,17 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateProduct     func(childComplexity int, input CreateProductRequest) int
-		CreateUser        func(childComplexity int, input CreateUserRequest) int
+		CreateProduct     func(childComplexity int, input pb.CreateProductRequest) int
+		CreateUser        func(childComplexity int, input pb.CreateUserRequest) int
 		DeleteProductByID func(childComplexity int, id string) int
-		UpdateProductByID func(childComplexity int, input UpdateProductRequest) int
+		UpdateProductByID func(childComplexity int, input pb.UpdateProductByIdRequest) int
 	}
 
 	Product struct {
 		CreatedAt   func(childComplexity int) int
 		Description func(childComplexity int) int
 		DiscardedAt func(childComplexity int) int
-		ID          func(childComplexity int) int
+		Id          func(childComplexity int) int
 		Image       func(childComplexity int) int
 		Name        func(childComplexity int) int
 		Price       func(childComplexity int) int
@@ -80,16 +84,16 @@ type ComplexityRoot struct {
 
 	Query struct {
 		FindProductByID            func(childComplexity int, id string) int
-		FindProductsWithPagination func(childComplexity int, filter FindProductsWithPaginationRequest) int
-		FindUserByEmailAndPassword func(childComplexity int, input FindUserByEmailAndPasswordRequest) int
-		FindUserByID               func(childComplexity int, input FindUserByIDRequest) int
+		FindProductsWithPagination func(childComplexity int, filter pb.FindProductsWithPaginationRequest) int
+		FindUserByEmailAndPassword func(childComplexity int, input pb.FindUserByEmailAndPasswordRequest) int
+		FindUserByID               func(childComplexity int, id string) int
 	}
 
 	User struct {
 		CreatedAt   func(childComplexity int) int
 		DiscardedAt func(childComplexity int) int
 		Email       func(childComplexity int) int
-		ID          func(childComplexity int) int
+		Id          func(childComplexity int) int
 		Name        func(childComplexity int) int
 		Password    func(childComplexity int) int
 		UpdatedAt   func(childComplexity int) int
@@ -116,18 +120,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 	switch typeName + "." + field {
 
 	case "CreateProductResponse.id":
-		if e.complexity.CreateProductResponse.ID == nil {
+		if e.complexity.CreateProductResponse.Id == nil {
 			break
 		}
 
-		return e.complexity.CreateProductResponse.ID(childComplexity), true
+		return e.complexity.CreateProductResponse.Id(childComplexity), true
 
-	case "CreateUserPayload.id":
-		if e.complexity.CreateUserPayload.ID == nil {
+	case "CreateUserResponse.id":
+		if e.complexity.CreateUserResponse.Id == nil {
 			break
 		}
 
-		return e.complexity.CreateUserPayload.ID(childComplexity), true
+		return e.complexity.CreateUserResponse.Id(childComplexity), true
 
 	case "DeleteProductByIdResponse.message":
 		if e.complexity.DeleteProductByIdResponse.Message == nil {
@@ -167,7 +171,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateProduct(childComplexity, args["input"].(CreateProductRequest)), true
+		return e.complexity.Mutation.CreateProduct(childComplexity, args["input"].(pb.CreateProductRequest)), true
 
 	case "Mutation.createUser":
 		if e.complexity.Mutation.CreateUser == nil {
@@ -179,7 +183,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateUser(childComplexity, args["input"].(CreateUserRequest)), true
+		return e.complexity.Mutation.CreateUser(childComplexity, args["input"].(pb.CreateUserRequest)), true
 
 	case "Mutation.deleteProductById":
 		if e.complexity.Mutation.DeleteProductByID == nil {
@@ -203,7 +207,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateProductByID(childComplexity, args["input"].(UpdateProductRequest)), true
+		return e.complexity.Mutation.UpdateProductByID(childComplexity, args["input"].(pb.UpdateProductByIdRequest)), true
 
 	case "Product.createdAt":
 		if e.complexity.Product.CreatedAt == nil {
@@ -227,11 +231,11 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		return e.complexity.Product.DiscardedAt(childComplexity), true
 
 	case "Product.id":
-		if e.complexity.Product.ID == nil {
+		if e.complexity.Product.Id == nil {
 			break
 		}
 
-		return e.complexity.Product.ID(childComplexity), true
+		return e.complexity.Product.Id(childComplexity), true
 
 	case "Product.image":
 		if e.complexity.Product.Image == nil {
@@ -297,7 +301,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.FindProductsWithPagination(childComplexity, args["filter"].(FindProductsWithPaginationRequest)), true
+		return e.complexity.Query.FindProductsWithPagination(childComplexity, args["filter"].(pb.FindProductsWithPaginationRequest)), true
 
 	case "Query.findUserByEmailAndPassword":
 		if e.complexity.Query.FindUserByEmailAndPassword == nil {
@@ -309,7 +313,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.FindUserByEmailAndPassword(childComplexity, args["input"].(FindUserByEmailAndPasswordRequest)), true
+		return e.complexity.Query.FindUserByEmailAndPassword(childComplexity, args["input"].(pb.FindUserByEmailAndPasswordRequest)), true
 
 	case "Query.findUserById":
 		if e.complexity.Query.FindUserByID == nil {
@@ -321,7 +325,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.FindUserByID(childComplexity, args["input"].(FindUserByIDRequest)), true
+		return e.complexity.Query.FindUserByID(childComplexity, args["id"].(string)), true
 
 	case "User.createdAt":
 		if e.complexity.User.CreatedAt == nil {
@@ -345,11 +349,11 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		return e.complexity.User.Email(childComplexity), true
 
 	case "User.id":
-		if e.complexity.User.ID == nil {
+		if e.complexity.User.Id == nil {
 			break
 		}
 
-		return e.complexity.User.ID(childComplexity), true
+		return e.complexity.User.Id(childComplexity), true
 
 	case "User.name":
 		if e.complexity.User.Name == nil {
@@ -384,8 +388,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputCreateUserRequest,
 		ec.unmarshalInputFindProductsWithPaginationRequest,
 		ec.unmarshalInputFindUserByEmailAndPasswordRequest,
-		ec.unmarshalInputFindUserByIdRequest,
-		ec.unmarshalInputUpdateProductRequest,
+		ec.unmarshalInputUpdateProductByIdRequest,
 	)
 	first := true
 
@@ -517,7 +520,7 @@ input CreateProductRequest {
     stock: Int!
 }
 
-input UpdateProductRequest {
+input UpdateProductByIdRequest {
     id: ID!
     name: String
     description: String
@@ -539,13 +542,13 @@ type CreateProductResponse {
 }`, BuiltIn: false},
 	{Name: "../schema/productMutation.graphqls", Input: `extend type Mutation {
     createProduct(input: CreateProductRequest!): CreateProductResponse!
-    updateProductById(input: UpdateProductRequest!): Product!
+    updateProductById(input: UpdateProductByIdRequest!): Product!
     deleteProductById(id: ID!): DeleteProductByIdResponse!
 }
 `, BuiltIn: false},
 	{Name: "../schema/productQuery.graphqls", Input: `extend type Query {
     findProductsWithPagination(filter: FindProductsWithPaginationRequest!): FindProductsWithPaginationResponse!
-    findProductById(id: ID!): Product!
+    findProductById(id: String!): Product!
 }`, BuiltIn: false},
 	{Name: "../schema/user.graphqls", Input: `type User {
     id: ID!
@@ -557,30 +560,26 @@ type CreateProductResponse {
     discardedAt: Time
 }
 
-input FindUserByIdRequest {
-    id: ID!
-}
-
 input CreateUserRequest {
     name: String!
     email: String!
     password: String!
 }
 
+type CreateUserResponse {
+    id : String!
+}
+
 input FindUserByEmailAndPasswordRequest {
     email: String!
     password: String!
 }
-
-type CreateUserPayload {
-    id: ID!
-}
 `, BuiltIn: false},
 	{Name: "../schema/userMutation.graphqls", Input: `extend type Mutation {
-    createUser(input: CreateUserRequest!): CreateUserPayload!
+    createUser(input: CreateUserRequest!): CreateUserResponse!
 }`, BuiltIn: false},
 	{Name: "../schema/userQuery.graphqls", Input: `extend type Query {
-    findUserById(input: FindUserByIdRequest!): User
+    findUserById(id: String!): User
     findUserByEmailAndPassword(input: FindUserByEmailAndPasswordRequest!): User
 }`, BuiltIn: false},
 }

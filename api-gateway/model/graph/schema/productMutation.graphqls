@@ -1,5 +1,5 @@
 extend type Mutation {
     createProduct(input: CreateProductRequest!): CreateProductResponse!
-    updateProductById(input: UpdateProductRequest!): Product!
+    updateProductById(input: UpdateProductByIdRequest!): Product!
     deleteProductById(id: ID!): DeleteProductByIdResponse!
 }

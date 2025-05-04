@@ -3,7 +3,7 @@ package enum
 type meta string
 
 const (
-	XRequestID meta = "X-REQUEST-ID"
+	XRequestID meta = "X-Request-Id"
 )
 
 func (e meta) String() string {

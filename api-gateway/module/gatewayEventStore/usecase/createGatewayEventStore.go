@@ -10,15 +10,17 @@ import (
 
 func (u *gatewayEventStoreUseCase) CreateGatewayEventStore(ctx context.Context, requestId string, req *pb.CreateGatewayEventStoreRequest) (*pb.CreateGatewayEventStoreResponse, error) {
 	var (
-		now = time.Now().UTC()
+		now     = time.Now().UTC()
+		payload = req.Payload.AsMap()
 	)
 
 	result, err := u.gatewayEventStoreRepository.CreateGatewayEventStore(ctx, requestId, &bson.Event{
 		SagaID:    requestId,
-		Entity:    "users",
+		Entity:    req.Entity,
 		EntityID:  req.EntityId,
 		EventType: req.EventType,
 		Status:    req.Status,
+		Payload:   &payload,
 		//Payload:       utils.ConvertPbUserStateToBsonUserState(req.Payload),
 		//PreviousState: utils.ConvertPbUserStateToBsonUserState(req.PreviousState),
 		CreatedAt: now,

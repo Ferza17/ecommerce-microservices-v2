@@ -3,7 +3,7 @@ package bootstrap
 import (
 	mongoDBInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/mongodb"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/rabbitmq"
-	rpcClientInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/rpcclient"
+	rpcClientInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/service"
 	gatewayEventStoreRepository "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/gatewayEventStore/repository/mongodb"
 	gatewayEventStoreUseCase "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/gatewayEventStore/usecase"
 	productUseCase "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/product/usecase"
@@ -16,7 +16,7 @@ type Bootstrap struct {
 
 	MongoDBInfrastructure   mongoDBInfrastructure.IMongoDBInfrastructure
 	RabbitMQInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
-	RpcClientInfrastructure rpcClientInfrastructure.IRpcClient
+	RpcClientInfrastructure rpcClientInfrastructure.Service
 
 	UserUseCase    userUseCase.IUserUseCase
 	ProductUseCase productUseCase.IProductUseCase

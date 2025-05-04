@@ -7,18 +7,20 @@ package resolver
 import (
 	"context"
 	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
 
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/graph/gen"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
 )
 
 // FindProductsWithPagination is the resolver for the findProductsWithPagination field.
-func (r *queryResolver) FindProductsWithPagination(ctx context.Context, filter gen.FindProductsWithPaginationRequest) (*gen.FindProductsWithPaginationResponse, error) {
+func (r *queryResolver) FindProductsWithPagination(ctx context.Context, filter pb.FindProductsWithPaginationRequest) (*pb.FindProductsWithPaginationResponse, error) {
 	panic(fmt.Errorf("not implemented: FindProductsWithPagination - findProductsWithPagination"))
 }
 
 // FindProductByID is the resolver for the findProductById field.
-func (r *queryResolver) FindProductByID(ctx context.Context, id string) (*gen.Product, error) {
-	panic(fmt.Errorf("not implemented: FindProductByID - findProductById"))
+func (r *queryResolver) FindProductByID(ctx context.Context, id string) (*pb.Product, error) {
+	return r.ProductUseCase.FindProductById(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &pb.FindProductByIdRequest{Id: id})
 }
 
 // Query returns gen.QueryResolver implementation.
