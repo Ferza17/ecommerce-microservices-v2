@@ -14,14 +14,14 @@ type (
 		FindProductById(ctx context.Context, requestId string, req *pb.FindProductByIdRequest) (*pb.Product, error)
 	}
 	ProductUseCase struct {
-		rpcClient rpcClientInfrastructure.Service
+		rpcClient rpcClientInfrastructure.IService
 		rabbitMQ  rabbitmqInfrastructure.IRabbitMQInfrastructure
 		logger    pkg.IZapLogger
 	}
 )
 
 func NewProductUseCase(
-	rpcClient rpcClientInfrastructure.Service,
+	rpcClient rpcClientInfrastructure.IService,
 	rabbitMQ rabbitmqInfrastructure.IRabbitMQInfrastructure,
 	logger pkg.IZapLogger,
 ) IProductUseCase {

@@ -2,7 +2,7 @@ package postgresql
 
 import (
 	"context"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/postgresql"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/orm"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
 	"gorm.io/gorm"
@@ -20,20 +20,20 @@ type (
 	}
 
 	userPostgresqlRepository struct {
-		connector *infrastructure.PostgresqlConnector
-		logger    pkg.IZapLogger
+		postgresSQLInfrastructure postgresql.IPostgreSQLInfrastructure
+		logger                    pkg.IZapLogger
 	}
 )
 
 const userTable = "users"
 
-func NewUserPostgresqlRepository(connector *infrastructure.PostgresqlConnector, logger pkg.IZapLogger) IUserPostgresqlRepository {
+func NewUserPostgresqlRepository(connector postgresql.IPostgreSQLInfrastructure, logger pkg.IZapLogger) IUserPostgresqlRepository {
 	return &userPostgresqlRepository{
-		connector: connector,
-		logger:    logger,
+		postgresSQLInfrastructure: connector,
+		logger:                    logger,
 	}
 }
 
 func (r *userPostgresqlRepository) OpenTransactionWithContext(ctx context.Context) *gorm.DB {
-	return r.connector.GormDB.WithContext(ctx).Begin()
+	return r.postgresSQLInfrastructure.GormDB().WithContext(ctx).Begin()
 }

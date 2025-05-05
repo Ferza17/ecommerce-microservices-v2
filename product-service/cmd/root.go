@@ -34,23 +34,8 @@ var (
 func init() {
 	config.SetConfig(".")
 	dependency = bootstrap.NewBootstrap()
-	grpcServer = NewGrpcServer()
-	rabbitMQServer = NewRabbitMQServer()
-}
-
-func NewRabbitMQServer() (srv *rabbitmq.Server) {
-	return rabbitmq.NewServer(
-		rabbitmq.NewLogger(dependency.Logger),
-		rabbitmq.NewPostgresConnector(dependency.PostgreSQLInfrastructure),
-		rabbitmq.NewRabbitMQInfrastructure(dependency.RabbitMQInfrastructure),
-	)
-}
-
-func NewGrpcServer() (srv *grpc.Server) {
-	return grpc.NewServer(
-		grpc.NewLogger(dependency.Logger),
-		grpc.NewPostgresSQLInfrastructure(dependency.PostgreSQLInfrastructure),
-	)
+	grpcServer = grpc.NewServer(dependency)
+	rabbitMQServer = rabbitmq.NewServer(dependency)
 }
 
 func Shutdown(ctx context.Context) (err error) {

@@ -14,7 +14,8 @@ type Bootstrap struct {
 	RabbitMQInfrastructure   rabbitmqInfrastructure.IRabbitMQInfrastructure
 	PostgreSQLInfrastructure postgreSQLInfrastructure.IPostgreSQLInfrastructure
 
-	ProductUseCase productUseCase.IProductUseCase
+	ProductRepository productPostgresqlRepository.IProductPostgresqlRepository
+	ProductUseCase    productUseCase.IProductUseCase
 }
 
 func NewBootstrap() *Bootstrap {
@@ -28,11 +29,15 @@ func NewBootstrap() *Bootstrap {
 	newProductPostgresqlRepository := productPostgresqlRepository.NewProductPostgresqlRepository(newPostgreSQLInfrastructure, logger)
 
 	// UseCase
-	productUseCase.NewProductUseCase(newProductPostgresqlRepository, newRabbitMQInfrastructure, logger)
+	newProductUseCase := productUseCase.NewProductUseCase(newProductPostgresqlRepository, newRabbitMQInfrastructure, logger)
 
 	return &Bootstrap{
 		Logger:                   logger,
 		RabbitMQInfrastructure:   newRabbitMQInfrastructure,
 		PostgreSQLInfrastructure: newPostgreSQLInfrastructure,
+
+		// Modules Dependency
+		ProductRepository: newProductPostgresqlRepository,
+		ProductUseCase:    newProductUseCase,
 	}
 }

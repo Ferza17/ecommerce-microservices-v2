@@ -1,6 +1,13 @@
 package cmd
 
 import (
+	"context"
+	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/bootstrap"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/server/grpc"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/server/rabbitmq"
+
 	"github.com/spf13/cobra"
 	"log"
 )
@@ -18,4 +25,34 @@ func Run() {
 	if err := cmd.Execute(); err != nil {
 		log.Panic(err)
 	}
+}
+
+var (
+	dependency     *bootstrap.Bootstrap
+	grpcServer     *grpc.Server
+	rabbitMQServer *rabbitmq.Server
+)
+
+func init() {
+	config.SetConfig(".")
+	dependency = bootstrap.NewBootstrap()
+	grpcServer = grpc.NewServer(dependency)
+	rabbitMQServer = rabbitmq.NewServer(dependency)
+}
+
+func Shutdown(ctx context.Context) (err error) {
+	grpcServer.GracefulStop()
+
+	if err = dependency.PostgresqlInfrastructure.Close(); err != nil {
+		dependency.Logger.Error(fmt.Sprintf("failed to close postgresql connection : %v", err))
+		return err
+	}
+
+	if err = dependency.RabbitMQInfrastructure.Close(); err != nil {
+		dependency.Logger.Error(fmt.Sprintf("failed to close rabbitmq connection : %v", err))
+		return err
+	}
+
+	log.Println("Shutdown...")
+	return
 }

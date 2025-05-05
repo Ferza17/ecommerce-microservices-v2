@@ -3,16 +3,19 @@ package presenter
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
 	productUseCase "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/usecase"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
 )
 
 type ProductGrpcPresenter struct {
 	pb.UnimplementedProductServiceServer
 
-	ProductUseCase productUseCase.IProductUseCase
+	productUseCase productUseCase.IProductUseCase
+	logger         pkg.IZapLogger
 }
 
-func NewProductGrpcPresenter(productUseCase productUseCase.IProductUseCase) *ProductGrpcPresenter {
+func NewProductGrpcPresenter(productUseCase productUseCase.IProductUseCase, logger pkg.IZapLogger) *ProductGrpcPresenter {
 	return &ProductGrpcPresenter{
-		ProductUseCase: productUseCase,
+		productUseCase: productUseCase,
+		logger:         logger,
 	}
 }

@@ -22,7 +22,7 @@ func (p *ProductGrpcPresenter) CreateProduct(ctx context.Context, req *pb.Create
 		return nil, err
 	}
 
-	res, err := p.ProductUseCase.CreateProduct(ctx, requestID, req)
+	res, err := p.productUseCase.CreateProduct(ctx, requestID, req)
 	if err != nil {
 		return nil, err
 	}

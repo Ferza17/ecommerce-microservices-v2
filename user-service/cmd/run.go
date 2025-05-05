@@ -20,8 +20,8 @@ var runCommand = &cobra.Command{
 			grpcServer.Serve()
 		}()
 		go func() {
-			log.Println("========== Starting AMQP Server ==========")
-			amqpServer.Serve()
+			log.Println("========== Starting RabbitMQ Consumer ==========")
+			rabbitMQServer.Serve()
 		}()
 
 		<-quit

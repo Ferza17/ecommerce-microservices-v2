@@ -12,7 +12,7 @@ type Bootstrap struct {
 	Logger pkg.IZapLogger
 
 	RabbitMQInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
-	RpcClientInfrastructure rpcClientInfrastructure.Service
+	RpcClientInfrastructure rpcClientInfrastructure.IService
 
 	// For Injection to GraphQL Resolver
 	UserUseCase    userUseCase.IUserUseCase
@@ -29,13 +29,13 @@ func NewBootstrap() *Bootstrap {
 
 	// UseCase
 	newUserUseCase := userUseCase.NewUserUseCase(newRpcClientInfrastructure, newRabbitMQInfrastructure, logger)
-	NewProductUseCase := productUseCase.NewProductUseCase(newRpcClientInfrastructure, newRabbitMQInfrastructure, logger)
+	newProductUseCase := productUseCase.NewProductUseCase(newRpcClientInfrastructure, newRabbitMQInfrastructure, logger)
 
 	return &Bootstrap{
 		Logger:                  logger,
 		RabbitMQInfrastructure:  newRabbitMQInfrastructure,
 		RpcClientInfrastructure: newRpcClientInfrastructure,
 		UserUseCase:             newUserUseCase,
-		ProductUseCase:          NewProductUseCase,
+		ProductUseCase:          newProductUseCase,
 	}
 }

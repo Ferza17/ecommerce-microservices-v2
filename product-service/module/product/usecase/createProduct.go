@@ -14,7 +14,6 @@ import (
 )
 
 func (u *productUseCase) CreateProduct(ctx context.Context, requestId string, req *pb.CreateProductRequest) (*pb.CreateProductResponse, error) {
-
 	var (
 		err        error
 		tx         = u.productPgsqlRepository.OpenTransactionWithContext(ctx)

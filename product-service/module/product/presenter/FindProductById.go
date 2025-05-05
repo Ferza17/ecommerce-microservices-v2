@@ -24,7 +24,7 @@ func (p *ProductGrpcPresenter) FindProductById(ctx context.Context, req *pb.Find
 		return nil, err
 	}
 
-	res, err := p.ProductUseCase.FindProductById(ctx, requestID, req)
+	res, err := p.productUseCase.FindProductById(ctx, requestID, req)
 	if err != nil {
 		return nil, err
 	}

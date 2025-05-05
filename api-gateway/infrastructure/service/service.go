@@ -10,7 +10,7 @@ import (
 )
 
 type (
-	Service interface {
+	IService interface {
 		Close() error
 		GetProductService() pb.ProductServiceClient
 		GetUserService() pb.UserServiceClient
@@ -28,7 +28,7 @@ type (
 	}
 )
 
-func NewRpcClient(logger pkg.IZapLogger) Service {
+func NewRpcClient(logger pkg.IZapLogger) IService {
 
 	insecureCredentials := grpc.WithTransportCredentials(insecure.NewCredentials()) // For Local Development
 

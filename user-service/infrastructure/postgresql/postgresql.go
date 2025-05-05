@@ -1,23 +1,32 @@
-package infrastructure
+package postgresql
 
 import (
 	"database/sql"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"
-	"log"
 	"time"
 )
 
-type PostgresqlConnector struct {
-	GormDB *gorm.DB
-	SqlDB  *sql.DB
-}
+type (
+	IPostgreSQLInfrastructure interface {
+		Close() error
+		GormDB() *gorm.DB
+		SqlDB() *sql.DB
+	}
 
-func NewPostgresqlConnector() *PostgresqlConnector {
+	PostgreSQLInfrastructure struct {
+		gormDB *gorm.DB
+		sqlDB  *sql.DB
+		logger pkg.IZapLogger
+	}
+)
+
+func NewPostgresqlInfrastructure(logger pkg.IZapLogger) IPostgreSQLInfrastructure {
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		config.Get().PostgresHost,
 		config.Get().PostgresPort,
@@ -28,10 +37,8 @@ func NewPostgresqlConnector() *PostgresqlConnector {
 
 	sqldb, err := sql.Open("pgx", dsn)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("could not open sql %s:", err))
+		logger.Error(fmt.Sprintf("failed to connect to postgres: %v", err))
 	}
-
-	log.Println("SQLDB registered")
 
 	gormConfig := gorm.Config{}
 	if config.Get().Env == enum.CONFIG_ENV_LOCAL {
@@ -46,30 +53,36 @@ func NewPostgresqlConnector() *PostgresqlConnector {
 
 	gormdb, err := gorm.Open(pgDialect, &gormConfig)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("could not open dao %s:", err))
+		logger.Error(fmt.Sprintf("failed to connect to postgres: %v", err))
 	}
 
 	gormSqlDB, err := gormdb.DB()
 	if err != nil {
-		log.Fatal(fmt.Sprintf("could not get dao DB %s:", err))
+		logger.Error(fmt.Sprintf("failed to connect to postgres: %v", err))
 	}
 
 	if err = gormSqlDB.Ping(); err != nil {
-		log.Fatal(fmt.Sprintf("could not dao db ping %s:", err))
+		logger.Error(fmt.Sprintf("failed to connect to postgres: %v", err))
 	}
 	gormSqlDB.SetMaxOpenConns(10)
 	gormSqlDB.SetMaxIdleConns(5)
 	gormSqlDB.SetConnMaxIdleTime(300 * time.Second)
 	gormSqlDB.SetConnMaxLifetime(time.Duration(300 * time.Second))
 
-	log.Println("GORM registered")
-
-	return &PostgresqlConnector{
-		GormDB: gormdb,
-		SqlDB:  sqldb,
+	return &PostgreSQLInfrastructure{
+		gormDB: gormdb,
+		sqlDB:  sqldb,
 	}
 }
 
-func (p *PostgresqlConnector) Close() error {
-	return p.SqlDB.Close()
+func (p *PostgreSQLInfrastructure) Close() error {
+	return p.sqlDB.Close()
+}
+
+func (p *PostgreSQLInfrastructure) GormDB() *gorm.DB {
+	return p.gormDB
+}
+
+func (p *PostgreSQLInfrastructure) SqlDB() *sql.DB {
+	return p.sqlDB
 }

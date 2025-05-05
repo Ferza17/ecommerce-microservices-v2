@@ -13,14 +13,14 @@ type (
 		CreateUser(ctx context.Context, requestId string, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error)
 	}
 	UserUseCase struct {
-		rpcClient rpcClientInfrastructure.Service
+		rpcClient rpcClientInfrastructure.IService
 		rabbitMQ  rabbitmqInfrastructure.IRabbitMQInfrastructure
 		logger    pkg.IZapLogger
 	}
 )
 
 func NewUserUseCase(
-	rpcClient rpcClientInfrastructure.Service,
+	rpcClient rpcClientInfrastructure.IService,
 	rabbitMQ rabbitmqInfrastructure.IRabbitMQInfrastructure,
 	logger pkg.IZapLogger,
 ) IUserUseCase {

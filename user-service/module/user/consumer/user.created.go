@@ -43,7 +43,7 @@ func (c *userConsumer) UserCreated(ctx context.Context) error {
 				requestId string
 				ok        bool
 			)
-			if requestId, ok = d.Headers[enum.XRequestId.String()].(string); !ok {
+			if requestId, ok = d.Headers[enum.XRequestIDHeader.String()].(string); !ok {
 				c.logger.Error("failed to get request id")
 				continue messages
 			}

@@ -17,7 +17,7 @@ func (u *UserUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 			RequestId:     requestId,
 			Service:       enum.UserService.String(),
 			EventType:     enum.USER_CREATED.String(),
-			Status:        enum.SUCCESS.String(),
+			Status:        enum.PENDING.String(),
 			PreviousState: nil,
 			CreatedAt:     timestamppb.Now(),
 			UpdatedAt:     timestamppb.Now(),
@@ -25,12 +25,11 @@ func (u *UserUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 	)
 
 	defer func(err error, eventStore *pb.EventStore) {
-		eventStore.Status = enum.SUCCESS.String()
 		if err != nil {
 			eventStore.Status = enum.FAILED.String()
 		}
 
-		eventStoreMessage, err := proto.Marshal(req)
+		eventStoreMessage, err := proto.Marshal(eventStore)
 		if err != nil {
 			u.logger.Error(fmt.Sprintf("error marshaling message: %s", err.Error()))
 			return

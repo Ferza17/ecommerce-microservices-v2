@@ -2,9 +2,9 @@ package usecase
 
 import (
 	"context"
+	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
 	userPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/postgresql"
-	userEventStoreUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/userEventStore/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
 )
 
@@ -17,15 +17,15 @@ type (
 
 	userUseCase struct {
 		userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository
-		userEventStoreUseCase    userEventStoreUseCase.IUserEventStoreUseCase
+		rabbitmqInfrastructure   rabbitmqInfrastructure.IRabbitMQInfrastructure
 		logger                   pkg.IZapLogger
 	}
 )
 
-func NewUserUseCase(userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository, userEventStoreUseCase userEventStoreUseCase.IUserEventStoreUseCase, logger pkg.IZapLogger) IUserUseCase {
+func NewUserUseCase(userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository, rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure, logger pkg.IZapLogger) IUserUseCase {
 	return &userUseCase{
 		userPostgresqlRepository: userPostgresqlRepository,
-		userEventStoreUseCase:    userEventStoreUseCase,
+		rabbitmqInfrastructure:   rabbitmqInfrastructure,
 		logger:                   logger,
 	}
 }

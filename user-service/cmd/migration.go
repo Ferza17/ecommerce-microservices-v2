@@ -16,12 +16,12 @@ var migrationCommand = &cobra.Command{
 			log.Fatalf("please insert argument up or down")
 			return
 		} else if args[0] == "up" {
-			if err := Up(pgsqlConn.SqlDB); err != nil {
+			if err := Up(dependency.PostgresqlInfrastructure.SqlDB()); err != nil {
 				log.Fatalf(err.Error())
 				return
 			}
 		} else if args[0] == "down" {
-			if err := Down(pgsqlConn.SqlDB); err != nil {
+			if err := Down(dependency.PostgresqlInfrastructure.SqlDB()); err != nil {
 				log.Fatalf(err.Error())
 				return
 			}
