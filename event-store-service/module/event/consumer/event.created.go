@@ -3,23 +3,37 @@ package consumer
 import (
 	"context"
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
+	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/enum"
+	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/pb"
+	"github.com/rabbitmq/amqp091-go"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 )
 
-func (c *userConsumer) UserCreated(ctx context.Context) error {
+func (c *eventConsumer) EventCreated(ctx context.Context) error {
 	q, err := c.amqpChannel.QueueDeclare(
-		enum.USER_CREATED.String(),
+		enum.EventExchange.String(),
 		true,
-		false,
+		true,
 		false,
 		true,
 		nil,
 	)
 	if err != nil {
 		c.logger.Error(fmt.Sprintf("failed to serve queue : %v", zap.Error(err)))
+		return err
+	}
+
+	if err = c.amqpChannel.ExchangeDeclare(
+		enum.EventExchange.String(),
+		amqp091.ExchangeTopic, // type
+		true,                  // durable
+		false,                 // auto-delete
+		false,
+		true,
+		nil,
+	); err != nil {
+		c.logger.Error(fmt.Sprintf("failed to declare exchange : %v", zap.Error(err)))
 		return err
 	}
 
@@ -39,11 +53,12 @@ func (c *userConsumer) UserCreated(ctx context.Context) error {
 	messages:
 		for d := range msgs {
 			var (
-				request   pb.CreateUserRequest
+				request   pb.EventStore
 				requestId string
 				ok        bool
 			)
-			if requestId, ok = d.Headers[enum.XRequestId.String()].(string); !ok {
+
+			if requestId, ok = d.Headers[enum.XRequestID.String()].(string); !ok {
 				c.logger.Error("failed to get request id")
 				continue messages
 			}
@@ -53,7 +68,7 @@ func (c *userConsumer) UserCreated(ctx context.Context) error {
 				continue messages
 			}
 
-			if _, err = c.userUseCase.CreateUser(ctx, requestId, &request); err != nil {
+			if _, err = c.eventUseCase.CreateEventStore(ctx, requestId, &request); err != nil {
 				c.logger.Error(fmt.Sprintf("failed to create user : %v", zap.Error(err)))
 				continue messages
 			}
@@ -61,5 +76,7 @@ func (c *userConsumer) UserCreated(ctx context.Context) error {
 	}()
 
 	<-ctx.Done()
+
 	return nil
+
 }

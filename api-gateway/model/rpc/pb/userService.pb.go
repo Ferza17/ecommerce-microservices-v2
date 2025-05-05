@@ -24,23 +24,29 @@ var File_userService_proto protoreflect.FileDescriptor
 
 const file_userService_proto_rawDesc = "" +
 	"\n" +
-	"\x11userService.proto\x12\x05proto\x1a\x11userMessage.proto2\x9b\x01\n" +
+	"\x11userService.proto\x12\x05proto\x1a\x11userMessage.proto2\xde\x01\n" +
 	"\vUserService\x127\n" +
 	"\fFindUserById\x12\x1a.proto.FindUserByIdRequest\x1a\v.proto.User\x12S\n" +
-	"\x1aFindUserByEmailAndPassword\x12(.proto.FindUserByEmailAndPasswordRequest\x1a\v.proto.UserBHZFgithub.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pbb\x06proto3"
+	"\x1aFindUserByEmailAndPassword\x12(.proto.FindUserByEmailAndPasswordRequest\x1a\v.proto.User\x12A\n" +
+	"\n" +
+	"CreateUser\x12\x18.proto.CreateUserRequest\x1a\x19.proto.CreateUserResponseBHZFgithub.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pbb\x06proto3"
 
 var file_userService_proto_goTypes = []any{
 	(*FindUserByIdRequest)(nil),               // 0: proto.FindUserByIdRequest
 	(*FindUserByEmailAndPasswordRequest)(nil), // 1: proto.FindUserByEmailAndPasswordRequest
-	(*User)(nil), // 2: proto.User
+	(*CreateUserRequest)(nil),                 // 2: proto.CreateUserRequest
+	(*User)(nil),                              // 3: proto.User
+	(*CreateUserResponse)(nil),                // 4: proto.CreateUserResponse
 }
 var file_userService_proto_depIdxs = []int32{
 	0, // 0: proto.UserService.FindUserById:input_type -> proto.FindUserByIdRequest
 	1, // 1: proto.UserService.FindUserByEmailAndPassword:input_type -> proto.FindUserByEmailAndPasswordRequest
-	2, // 2: proto.UserService.FindUserById:output_type -> proto.User
-	2, // 3: proto.UserService.FindUserByEmailAndPassword:output_type -> proto.User
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+	2, // 2: proto.UserService.CreateUser:input_type -> proto.CreateUserRequest
+	3, // 3: proto.UserService.FindUserById:output_type -> proto.User
+	3, // 4: proto.UserService.FindUserByEmailAndPassword:output_type -> proto.User
+	4, // 5: proto.UserService.CreateUser:output_type -> proto.CreateUserResponse
+	3, // [3:6] is the sub-list for method output_type
+	0, // [0:3] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name

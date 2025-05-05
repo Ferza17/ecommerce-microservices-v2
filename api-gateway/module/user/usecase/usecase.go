@@ -1,15 +1,17 @@
 package usecase
 
 import (
+	"context"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/rabbitmq"
 	rpcClientInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/service"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
 	gatewayEventStoreUseCase "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/gatewayEventStore/usecase"
-
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/pkg"
 )
 
 type (
 	IUserUseCase interface {
+		CreateUser(ctx context.Context, requestId string, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error)
 	}
 	UserUseCase struct {
 		rpcClient                rpcClientInfrastructure.Service

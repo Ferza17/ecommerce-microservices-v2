@@ -6,12 +6,12 @@ package resolver
 
 import (
 	"context"
-	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
 
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
 )
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	panic(fmt.Errorf("not implemented: CreateUser - createUser"))
+	return r.UserUseCase.CreateUser(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &input)
 }

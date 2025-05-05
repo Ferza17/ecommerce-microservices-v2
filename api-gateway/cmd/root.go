@@ -58,5 +58,3 @@ func Shutdown(ctx context.Context) (err error) {
 	bootstrap.Logger.Info("Exit...")
 	return
 }
-
-//func NewGraphQLServer()  (srv *graphql.Server){}

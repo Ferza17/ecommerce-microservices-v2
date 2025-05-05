@@ -15,13 +15,6 @@ func ConvertProtoTimestampToTime(ts *timestamppb.Timestamp) *time.Time {
 	return &t
 }
 
-func ConvertTimeToProtoTimestamp(t *time.Time) *timestamppb.Timestamp {
-	if t == nil {
-		return nil
-	}
-	return timestamppb.New(*t)
-}
-
 func ConvertStructToProtoStruct(input interface{}) (*structpb.Struct, error) {
 	if input == nil {
 		return nil, nil
