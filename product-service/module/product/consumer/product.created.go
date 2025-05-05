@@ -58,7 +58,7 @@ func (c *productConsumer) ProductCreated(ctx context.Context) error {
 	messages:
 		for d := range msgs {
 			var request pb.CreateProductRequest
-			if requestId, ok = d.Headers[enum.XRequestID.String()].(string); !ok {
+			if requestId, ok = d.Headers[enum.XRequestIDHeader.String()].(string); !ok {
 				c.logger.Error("failed to get request id")
 				continue messages
 			}

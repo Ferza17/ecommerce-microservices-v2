@@ -12,9 +12,8 @@ func (u *eventUseCase) CreateEventStore(ctx context.Context, requestId string, r
 	var (
 		now       = time.Now().UTC()
 		bsonEvent = &bson.Event{
-			SagaID:    requestId,
-			Entity:    req.Entity,
-			EntityID:  req.EntityId,
+			RequestID: requestId,
+			Service:   req.Service,
 			EventType: req.EventType,
 			Status:    req.Status,
 			CreatedAt: now,

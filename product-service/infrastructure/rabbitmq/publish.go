@@ -3,14 +3,13 @@ package rabbitmq
 import (
 	"context"
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
 	"github.com/rabbitmq/amqp091-go"
 	"go.uber.org/zap"
 	"time"
 )
 
 func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, exchange enum.Exchange, event enum.Event, message []byte) error {
-
 	amqpChannel, err := c.amqpConn.Channel()
 	if err != nil {
 		c.logger.Error(fmt.Sprintf("Failed to create a channel: %v", err))

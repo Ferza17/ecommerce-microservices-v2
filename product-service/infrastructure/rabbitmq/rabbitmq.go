@@ -3,9 +3,9 @@ package rabbitmq
 import (
 	"context"
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/config"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/pkg"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
 	"github.com/rabbitmq/amqp091-go"
 )
 

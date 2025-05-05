@@ -1,15 +1,14 @@
-package amqp
+package rabbitmq
 
 import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/connector"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/postgresql"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/rabbitmq"
 	productConsumer "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/consumer"
 	productpgRepo "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/repository/postgresql"
 	productUseCase "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/usecase"
-	productEventStoreRepository "github.com/ferza17/ecommerce-microservices-v2/product-service/module/productEventStore/repository/mongodb"
-	productEventStoreUseCase "github.com/ferza17/ecommerce-microservices-v2/product-service/module/productEventStore/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
 	"github.com/rabbitmq/amqp091-go"
 	"go.uber.org/zap"
@@ -23,9 +22,9 @@ type (
 	Server struct {
 		amqpConn *amqp091.Connection
 
-		logger              pkg.IZapLogger
-		postgresqlConnector *connector.PostgresqlConnector
-		mongoDBConnector    *connector.MongodbConnector
+		logger                 pkg.IZapLogger
+		postgresqlConnector    postgresql.IPostgreSQLInfrastructure
+		rabbitmqInfrastructure rabbitmq.IRabbitMQInfrastructure
 	}
 
 	Option func(server *Server)
@@ -61,11 +60,8 @@ func (srv *Server) Serve() {
 	}
 
 	// Register Repository & UseCase
-	newProductEventStoreRepository := productEventStoreRepository.NewProductEventStoreRepository(srv.mongoDBConnector, srv.logger)
-	newProductEventStoreUseCase := productEventStoreUseCase.NewProductEventStoreUseCase(newProductEventStoreRepository, srv.logger)
-
 	newProductPgRepo := productpgRepo.NewProductPostgresqlRepository(srv.postgresqlConnector, srv.logger)
-	newProductUseCase := productUseCase.NewProductUseCase(newProductPgRepo, newProductEventStoreUseCase, srv.logger)
+	newProductUseCase := productUseCase.NewProductUseCase(newProductPgRepo, srv.rabbitmqInfrastructure, srv.logger)
 
 	newProductConsumer := productConsumer.NewProductConsumer(amqpChannel, newProductUseCase, srv.logger)
 

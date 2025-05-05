@@ -2,9 +2,10 @@ package usecase
 
 import (
 	"context"
+	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
 	productRepo "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/repository/postgresql"
-	productEventStoreUseCase "github.com/ferza17/ecommerce-microservices-v2/product-service/module/productEventStore/usecase"
+
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
 )
 
@@ -18,17 +19,20 @@ type (
 	}
 
 	productUseCase struct {
-		productPgsqlRepository   productRepo.IProductPostgresqlRepository
-		productEventStoreUseCase productEventStoreUseCase.IProductEventStoreUseCase
-		logger                   pkg.IZapLogger
+		productPgsqlRepository productRepo.IProductPostgresqlRepository
+		rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure
+		logger                 pkg.IZapLogger
 	}
 )
 
-func NewProductUseCase(productPgsqlRepository productRepo.IProductPostgresqlRepository, productEventStoreUseCase productEventStoreUseCase.IProductEventStoreUseCase, logger pkg.IZapLogger) IProductUseCase {
+func NewProductUseCase(
+	productPgsqlRepository productRepo.IProductPostgresqlRepository,
+	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
+	logger pkg.IZapLogger,
+) IProductUseCase {
 	return &productUseCase{
-		productPgsqlRepository:   productPgsqlRepository,
-		productEventStoreUseCase: productEventStoreUseCase,
-		logger:                   logger,
+		productPgsqlRepository: productPgsqlRepository,
+		rabbitmqInfrastructure: rabbitmqInfrastructure,
+		logger:                 logger,
 	}
-
 }

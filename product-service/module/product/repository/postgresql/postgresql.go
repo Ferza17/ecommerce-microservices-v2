@@ -2,7 +2,7 @@ package postgresql
 
 import (
 	"context"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/connector"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/postgresql"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/orm"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
 	"gorm.io/gorm"
@@ -20,18 +20,18 @@ type (
 	}
 
 	ProductPostgresqlRepository struct {
-		connector *connector.PostgresqlConnector
-		logger    pkg.IZapLogger
+		postgreSQLInfrastructure postgresql.IPostgreSQLInfrastructure
+		logger                   pkg.IZapLogger
 	}
 )
 
-func NewProductPostgresqlRepository(connector *connector.PostgresqlConnector, logger pkg.IZapLogger) IProductPostgresqlRepository {
+func NewProductPostgresqlRepository(infrastructure postgresql.IPostgreSQLInfrastructure, logger pkg.IZapLogger) IProductPostgresqlRepository {
 	return &ProductPostgresqlRepository{
-		connector: connector,
-		logger:    logger,
+		postgreSQLInfrastructure: infrastructure,
+		logger:                   logger,
 	}
 }
 
 func (r *ProductPostgresqlRepository) OpenTransactionWithContext(ctx context.Context) *gorm.DB {
-	return r.connector.GormDB.WithContext(ctx).Begin()
+	return r.postgreSQLInfrastructure.GormDB().WithContext(ctx).Begin()
 }

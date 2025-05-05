@@ -12,27 +12,33 @@ import (
 
 func (u *UserUseCase) CreateUser(ctx context.Context, requestId string, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	var (
-		err error = nil
+		err        error = nil
+		eventStore       = &pb.EventStore{
+			RequestId:     requestId,
+			Service:       enum.UserService.String(),
+			EventType:     enum.USER_CREATED.String(),
+			Status:        enum.SUCCESS.String(),
+			PreviousState: nil,
+			CreatedAt:     timestamppb.Now(),
+			UpdatedAt:     timestamppb.Now(),
+		}
 	)
 
-	eventStore := &pb.CreateGatewayEventStoreRequest{
-		SagaId:        requestId,
-		Entity:        "api-gateway",
-		EntityId:      "",
-		EventType:     "",
-		Status:        enum.SUCCESS.String(),
-		PreviousState: nil,
-		CreatedAt:     timestamppb.Now(),
-		UpdatedAt:     timestamppb.Now(),
-	}
-
-	defer func(err error, eventStore *pb.CreateGatewayEventStoreRequest) {
+	defer func(err error, eventStore *pb.EventStore) {
 		eventStore.Status = enum.SUCCESS.String()
 		if err != nil {
 			eventStore.Status = enum.FAILED.String()
 		}
-		if _, err = u.gatewayEventStoreUseCase.CreateGatewayEventStore(ctx, requestId, eventStore); err != nil {
+
+		eventStoreMessage, err := proto.Marshal(req)
+		if err != nil {
+			u.logger.Error(fmt.Sprintf("error marshaling message: %s", err.Error()))
+			return
+		}
+
+		if err = u.rabbitMQ.Publish(ctx, requestId, enum.EventExchange, enum.EVENT_CREATED, eventStoreMessage); err != nil {
 			u.logger.Error(fmt.Sprintf("error creating product event store: %s", err.Error()))
+			return
 		}
 	}(err, eventStore)
 

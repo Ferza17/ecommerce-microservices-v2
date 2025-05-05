@@ -12,9 +12,9 @@ import (
 
 func (c *eventConsumer) EventCreated(ctx context.Context) error {
 	q, err := c.amqpChannel.QueueDeclare(
-		enum.EventExchange.String(),
+		enum.EVENT_CREATED.String(),
 		true,
-		true,
+		false,
 		false,
 		true,
 		nil,

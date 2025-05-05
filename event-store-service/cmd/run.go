@@ -23,7 +23,8 @@ var runCommand = &cobra.Command{
 				NewServer(
 					rabbitMQServer.NewLogger(dependency.Logger),
 					rabbitMQServer.NewMongoDBInfrastructure(dependency.MongoDBInfrastructure),
-				).Serve()
+				).
+				Serve()
 		}()
 
 		<-quit

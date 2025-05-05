@@ -1,4 +1,4 @@
-package grpc
+package rabbitmq
 
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/postgresql"
@@ -12,9 +12,9 @@ func NewLogger(logger pkg.IZapLogger) Option {
 	}
 }
 
-func NewPostgresSQLInfrastructure(pgconn postgresql.IPostgreSQLInfrastructure) Option {
+func NewPostgresConnector(pgconn postgresql.IPostgreSQLInfrastructure) Option {
 	return func(s *Server) {
-		s.postgresqlInfrastructure = pgconn
+		s.postgresqlConnector = pgconn
 	}
 }
 

@@ -1,14 +1,16 @@
 package enum
 
-type exchange string
+type Exchange string
 
 const (
-	ProductExchange exchange = "product.exchange"
+	ProductExchange Exchange = "product.exchange"
+	EventExchange   Exchange = "event.exchange"
 )
 
-func (e exchange) String() string {
+func (e Exchange) String() string {
 	switch e {
-	case ProductExchange:
+	case ProductExchange,
+		EventExchange:
 		return string(e)
 	default:
 		return "unknown"

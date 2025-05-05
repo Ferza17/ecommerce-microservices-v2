@@ -2,7 +2,9 @@ package grpc
 
 import (
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/connector"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/postgresql"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -13,22 +15,22 @@ import (
 
 type (
 	Server struct {
-		address             string
-		port                string
-		listener            *net.Listener
-		grpcServer          *grpc.Server
-		logger              pkg.IZapLogger
-		postgresqlConnector *connector.PostgresqlConnector
-		mongoDBConnector    *connector.MongodbConnector
+		address                  string
+		port                     string
+		listener                 *net.Listener
+		grpcServer               *grpc.Server
+		logger                   pkg.IZapLogger
+		postgresqlInfrastructure postgresql.IPostgreSQLInfrastructure
+		rabbitmqInfrastructure   rabbitmq.IRabbitMQInfrastructure
 	}
 
 	Option func(server *Server)
 )
 
-func NewServer(address, port string, option ...Option) *Server {
+func NewServer(option ...Option) *Server {
 	s := &Server{
-		address: address,
-		port:    port,
+		address: config.Get().RpcHost,
+		port:    config.Get().RpcPort,
 	}
 	for _, o := range option {
 		o(s)

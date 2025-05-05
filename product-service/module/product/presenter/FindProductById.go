@@ -16,7 +16,7 @@ func (p *ProductGrpcPresenter) FindProductById(ctx context.Context, req *pb.Find
 		return nil, status.Error(codes.InvalidArgument, "metadata not found")
 	}
 	requestID := ""
-	if values := md.Get(enum.XRequestID.String()); len(values) > 0 {
+	if values := md.Get(enum.XRequestIDHeader.String()); len(values) > 0 {
 		requestID = values[0]
 	}
 

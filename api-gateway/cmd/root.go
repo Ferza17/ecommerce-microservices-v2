@@ -46,11 +46,6 @@ func Shutdown(ctx context.Context) (err error) {
 		return err
 	}
 
-	if err = bootstrap.MongoDBInfrastructure.Close(ctx); err != nil {
-		bootstrap.Logger.Error(fmt.Sprintf("Failed to close a connection: %v", err))
-		return err
-	}
-
 	if err = bootstrap.RpcClientInfrastructure.Close(); err != nil {
 		bootstrap.Logger.Error(fmt.Sprintf("Failed to close a connection: %v", err))
 	}
