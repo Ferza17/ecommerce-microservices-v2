@@ -24,12 +24,22 @@
     "@connectrpc/connect": "^2.0.2",
     "@connectrpc/connect-node": "^2.0.2",
     "@connectrpc/connect-web": "^2.0.2",
+    "@grpc/grpc-js": "^1.13.3",
+    "@grpc/proto-loader": "^0.7.15",
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
+    "@nestjs/microservices": "^11.1.0",
     "@nestjs/platform-express": "^11.0.1",
+    "fast-glob": "^3.3.3",
+    "grpc": "^1.24.11",
+    "joi": "^17.8.3",
+    "mongoose": "^8.14.1",
+    "nestjs-grpc-reflection": "^0.2.2",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "ts-proto": "^2.7.0"
+    "ts-proto": "^2.7.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

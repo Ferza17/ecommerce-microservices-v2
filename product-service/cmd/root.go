@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/bootstrap"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/server/grpc"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/server/rabbitmq"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/transport/grpc"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/transport/rabbitmq"
 	"github.com/spf13/cobra"
 	"log"
 )
@@ -27,7 +27,7 @@ func Run() {
 
 var (
 	dependency     *bootstrap.Bootstrap
-	grpcServer     *grpc.Server
+	grpcServer     *grpc.GrpcTransport
 	rabbitMQServer *rabbitmq.Server
 )
 

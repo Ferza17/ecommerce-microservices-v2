@@ -1,0 +1,10 @@
+syntax = "proto3";
+package proto;
+
+import "wishlistMessage.proto";
+
+service WishlistService {
+  rpc CreateWishlistItem(CreateWishlistItemRequest) returns (CreateWishlistItemResponse);
+  rpc FindWishlistItemWithPagination(FindWishlistItemWithPaginationRequest) returns (FindWishlistItemWithPaginationResponse);
+  rpc DeleteWishlistItemById(DeleteWishlistItemByIdRequest) returns (DeleteWishlistItemByIdResponse);
+}

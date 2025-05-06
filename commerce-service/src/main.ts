@@ -1,8 +1,16 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { GrpcServer } from './server/rpc/rpc';
+import { ConfigService } from '@nestjs/config';
+import { GrpcClientOptions } from './server/rpc/options';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+
+  const configService: ConfigService = new ConfigService();
+  const grpcClientOptions: GrpcClientOptions = new GrpcClientOptions(configService);
+  const grpcServer = new GrpcServer( grpcClientOptions);
+  await grpcServer.Serve();
+
+  // TODO: RabbitMQ Server
+
 }
+
 bootstrap();

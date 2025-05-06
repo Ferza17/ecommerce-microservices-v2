@@ -15,7 +15,7 @@ model:
 resolver:
   package: resolver
   layout: follow-schema
-  dir: server/graphql/resolver
+  dir: transport/graphql/resolver
   filename_template: "{name}.resolvers.go"
 
 call_argument_directives_with_null: true

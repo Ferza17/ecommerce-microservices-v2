@@ -1,0 +1,60 @@
+syntax = "proto3";
+package proto;
+
+import "google/protobuf/timestamp.proto";
+
+
+message CartItem {
+  string id = 1;
+  string productId = 2;
+  string userId = 3;
+  string qty = 4;
+  string price = 5;
+  google.protobuf.Timestamp crated_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+message CreateCartItemRequest {
+  string productId = 1;
+  string userId = 2;
+  string qty = 3;
+  float price = 4;
+}
+
+message CreateCartItemResponse {
+  string id = 1;
+}
+
+message UpdateCartItemByIdRequest {
+  string id = 1;
+  string productId = 2;
+  string userId = 3;
+  string qty = 4;
+  float price = 5;
+}
+message UpdateCartItemByIdResponse {
+  string id = 1;
+}
+
+
+message DeleteCartItemRequest {
+  string productId = 1;
+  string userId = 2;
+}
+
+message DeleteCartItemResponse {
+  string userId = 1;
+}
+
+message FindCartItemsWithPaginationRequest {
+  string userId = 1;
+  repeated string productIds = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message FindCartItemsWithPaginationResponse{
+  repeated CartItem items = 1;
+  int32 page = 2;
+  int32 limit = 3;
+}

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	bootstrap2 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/bootstrap"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/config"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/server/graphql"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/transport/graphql"
 	"github.com/spf13/cobra"
 	"log"
 )
@@ -27,7 +27,7 @@ func Run() {
 
 var (
 	bootstrap     *bootstrap2.Bootstrap
-	graphQLServer *graphql.Server
+	graphQLServer *graphql.GraphQLTransport
 )
 
 func init() {
