@@ -33,6 +33,7 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	CartItem() CartItemResolver
 	FindProductsWithPaginationResponse() FindProductsWithPaginationResponseResolver
 	Mutation() MutationResolver
 	Product() ProductResolver
@@ -44,6 +45,20 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	CartItem struct {
+		CratedAt  func(childComplexity int) int
+		Id        func(childComplexity int) int
+		Price     func(childComplexity int) int
+		ProductId func(childComplexity int) int
+		Qty       func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+		UserId    func(childComplexity int) int
+	}
+
+	CreateCartItemResponse struct {
+		Id func(childComplexity int) int
+	}
+
 	CreateProductResponse struct {
 		Id func(childComplexity int) int
 	}
@@ -52,8 +67,18 @@ type ComplexityRoot struct {
 		Id func(childComplexity int) int
 	}
 
+	DeleteCartItemResponse struct {
+		UserId func(childComplexity int) int
+	}
+
 	DeleteProductByIdResponse struct {
 		Message func(childComplexity int) int
+	}
+
+	FindCartItemsWithPaginationResponse struct {
+		Items func(childComplexity int) int
+		Limit func(childComplexity int) int
+		Page  func(childComplexity int) int
 	}
 
 	FindProductsWithPaginationResponse struct {
@@ -63,10 +88,14 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateProduct     func(childComplexity int, input pb.CreateProductRequest) int
-		CreateUser        func(childComplexity int, input pb.CreateUserRequest) int
-		DeleteProductByID func(childComplexity int, id string) int
-		UpdateProductByID func(childComplexity int, input pb.UpdateProductByIdRequest) int
+		CreateCartItem     func(childComplexity int, input *pb.CreateCartItemRequest) int
+		CreateProduct      func(childComplexity int, input pb.CreateProductRequest) int
+		CreateUser         func(childComplexity int, input pb.CreateUserRequest) int
+		DeleteCartItem     func(childComplexity int, input *pb.DeleteCartItemRequest) int
+		DeleteProductByID  func(childComplexity int, id string) int
+		UpdateCartItemByID func(childComplexity int, input *pb.UpdateCartItemByIdRequest) int
+		UpdateProductByID  func(childComplexity int, input pb.UpdateProductByIdRequest) int
+		UpdateUserByID     func(childComplexity int, input pb.UpdateUserByIdRequest) int
 	}
 
 	Product struct {
@@ -83,10 +112,19 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		FindProductByID            func(childComplexity int, id string) int
-		FindProductsWithPagination func(childComplexity int, filter pb.FindProductsWithPaginationRequest) int
-		FindUserByEmailAndPassword func(childComplexity int, input pb.FindUserByEmailAndPasswordRequest) int
-		FindUserByID               func(childComplexity int, id string) int
+		FindCartItemsWithPagination func(childComplexity int, input *pb.FindCartItemsWithPaginationRequest) int
+		FindProductByID             func(childComplexity int, id string) int
+		FindProductsWithPagination  func(childComplexity int, filter pb.FindProductsWithPaginationRequest) int
+		FindUserByEmailAndPassword  func(childComplexity int, input pb.FindUserByEmailAndPasswordRequest) int
+		FindUserByID                func(childComplexity int, id string) int
+	}
+
+	UpdateCartItemByIdResponse struct {
+		Id func(childComplexity int) int
+	}
+
+	UpdateUserByIdResponse struct {
+		Id func(childComplexity int) int
 	}
 
 	User struct {
@@ -119,6 +157,62 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 	_ = ec
 	switch typeName + "." + field {
 
+	case "CartItem.crated_at":
+		if e.complexity.CartItem.CratedAt == nil {
+			break
+		}
+
+		return e.complexity.CartItem.CratedAt(childComplexity), true
+
+	case "CartItem.id":
+		if e.complexity.CartItem.Id == nil {
+			break
+		}
+
+		return e.complexity.CartItem.Id(childComplexity), true
+
+	case "CartItem.price":
+		if e.complexity.CartItem.Price == nil {
+			break
+		}
+
+		return e.complexity.CartItem.Price(childComplexity), true
+
+	case "CartItem.productId":
+		if e.complexity.CartItem.ProductId == nil {
+			break
+		}
+
+		return e.complexity.CartItem.ProductId(childComplexity), true
+
+	case "CartItem.qty":
+		if e.complexity.CartItem.Qty == nil {
+			break
+		}
+
+		return e.complexity.CartItem.Qty(childComplexity), true
+
+	case "CartItem.updated_at":
+		if e.complexity.CartItem.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.CartItem.UpdatedAt(childComplexity), true
+
+	case "CartItem.userId":
+		if e.complexity.CartItem.UserId == nil {
+			break
+		}
+
+		return e.complexity.CartItem.UserId(childComplexity), true
+
+	case "CreateCartItemResponse.id":
+		if e.complexity.CreateCartItemResponse.Id == nil {
+			break
+		}
+
+		return e.complexity.CreateCartItemResponse.Id(childComplexity), true
+
 	case "CreateProductResponse.id":
 		if e.complexity.CreateProductResponse.Id == nil {
 			break
@@ -133,12 +227,40 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.CreateUserResponse.Id(childComplexity), true
 
+	case "DeleteCartItemResponse.userId":
+		if e.complexity.DeleteCartItemResponse.UserId == nil {
+			break
+		}
+
+		return e.complexity.DeleteCartItemResponse.UserId(childComplexity), true
+
 	case "DeleteProductByIdResponse.message":
 		if e.complexity.DeleteProductByIdResponse.Message == nil {
 			break
 		}
 
 		return e.complexity.DeleteProductByIdResponse.Message(childComplexity), true
+
+	case "FindCartItemsWithPaginationResponse.items":
+		if e.complexity.FindCartItemsWithPaginationResponse.Items == nil {
+			break
+		}
+
+		return e.complexity.FindCartItemsWithPaginationResponse.Items(childComplexity), true
+
+	case "FindCartItemsWithPaginationResponse.limit":
+		if e.complexity.FindCartItemsWithPaginationResponse.Limit == nil {
+			break
+		}
+
+		return e.complexity.FindCartItemsWithPaginationResponse.Limit(childComplexity), true
+
+	case "FindCartItemsWithPaginationResponse.page":
+		if e.complexity.FindCartItemsWithPaginationResponse.Page == nil {
+			break
+		}
+
+		return e.complexity.FindCartItemsWithPaginationResponse.Page(childComplexity), true
 
 	case "FindProductsWithPaginationResponse.limit":
 		if e.complexity.FindProductsWithPaginationResponse.Limit == nil {
@@ -160,6 +282,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.FindProductsWithPaginationResponse.Products(childComplexity), true
+
+	case "Mutation.createCartItem":
+		if e.complexity.Mutation.CreateCartItem == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createCartItem_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateCartItem(childComplexity, args["input"].(*pb.CreateCartItemRequest)), true
 
 	case "Mutation.createProduct":
 		if e.complexity.Mutation.CreateProduct == nil {
@@ -185,6 +319,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Mutation.CreateUser(childComplexity, args["input"].(pb.CreateUserRequest)), true
 
+	case "Mutation.deleteCartItem":
+		if e.complexity.Mutation.DeleteCartItem == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteCartItem_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteCartItem(childComplexity, args["input"].(*pb.DeleteCartItemRequest)), true
+
 	case "Mutation.deleteProductById":
 		if e.complexity.Mutation.DeleteProductByID == nil {
 			break
@@ -197,6 +343,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Mutation.DeleteProductByID(childComplexity, args["id"].(string)), true
 
+	case "Mutation.updateCartItemById":
+		if e.complexity.Mutation.UpdateCartItemByID == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateCartItemById_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateCartItemByID(childComplexity, args["input"].(*pb.UpdateCartItemByIdRequest)), true
+
 	case "Mutation.updateProductById":
 		if e.complexity.Mutation.UpdateProductByID == nil {
 			break
@@ -208,6 +366,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.UpdateProductByID(childComplexity, args["input"].(pb.UpdateProductByIdRequest)), true
+
+	case "Mutation.updateUserById":
+		if e.complexity.Mutation.UpdateUserByID == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateUserById_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateUserByID(childComplexity, args["input"].(pb.UpdateUserByIdRequest)), true
 
 	case "Product.createdAt":
 		if e.complexity.Product.CreatedAt == nil {
@@ -279,6 +449,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Product.UpdatedAt(childComplexity), true
 
+	case "Query.findCartItemsWithPagination":
+		if e.complexity.Query.FindCartItemsWithPagination == nil {
+			break
+		}
+
+		args, err := ec.field_Query_findCartItemsWithPagination_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.FindCartItemsWithPagination(childComplexity, args["input"].(*pb.FindCartItemsWithPaginationRequest)), true
+
 	case "Query.findProductById":
 		if e.complexity.Query.FindProductByID == nil {
 			break
@@ -326,6 +508,20 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.FindUserByID(childComplexity, args["id"].(string)), true
+
+	case "UpdateCartItemByIdResponse.id":
+		if e.complexity.UpdateCartItemByIdResponse.Id == nil {
+			break
+		}
+
+		return e.complexity.UpdateCartItemByIdResponse.Id(childComplexity), true
+
+	case "UpdateUserByIdResponse.id":
+		if e.complexity.UpdateUserByIdResponse.Id == nil {
+			break
+		}
+
+		return e.complexity.UpdateUserByIdResponse.Id(childComplexity), true
 
 	case "User.createdAt":
 		if e.complexity.User.CreatedAt == nil {
@@ -384,11 +580,16 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
 	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputCreateCartItemRequest,
 		ec.unmarshalInputCreateProductRequest,
 		ec.unmarshalInputCreateUserRequest,
+		ec.unmarshalInputDeleteCartItemRequest,
+		ec.unmarshalInputFindCartItemsWithPaginationRequest,
 		ec.unmarshalInputFindProductsWithPaginationRequest,
 		ec.unmarshalInputFindUserByEmailAndPasswordRequest,
+		ec.unmarshalInputUpdateCartItemByIdRequest,
 		ec.unmarshalInputUpdateProductByIdRequest,
+		ec.unmarshalInputUpdateUserByIdRequest,
 	)
 	first := true
 
@@ -486,6 +687,69 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
+	{Name: "../schema/cart.graphqls", Input: `type CartItem {
+    id: String
+    productId: String
+    userId: String
+    qty: Int
+    price: Float
+    crated_at: Time
+    updated_at: Time
+}
+
+input CreateCartItemRequest {
+    productId: String
+    userId: String
+    qty: Int
+    price: Float
+}
+
+type CreateCartItemResponse {
+    id: String
+}
+
+input UpdateCartItemByIdRequest {
+    id: String
+    productId: String
+    userId: String
+    qty: Int
+    price: Float
+}
+
+type UpdateCartItemByIdResponse {
+    id: String
+}
+
+input DeleteCartItemRequest {
+    productId: String
+    userId: String
+}
+
+type DeleteCartItemResponse {
+    userId: String
+}
+
+input FindCartItemsWithPaginationRequest {
+    userId: String
+    productIds: [String]
+    page: Int
+    limit: Int
+}
+
+type FindCartItemsWithPaginationResponse {
+    items: [CartItem]
+    page: Int
+    limit: Int
+}
+`, BuiltIn: false},
+	{Name: "../schema/cartMutation.graphqls", Input: `extend type Mutation {
+    createCartItem(input: CreateCartItemRequest): CreateCartItemResponse
+    updateCartItemById(input: UpdateCartItemByIdRequest): UpdateCartItemByIdResponse
+    deleteCartItem(input: DeleteCartItemRequest): DeleteCartItemResponse
+}`, BuiltIn: false},
+	{Name: "../schema/cartQuery.graphqls", Input: `extend type Query {
+    findCartItemsWithPagination(input: FindCartItemsWithPaginationRequest): FindCartItemsWithPaginationResponse
+}`, BuiltIn: false},
 	{Name: "../schema/product.graphqls", Input: `scalar Time
 
 type Product {
@@ -570,6 +834,17 @@ type CreateUserResponse {
     id : String!
 }
 
+input UpdateUserByIdRequest {
+    id: String!
+    name: String
+    email: String
+    password: String
+}
+
+type UpdateUserByIdResponse {
+    id: String!
+}
+
 input FindUserByEmailAndPasswordRequest {
     email: String!
     password: String!
@@ -577,6 +852,7 @@ input FindUserByEmailAndPasswordRequest {
 `, BuiltIn: false},
 	{Name: "../schema/userMutation.graphqls", Input: `extend type Mutation {
     createUser(input: CreateUserRequest!): CreateUserResponse!
+    updateUserById(input: UpdateUserByIdRequest!): UpdateUserByIdResponse
 }`, BuiltIn: false},
 	{Name: "../schema/userQuery.graphqls", Input: `extend type Query {
     findUserById(id: String!): User

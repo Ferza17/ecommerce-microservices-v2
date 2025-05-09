@@ -3,7 +3,10 @@ import { GrpcMethod } from '@nestjs/microservices';
 import { CartService } from './cart.service';
 import { Metadata } from '@grpc/grpc-js';
 import { Header } from '../../enum/header';
-import { CreateCartItemRequest, CreateCartItemResponse } from '../../model/rpc/cartMessage';
+import {
+  CreateCartItemRequest,
+  CreateCartItemResponse,
+} from '../../model/rpc/cartMessage';
 
 
 @Controller('cart-controller')
@@ -25,4 +28,5 @@ export class CartController {
       throw e;
     }
   }
+
 }

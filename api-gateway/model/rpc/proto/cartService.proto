@@ -1,0 +1,13 @@
+syntax = "proto3";
+package proto;
+
+import "cartMessage.proto";
+option go_package = "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb";
+
+
+service CartService {
+  rpc CreateCartItem(CreateCartItemRequest) returns (CreateCartItemResponse);
+  rpc FindCartItemsWithPagination(FindCartItemsWithPaginationRequest) returns (FindCartItemsWithPaginationResponse);
+  rpc UpdateCartItemById(UpdateCartItemByIdRequest) returns (UpdateCartItemByIdResponse);
+  rpc DeleteCartItem(DeleteCartItemRequest) returns (DeleteCartItemResponse);
+}

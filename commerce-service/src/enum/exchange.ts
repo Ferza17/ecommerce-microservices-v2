@@ -1,3 +1,3 @@
 export enum Exchange {
-  CartExchange = 'commerce.exchange',
+  CommerceExchange = 'commerce.exchange',
 }

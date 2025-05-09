@@ -262,6 +262,118 @@ func (x *CreateUserResponse) GetId() string {
 	return ""
 }
 
+type UpdateUserByIdRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Email         *string                `protobuf:"bytes,3,opt,name=email,proto3,oneof" json:"email,omitempty"`
+	Password      *string                `protobuf:"bytes,4,opt,name=password,proto3,oneof" json:"password,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateUserByIdRequest) Reset() {
+	*x = UpdateUserByIdRequest{}
+	mi := &file_userMessage_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateUserByIdRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateUserByIdRequest) ProtoMessage() {}
+
+func (x *UpdateUserByIdRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_userMessage_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateUserByIdRequest.ProtoReflect.Descriptor instead.
+func (*UpdateUserByIdRequest) Descriptor() ([]byte, []int) {
+	return file_userMessage_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *UpdateUserByIdRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *UpdateUserByIdRequest) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
+func (x *UpdateUserByIdRequest) GetEmail() string {
+	if x != nil && x.Email != nil {
+		return *x.Email
+	}
+	return ""
+}
+
+func (x *UpdateUserByIdRequest) GetPassword() string {
+	if x != nil && x.Password != nil {
+		return *x.Password
+	}
+	return ""
+}
+
+type UpdateUserByIdResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateUserByIdResponse) Reset() {
+	*x = UpdateUserByIdResponse{}
+	mi := &file_userMessage_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateUserByIdResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateUserByIdResponse) ProtoMessage() {}
+
+func (x *UpdateUserByIdResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_userMessage_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateUserByIdResponse.ProtoReflect.Descriptor instead.
+func (*UpdateUserByIdResponse) Descriptor() ([]byte, []int) {
+	return file_userMessage_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *UpdateUserByIdResponse) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
 type FindUserByEmailAndPasswordRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
@@ -272,7 +384,7 @@ type FindUserByEmailAndPasswordRequest struct {
 
 func (x *FindUserByEmailAndPasswordRequest) Reset() {
 	*x = FindUserByEmailAndPasswordRequest{}
-	mi := &file_userMessage_proto_msgTypes[4]
+	mi := &file_userMessage_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -284,7 +396,7 @@ func (x *FindUserByEmailAndPasswordRequest) String() string {
 func (*FindUserByEmailAndPasswordRequest) ProtoMessage() {}
 
 func (x *FindUserByEmailAndPasswordRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_userMessage_proto_msgTypes[4]
+	mi := &file_userMessage_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -297,7 +409,7 @@ func (x *FindUserByEmailAndPasswordRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use FindUserByEmailAndPasswordRequest.ProtoReflect.Descriptor instead.
 func (*FindUserByEmailAndPasswordRequest) Descriptor() ([]byte, []int) {
-	return file_userMessage_proto_rawDescGZIP(), []int{4}
+	return file_userMessage_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *FindUserByEmailAndPasswordRequest) GetEmail() string {
@@ -339,6 +451,16 @@ const file_userMessage_proto_rawDesc = "" +
 	"\x05email\x18\x03 \x01(\tR\x05email\x12\x1a\n" +
 	"\bpassword\x18\x04 \x01(\tR\bpassword\"$\n" +
 	"\x12CreateUserResponse\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x9c\x01\n" +
+	"\x15UpdateUserByIdRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
+	"\x04name\x18\x02 \x01(\tH\x00R\x04name\x88\x01\x01\x12\x19\n" +
+	"\x05email\x18\x03 \x01(\tH\x01R\x05email\x88\x01\x01\x12\x1f\n" +
+	"\bpassword\x18\x04 \x01(\tH\x02R\bpassword\x88\x01\x01B\a\n" +
+	"\x05_nameB\b\n" +
+	"\x06_emailB\v\n" +
+	"\t_password\"(\n" +
+	"\x16UpdateUserByIdResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"U\n" +
 	"!FindUserByEmailAndPasswordRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
@@ -356,19 +478,21 @@ func file_userMessage_proto_rawDescGZIP() []byte {
 	return file_userMessage_proto_rawDescData
 }
 
-var file_userMessage_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_userMessage_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_userMessage_proto_goTypes = []any{
 	(*User)(nil),                              // 0: proto.User
 	(*FindUserByIdRequest)(nil),               // 1: proto.FindUserByIdRequest
 	(*CreateUserRequest)(nil),                 // 2: proto.CreateUserRequest
 	(*CreateUserResponse)(nil),                // 3: proto.CreateUserResponse
-	(*FindUserByEmailAndPasswordRequest)(nil), // 4: proto.FindUserByEmailAndPasswordRequest
-	(*timestamppb.Timestamp)(nil),             // 5: google.protobuf.Timestamp
+	(*UpdateUserByIdRequest)(nil),             // 4: proto.UpdateUserByIdRequest
+	(*UpdateUserByIdResponse)(nil),            // 5: proto.UpdateUserByIdResponse
+	(*FindUserByEmailAndPasswordRequest)(nil), // 6: proto.FindUserByEmailAndPasswordRequest
+	(*timestamppb.Timestamp)(nil),             // 7: google.protobuf.Timestamp
 }
 var file_userMessage_proto_depIdxs = []int32{
-	5, // 0: proto.User.created_at:type_name -> google.protobuf.Timestamp
-	5, // 1: proto.User.updated_at:type_name -> google.protobuf.Timestamp
-	5, // 2: proto.User.discarded_at:type_name -> google.protobuf.Timestamp
+	7, // 0: proto.User.created_at:type_name -> google.protobuf.Timestamp
+	7, // 1: proto.User.updated_at:type_name -> google.protobuf.Timestamp
+	7, // 2: proto.User.discarded_at:type_name -> google.protobuf.Timestamp
 	3, // [3:3] is the sub-list for method output_type
 	3, // [3:3] is the sub-list for method input_type
 	3, // [3:3] is the sub-list for extension type_name
@@ -382,13 +506,14 @@ func file_userMessage_proto_init() {
 		return
 	}
 	file_userMessage_proto_msgTypes[0].OneofWrappers = []any{}
+	file_userMessage_proto_msgTypes[4].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_userMessage_proto_rawDesc), len(file_userMessage_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

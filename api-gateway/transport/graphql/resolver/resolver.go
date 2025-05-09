@@ -1,6 +1,7 @@
 package resolver
 
 import (
+	cartUseCase "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/commerce/cart/usecase"
 	productUseCase "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/product/usecase"
 	userUseCase "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/user/usecase"
 )
@@ -12,4 +13,5 @@ import (
 type Resolver struct {
 	UserUseCase    userUseCase.IUserUseCase
 	ProductUseCase productUseCase.IProductUseCase
+	CartUseCase    cartUseCase.ICartUseCase
 }

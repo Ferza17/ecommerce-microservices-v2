@@ -11,7 +11,8 @@ import (
 
 type (
 	IRabbitMQInfrastructure interface {
-		Publish(ctx context.Context, requestId string, exchange enum.Exchange, event enum.Event, message []byte) error
+		Publish(ctx context.Context, requestId string, exchange enum.Exchange, queue enum.Queue, message []byte) error
+		GetConnection() *amqp091.Connection
 		Close() error
 	}
 	RabbitMQInfrastructure struct {
@@ -44,4 +45,8 @@ func (c *RabbitMQInfrastructure) Close() error {
 		return err
 	}
 	return nil
+}
+
+func (c *RabbitMQInfrastructure) GetConnection() *amqp091.Connection {
+	return c.amqpConn
 }

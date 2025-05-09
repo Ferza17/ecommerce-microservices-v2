@@ -25,7 +25,7 @@ export class CartService {
         productId: req.productId,
         userId: req.userId,
         qty: req.qty,
-        price: req.price.toString(),
+        price: req.price,
         created_at: new Date(),
         updated_at: new Date(),
       } as ICartItem;

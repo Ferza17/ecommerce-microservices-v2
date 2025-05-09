@@ -1,6 +1,5 @@
-import { Controller, Logger } from '@nestjs/common';
-import { Ctx, EventPattern, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
-import { CartService } from './cart.service';
+import { Controller, Logger, UseInterceptors } from '@nestjs/common';
+import { Ctx, EventPattern, MessagePattern, Payload, RmqContext, Transport } from '@nestjs/microservices';
 import { Header } from '../../enum/header';
 import {
   CreateCartItemRequest,
@@ -8,7 +7,8 @@ import {
   UpdateCartItemByIdRequest,
   UpdateCartItemByIdResponse,
 } from '../../model/rpc/cartMessage';
-import { RoutingKey } from '../../enum/routingKey';
+import { CartService } from './cart.service';
+import { Queue } from '../../enum/queue';
 
 
 @Controller()
@@ -24,18 +24,16 @@ export class CartConsumer {
   handleAnyPattern(@Payload() data: any, @Ctx() ctx: RmqContext) {
     const { properties: { headers } } = ctx.getMessage();
     const requestId: string = headers[Header.X_REQUEST_ID];
-    const pattern = ctx.getPattern();
-    this.logger.log(`requestId: ${requestId} , data: ${JSON.stringify(data)}`);
-    this.logger.log(`Received pattern: ${pattern}`);
+    const pattern: string = ctx.getPattern();
+
+    this.logger.log(`requestId: ${requestId} , pattern: ${pattern} , data: ${JSON.stringify(data)}`);
+    this.logger.log(`pattern : `, ctx.getPattern());
   }
 
-
-  @MessagePattern(RoutingKey.CART_CREATED)
-  async createCartItem(@Payload() data: CreateCartItemRequest, @Ctx() context: RmqContext): Promise<CreateCartItemResponse> {
+  @MessagePattern(`${Queue.CART_CREATED}`)
+  async consumeCreateCartItem(@Payload() data: CreateCartItemRequest, @Ctx() context: RmqContext): Promise<CreateCartItemResponse> {
     const { properties: { headers } } = context.getMessage();
     const requestId: string = headers[Header.X_REQUEST_ID];
-    this.logger.log(`requestId: ${requestId} , data: ${JSON.stringify(data)}`);
-    this.logger.log(`createCartItem`);
     try {
       return await this.cartService.createCartItem(requestId, data);
     } catch (e) {
@@ -44,17 +42,19 @@ export class CartConsumer {
     }
   }
 
-  @MessagePattern(RoutingKey.CART_UPDATED)
+  @MessagePattern(`${Queue.CART_UPDATED}`)
   async updateCartItemByIdRequest(@Payload() data: UpdateCartItemByIdRequest, @Ctx() context: RmqContext): Promise<UpdateCartItemByIdResponse> {
     const { properties: { headers } } = context.getMessage();
     const requestId: string = headers[Header.X_REQUEST_ID];
-    this.logger.log(`requestId: ${requestId} , data: ${JSON.stringify(data)}`);
     this.logger.log(`updateCartItemByIdRequest`);
+
     try {
-      return await this.cartService.updateCartItemByIdRequest(requestId, data);
+      return await this.cartService.updateCartItemByIdRequest(requestId, <UpdateCartItemByIdRequest>data);
     } catch (e) {
       this.logger.error(`requestId: ${requestId} , error: ${e.message}`);
       throw e;
     }
   }
+
+
 }

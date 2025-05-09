@@ -9,7 +9,6 @@ import (
 	"fmt"
 
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/graph/gen"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
 )
 
@@ -22,8 +21,3 @@ func (r *queryResolver) FindProductsWithPagination(ctx context.Context, filter p
 func (r *queryResolver) FindProductByID(ctx context.Context, id string) (*pb.Product, error) {
 	return r.ProductUseCase.FindProductById(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &pb.FindProductByIdRequest{Id: id})
 }
-
-// Query returns gen.QueryResolver implementation.
-func (r *Resolver) Query() gen.QueryResolver { return &queryResolver{r} }
-
-type queryResolver struct{ *Resolver }

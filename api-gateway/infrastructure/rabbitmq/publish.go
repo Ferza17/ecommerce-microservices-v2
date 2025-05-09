@@ -9,19 +9,24 @@ import (
 	"time"
 )
 
-func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, exchange enum.Exchange, event enum.Event, message []byte) error {
+func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, exchange enum.Exchange, queue enum.Queue, message []byte) error {
 
 	amqpChannel, err := c.amqpConn.Channel()
 	if err != nil {
 		c.logger.Error(fmt.Sprintf("Failed to create a channel: %v", err))
 		return err
 	}
+	defer func(amqpChannel *amqp091.Channel) {
+		if err = amqpChannel.Close(); err != nil {
+			c.logger.Error(fmt.Sprintf("Failed to close a channel: %v", err))
+		}
+	}(amqpChannel)
 
 	if err = amqpChannel.ExchangeDeclare(
 		exchange.String(),
-		amqp091.ExchangeTopic, // type
-		true,                  // durable
-		false,                 // auto-delete
+		amqp091.ExchangeDirect,
+		true,
+		false,
 		false,
 		true,
 		nil,
@@ -30,30 +35,11 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 		return err
 	}
 
-	defer func(amqpChannel *amqp091.Channel) {
-		if err = amqpChannel.Close(); err != nil {
-			c.logger.Error(fmt.Sprintf("Failed to close a channel: %v", err))
-		}
-	}(amqpChannel)
-
-	q, err := amqpChannel.QueueDeclare(
-		event.String(),
-		true,
-		false,
-		false,
-		true,
-		nil,
-	)
-	if err != nil {
-		c.logger.Error(fmt.Sprintf("Failed to declare a queue: %v", err))
-		return err
-	}
-
 	// Publish message
-	if _, err = amqpChannel.PublishWithDeferredConfirmWithContext(
+	if err = amqpChannel.PublishWithContext(
 		ctx,
-		"",
-		q.Name,
+		exchange.String(),
+		queue.String(),
 		false,
 		false,
 		amqp091.Publishing{
@@ -61,7 +47,8 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 			DeliveryMode: amqp091.Transient,
 			Timestamp:    time.Now(),
 			Body:         message,
-			Headers: map[string]interface{}{
+			Headers: amqp091.Table{
+				"pattern":                      queue.String(),
 				enum.XRequestIDHeader.String(): requestId,
 			},
 		},

@@ -11,24 +11,12 @@ import (
 )
 
 func (c *eventConsumer) EventCreated(ctx context.Context) error {
-	q, err := c.amqpChannel.QueueDeclare(
-		enum.EVENT_CREATED.String(),
-		true,
-		false,
-		false,
-		true,
-		nil,
-	)
-	if err != nil {
-		c.logger.Error(fmt.Sprintf("failed to serve queue : %v", zap.Error(err)))
-		return err
-	}
 
-	if err = c.amqpChannel.ExchangeDeclare(
+	if err := c.amqpChannel.ExchangeDeclare(
 		enum.EventExchange.String(),
-		amqp091.ExchangeTopic, // type
-		true,                  // durable
-		false,                 // auto-delete
+		amqp091.ExchangeDirect,
+		true,
+		false,
 		false,
 		true,
 		nil,
@@ -37,8 +25,19 @@ func (c *eventConsumer) EventCreated(ctx context.Context) error {
 		return err
 	}
 
+	if err := c.amqpChannel.QueueBind(
+		enum.EVENT_CREATED.String(),
+		enum.EVENT_CREATED.String(),
+		enum.EventExchange.String(),
+		false,
+		nil,
+	); err != nil {
+		c.logger.Error(fmt.Sprintf("failed to bind queue : %v", zap.Error(err)))
+		return err
+	}
+
 	msgs, err := c.amqpChannel.Consume(
-		q.Name,
+		enum.EVENT_CREATED.String(),
 		"",
 		true,
 		false,

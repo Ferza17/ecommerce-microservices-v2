@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/postgresql"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/orm"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
 	"gorm.io/gorm"
 )
@@ -14,6 +15,8 @@ type (
 
 		FindUserByIdWithTransaction(ctx context.Context, requestId string, id string, tx *gorm.DB) (*orm.User, error)
 		FindUserByEmailAndPasswordWithTransaction(ctx context.Context, requestId string, email string, password string, tx *gorm.DB) (*orm.User, error)
+
+		UpdateUserByIdWithTransaction(ctx context.Context, requestId string, req *pb.UpdateUserByIdRequest, tx *gorm.DB) (string, error)
 
 		// OpenTransactionWithContext
 		OpenTransactionWithContext(ctx context.Context) *gorm.DB

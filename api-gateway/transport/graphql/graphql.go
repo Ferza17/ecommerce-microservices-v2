@@ -46,6 +46,7 @@ func (srv *GraphQLTransport) Serve() {
 		Resolvers: &resolver.Resolver{
 			UserUseCase:    srv.bootstrap.UserUseCase,
 			ProductUseCase: srv.bootstrap.ProductUseCase,
+			CartUseCase:    srv.bootstrap.CartUseCase,
 		},
 		Directives: gen.DirectiveRoot{
 			//Jwt: middleware.DirectiveJwtRequired,

@@ -8,8 +8,8 @@ message CartItem {
   string id = 1;
   string productId = 2;
   string userId = 3;
-  string qty = 4;
-  string price = 5;
+  int32 qty = 4;
+  double price = 5;
   google.protobuf.Timestamp crated_at = 6;
   google.protobuf.Timestamp updated_at = 7;
 }
@@ -17,8 +17,8 @@ message CartItem {
 message CreateCartItemRequest {
   string productId = 1;
   string userId = 2;
-  string qty = 3;
-  float price = 4;
+  int32 qty = 3;
+  double price = 4;
 }
 
 message CreateCartItemResponse {
@@ -29,8 +29,8 @@ message UpdateCartItemByIdRequest {
   string id = 1;
   string productId = 2;
   string userId = 3;
-  string qty = 4;
-  float price = 5;
+  int32 qty = 4;
+  double price = 5;
 }
 message UpdateCartItemByIdResponse {
   string id = 1;

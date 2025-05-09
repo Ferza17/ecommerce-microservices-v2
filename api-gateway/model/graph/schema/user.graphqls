@@ -18,6 +18,17 @@ type CreateUserResponse {
     id : String!
 }
 
+input UpdateUserByIdRequest {
+    id: String!
+    name: String
+    email: String
+    password: String
+}
+
+type UpdateUserByIdResponse {
+    id: String!
+}
+
 input FindUserByEmailAndPasswordRequest {
     email: String!
     password: String!

@@ -9,7 +9,6 @@ import (
 	"fmt"
 
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/graph/gen"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
 )
 
@@ -27,8 +26,3 @@ func (r *mutationResolver) UpdateProductByID(ctx context.Context, input pb.Updat
 func (r *mutationResolver) DeleteProductByID(ctx context.Context, id string) (*pb.DeleteProductByIdResponse, error) {
 	panic(fmt.Errorf("not implemented: DeleteProductByID - deleteProductById"))
 }
-
-// Mutation returns gen.MutationResolver implementation.
-func (r *Resolver) Mutation() gen.MutationResolver { return &mutationResolver{r} }
-
-type mutationResolver struct{ *Resolver }

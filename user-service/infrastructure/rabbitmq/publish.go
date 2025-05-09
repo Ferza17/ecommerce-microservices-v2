@@ -9,23 +9,10 @@ import (
 	"time"
 )
 
-func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, exchange enum.Exchange, event enum.Event, message []byte) error {
+func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, exchange enum.Exchange, queue enum.Queue, message []byte) error {
 	amqpChannel, err := c.amqpConn.Channel()
 	if err != nil {
 		c.logger.Error(fmt.Sprintf("Failed to create a channel: %v", err))
-		return err
-	}
-
-	if err = amqpChannel.ExchangeDeclare(
-		exchange.String(),
-		amqp091.ExchangeTopic, // type
-		true,                  // durable
-		false,                 // auto-delete
-		false,
-		true,
-		nil,
-	); err != nil {
-		c.logger.Error(fmt.Sprintf("failed to declare exchange : %v", zap.Error(err)))
 		return err
 	}
 
@@ -35,24 +22,35 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 		}
 	}(amqpChannel)
 
-	q, err := amqpChannel.QueueDeclare(
-		event.String(),
+	if err = amqpChannel.ExchangeDeclare(
+		exchange.String(),
+		amqp091.ExchangeDirect,
 		true,
 		false,
 		false,
 		true,
 		nil,
-	)
-	if err != nil {
-		c.logger.Error(fmt.Sprintf("Failed to declare a queue: %v", err))
+	); err != nil {
+		c.logger.Error(fmt.Sprintf("failed to declare exchange : %v", zap.Error(err)))
+		return err
+	}
+
+	if err = amqpChannel.QueueBind(
+		queue.String(),
+		"",
+		exchange.String(),
+		false,
+		nil,
+	); err != nil {
+		c.logger.Error(fmt.Sprintf("failed to bind queue : %v", zap.Error(err)))
 		return err
 	}
 
 	// Publish message
 	if _, err = amqpChannel.PublishWithDeferredConfirmWithContext(
 		ctx,
+		exchange.String(),
 		"",
-		q.Name,
 		false,
 		false,
 		amqp091.Publishing{

@@ -2,9 +2,9 @@ package consumer
 
 import (
 	"context"
+	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	userUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
-	"github.com/rabbitmq/amqp091-go"
 )
 
 type (
@@ -13,16 +13,16 @@ type (
 		UserUpdated(ctx context.Context) error
 	}
 	userConsumer struct {
-		amqpChannel *amqp091.Channel
-		userUseCase userUseCase.IUserUseCase
-		logger      pkg.IZapLogger
+		rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure
+		userUseCase            userUseCase.IUserUseCase
+		logger                 pkg.IZapLogger
 	}
 )
 
-func NewUserConsumer(amqpChannel *amqp091.Channel, userUseCase userUseCase.IUserUseCase, logger pkg.IZapLogger) IUserConsumer {
+func NewUserConsumer(rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure, userUseCase userUseCase.IUserUseCase, logger pkg.IZapLogger) IUserConsumer {
 	return &userConsumer{
-		amqpChannel: amqpChannel,
-		userUseCase: userUseCase,
-		logger:      logger,
+		rabbitmqInfrastructure: rabbitmqInfrastructure,
+		userUseCase:            userUseCase,
+		logger:                 logger,
 	}
 }

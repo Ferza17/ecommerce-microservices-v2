@@ -13,6 +13,7 @@ type (
 		CreateUser(ctx context.Context, requestId string, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error)
 		FindUserById(ctx context.Context, requestId string, req *pb.FindUserByIdRequest) (*pb.User, error)
 		FindUserByEmailAndPassword(ctx context.Context, requestId string, req *pb.FindUserByEmailAndPasswordRequest) (*pb.User, error)
+		UpdateUserById(ctx context.Context, requestId string, req *pb.UpdateUserByIdRequest) (*pb.UpdateUserByIdResponse, error)
 	}
 
 	userUseCase struct {

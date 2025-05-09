@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@types/amqplib": "^0.10.7",
+    "amqp-connection-manager": "^4.1.14",
+    "amqplib": "^0.10.8"
+  }
+}

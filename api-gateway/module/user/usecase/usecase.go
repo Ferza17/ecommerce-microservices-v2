@@ -11,6 +11,7 @@ import (
 type (
 	IUserUseCase interface {
 		CreateUser(ctx context.Context, requestId string, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error)
+		UpdateUserById(ctx context.Context, requestId string, req *pb.UpdateUserByIdRequest) (*pb.UpdateUserByIdResponse, error)
 	}
 	UserUseCase struct {
 		rpcClient rpcClientInfrastructure.IService

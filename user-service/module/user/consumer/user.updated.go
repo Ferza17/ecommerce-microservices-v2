@@ -4,26 +4,46 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
+	"github.com/rabbitmq/amqp091-go"
 	"go.uber.org/zap"
-	"log"
+	"google.golang.org/protobuf/proto"
 )
 
 func (c *userConsumer) UserUpdated(ctx context.Context) error {
-	q, err := c.amqpChannel.QueueDeclare(
-		enum.USER_UPDATED.String(),
+	amqpChannel, err := c.rabbitmqInfrastructure.GetConnection().Channel()
+	if err != nil {
+		c.logger.Error(fmt.Sprintf("Failed to create a channel: %v", err))
+		return err
+	}
+
+	if err = amqpChannel.ExchangeDeclare(
+		enum.USER_EXCHANGE.String(),
+		amqp091.ExchangeDirect,
 		true,
 		false,
 		false,
 		true,
 		nil,
-	)
-	if err != nil {
-		c.logger.Error(fmt.Sprintf("failed to serve queue ", zap.Error(err)))
+	); err != nil {
+		c.logger.Error(fmt.Sprintf("failed to declare exchange : %v", zap.Error(err)))
 		return err
 	}
 
-	msgs, err := c.amqpChannel.Consume(
-		q.Name,
+	if err = amqpChannel.QueueBind(
+		enum.USER_UPDATED.String(),
+		enum.USER_UPDATED.String(),
+		enum.USER_EXCHANGE.String(),
+		false,
+		nil,
+	); err != nil {
+		c.logger.Error(fmt.Sprintf("failed to bind queue : %v", zap.Error(err)))
+		return err
+	}
+
+	deliveries, err := amqpChannel.ConsumeWithContext(
+		ctx,
+		enum.USER_UPDATED.String(),
 		"",
 		true,
 		false,
@@ -32,13 +52,38 @@ func (c *userConsumer) UserUpdated(ctx context.Context) error {
 		nil,
 	)
 
+	if err != nil {
+		c.logger.Error(fmt.Sprintf("failed to consume : %v", zap.Error(err)))
+		return err
+	}
+
 	ctx, cancel := context.WithCancel(context.Background())
-	go func() {
+	go func(deliveries <-chan amqp091.Delivery) {
 		defer cancel()
-		for d := range msgs {
-			log.Printf("Received a %s message: %s", enum.USER_UPDATED.String(), d.Body)
+	messages:
+		for d := range deliveries {
+			var (
+				request   pb.UpdateUserByIdRequest
+				requestId string
+				ok        bool
+			)
+			if requestId, ok = d.Headers[enum.XRequestIDHeader.String()].(string); !ok {
+				c.logger.Error("failed to get request id")
+				continue messages
+			}
+
+			if err = proto.Unmarshal(d.Body, &request); err != nil {
+				c.logger.Error(fmt.Sprintf("requsetID : %s , failed to unmarshal request : %v", requestId, zap.Error(err)))
+				continue messages
+			}
+
+			c.logger.Info(fmt.Sprintf("received a %s message: %s", d.RoutingKey, d.Body))
+			if _, err = c.userUseCase.UpdateUserById(ctx, requestId, &request); err != nil {
+				c.logger.Error(fmt.Sprintf("failed to create user : %v", zap.Error(err)))
+				continue messages
+			}
 		}
-	}()
+	}(deliveries)
 
 	<-ctx.Done()
 	return nil

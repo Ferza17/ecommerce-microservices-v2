@@ -14,8 +14,8 @@ export interface CartItem {
   id: string;
   productId: string;
   userId: string;
-  qty: string;
-  price: string;
+  qty: number;
+  price: number;
   cratedAt: Date | undefined;
   updatedAt: Date | undefined;
 }
@@ -23,7 +23,7 @@ export interface CartItem {
 export interface CreateCartItemRequest {
   productId: string;
   userId: string;
-  qty: string;
+  qty: number;
   price: number;
 }
 
@@ -35,7 +35,7 @@ export interface UpdateCartItemByIdRequest {
   id: string;
   productId: string;
   userId: string;
-  qty: string;
+  qty: number;
   price: number;
 }
 
@@ -66,7 +66,7 @@ export interface FindCartItemsWithPaginationResponse {
 }
 
 function createBaseCartItem(): CartItem {
-  return { id: "", productId: "", userId: "", qty: "", price: "", cratedAt: undefined, updatedAt: undefined };
+  return { id: "", productId: "", userId: "", qty: 0, price: 0, cratedAt: undefined, updatedAt: undefined };
 }
 
 export const CartItem: MessageFns<CartItem> = {
@@ -80,11 +80,11 @@ export const CartItem: MessageFns<CartItem> = {
     if (message.userId !== "") {
       writer.uint32(26).string(message.userId);
     }
-    if (message.qty !== "") {
-      writer.uint32(34).string(message.qty);
+    if (message.qty !== 0) {
+      writer.uint32(32).int32(message.qty);
     }
-    if (message.price !== "") {
-      writer.uint32(42).string(message.price);
+    if (message.price !== 0) {
+      writer.uint32(41).double(message.price);
     }
     if (message.cratedAt !== undefined) {
       Timestamp.encode(toTimestamp(message.cratedAt), writer.uint32(50).fork()).join();
@@ -127,19 +127,19 @@ export const CartItem: MessageFns<CartItem> = {
           continue;
         }
         case 4: {
-          if (tag !== 34) {
+          if (tag !== 32) {
             break;
           }
 
-          message.qty = reader.string();
+          message.qty = reader.int32();
           continue;
         }
         case 5: {
-          if (tag !== 42) {
+          if (tag !== 41) {
             break;
           }
 
-          message.price = reader.string();
+          message.price = reader.double();
           continue;
         }
         case 6: {
@@ -172,8 +172,8 @@ export const CartItem: MessageFns<CartItem> = {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       productId: isSet(object.productId) ? globalThis.String(object.productId) : "",
       userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
-      qty: isSet(object.qty) ? globalThis.String(object.qty) : "",
-      price: isSet(object.price) ? globalThis.String(object.price) : "",
+      qty: isSet(object.qty) ? globalThis.Number(object.qty) : 0,
+      price: isSet(object.price) ? globalThis.Number(object.price) : 0,
       cratedAt: isSet(object.cratedAt) ? fromJsonTimestamp(object.cratedAt) : undefined,
       updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
     };
@@ -190,10 +190,10 @@ export const CartItem: MessageFns<CartItem> = {
     if (message.userId !== "") {
       obj.userId = message.userId;
     }
-    if (message.qty !== "") {
-      obj.qty = message.qty;
+    if (message.qty !== 0) {
+      obj.qty = Math.round(message.qty);
     }
-    if (message.price !== "") {
+    if (message.price !== 0) {
       obj.price = message.price;
     }
     if (message.cratedAt !== undefined) {
@@ -213,8 +213,8 @@ export const CartItem: MessageFns<CartItem> = {
     message.id = object.id ?? "";
     message.productId = object.productId ?? "";
     message.userId = object.userId ?? "";
-    message.qty = object.qty ?? "";
-    message.price = object.price ?? "";
+    message.qty = object.qty ?? 0;
+    message.price = object.price ?? 0;
     message.cratedAt = object.cratedAt ?? undefined;
     message.updatedAt = object.updatedAt ?? undefined;
     return message;
@@ -222,7 +222,7 @@ export const CartItem: MessageFns<CartItem> = {
 };
 
 function createBaseCreateCartItemRequest(): CreateCartItemRequest {
-  return { productId: "", userId: "", qty: "", price: 0 };
+  return { productId: "", userId: "", qty: 0, price: 0 };
 }
 
 export const CreateCartItemRequest: MessageFns<CreateCartItemRequest> = {
@@ -233,11 +233,11 @@ export const CreateCartItemRequest: MessageFns<CreateCartItemRequest> = {
     if (message.userId !== "") {
       writer.uint32(18).string(message.userId);
     }
-    if (message.qty !== "") {
-      writer.uint32(26).string(message.qty);
+    if (message.qty !== 0) {
+      writer.uint32(24).int32(message.qty);
     }
     if (message.price !== 0) {
-      writer.uint32(37).float(message.price);
+      writer.uint32(33).double(message.price);
     }
     return writer;
   },
@@ -266,19 +266,19 @@ export const CreateCartItemRequest: MessageFns<CreateCartItemRequest> = {
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.qty = reader.string();
+          message.qty = reader.int32();
           continue;
         }
         case 4: {
-          if (tag !== 37) {
+          if (tag !== 33) {
             break;
           }
 
-          message.price = reader.float();
+          message.price = reader.double();
           continue;
         }
       }
@@ -294,7 +294,7 @@ export const CreateCartItemRequest: MessageFns<CreateCartItemRequest> = {
     return {
       productId: isSet(object.productId) ? globalThis.String(object.productId) : "",
       userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
-      qty: isSet(object.qty) ? globalThis.String(object.qty) : "",
+      qty: isSet(object.qty) ? globalThis.Number(object.qty) : 0,
       price: isSet(object.price) ? globalThis.Number(object.price) : 0,
     };
   },
@@ -307,8 +307,8 @@ export const CreateCartItemRequest: MessageFns<CreateCartItemRequest> = {
     if (message.userId !== "") {
       obj.userId = message.userId;
     }
-    if (message.qty !== "") {
-      obj.qty = message.qty;
+    if (message.qty !== 0) {
+      obj.qty = Math.round(message.qty);
     }
     if (message.price !== 0) {
       obj.price = message.price;
@@ -323,7 +323,7 @@ export const CreateCartItemRequest: MessageFns<CreateCartItemRequest> = {
     const message = createBaseCreateCartItemRequest();
     message.productId = object.productId ?? "";
     message.userId = object.userId ?? "";
-    message.qty = object.qty ?? "";
+    message.qty = object.qty ?? 0;
     message.price = object.price ?? 0;
     return message;
   },
@@ -388,7 +388,7 @@ export const CreateCartItemResponse: MessageFns<CreateCartItemResponse> = {
 };
 
 function createBaseUpdateCartItemByIdRequest(): UpdateCartItemByIdRequest {
-  return { id: "", productId: "", userId: "", qty: "", price: 0 };
+  return { id: "", productId: "", userId: "", qty: 0, price: 0 };
 }
 
 export const UpdateCartItemByIdRequest: MessageFns<UpdateCartItemByIdRequest> = {
@@ -402,11 +402,11 @@ export const UpdateCartItemByIdRequest: MessageFns<UpdateCartItemByIdRequest> = 
     if (message.userId !== "") {
       writer.uint32(26).string(message.userId);
     }
-    if (message.qty !== "") {
-      writer.uint32(34).string(message.qty);
+    if (message.qty !== 0) {
+      writer.uint32(32).int32(message.qty);
     }
     if (message.price !== 0) {
-      writer.uint32(45).float(message.price);
+      writer.uint32(41).double(message.price);
     }
     return writer;
   },
@@ -443,19 +443,19 @@ export const UpdateCartItemByIdRequest: MessageFns<UpdateCartItemByIdRequest> = 
           continue;
         }
         case 4: {
-          if (tag !== 34) {
+          if (tag !== 32) {
             break;
           }
 
-          message.qty = reader.string();
+          message.qty = reader.int32();
           continue;
         }
         case 5: {
-          if (tag !== 45) {
+          if (tag !== 41) {
             break;
           }
 
-          message.price = reader.float();
+          message.price = reader.double();
           continue;
         }
       }
@@ -472,7 +472,7 @@ export const UpdateCartItemByIdRequest: MessageFns<UpdateCartItemByIdRequest> = 
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       productId: isSet(object.productId) ? globalThis.String(object.productId) : "",
       userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
-      qty: isSet(object.qty) ? globalThis.String(object.qty) : "",
+      qty: isSet(object.qty) ? globalThis.Number(object.qty) : 0,
       price: isSet(object.price) ? globalThis.Number(object.price) : 0,
     };
   },
@@ -488,8 +488,8 @@ export const UpdateCartItemByIdRequest: MessageFns<UpdateCartItemByIdRequest> = 
     if (message.userId !== "") {
       obj.userId = message.userId;
     }
-    if (message.qty !== "") {
-      obj.qty = message.qty;
+    if (message.qty !== 0) {
+      obj.qty = Math.round(message.qty);
     }
     if (message.price !== 0) {
       obj.price = message.price;
@@ -505,7 +505,7 @@ export const UpdateCartItemByIdRequest: MessageFns<UpdateCartItemByIdRequest> = 
     message.id = object.id ?? "";
     message.productId = object.productId ?? "";
     message.userId = object.userId ?? "";
-    message.qty = object.qty ?? "";
+    message.qty = object.qty ?? 0;
     message.price = object.price ?? 0;
     return message;
   },

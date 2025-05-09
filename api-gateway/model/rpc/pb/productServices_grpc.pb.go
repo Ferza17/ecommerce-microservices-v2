@@ -95,7 +95,7 @@ func (c *productServiceClient) DeleteProductById(ctx context.Context, in *Delete
 	return out, nil
 }
 
-// ProductServiceServer is the transport API for ProductService service.
+// ProductServiceServer is the server API for ProductService service.
 // All implementations should embed UnimplementedProductServiceServer
 // for forward compatibility.
 type ProductServiceServer interface {

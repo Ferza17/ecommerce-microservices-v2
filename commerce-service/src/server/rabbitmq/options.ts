@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { RmqOptions, Transport } from '@nestjs/microservices';
-import { RoutingKey } from '../../enum/routingKey';
+import { RmqOptions, Serializer, Transport } from '@nestjs/microservices';
+import { Queue } from '../../enum/queue';
+import { Exchange } from '../../enum/exchange';
 
 
 @Injectable()
 export class RabbitmqOptions {
   constructor(
     private readonly configService: ConfigService,
-    private readonly queue: string,
-    private readonly exchange: string,
+    private queue: Queue,
   ) {
   }
 
@@ -29,8 +29,9 @@ export class RabbitmqOptions {
         queueOptions: {
           durable: true,
         },
-        exchange: this.exchange,
-        exchangeType: 'topic',
+        exchange: Exchange.CommerceExchange,
+        exchangeType: 'direct',
+        routingKey: this.queue,
       },
     });
   }
