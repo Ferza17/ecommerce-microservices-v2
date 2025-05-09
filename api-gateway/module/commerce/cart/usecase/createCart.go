@@ -17,7 +17,7 @@ func (u *CartUseCase) CreateCart(ctx context.Context, requestId string, req *pb.
 		eventStore       = &pb.EventStore{
 			RequestId:     requestId,
 			Service:       enum.ProductService.String(),
-			EventType:     enum.PRODUCT_CREATED.String(),
+			EventType:     enum.CART_CREATED.String(),
 			Status:        enum.PENDING.String(),
 			PreviousState: nil,
 			CreatedAt:     timestamppb.Now(),
@@ -50,18 +50,11 @@ func (u *CartUseCase) CreateCart(ctx context.Context, requestId string, req *pb.
 	}
 	eventStore.Payload = payload
 
-	//message, err := proto.Marshal(req)
-	//if err != nil {
-	//	u.logger.Error(fmt.Sprintf("error marshaling message: %s", err.Error()))
-	//	return nil, err
-	//}
-
-	msg := map[string]interface{}{
-		"pattern": enum.CART_CREATED,
+	// Need to add this line for matching with Nestjs Constructor
+	message, err := json.Marshal(map[string]interface{}{
+		"pattern": event,
 		"data":    req,
-	}
-
-	message, err := json.Marshal(msg)
+	})
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("error marshaling message: %s", err.Error()))
 		return nil, err

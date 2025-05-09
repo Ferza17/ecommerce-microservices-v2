@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
@@ -16,7 +17,7 @@ func (u *CartUseCase) UpdateCartItemById(ctx context.Context, requestId string, 
 		eventStore       = &pb.EventStore{
 			RequestId:     requestId,
 			Service:       enum.ProductService.String(),
-			EventType:     enum.PRODUCT_CREATED.String(),
+			EventType:     enum.CART_UPDATED.String(),
 			Status:        enum.PENDING.String(),
 			PreviousState: nil,
 			CreatedAt:     timestamppb.Now(),
@@ -49,7 +50,11 @@ func (u *CartUseCase) UpdateCartItemById(ctx context.Context, requestId string, 
 	}
 	eventStore.Payload = payload
 
-	message, err := proto.Marshal(req)
+	// Need to add this line for matching with Nestjs Constructor
+	message, err := json.Marshal(map[string]interface{}{
+		"pattern": event,
+		"data":    req,
+	})
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("error marshaling message: %s", err.Error()))
 		return nil, err

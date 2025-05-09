@@ -2,6 +2,7 @@ package consumer
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
@@ -72,8 +73,19 @@ func (c *userConsumer) UserUpdated(ctx context.Context) error {
 				continue messages
 			}
 
-			if err = proto.Unmarshal(d.Body, &request); err != nil {
-				c.logger.Error(fmt.Sprintf("requsetID : %s , failed to unmarshal request : %v", requestId, zap.Error(err)))
+			switch d.ContentType {
+			case enum.XProtobuf.String():
+				if err = proto.Unmarshal(d.Body, &request); err != nil {
+					c.logger.Error(fmt.Sprintf("requsetID : %s , failed to unmarshal request : %v", requestId, zap.Error(err)))
+					continue messages
+				}
+			case enum.JSON.String():
+				if err = json.Unmarshal(d.Body, &request); err != nil {
+					c.logger.Error(fmt.Sprintf("failed to unmarshal request : %v", zap.Error(err)))
+					continue messages
+				}
+			default:
+				c.logger.Error(fmt.Sprintf("failed to get request id"))
 				continue messages
 			}
 

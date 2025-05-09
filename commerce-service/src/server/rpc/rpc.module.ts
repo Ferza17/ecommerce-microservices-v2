@@ -1,14 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ModuleModule } from '../../module/module.module';
-import { InfrastructureModule } from '../../infrastructure/infrastructure.module';
-import { configRoot } from '../../config/configRoot';
-
+import { configRoot, MongooseRootAsync } from '../../config/configRoot';
 
 @Module({
   imports: [
     configRoot,
+    MongooseRootAsync,
     ModuleModule,
-    InfrastructureModule,
   ],
 })
 export class RpcServerModule {

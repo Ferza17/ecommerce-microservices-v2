@@ -1,5 +1,5 @@
 import { Controller, Logger, OnModuleInit } from '@nestjs/common';
-import { RabbitmqOptions } from './options';
+import { RabbitmqOptions } from './consumer.config';
 import { NestFactory } from '@nestjs/core';
 import { RabbitmqModule } from './rabbitmq.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';

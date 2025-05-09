@@ -55,7 +55,7 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 		false,
 		false,
 		amqp091.Publishing{
-			ContentType:  "application/json",
+			ContentType:  enum.XProtobuf.String(),
 			DeliveryMode: amqp091.Transient,
 			Timestamp:    time.Now(),
 			Body:         message,

@@ -1,9 +1,11 @@
 import * as joi from 'joi';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import Environment from '../enum/environment';
+import { MongooseModule } from '@nestjs/mongoose';
 
 export const configRoot = ConfigModule.forRoot({
   envFilePath: '.env',
+  isGlobal: true,
   validationSchema: joi.object({
     ENV: joi.string()
       .valid(
@@ -25,5 +27,12 @@ export const configRoot = ConfigModule.forRoot({
     RPC_HOST: joi.string().required(),
     RPC_PORT: joi.number().required(),
   }),
-  isGlobal: true,
 });
+
+export const MongooseRootAsync = MongooseModule.forRootAsync({
+  inject: [ConfigService],
+  useFactory: (configService: ConfigService) => ({
+    uri: `mongodb://${configService.get('MONGO_USERNAME')}:${configService.get('MONGO_PASSWORD')}@${configService.get('MONGO_HOST')}:${configService.get('MONGO_PORT')}/${configService.get('MONGO_DATABASE_NAME')}?authSource=admin`,
+  }),
+});
+

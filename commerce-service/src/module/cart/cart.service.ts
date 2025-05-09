@@ -6,7 +6,11 @@ import {
   UpdateCartItemByIdRequest,
   UpdateCartItemByIdResponse,
 } from '../../model/rpc/cartMessage';
-import { ICartItem } from '../../model/mongo/cart';
+import { RabbitmqInfrastructure } from '../../infrastructure/rabbitmq/rabbitmq';
+import { EventStore } from '../../model/rpc/eventStoreMessage';
+import { SagaStatus } from '../../enum/sagaStatus';
+import { Service } from '../../enum/service';
+import { Queue } from '../../enum/queue';
 
 @Injectable()
 export class CartService {
@@ -14,30 +18,48 @@ export class CartService {
 
   constructor(
     private readonly cartItemRepository: CartMongodbRepository,
+    private readonly rabbitMQInfrastructure: RabbitmqInfrastructure,
   ) {
   }
 
   async createCartItem(requestId: string, req: CreateCartItemRequest): Promise<CreateCartItemResponse> {
+    let id = '';
+    let event: EventStore = {
+      service: Service.CommerceService.toString(),
+      eventType: Queue.CART_CREATED.toString(),
+      requestId: requestId,
+      payload: req,
+      updatedAt: new Date(),
+      createdAt: new Date(),
+      id: '',
+      status: '',
+    };
 
-    let id: string = '';
+
     try {
-      const cartItem: ICartItem = {
-        productId: req.productId,
-        userId: req.userId,
-        qty: req.qty,
-        price: req.price,
-        created_at: new Date(),
-        updated_at: new Date(),
-      } as ICartItem;
-      id = await this.cartItemRepository.CreateCartItem(requestId, cartItem);
+      const result = await this.cartItemRepository.CreateCartItem(requestId, req);
+      if (result !== null) {
+        id = result;
+      }
+      event.status = SagaStatus.SUCCESS.toString();
+      await this.rabbitMQInfrastructure.publishEventCreated(requestId,event);
     } catch (e) {
-      this.logger.error(`requestId: ${requestId} , error: ${e.message}`);
+      event.status = SagaStatus.FAILED.toString();
+      await this.rabbitMQInfrastructure.publishEventCreated(requestId,event);
+      throw e;
     }
-
     return { id };
   }
 
   async updateCartItemByIdRequest(requestId: string, req: UpdateCartItemByIdRequest): Promise<UpdateCartItemByIdResponse> {
+    try {
+      // Validate Id
+
+    } catch (e) {
+      this.logger.error(`requestId: ${requestId} , error: ${e.message}`);
+      throw e;
+    }
+
     return { id: req.id };
   }
 }
