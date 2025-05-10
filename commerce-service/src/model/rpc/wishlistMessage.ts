@@ -125,10 +125,10 @@ export const WishlistItem: MessageFns<WishlistItem> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<WishlistItem>, I>>(base?: I): WishlistItem {
-    return WishlistItem.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<WishlistItem>): WishlistItem {
+    return WishlistItem.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<WishlistItem>, I>>(object: I): WishlistItem {
+  fromPartial(object: DeepPartial<WishlistItem>): WishlistItem {
     const message = createBaseWishlistItem();
     message.id = object.id ?? "";
     message.productId = object.productId ?? "";
@@ -202,10 +202,10 @@ export const CreateWishlistItemRequest: MessageFns<CreateWishlistItemRequest> = 
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CreateWishlistItemRequest>, I>>(base?: I): CreateWishlistItemRequest {
-    return CreateWishlistItemRequest.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<CreateWishlistItemRequest>): CreateWishlistItemRequest {
+    return CreateWishlistItemRequest.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<CreateWishlistItemRequest>, I>>(object: I): CreateWishlistItemRequest {
+  fromPartial(object: DeepPartial<CreateWishlistItemRequest>): CreateWishlistItemRequest {
     const message = createBaseCreateWishlistItemRequest();
     message.productId = object.productId ?? "";
     message.userId = object.userId ?? "";
@@ -261,10 +261,10 @@ export const CreateWishlistItemResponse: MessageFns<CreateWishlistItemResponse> 
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CreateWishlistItemResponse>, I>>(base?: I): CreateWishlistItemResponse {
-    return CreateWishlistItemResponse.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<CreateWishlistItemResponse>): CreateWishlistItemResponse {
+    return CreateWishlistItemResponse.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<CreateWishlistItemResponse>, I>>(object: I): CreateWishlistItemResponse {
+  fromPartial(object: DeepPartial<CreateWishlistItemResponse>): CreateWishlistItemResponse {
     const message = createBaseCreateWishlistItemResponse();
     message.id = object.id ?? "";
     return message;
@@ -368,14 +368,10 @@ export const FindWishlistItemWithPaginationRequest: MessageFns<FindWishlistItemW
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<FindWishlistItemWithPaginationRequest>, I>>(
-    base?: I,
-  ): FindWishlistItemWithPaginationRequest {
-    return FindWishlistItemWithPaginationRequest.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<FindWishlistItemWithPaginationRequest>): FindWishlistItemWithPaginationRequest {
+    return FindWishlistItemWithPaginationRequest.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<FindWishlistItemWithPaginationRequest>, I>>(
-    object: I,
-  ): FindWishlistItemWithPaginationRequest {
+  fromPartial(object: DeepPartial<FindWishlistItemWithPaginationRequest>): FindWishlistItemWithPaginationRequest {
     const message = createBaseFindWishlistItemWithPaginationRequest();
     message.userId = object.userId ?? "";
     message.productIds = object.productIds?.map((e) => e) || [];
@@ -465,14 +461,10 @@ export const FindWishlistItemWithPaginationResponse: MessageFns<FindWishlistItem
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<FindWishlistItemWithPaginationResponse>, I>>(
-    base?: I,
-  ): FindWishlistItemWithPaginationResponse {
-    return FindWishlistItemWithPaginationResponse.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<FindWishlistItemWithPaginationResponse>): FindWishlistItemWithPaginationResponse {
+    return FindWishlistItemWithPaginationResponse.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<FindWishlistItemWithPaginationResponse>, I>>(
-    object: I,
-  ): FindWishlistItemWithPaginationResponse {
+  fromPartial(object: DeepPartial<FindWishlistItemWithPaginationResponse>): FindWishlistItemWithPaginationResponse {
     const message = createBaseFindWishlistItemWithPaginationResponse();
     message.items = object.items?.map((e) => WishlistItem.fromPartial(e)) || [];
     message.page = object.page ?? 0;
@@ -529,12 +521,10 @@ export const DeleteWishlistItemByIdRequest: MessageFns<DeleteWishlistItemByIdReq
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<DeleteWishlistItemByIdRequest>, I>>(base?: I): DeleteWishlistItemByIdRequest {
-    return DeleteWishlistItemByIdRequest.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<DeleteWishlistItemByIdRequest>): DeleteWishlistItemByIdRequest {
+    return DeleteWishlistItemByIdRequest.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<DeleteWishlistItemByIdRequest>, I>>(
-    object: I,
-  ): DeleteWishlistItemByIdRequest {
+  fromPartial(object: DeepPartial<DeleteWishlistItemByIdRequest>): DeleteWishlistItemByIdRequest {
     const message = createBaseDeleteWishlistItemByIdRequest();
     message.id = object.id ?? "";
     return message;
@@ -589,12 +579,10 @@ export const DeleteWishlistItemByIdResponse: MessageFns<DeleteWishlistItemByIdRe
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<DeleteWishlistItemByIdResponse>, I>>(base?: I): DeleteWishlistItemByIdResponse {
-    return DeleteWishlistItemByIdResponse.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<DeleteWishlistItemByIdResponse>): DeleteWishlistItemByIdResponse {
+    return DeleteWishlistItemByIdResponse.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<DeleteWishlistItemByIdResponse>, I>>(
-    object: I,
-  ): DeleteWishlistItemByIdResponse {
+  fromPartial(object: DeepPartial<DeleteWishlistItemByIdResponse>): DeleteWishlistItemByIdResponse {
     const message = createBaseDeleteWishlistItemByIdResponse();
     message.userId = object.userId ?? "";
     return message;
@@ -609,10 +597,6 @@ export type DeepPartial<T> = T extends Builtin ? T
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
-type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
-
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;
 }
@@ -622,6 +606,6 @@ export interface MessageFns<T> {
   decode(input: BinaryReader | Uint8Array, length?: number): T;
   fromJSON(object: any): T;
   toJSON(message: T): unknown;
-  create<I extends Exact<DeepPartial<T>, I>>(base?: I): T;
-  fromPartial<I extends Exact<DeepPartial<T>, I>>(object: I): T;
+  create(base?: DeepPartial<T>): T;
+  fromPartial(object: DeepPartial<T>): T;
 }

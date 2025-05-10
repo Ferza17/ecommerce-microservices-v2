@@ -11,7 +11,7 @@ import (
 
 type (
 	IRabbitMQInfrastructure interface {
-		Publish(ctx context.Context, requestId string, exchange enum.Exchange, queue enum.Queue, event enum.Routing, message []byte) error
+		Publish(ctx context.Context, requestId string, exchange enum.Exchange, queue enum.Queue, message []byte) error
 		Close() error
 	}
 	RabbitMQInfrastructure struct {

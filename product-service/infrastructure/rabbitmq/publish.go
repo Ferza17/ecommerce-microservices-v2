@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, exchange enum.Exchange, queue enum.Queue, event enum.Routing, message []byte) error {
+func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, exchange enum.Exchange, queue enum.Queue, message []byte) error {
 
 	amqpChannel, err := c.amqpConn.Channel()
 	if err != nil {
@@ -38,7 +38,7 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 
 	if err = amqpChannel.QueueBind(
 		queue.String(),
-		event.String(),
+		"",
 		exchange.String(),
 		false,
 		nil,
@@ -51,7 +51,7 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 	if _, err = amqpChannel.PublishWithDeferredConfirmWithContext(
 		ctx,
 		exchange.String(),
-		event.String(),
+		"",
 		false,
 		false,
 		amqp091.Publishing{

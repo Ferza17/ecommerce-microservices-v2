@@ -43,15 +43,6 @@ export interface UpdateCartItemByIdResponse {
   id: string;
 }
 
-export interface DeleteCartItemRequest {
-  productId: string;
-  userId: string;
-}
-
-export interface DeleteCartItemResponse {
-  userId: string;
-}
-
 export interface FindCartItemsWithPaginationRequest {
   userId: string;
   productIds: string[];
@@ -63,6 +54,19 @@ export interface FindCartItemsWithPaginationResponse {
   items: CartItem[];
   page: number;
   limit: number;
+  total: number;
+}
+
+export interface FindCartItemByIdRequest {
+  id: string;
+}
+
+export interface DeleteCartItemByIdRequest {
+  id: string;
+}
+
+export interface DeleteCartItemByIdResponse {
+  message: string;
 }
 
 function createBaseCartItem(): CartItem {
@@ -205,10 +209,10 @@ export const CartItem: MessageFns<CartItem> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CartItem>, I>>(base?: I): CartItem {
-    return CartItem.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<CartItem>): CartItem {
+    return CartItem.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<CartItem>, I>>(object: I): CartItem {
+  fromPartial(object: DeepPartial<CartItem>): CartItem {
     const message = createBaseCartItem();
     message.id = object.id ?? "";
     message.productId = object.productId ?? "";
@@ -316,10 +320,10 @@ export const CreateCartItemRequest: MessageFns<CreateCartItemRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CreateCartItemRequest>, I>>(base?: I): CreateCartItemRequest {
-    return CreateCartItemRequest.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<CreateCartItemRequest>): CreateCartItemRequest {
+    return CreateCartItemRequest.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<CreateCartItemRequest>, I>>(object: I): CreateCartItemRequest {
+  fromPartial(object: DeepPartial<CreateCartItemRequest>): CreateCartItemRequest {
     const message = createBaseCreateCartItemRequest();
     message.productId = object.productId ?? "";
     message.userId = object.userId ?? "";
@@ -377,10 +381,10 @@ export const CreateCartItemResponse: MessageFns<CreateCartItemResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CreateCartItemResponse>, I>>(base?: I): CreateCartItemResponse {
-    return CreateCartItemResponse.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<CreateCartItemResponse>): CreateCartItemResponse {
+    return CreateCartItemResponse.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<CreateCartItemResponse>, I>>(object: I): CreateCartItemResponse {
+  fromPartial(object: DeepPartial<CreateCartItemResponse>): CreateCartItemResponse {
     const message = createBaseCreateCartItemResponse();
     message.id = object.id ?? "";
     return message;
@@ -497,10 +501,10 @@ export const UpdateCartItemByIdRequest: MessageFns<UpdateCartItemByIdRequest> = 
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<UpdateCartItemByIdRequest>, I>>(base?: I): UpdateCartItemByIdRequest {
-    return UpdateCartItemByIdRequest.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<UpdateCartItemByIdRequest>): UpdateCartItemByIdRequest {
+    return UpdateCartItemByIdRequest.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<UpdateCartItemByIdRequest>, I>>(object: I): UpdateCartItemByIdRequest {
+  fromPartial(object: DeepPartial<UpdateCartItemByIdRequest>): UpdateCartItemByIdRequest {
     const message = createBaseUpdateCartItemByIdRequest();
     message.id = object.id ?? "";
     message.productId = object.productId ?? "";
@@ -559,146 +563,12 @@ export const UpdateCartItemByIdResponse: MessageFns<UpdateCartItemByIdResponse> 
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<UpdateCartItemByIdResponse>, I>>(base?: I): UpdateCartItemByIdResponse {
-    return UpdateCartItemByIdResponse.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<UpdateCartItemByIdResponse>): UpdateCartItemByIdResponse {
+    return UpdateCartItemByIdResponse.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<UpdateCartItemByIdResponse>, I>>(object: I): UpdateCartItemByIdResponse {
+  fromPartial(object: DeepPartial<UpdateCartItemByIdResponse>): UpdateCartItemByIdResponse {
     const message = createBaseUpdateCartItemByIdResponse();
     message.id = object.id ?? "";
-    return message;
-  },
-};
-
-function createBaseDeleteCartItemRequest(): DeleteCartItemRequest {
-  return { productId: "", userId: "" };
-}
-
-export const DeleteCartItemRequest: MessageFns<DeleteCartItemRequest> = {
-  encode(message: DeleteCartItemRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.productId !== "") {
-      writer.uint32(10).string(message.productId);
-    }
-    if (message.userId !== "") {
-      writer.uint32(18).string(message.userId);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): DeleteCartItemRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseDeleteCartItemRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.productId = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.userId = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): DeleteCartItemRequest {
-    return {
-      productId: isSet(object.productId) ? globalThis.String(object.productId) : "",
-      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
-    };
-  },
-
-  toJSON(message: DeleteCartItemRequest): unknown {
-    const obj: any = {};
-    if (message.productId !== "") {
-      obj.productId = message.productId;
-    }
-    if (message.userId !== "") {
-      obj.userId = message.userId;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<DeleteCartItemRequest>, I>>(base?: I): DeleteCartItemRequest {
-    return DeleteCartItemRequest.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<DeleteCartItemRequest>, I>>(object: I): DeleteCartItemRequest {
-    const message = createBaseDeleteCartItemRequest();
-    message.productId = object.productId ?? "";
-    message.userId = object.userId ?? "";
-    return message;
-  },
-};
-
-function createBaseDeleteCartItemResponse(): DeleteCartItemResponse {
-  return { userId: "" };
-}
-
-export const DeleteCartItemResponse: MessageFns<DeleteCartItemResponse> = {
-  encode(message: DeleteCartItemResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.userId !== "") {
-      writer.uint32(10).string(message.userId);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): DeleteCartItemResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseDeleteCartItemResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.userId = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): DeleteCartItemResponse {
-    return { userId: isSet(object.userId) ? globalThis.String(object.userId) : "" };
-  },
-
-  toJSON(message: DeleteCartItemResponse): unknown {
-    const obj: any = {};
-    if (message.userId !== "") {
-      obj.userId = message.userId;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<DeleteCartItemResponse>, I>>(base?: I): DeleteCartItemResponse {
-    return DeleteCartItemResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<DeleteCartItemResponse>, I>>(object: I): DeleteCartItemResponse {
-    const message = createBaseDeleteCartItemResponse();
-    message.userId = object.userId ?? "";
     return message;
   },
 };
@@ -800,14 +670,10 @@ export const FindCartItemsWithPaginationRequest: MessageFns<FindCartItemsWithPag
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<FindCartItemsWithPaginationRequest>, I>>(
-    base?: I,
-  ): FindCartItemsWithPaginationRequest {
-    return FindCartItemsWithPaginationRequest.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<FindCartItemsWithPaginationRequest>): FindCartItemsWithPaginationRequest {
+    return FindCartItemsWithPaginationRequest.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<FindCartItemsWithPaginationRequest>, I>>(
-    object: I,
-  ): FindCartItemsWithPaginationRequest {
+  fromPartial(object: DeepPartial<FindCartItemsWithPaginationRequest>): FindCartItemsWithPaginationRequest {
     const message = createBaseFindCartItemsWithPaginationRequest();
     message.userId = object.userId ?? "";
     message.productIds = object.productIds?.map((e) => e) || [];
@@ -818,7 +684,7 @@ export const FindCartItemsWithPaginationRequest: MessageFns<FindCartItemsWithPag
 };
 
 function createBaseFindCartItemsWithPaginationResponse(): FindCartItemsWithPaginationResponse {
-  return { items: [], page: 0, limit: 0 };
+  return { items: [], page: 0, limit: 0, total: 0 };
 }
 
 export const FindCartItemsWithPaginationResponse: MessageFns<FindCartItemsWithPaginationResponse> = {
@@ -831,6 +697,9 @@ export const FindCartItemsWithPaginationResponse: MessageFns<FindCartItemsWithPa
     }
     if (message.limit !== 0) {
       writer.uint32(24).int32(message.limit);
+    }
+    if (message.total !== 0) {
+      writer.uint32(32).int32(message.total);
     }
     return writer;
   },
@@ -866,6 +735,14 @@ export const FindCartItemsWithPaginationResponse: MessageFns<FindCartItemsWithPa
           message.limit = reader.int32();
           continue;
         }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.total = reader.int32();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -880,6 +757,7 @@ export const FindCartItemsWithPaginationResponse: MessageFns<FindCartItemsWithPa
       items: globalThis.Array.isArray(object?.items) ? object.items.map((e: any) => CartItem.fromJSON(e)) : [],
       page: isSet(object.page) ? globalThis.Number(object.page) : 0,
       limit: isSet(object.limit) ? globalThis.Number(object.limit) : 0,
+      total: isSet(object.total) ? globalThis.Number(object.total) : 0,
     };
   },
 
@@ -894,21 +772,195 @@ export const FindCartItemsWithPaginationResponse: MessageFns<FindCartItemsWithPa
     if (message.limit !== 0) {
       obj.limit = Math.round(message.limit);
     }
+    if (message.total !== 0) {
+      obj.total = Math.round(message.total);
+    }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<FindCartItemsWithPaginationResponse>, I>>(
-    base?: I,
-  ): FindCartItemsWithPaginationResponse {
-    return FindCartItemsWithPaginationResponse.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<FindCartItemsWithPaginationResponse>): FindCartItemsWithPaginationResponse {
+    return FindCartItemsWithPaginationResponse.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<FindCartItemsWithPaginationResponse>, I>>(
-    object: I,
-  ): FindCartItemsWithPaginationResponse {
+  fromPartial(object: DeepPartial<FindCartItemsWithPaginationResponse>): FindCartItemsWithPaginationResponse {
     const message = createBaseFindCartItemsWithPaginationResponse();
     message.items = object.items?.map((e) => CartItem.fromPartial(e)) || [];
     message.page = object.page ?? 0;
     message.limit = object.limit ?? 0;
+    message.total = object.total ?? 0;
+    return message;
+  },
+};
+
+function createBaseFindCartItemByIdRequest(): FindCartItemByIdRequest {
+  return { id: "" };
+}
+
+export const FindCartItemByIdRequest: MessageFns<FindCartItemByIdRequest> = {
+  encode(message: FindCartItemByIdRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): FindCartItemByIdRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseFindCartItemByIdRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): FindCartItemByIdRequest {
+    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+  },
+
+  toJSON(message: FindCartItemByIdRequest): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<FindCartItemByIdRequest>): FindCartItemByIdRequest {
+    return FindCartItemByIdRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<FindCartItemByIdRequest>): FindCartItemByIdRequest {
+    const message = createBaseFindCartItemByIdRequest();
+    message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseDeleteCartItemByIdRequest(): DeleteCartItemByIdRequest {
+  return { id: "" };
+}
+
+export const DeleteCartItemByIdRequest: MessageFns<DeleteCartItemByIdRequest> = {
+  encode(message: DeleteCartItemByIdRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): DeleteCartItemByIdRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeleteCartItemByIdRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DeleteCartItemByIdRequest {
+    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+  },
+
+  toJSON(message: DeleteCartItemByIdRequest): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<DeleteCartItemByIdRequest>): DeleteCartItemByIdRequest {
+    return DeleteCartItemByIdRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<DeleteCartItemByIdRequest>): DeleteCartItemByIdRequest {
+    const message = createBaseDeleteCartItemByIdRequest();
+    message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseDeleteCartItemByIdResponse(): DeleteCartItemByIdResponse {
+  return { message: "" };
+}
+
+export const DeleteCartItemByIdResponse: MessageFns<DeleteCartItemByIdResponse> = {
+  encode(message: DeleteCartItemByIdResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.message !== "") {
+      writer.uint32(10).string(message.message);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): DeleteCartItemByIdResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeleteCartItemByIdResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DeleteCartItemByIdResponse {
+    return { message: isSet(object.message) ? globalThis.String(object.message) : "" };
+  },
+
+  toJSON(message: DeleteCartItemByIdResponse): unknown {
+    const obj: any = {};
+    if (message.message !== "") {
+      obj.message = message.message;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<DeleteCartItemByIdResponse>): DeleteCartItemByIdResponse {
+    return DeleteCartItemByIdResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<DeleteCartItemByIdResponse>): DeleteCartItemByIdResponse {
+    const message = createBaseDeleteCartItemByIdResponse();
+    message.message = object.message ?? "";
     return message;
   },
 };
@@ -920,10 +972,6 @@ export type DeepPartial<T> = T extends Builtin ? T
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
-
-type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
 
 function toTimestamp(date: Date): Timestamp {
   const seconds = Math.trunc(date.getTime() / 1_000);
@@ -956,6 +1004,6 @@ export interface MessageFns<T> {
   decode(input: BinaryReader | Uint8Array, length?: number): T;
   fromJSON(object: any): T;
   toJSON(message: T): unknown;
-  create<I extends Exact<DeepPartial<T>, I>>(base?: I): T;
-  fromPartial<I extends Exact<DeepPartial<T>, I>>(object: I): T;
+  create(base?: DeepPartial<T>): T;
+  fromPartial(object: DeepPartial<T>): T;
 }

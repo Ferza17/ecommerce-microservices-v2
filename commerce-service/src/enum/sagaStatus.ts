@@ -1,6 +1,6 @@
 export enum SagaStatus {
-  PENDING = 'PENDING',
-  SUCCESS = 'SUCCESS',
-  FAILED = 'FAILED',
-  ROLLBACK = 'ROLLBACK',
+  PENDING = 'pending',
+  SUCCESS = 'success',
+  FAILED = 'failed',
+  ROLLBACK = 'rollback',
 }

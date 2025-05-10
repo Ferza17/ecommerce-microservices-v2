@@ -1,0 +1,10 @@
+syntax = "proto3";
+package proto;
+
+option go_package = "github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb";
+import "userMessage.proto";
+
+service UserService {
+  rpc FindUserById(FindUserByIdRequest) returns (User);
+  rpc FindUserByEmailAndPassword(FindUserByEmailAndPasswordRequest) returns (User);
+}

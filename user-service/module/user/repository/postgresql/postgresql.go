@@ -13,6 +13,7 @@ type (
 	IUserPostgresqlRepository interface {
 		CreateUserWithTransaction(ctx context.Context, requestId string, req *orm.User, tx *gorm.DB) (string, error)
 
+		FindUserById(ctx context.Context, requestId string, id string) (*orm.User, error)
 		FindUserByIdWithTransaction(ctx context.Context, requestId string, id string, tx *gorm.DB) (*orm.User, error)
 		FindUserByEmailAndPasswordWithTransaction(ctx context.Context, requestId string, email string, password string, tx *gorm.DB) (*orm.User, error)
 

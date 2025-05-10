@@ -3,7 +3,7 @@ import { Ctx, EventPattern, MessagePattern, Payload, RmqContext, Transport } fro
 import { Header } from '../../enum/header';
 import {
   CreateCartItemRequest,
-  CreateCartItemResponse,
+  CreateCartItemResponse, DeleteCartItemByIdRequest, DeleteCartItemByIdResponse,
   UpdateCartItemByIdRequest,
   UpdateCartItemByIdResponse,
 } from '../../model/rpc/cartMessage';
@@ -20,22 +20,12 @@ export class CartConsumer {
   ) {
   }
 
-  @MessagePattern()
-  handleAnyPattern(@Payload() data: any, @Ctx() ctx: RmqContext) {
-    const { properties: { headers } } = ctx.getMessage();
-    const requestId: string = headers[Header.X_REQUEST_ID];
-    const pattern: string = ctx.getPattern();
-
-    this.logger.log(`requestId: ${requestId} , pattern: ${pattern} , data: ${JSON.stringify(data)}`);
-    this.logger.log(`pattern : `, ctx.getPattern());
-  }
-
   @MessagePattern(`${Queue.CART_CREATED}`)
   async consumeCreateCartItem(@Payload() data: CreateCartItemRequest, @Ctx() context: RmqContext): Promise<CreateCartItemResponse> {
     const { properties: { headers } } = context.getMessage();
     const requestId: string = headers[Header.X_REQUEST_ID];
     try {
-      return await this.cartService.createCartItem(requestId, data);
+      return await this.cartService.CreateCartItem(requestId, data);
     } catch (e) {
       this.logger.error(`requestId: ${requestId} , error: ${e.message}`);
       throw e;
@@ -46,10 +36,20 @@ export class CartConsumer {
   async updateCartItemByIdRequest(@Payload() data: UpdateCartItemByIdRequest, @Ctx() context: RmqContext): Promise<UpdateCartItemByIdResponse> {
     const { properties: { headers } } = context.getMessage();
     const requestId: string = headers[Header.X_REQUEST_ID];
-    this.logger.log(`updateCartItemByIdRequest`);
-
     try {
-      return await this.cartService.updateCartItemByIdRequest(requestId, <UpdateCartItemByIdRequest>data);
+      return await this.cartService.UpdateCartItemByIdRequest(requestId, <UpdateCartItemByIdRequest>data);
+    } catch (e) {
+      this.logger.error(`requestId: ${requestId} , error: ${e.message}`);
+      throw e;
+    }
+  }
+
+  @MessagePattern(`${Queue.CART_DELETED}`)
+  async deleteCartItemByIdRequest(@Payload() data: DeleteCartItemByIdRequest, @Ctx() context: RmqContext): Promise<DeleteCartItemByIdResponse> {
+    const { properties: { headers } } = context.getMessage();
+    const requestId: string = headers[Header.X_REQUEST_ID];
+    try {
+      return await this.cartService.DeleteCartItemById(requestId, data);
     } catch (e) {
       this.logger.error(`requestId: ${requestId} , error: ${e.message}`);
       throw e;

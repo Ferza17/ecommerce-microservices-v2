@@ -3,19 +3,30 @@ package enum
 type Queue string
 
 const (
-	QueueProduct  Queue = "product.queue"
-	QueueUser     Queue = "user.queue"
-	QueueEvent    Queue = "event.queue"
-	QueueCommerce Queue = "commerce.queue"
+	PRODUCT_CREATED Queue = "product.created"
+	PRODUCT_UPDATED Queue = "product.updated"
+	PRODUCT_DELETED Queue = "product.deleted"
+
+	CART_CREATED Queue = "cart.created"
+	CART_UPDATED Queue = "cart.updated"
+
+	USER_CREATED Queue = "user.created"
+	USER_UPDATED Queue = "user.updated"
+
+	EVENT_CREATED Queue = "event.created"
 )
 
-func (e Queue) String() string {
-	switch e {
-	case QueueProduct,
-		QueueUser,
-		QueueCommerce,
-		QueueEvent:
-		return string(e)
+func (t Queue) String() string {
+	switch t {
+	case PRODUCT_CREATED,
+		PRODUCT_UPDATED,
+		PRODUCT_DELETED,
+		USER_CREATED,
+		USER_UPDATED,
+		CART_CREATED,
+		CART_UPDATED,
+		EVENT_CREATED:
+		return string(t)
 	default:
 		return "unknown"
 	}

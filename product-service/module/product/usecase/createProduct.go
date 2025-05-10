@@ -45,7 +45,7 @@ func (u *productUseCase) CreateProduct(ctx context.Context, requestId string, re
 			eventStore.Status = enum.FAILED.String()
 		}
 
-		if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, enum.EventExchange, enum.QueueEvent, enum.EVENT_CREATED, eventStoreMessage); err != nil {
+		if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, enum.EventExchange, enum.EVENT_CREATED, eventStoreMessage); err != nil {
 			u.logger.Error(fmt.Sprintf("error creating product event store: %s", err.Error()))
 			return
 		}

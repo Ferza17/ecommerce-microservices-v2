@@ -26,6 +26,10 @@ export const configRoot = ConfigModule.forRoot({
     RABBITMQ_PORT: joi.number().required(),
     RPC_HOST: joi.string().required(),
     RPC_PORT: joi.number().required(),
+    PRODUCT_SERVICE_RPC_HOST: joi.string().required(),
+    PRODUCT_SERVICE_RPC_PORT: joi.number().required(),
+    USER_SERVICE_RPC_HOST: joi.string().required(),
+    USER_SERVICE_RPC_PORT: joi.number().required(),
   }),
 });
 

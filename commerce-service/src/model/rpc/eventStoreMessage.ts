@@ -208,10 +208,10 @@ export const EventStore: MessageFns<EventStore> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<EventStore>, I>>(base?: I): EventStore {
-    return EventStore.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<EventStore>): EventStore {
+    return EventStore.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<EventStore>, I>>(object: I): EventStore {
+  fromPartial(object: DeepPartial<EventStore>): EventStore {
     const message = createBaseEventStore();
     message.id = object.id ?? "";
     message.requestId = object.requestId ?? "";
@@ -274,10 +274,10 @@ export const CreateEventStoreResponse: MessageFns<CreateEventStoreResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CreateEventStoreResponse>, I>>(base?: I): CreateEventStoreResponse {
-    return CreateEventStoreResponse.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<CreateEventStoreResponse>): CreateEventStoreResponse {
+    return CreateEventStoreResponse.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<CreateEventStoreResponse>, I>>(object: I): CreateEventStoreResponse {
+  fromPartial(object: DeepPartial<CreateEventStoreResponse>): CreateEventStoreResponse {
     const message = createBaseCreateEventStoreResponse();
     message.id = object.id ?? "";
     return message;
@@ -291,10 +291,6 @@ export type DeepPartial<T> = T extends Builtin ? T
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
-
-type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
 
 function toTimestamp(date: Date): Timestamp {
   const seconds = Math.trunc(date.getTime() / 1_000);
@@ -331,6 +327,6 @@ export interface MessageFns<T> {
   decode(input: BinaryReader | Uint8Array, length?: number): T;
   fromJSON(object: any): T;
   toJSON(message: T): unknown;
-  create<I extends Exact<DeepPartial<T>, I>>(base?: I): T;
-  fromPartial<I extends Exact<DeepPartial<T>, I>>(object: I): T;
+  create(base?: DeepPartial<T>): T;
+  fromPartial(object: DeepPartial<T>): T;
 }

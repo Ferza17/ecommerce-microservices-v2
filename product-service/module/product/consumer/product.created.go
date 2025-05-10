@@ -31,7 +31,7 @@ func (c *productConsumer) ProductCreated(ctx context.Context) error {
 	}
 
 	if err := c.amqpChannel.QueueBind(
-		enum.QueueProduct.String(),
+		enum.PRODUCT_CREATED.String(),
 		enum.PRODUCT_CREATED.String(),
 		enum.ProductExchange.String(),
 		false,
@@ -42,7 +42,7 @@ func (c *productConsumer) ProductCreated(ctx context.Context) error {
 	}
 
 	msgs, err := c.amqpChannel.Consume(
-		enum.QueueProduct.String(),
+		enum.PRODUCT_CREATED.String(),
 		"",
 		true,
 		false,
@@ -74,7 +74,7 @@ func (c *productConsumer) ProductCreated(ctx context.Context) error {
 					continue messages
 				}
 			default:
-				c.logger.Error(fmt.Sprintf("failed to get request id"))
+				c.logger.Error(fmt.Sprintf("failed to get ContentType"))
 				continue messages
 			}
 

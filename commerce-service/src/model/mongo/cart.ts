@@ -1,10 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 
 export type CartDocument = HydratedDocument<CartItem>;
 
 @Schema()
 export class CartItem {
+  _id: mongoose.Types.ObjectId;
+
   @Prop()
   productId: string;
 

@@ -12,3 +12,9 @@ plugins:
       - paths=source_relative
       - require_unimplemented_servers=false
 
+  - plugin: validate
+    out: model/pb
+    opt:
+      - lang=go
+      - paths=source_relative
+

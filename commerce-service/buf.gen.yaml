@@ -1,14 +1,17 @@
 version: v1
 plugins:
-  - plugin: buf.build/bufbuild/connect-es
-    out: src/model/rpc
-    opt:
-      - target=ts
-
+#  - plugin: buf.build/bufbuild/connect-es
+#    out: src/model/rpc
+#    opt:
+#      - target=ts
+#
   - plugin: buf.build/community/stephenh-ts-proto
     out: src/model/rpc
     opt:
-      - outputServices=...
-      - useExactTypes=...
+      - esModuleInterop=true
+      - outputServices=grpc-js
+      - useExactTypes=false
+      - import_style=relative
+      - env=node
 
 

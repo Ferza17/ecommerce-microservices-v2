@@ -21,7 +21,7 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 		now        = time.Now().UTC()
 		eventStore = &pb.EventStore{
 			RequestId:     requestId,
-			Service:       enum.ProductService.String(),
+			Service:       enum.UserService.String(),
 			EventType:     enum.USER_CREATED.String(),
 			Status:        enum.SUCCESS.String(),
 			PreviousState: nil,

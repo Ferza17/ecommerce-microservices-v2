@@ -24,6 +24,10 @@ export class RabbitmqConsumer {
         queue: Queue.CART_UPDATED,
         option: new RabbitmqOptions(this.configService, Queue.CART_UPDATED).getRabbitmqOptions(),
       },
+      {
+        queue: Queue.CART_DELETED,
+        option: new RabbitmqOptions(this.configService, Queue.CART_DELETED).getRabbitmqOptions(),
+      }
     ];
 
     for (const option of options) {

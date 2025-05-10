@@ -10,7 +10,6 @@ import (
 )
 
 func (p *ProductGrpcPresenter) FindProductById(ctx context.Context, req *pb.FindProductByIdRequest) (*pb.Product, error) {
-
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.InvalidArgument, "metadata not found")
