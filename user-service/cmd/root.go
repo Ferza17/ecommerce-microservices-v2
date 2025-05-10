@@ -53,6 +53,11 @@ func Shutdown(ctx context.Context) (err error) {
 		return err
 	}
 
+	if err = dependency.RedisInfrastructure.Close(); err != nil {
+		dependency.Logger.Error(fmt.Sprintf("failed to close redis connection : %v", err))
+		return err
+	}
+
 	log.Println("Shutdown...")
 	return
 }

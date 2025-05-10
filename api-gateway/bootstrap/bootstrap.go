@@ -3,6 +3,7 @@ package bootstrap
 import (
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/rabbitmq"
 	rpcClientInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/service"
+	authUseCase "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/auth/usecase"
 	newCartUseCase "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/commerce/cart/usecase"
 	productUseCase "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/product/usecase"
 	userUseCase "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/user/usecase"
@@ -19,6 +20,7 @@ type Bootstrap struct {
 	UserUseCase    userUseCase.IUserUseCase
 	ProductUseCase productUseCase.IProductUseCase
 	CartUseCase    newCartUseCase.ICartUseCase
+	AuthUseCase    authUseCase.IAuthUseCase
 }
 
 func NewBootstrap() *Bootstrap {
@@ -33,6 +35,7 @@ func NewBootstrap() *Bootstrap {
 	newUserUseCase := userUseCase.NewUserUseCase(newRpcClientInfrastructure, newRabbitMQInfrastructure, logger)
 	newProductUseCase := productUseCase.NewProductUseCase(newRpcClientInfrastructure, newRabbitMQInfrastructure, logger)
 	newCartUseCase := newCartUseCase.NewCartUseCase(newRpcClientInfrastructure, newRabbitMQInfrastructure, logger)
+	newAuthUseCase := authUseCase.NewAuthUseCase(newRabbitMQInfrastructure, newRpcClientInfrastructure, logger)
 
 	return &Bootstrap{
 		Logger:                  logger,
@@ -41,5 +44,6 @@ func NewBootstrap() *Bootstrap {
 		UserUseCase:             newUserUseCase,
 		ProductUseCase:          newProductUseCase,
 		CartUseCase:             newCartUseCase,
+		AuthUseCase:             newAuthUseCase,
 	}
 }

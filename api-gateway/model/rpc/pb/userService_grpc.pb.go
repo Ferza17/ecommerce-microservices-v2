@@ -19,9 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_FindUserById_FullMethodName               = "/proto.UserService/FindUserById"
-	UserService_FindUserByEmailAndPassword_FullMethodName = "/proto.UserService/FindUserByEmailAndPassword"
-	UserService_CreateUser_FullMethodName                 = "/proto.UserService/CreateUser"
+	UserService_FindUserById_FullMethodName                = "/proto.UserService/FindUserById"
+	UserService_FindUserByEmailAndPassword_FullMethodName  = "/proto.UserService/FindUserByEmailAndPassword"
+	UserService_CreateUser_FullMethodName                  = "/proto.UserService/CreateUser"
+	UserService_UserLoginByEmailAndPassword_FullMethodName = "/proto.UserService/UserLoginByEmailAndPassword"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -31,6 +32,7 @@ type UserServiceClient interface {
 	FindUserById(ctx context.Context, in *FindUserByIdRequest, opts ...grpc.CallOption) (*User, error)
 	FindUserByEmailAndPassword(ctx context.Context, in *FindUserByEmailAndPasswordRequest, opts ...grpc.CallOption) (*User, error)
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
+	UserLoginByEmailAndPassword(ctx context.Context, in *UserLoginByEmailAndPasswordRequest, opts ...grpc.CallOption) (*UserLoginByEmailAndPasswordResponse, error)
 }
 
 type userServiceClient struct {
@@ -71,6 +73,16 @@ func (c *userServiceClient) CreateUser(ctx context.Context, in *CreateUserReques
 	return out, nil
 }
 
+func (c *userServiceClient) UserLoginByEmailAndPassword(ctx context.Context, in *UserLoginByEmailAndPasswordRequest, opts ...grpc.CallOption) (*UserLoginByEmailAndPasswordResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserLoginByEmailAndPasswordResponse)
+	err := c.cc.Invoke(ctx, UserService_UserLoginByEmailAndPassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations should embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -78,6 +90,7 @@ type UserServiceServer interface {
 	FindUserById(context.Context, *FindUserByIdRequest) (*User, error)
 	FindUserByEmailAndPassword(context.Context, *FindUserByEmailAndPasswordRequest) (*User, error)
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
+	UserLoginByEmailAndPassword(context.Context, *UserLoginByEmailAndPasswordRequest) (*UserLoginByEmailAndPasswordResponse, error)
 }
 
 // UnimplementedUserServiceServer should be embedded to have
@@ -95,6 +108,9 @@ func (UnimplementedUserServiceServer) FindUserByEmailAndPassword(context.Context
 }
 func (UnimplementedUserServiceServer) CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+}
+func (UnimplementedUserServiceServer) UserLoginByEmailAndPassword(context.Context, *UserLoginByEmailAndPasswordRequest) (*UserLoginByEmailAndPasswordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserLoginByEmailAndPassword not implemented")
 }
 func (UnimplementedUserServiceServer) testEmbeddedByValue() {}
 
@@ -170,6 +186,24 @@ func _UserService_CreateUser_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_UserLoginByEmailAndPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserLoginByEmailAndPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UserLoginByEmailAndPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UserLoginByEmailAndPassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UserLoginByEmailAndPassword(ctx, req.(*UserLoginByEmailAndPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -188,6 +222,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateUser",
 			Handler:    _UserService_CreateUser_Handler,
+		},
+		{
+			MethodName: "UserLoginByEmailAndPassword",
+			Handler:    _UserService_UserLoginByEmailAndPassword_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

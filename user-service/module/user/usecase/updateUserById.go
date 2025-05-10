@@ -6,6 +6,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/util"
+	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -48,13 +49,14 @@ func (u *userUseCase) UpdateUserById(ctx context.Context, requestId string, req 
 	}(err, eventStore)
 
 	if req.Password != nil {
-		hashedPassword, err := util.Hashed(*req.Password)
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*req.Password), bcrypt.DefaultCost)
 		if err != nil {
 			tx.Rollback()
 			u.logger.Error(fmt.Sprintf("requestId : %s , error hashing password: %v", requestId, err))
 			return nil, err
 		}
-		req.Password = &hashedPassword
+		newPassword := string(hashedPassword)
+		req.Password = &newPassword
 	}
 
 	result, err := u.userPostgresqlRepository.UpdateUserByIdWithTransaction(ctx, requestId, req, tx)

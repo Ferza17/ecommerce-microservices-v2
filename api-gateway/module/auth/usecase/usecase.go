@@ -1,0 +1,32 @@
+package usecase
+
+import (
+	"context"
+	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/rabbitmq"
+	rpcClientInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/service"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/pkg"
+)
+
+type (
+	IAuthUseCase interface {
+		UserLoginByEmailAndPassword(ctx context.Context, requestId string, input *pb.UserLoginByEmailAndPasswordRequest) (*pb.UserLoginByEmailAndPasswordResponse, error)
+	}
+	authUseCase struct {
+		rabbitMQ  rabbitmqInfrastructure.IRabbitMQInfrastructure
+		rpcClient rpcClientInfrastructure.IService
+		logger    pkg.IZapLogger
+	}
+)
+
+func NewAuthUseCase(
+	rabbitMQ rabbitmqInfrastructure.IRabbitMQInfrastructure,
+	rpcClient rpcClientInfrastructure.IService,
+	logger pkg.IZapLogger,
+) IAuthUseCase {
+	return &authUseCase{
+		rabbitMQ:  rabbitMQ,
+		rpcClient: rpcClient,
+		logger:    logger,
+	}
+}

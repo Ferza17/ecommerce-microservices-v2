@@ -6,7 +6,6 @@ package resolver
 
 import (
 	"context"
-
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
 )
@@ -19,4 +18,9 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input pb.CreateUserRe
 // UpdateUserByID is the resolver for the updateUserById field.
 func (r *mutationResolver) UpdateUserByID(ctx context.Context, input pb.UpdateUserByIdRequest) (*pb.UpdateUserByIdResponse, error) {
 	return r.UserUseCase.UpdateUserById(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &input)
+}
+
+// UserLoginByEmailAndPassword is the resolver for the userLoginByEmailAndPassword field.
+func (r *mutationResolver) UserLoginByEmailAndPassword(ctx context.Context, input *pb.UserLoginByEmailAndPasswordRequest) (*pb.UserLoginByEmailAndPasswordResponse, error) {
+	return r.AuthUseCase.UserLoginByEmailAndPassword(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), input)
 }

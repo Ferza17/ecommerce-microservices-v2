@@ -1,4 +1,6 @@
 extend type Mutation {
     createUser(input: CreateUserRequest!): CreateUserResponse!
     updateUserById(input: UpdateUserByIdRequest!): UpdateUserByIdResponse
+    userLoginByEmailAndPassword(input: UserLoginByEmailAndPasswordRequest): UserLoginByEmailAndPasswordResponse
+    
 }

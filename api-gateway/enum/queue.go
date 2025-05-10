@@ -12,6 +12,7 @@ const (
 
 	USER_CREATED Queue = "user.created"
 	USER_UPDATED Queue = "user.updated"
+	USER_LOGIN   Queue = "user.login"
 
 	EVENT_CREATED Queue = "event.created"
 )
@@ -23,6 +24,7 @@ func (t Queue) String() string {
 		PRODUCT_DELETED,
 		USER_CREATED,
 		USER_UPDATED,
+		USER_LOGIN,
 		CART_CREATED,
 		CART_UPDATED,
 		EVENT_CREATED:

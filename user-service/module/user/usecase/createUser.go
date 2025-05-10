@@ -8,6 +8,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/util"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
@@ -52,19 +53,19 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 		}
 	}(err, eventStore)
 
-	hashedPassword, err := util.Hashed(req.Password)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		tx.Rollback()
 		u.logger.Error(fmt.Sprintf("requestId : %s , error hashing password: %v", requestId, err))
 		return nil, err
 	}
-	req.Password = hashedPassword
+	req.Password = string(hashedPassword)
 
 	result, err := u.userPostgresqlRepository.CreateUserWithTransaction(ctx, requestId, &orm.User{
 		ID:          uuid.NewString(),
 		Name:        req.Name,
 		Email:       req.Email,
-		Password:    hashedPassword,
+		Password:    string(hashedPassword),
 		CreatedAt:   &now,
 		UpdatedAt:   &now,
 		DiscardedAt: nil,

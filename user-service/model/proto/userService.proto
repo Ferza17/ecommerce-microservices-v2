@@ -7,4 +7,5 @@ import "userMessage.proto";
 service UserService {
   rpc FindUserById(FindUserByIdRequest) returns (User);
   rpc FindUserByEmailAndPassword(FindUserByEmailAndPasswordRequest) returns (User);
+  rpc UserLoginByEmailAndPassword(UserLoginByEmailAndPasswordRequest) returns (UserLoginByEmailAndPasswordResponse);
 }

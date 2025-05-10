@@ -11,7 +11,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func (c *userConsumer) UserCreated(ctx context.Context) error {
+func (c *authConsumer) UserLogin(ctx context.Context) error {
 	amqpChannel, err := c.rabbitmqInfrastructure.GetConnection().Channel()
 	if err != nil {
 		c.logger.Error(fmt.Sprintf("Failed to create a channel: %v", err))
@@ -32,8 +32,8 @@ func (c *userConsumer) UserCreated(ctx context.Context) error {
 	}
 
 	if err = amqpChannel.QueueBind(
-		enum.USER_CREATED.String(),
-		enum.USER_CREATED.String(),
+		enum.USER_LOGIN.String(),
+		enum.USER_LOGIN.String(),
 		enum.USER_EXCHANGE.String(),
 		false,
 		nil,
@@ -43,7 +43,7 @@ func (c *userConsumer) UserCreated(ctx context.Context) error {
 	}
 
 	msgs, err := amqpChannel.Consume(
-		enum.USER_CREATED.String(),
+		enum.USER_LOGIN.String(),
 		"",
 		true,
 		false,
@@ -58,7 +58,7 @@ func (c *userConsumer) UserCreated(ctx context.Context) error {
 	messages:
 		for d := range deliveries {
 			var (
-				request   pb.CreateUserRequest
+				request   pb.UserLoginByEmailAndPasswordRequest
 				requestId string
 				ok        bool
 			)
@@ -73,6 +73,7 @@ func (c *userConsumer) UserCreated(ctx context.Context) error {
 					c.logger.Error(fmt.Sprintf("requsetID : %s , failed to unmarshal request : %v", requestId, zap.Error(err)))
 					continue messages
 				}
+
 			case enum.JSON.String():
 				if err = json.Unmarshal(d.Body, &request); err != nil {
 					c.logger.Error(fmt.Sprintf("failed to unmarshal request : %v", zap.Error(err)))
@@ -83,13 +84,19 @@ func (c *userConsumer) UserCreated(ctx context.Context) error {
 				continue messages
 			}
 
-			if _, err = c.userUseCase.CreateUser(ctx, requestId, &request); err != nil {
-				c.logger.Error(fmt.Sprintf("failed to create user : %v", zap.Error(err)))
+			c.logger.Info(fmt.Sprintf("received a %s message: %s", d.RoutingKey, d.Body))
+			if _, err = c.authUseCase.UserLoginByEmailAndPassword(ctx, requestId, &request); err != nil {
+				c.logger.Error(fmt.Sprintf("failed to login user : %v", zap.Error(err)))
 				continue messages
 			}
 		}
-	}(msgs)
 
+	}(msgs)
 	<-ctx.Done()
+
+	if err = amqpChannel.Close(); err != nil {
+		c.logger.Error(fmt.Sprintf("Failed to close a channel: %v", err))
+		return err
+	}
 	return nil
 }
