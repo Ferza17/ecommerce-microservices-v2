@@ -1,0 +1,20 @@
+version: v1
+plugins:
+  - plugin: go
+    out: model/rpc/pb
+    opt:
+      - paths=source_relative
+
+  - plugin: go-grpc
+    out: model/rpc/pb
+    opt:
+      - paths=source_relative
+      - require_unimplemented_servers=false
+
+  - plugin: validate
+    out: model/rpc/pb
+    opt:
+      - lang=go
+      - paths=source_relative
+
+

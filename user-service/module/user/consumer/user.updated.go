@@ -19,7 +19,7 @@ func (c *userConsumer) UserUpdated(ctx context.Context) error {
 	}
 
 	if err = amqpChannel.ExchangeDeclare(
-		enum.USER_EXCHANGE.String(),
+		enum.UserExchange.String(),
 		amqp091.ExchangeDirect,
 		true,
 		false,
@@ -34,7 +34,7 @@ func (c *userConsumer) UserUpdated(ctx context.Context) error {
 	if err = amqpChannel.QueueBind(
 		enum.USER_UPDATED.String(),
 		enum.USER_UPDATED.String(),
-		enum.USER_EXCHANGE.String(),
+		enum.UserExchange.String(),
 		false,
 		nil,
 	); err != nil {

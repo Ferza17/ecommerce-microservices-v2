@@ -17,10 +17,11 @@ import (
 
 func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId string, req *pb.UserLoginByEmailAndPasswordRequest) (*pb.UserLoginByEmailAndPasswordResponse, error) {
 	var (
-		err        error
-		tx         = u.userPostgresqlRepository.OpenTransactionWithContext(ctx)
-		now        = time.Now().UTC()
-		eventStore = &pb.EventStore{
+		err                      error
+		reqUserLoginNotification *pb.SendLoginEmailNotificationRequest
+		tx                       = u.userPostgresqlRepository.OpenTransactionWithContext(ctx)
+		now                      = time.Now().UTC()
+		eventStore               = &pb.EventStore{
 			RequestId:     requestId,
 			Service:       enum.UserService.String(),
 			EventType:     enum.USER_LOGIN.String(),
@@ -48,10 +49,33 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 			eventStore.Status = enum.FAILED.String()
 		}
 
+		// Success Login
 		if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, enum.EventExchange, enum.EVENT_CREATED, eventStoreMessage); err != nil {
 			u.logger.Error(fmt.Sprintf("error creating product event store: %s", err.Error()))
 			return
 		}
+
+		loginNotificationPayload, err := util.ConvertStructToProtoStruct(reqUserLoginNotification)
+		if err != nil {
+			u.logger.Error(fmt.Sprintf("error converting struct to proto struct: %s", err.Error()))
+		}
+
+		eventStore.Payload = loginNotificationPayload
+		eventStore.EventType = enum.NOTIFICATION_LOGIN_CREATED.String()
+		eventStore.Service = enum.NotificationService.String()
+		eventStore.Status = enum.PENDING.String()
+
+		eventStoreMessage, err = proto.Marshal(eventStore)
+		if err != nil {
+			u.logger.Error(fmt.Sprintf("error marshaling message: %s", err.Error()))
+		}
+
+		// PENDING Notification Login
+		if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, enum.EventExchange, enum.EVENT_CREATED, eventStoreMessage); err != nil {
+			u.logger.Error(fmt.Sprintf("error creating product event store: %s", err.Error()))
+			return
+		}
+
 		tx.Commit()
 	}(err, eventStore)
 
@@ -99,10 +123,23 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 		u.logger.Error(fmt.Sprintf("requestId : %s , error generating refresh token: %v", requestId, err))
 	}
 
-	// TODO: Implement User
-	//1. send Token (Send To Notification Service)
-	//2. send Refresh Token (Send To Notification Service)
-	//3. Send Email to Notification Service
+	reqUserLoginNotification = &pb.SendLoginEmailNotificationRequest{
+		Username:         user.Name,
+		Email:            user.Email,
+		AccessToken:      accessToken,
+		RefreshToken:     refreshToken,
+		NotificationType: pb.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_LOGIN,
+	}
+
+	message, err := proto.Marshal(reqUserLoginNotification)
+	if err != nil {
+		u.logger.Error(fmt.Sprintf("error marshaling message: %s", err.Error()))
+		return nil, err
+	}
+
+	if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, enum.NotificationExchange, enum.NOTIFICATION_LOGIN_CREATED, message); err != nil {
+		return nil, err
+	}
 
 	tx.Commit()
 	return &pb.UserLoginByEmailAndPasswordResponse{

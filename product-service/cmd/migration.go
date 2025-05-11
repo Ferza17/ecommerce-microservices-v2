@@ -55,7 +55,3 @@ func Down(db *sql.DB) error {
 
 	return nil
 }
-
-func init() {
-	rootCommand.AddCommand(migrationCommand)
-}

@@ -53,6 +53,8 @@ type Config struct {
 
 	RpcHost string `mapstructure:"RPC_HOST"`
 	RpcPort string `mapstructure:"RPC_PORT"`
+
+	VerificationUserLoginUrl string `mapstructure:"VERIFICATION_USER_LOGIN_URL"`
 }
 
 func SetConfig(path string) {
@@ -169,6 +171,10 @@ func SetConfig(path string) {
 	c.JwtRefreshTokenExpirationTime, err = str2duration.ParseDuration(c.JwtRefreshTokenExpirationTimeString)
 	if err != nil {
 		log.Fatalf("SetConfig | JWT_REFRESH_TOKEN_EXPIRATION_TIME is invalid")
+	}
+
+	if c.VerificationUserLoginUrl == "" {
+		log.Fatalf("SetConfig | VERIFICATION_USER_LOGIN_URL is required")
 	}
 
 	//if c.RedisPassword == "" {

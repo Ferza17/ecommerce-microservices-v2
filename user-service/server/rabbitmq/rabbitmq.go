@@ -30,12 +30,9 @@ type (
 
 func NewServer(dependency *bootstrap.Bootstrap) *Server {
 	return &Server{
-		amqpInfrastructure: dependency.RabbitMQInfrastructure,
-		userUseCase:        dependency.UserUseCase,
-		authUseCase:        dependency.AuthUseCase,
-		logger:             dependency.Logger,
-		userConsumer:       dependency.UserConsumer,
-		authConsumer:       dependency.AuthConsumer,
+		logger:       dependency.Logger,
+		userConsumer: dependency.UserConsumer,
+		authConsumer: dependency.AuthConsumer,
 	}
 }
 
