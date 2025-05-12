@@ -10,6 +10,10 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=1234
+    volumes:
+      - ./entrypoint/postgres:/docker-entrypoint-initdb.d
+    networks:
+      - local
 
   mongo-local:
     container_name: mongo-local
@@ -20,6 +24,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo
       MONGO_INITDB_ROOT_PASSWORD: 1234
+    networks:
+      - local
 
 # FOR TEST EMAIL NOTIFICATION
   mailhog-local:
@@ -28,12 +34,33 @@ services:
     ports:
       - '1025:1025'
       - '8025:8025'
+    networks:
+      - local
 
   redis-local:
     container_name: redis-local
     ports:
       - '6379:6379'
     image: redis:latest
+    networks:
+      - local
+
+  rabbitmq-local:
+    container_name: rabbitmq-local
+    image: rabbitmq:3-management
+    ports:
+      - '15672:15672'
+      - '5672:5672'
+    environment:
+      RABBITMQ_DEFAULT_USER: "rabbitmq"
+      RABBITMQ_DEFAULT_PASS: "1234"
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbitmq_management load_definitions \"/etc/rabbitmq/definitions.json\""
+    volumes:
+      - ./entrypoint/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - local
 
 # FOR TRACING
   jaeger-local:
@@ -53,3 +80,37 @@ services:
       - '14268:14268'
       - '14269:14269'
       - '9411:9411'
+
+  elasticsearch-local:
+    container_name: elasticsearch-local
+    image: elasticsearch:8.4.1
+    restart: always
+    environment:
+      - "discovery.type=single-node"
+      - "cluster.name=products"
+      - "node.name=node1"
+      - "bootstrap.memory_lock=true"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "xpack.security.enabled=false"
+    ports:
+      - '9200:9200'
+      - '9300:9300'
+    networks:
+      - local
+
+  kibana-local:
+    container_name: kibana-local
+    image: kibana:8.4.1
+    depends_on:
+      - elasticsearch-local
+    ports:
+      - '5601:5601'
+    environment:
+      - 'ELASTICSEARCH_HOSTS=http://elasticsearch-local:9200'
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    networks:
+      - local
+
+networks:
+  local:
+    driver: bridge

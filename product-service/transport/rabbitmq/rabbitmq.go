@@ -34,7 +34,6 @@ func NewServer(dependency *bootstrap.Bootstrap) *Server {
 	if err != nil {
 		dependency.Logger.Error(fmt.Sprintf("Failed to connect to RabbitMQ: %v", err))
 	}
-	log.Println("RabbitMQ connected")
 
 	return &Server{
 		amqpConn:   amqpConn,
@@ -74,7 +73,7 @@ func (srv *Server) Serve() {
 	}()
 
 	<-ctx.Done()
-	
+
 	if err = amqpChannel.Close(); err != nil {
 		srv.logger.Error(fmt.Sprintf("failed to close channel %v", zap.Error(err)))
 		return

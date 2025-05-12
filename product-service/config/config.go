@@ -25,11 +25,10 @@ type Config struct {
 	PostgresPort         string `mapstructure:"POSTGRES_PORT"`
 	PostgresDatabaseName string `mapstructure:"POSTGRES_DATABASE_NAME"`
 
-	MongoUsername     string `mapstructure:"MONGO_USERNAME"`
-	MongoPassword     string `mapstructure:"MONGO_PASSWORD"`
-	MongoHost         string `mapstructure:"MONGO_HOST"`
-	MongoPort         string `mapstructure:"MONGO_PORT"`
-	MongoDatabaseName string `mapstructure:"MONGO_DATABASE_NAME"`
+	ElasticsearchUsername string `mapstructure:"ELASTICSEARCH_USERNAME"`
+	ElasticsearchPassword string `mapstructure:"ELASTICSEARCH_PASSWORD"`
+	ElasticsearchHost     string `mapstructure:"ELASTICSEARCH_HOST"`
+	ElasticsearchPort     string `mapstructure:"ELASTICSEARCH_PORT"`
 
 	RabbitMQUsername string `mapstructure:"RABBITMQ_USERNAME"`
 	RabbitMQPassword string `mapstructure:"RABBITMQ_PASSWORD"`
@@ -89,30 +88,6 @@ func SetConfig(path string) {
 		log.Fatalf("SetConfig | RPC_PORT is required")
 	}
 
-	if c.MongoUsername == "" {
-		log.Fatalf("SetConfig | MONGO_USERNAME is required")
-	}
-
-	if c.MongoPassword == "" {
-		log.Fatalf("SetConfig | MONGO_PASSWORD is required")
-	}
-
-	if c.MongoHost == "" {
-		log.Fatalf("SetConfig | MONGO_HOST is required")
-	}
-
-	if c.MongoPort == "" {
-		log.Fatalf("SetConfig | MONGO_PORT is required")
-	}
-
-	if c.MongoDatabaseName == "" {
-		log.Fatalf("SetConfig | MONGO_DATABASE_NAME is required")
-	}
-
-	if c.MongoDatabaseName == "" {
-		log.Fatalf("SetConfig | MONGO_DATABASE_NAME is required")
-	}
-
 	if c.RabbitMQUsername == "" {
 		log.Fatalf("SetConfig | RABBITMQ_USERNAME is required")
 	}
@@ -126,6 +101,20 @@ func SetConfig(path string) {
 
 	if c.RabbitMQPort == "" {
 		log.Fatalf("SetConfig | RABBITMQ_PORT is required")
+	}
+
+	// uncomment this if you have username & password configured on your elasticsearch
+	//if c.ElasticsearchUsername == "" {
+	//	log.Fatalf("SetConfig | ELASTICSEARCH_USERNAME is required")
+	//}
+	//if c.ElasticsearchPassword == "" {
+	//	log.Fatalf("SetConfig | ELASTICSEARCH_PASSWORD is required")
+	//}
+	if c.ElasticsearchHost == "" {
+		log.Fatalf("SetConfig | ELASTICSEARCH_HOST is required")
+	}
+	if c.ElasticsearchPort == "" {
+		log.Fatalf("SetConfig | ELASTICSEARCH_PORT is required")
 	}
 
 	viper.WatchConfig()

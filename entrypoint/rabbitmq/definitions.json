@@ -1,0 +1,132 @@
+{
+  "users": [
+    {
+      "name": "rabbitmq",
+      "password": "1234",
+      "tags": "administrator"
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "rabbitmq",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "commerce.exchange",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "event.exchange",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "notification.exchange",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "product.exchange",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "user.exchange",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "queues": [
+    {
+      "name": "user.created",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "user.updated",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "user.login",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "product.created",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "product.updated",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "product.deleted",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "notification.login.created",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "notification.user.created",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "event.created",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "cart.created",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "cart.updated",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "cart.deleted",
+      "vhost": "/",
+      "durable": true
+    }
+  ]
+}

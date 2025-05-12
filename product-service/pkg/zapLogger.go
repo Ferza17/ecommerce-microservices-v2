@@ -36,7 +36,6 @@ func NewZapLogger() IZapLogger {
 	if err != nil {
 		log.Fatalf("error when register logger: %v\n", err)
 	}
-	log.Println("LOGGER registered")
 	return &zapLogger{
 		logger: logger,
 	}

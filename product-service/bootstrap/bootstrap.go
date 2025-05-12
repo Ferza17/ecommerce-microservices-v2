@@ -1,8 +1,10 @@
 package bootstrap
 
 import (
+	elasticsearchInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/elasticsearch"
 	postgreSQLInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/postgresql"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/rabbitmq"
+	productElasticsearchRepository "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/repository/elasticsearch"
 	productPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/repository/postgresql"
 	productUseCase "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
@@ -11,11 +13,13 @@ import (
 type Bootstrap struct {
 	Logger pkg.IZapLogger
 
-	RabbitMQInfrastructure   rabbitmqInfrastructure.IRabbitMQInfrastructure
-	PostgreSQLInfrastructure postgreSQLInfrastructure.IPostgreSQLInfrastructure
+	RabbitMQInfrastructure      rabbitmqInfrastructure.IRabbitMQInfrastructure
+	PostgreSQLInfrastructure    postgreSQLInfrastructure.IPostgreSQLInfrastructure
+	ElasticsearchInfrastructure elasticsearchInfrastructure.IElasticsearchInfrastructure
 
-	ProductRepository productPostgresqlRepository.IProductPostgresqlRepository
-	ProductUseCase    productUseCase.IProductUseCase
+	ProductPostgresSQLRepository   productPostgresqlRepository.IProductPostgresqlRepository
+	ProductElasticsearchRepository productElasticsearchRepository.IProductElasticsearchRepository
+	ProductUseCase                 productUseCase.IProductUseCase
 }
 
 func NewBootstrap() *Bootstrap {
@@ -24,10 +28,11 @@ func NewBootstrap() *Bootstrap {
 	// Infrastructure
 	newRabbitMQInfrastructure := rabbitmqInfrastructure.NewRabbitMQInfrastructure(logger)
 	newPostgreSQLInfrastructure := postgreSQLInfrastructure.NewPostgresqlInfrastructure(logger)
+	newElasticsearchInfrastructure := elasticsearchInfrastructure.NewElasticsearchInfrastructure(logger)
 
 	// Repository
 	newProductPostgresqlRepository := productPostgresqlRepository.NewProductPostgresqlRepository(newPostgreSQLInfrastructure, logger)
-
+	NewProductElasticsearchRepository := productElasticsearchRepository.NewProductElasticsearchRepository(newElasticsearchInfrastructure, logger)
 	// UseCase
 	newProductUseCase := productUseCase.NewProductUseCase(newProductPostgresqlRepository, newRabbitMQInfrastructure, logger)
 
@@ -37,7 +42,8 @@ func NewBootstrap() *Bootstrap {
 		PostgreSQLInfrastructure: newPostgreSQLInfrastructure,
 
 		// Modules Dependency
-		ProductRepository: newProductPostgresqlRepository,
-		ProductUseCase:    newProductUseCase,
+		ProductPostgresSQLRepository:   newProductPostgresqlRepository,
+		ProductElasticsearchRepository: NewProductElasticsearchRepository,
+		ProductUseCase:                 newProductUseCase,
 	}
 }

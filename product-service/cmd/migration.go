@@ -37,7 +37,7 @@ func Up(db *sql.DB) error {
 		return err
 	}
 
-	if err := goose.Up(db, "dbMigration"); err != nil {
+	if err := goose.Up(db, "dbMigration/postgres"); err != nil {
 		return err
 	}
 
@@ -49,7 +49,7 @@ func Down(db *sql.DB) error {
 		return err
 	}
 
-	if err := goose.Down(db, "dbMigration"); err != nil {
+	if err := goose.Down(db, "dbMigration/postgres"); err != nil {
 		return err
 	}
 
