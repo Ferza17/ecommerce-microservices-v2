@@ -25,8 +25,10 @@ func (u *notificationUseCase) SendUserVerificationEmailNotification(ctx context.
 			UpdatedAt:     timestamppb.Now(),
 		}
 	)
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.SendUserVerificationEmailNotification")
 
 	defer func(err error, eventStore *pb.EventStore) {
+		defer span.End()
 		if err != nil {
 			eventStore.Status = enum.FAILED.String()
 		}

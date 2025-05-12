@@ -25,8 +25,10 @@ func (u *userUseCase) UpdateUserById(ctx context.Context, requestId string, req 
 			UpdatedAt:     timestamppb.Now(),
 		}
 	)
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.UpdateUserById")
 
 	defer func(err error, eventStore *pb.EventStore) {
+		defer span.End()
 		payload, err := util.ConvertStructToProtoStruct(req)
 		if err != nil {
 			u.logger.Error(fmt.Sprintf("error converting struct to proto struct: %s", err.Error()))

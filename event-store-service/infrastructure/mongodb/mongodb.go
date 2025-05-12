@@ -23,7 +23,9 @@ type (
 	}
 )
 
-func NewMongoDBInfrastructure(logger pkg.IZapLogger) IMongoDBInfrastructure {
+func NewMongoDBInfrastructure(
+	logger pkg.IZapLogger,
+) IMongoDBInfrastructure {
 	conn, err := mongo.Connect(
 		context.Background(),
 		options.

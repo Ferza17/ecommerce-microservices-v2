@@ -25,8 +25,10 @@ func (u *CartUseCase) CreateCart(ctx context.Context, requestId string, req *pb.
 		}
 		event = enum.CART_CREATED.String()
 	)
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "CreateCart")
 
 	defer func(err error, eventStore *pb.EventStore) {
+		defer span.End()
 		if err != nil {
 			eventStore.Status = enum.FAILED.String()
 		}

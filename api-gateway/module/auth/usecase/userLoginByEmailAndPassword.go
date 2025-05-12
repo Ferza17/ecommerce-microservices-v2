@@ -24,6 +24,7 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 			UpdatedAt:     timestamppb.Now(),
 		}
 	)
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.UserLoginByEmailAndPassword")
 
 	// Validation If User Exists
 	ctx = metadata.NewOutgoingContext(ctx, metadata.New(map[string]string{
@@ -42,6 +43,7 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 	}
 
 	defer func(err error, eventStore *pb.EventStore) {
+		defer span.End()
 		if err != nil {
 			eventStore.Status = enum.FAILED.String()
 		}

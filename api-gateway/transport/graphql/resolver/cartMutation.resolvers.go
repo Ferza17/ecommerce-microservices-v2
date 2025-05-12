@@ -20,6 +20,8 @@ func (r *mutationResolver) CreateCartItem(ctx context.Context, input *pb.CreateC
 
 // UpdateCartItemByID is the resolver for the updateCartItemById field.
 func (r *mutationResolver) UpdateCartItemByID(ctx context.Context, input *pb.UpdateCartItemByIdRequest) (*pb.UpdateCartItemByIdResponse, error) {
+	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.UpdateCartItemByID")
+	defer span.End()
 	return r.CartUseCase.UpdateCartItemById(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), input)
 }
 

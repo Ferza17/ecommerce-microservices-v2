@@ -3,6 +3,7 @@ package postgresql
 import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/postgresql"
+	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/orm"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
@@ -25,15 +26,20 @@ type (
 
 	userPostgresqlRepository struct {
 		postgresSQLInfrastructure postgresql.IPostgreSQLInfrastructure
+		telemetryInfrastructure   telemetryInfrastructure.ITelemetryInfrastructure
 		logger                    pkg.IZapLogger
 	}
 )
 
 const userTable = "users"
 
-func NewUserPostgresqlRepository(connector postgresql.IPostgreSQLInfrastructure, logger pkg.IZapLogger) IUserPostgresqlRepository {
+func NewUserPostgresqlRepository(
+	connector postgresql.IPostgreSQLInfrastructure,
+	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
+	logger pkg.IZapLogger) IUserPostgresqlRepository {
 	return &userPostgresqlRepository{
 		postgresSQLInfrastructure: connector,
+		telemetryInfrastructure:   telemetryInfrastructure,
 		logger:                    logger,
 	}
 }

@@ -23,8 +23,11 @@ func (u *UserUseCase) UpdateUserById(ctx context.Context, requestId string, req 
 			UpdatedAt:     timestamppb.Now(),
 		}
 	)
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UpdateUserById")
 
 	defer func(err error, eventStore *pb.EventStore) {
+		defer span.End()
+		
 		if err != nil {
 			eventStore.Status = enum.FAILED.String()
 		}

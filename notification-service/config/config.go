@@ -33,6 +33,9 @@ type Config struct {
 	SmtpPassword    string `mapstructure:"SMTP_PASSWORD"`
 	SmtpHost        string `mapstructure:"SMTP_HOST"`
 	SmtpPort        int    `mapstructure:"SMTP_PORT"`
+
+	JaegerTelemetryHost string `mapstructure:"JAEGER_TELEMETRY_HOST"`
+	JaegerTelemetryPort string `mapstructure:"JAEGER_TELEMETRY_PORT"`
 }
 
 func SetConfig(path string) {
@@ -109,6 +112,14 @@ func SetConfig(path string) {
 
 	if c.SmtpPort == 0 {
 		log.Fatalf("SetConfig | SMTP_PORT is required")
+	}
+
+	if c.JaegerTelemetryHost == "" {
+		log.Fatalf("SetConfig | JAEGER_TELEMETRY_HOST is required")
+	}
+
+	if c.JaegerTelemetryPort == "" {
+		log.Fatalf("SetConfig | JAEGER_TELEMETRY_PORT is required")
 	}
 
 	viper.WatchConfig()

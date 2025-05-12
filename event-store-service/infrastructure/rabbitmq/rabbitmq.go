@@ -10,6 +10,7 @@ import (
 type (
 	IRabbitMQInfrastructure interface {
 		Close() error
+		GetConnection() *amqp091.Connection
 	}
 	RabbitMQInfrastructure struct {
 		amqpConn *amqp091.Connection
@@ -17,7 +18,9 @@ type (
 	}
 )
 
-func NewRabbitMQInfrastructure(logger pkg.IZapLogger) IRabbitMQInfrastructure {
+func NewRabbitMQInfrastructure(
+	logger pkg.IZapLogger,
+) IRabbitMQInfrastructure {
 	amqpConn, err := amqp091.Dial(
 		fmt.Sprintf("amqp://%s:%s@%s:%s/",
 			config.Get().RabbitMQUsername,
@@ -40,6 +43,9 @@ func (c *RabbitMQInfrastructure) Close() error {
 		c.logger.Error(fmt.Sprintf("Failed to close a connection: %v", err))
 		return err
 	}
-
 	return nil
+}
+
+func (c *RabbitMQInfrastructure) GetConnection() *amqp091.Connection {
+	return c.amqpConn
 }

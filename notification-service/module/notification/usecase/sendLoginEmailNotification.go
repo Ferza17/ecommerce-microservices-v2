@@ -25,8 +25,10 @@ func (u *notificationUseCase) SendLoginEmailNotification(ctx context.Context, re
 			UpdatedAt:     timestamppb.Now(),
 		}
 	)
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.SendLoginEmailNotification")
 
 	defer func(err error, eventStore *pb.EventStore) {
+		defer span.End()
 		if err != nil {
 			eventStore.Status = enum.FAILED.String()
 		}

@@ -14,15 +14,21 @@ import (
 
 // CreateProduct is the resolver for the createProduct field.
 func (r *mutationResolver) CreateProduct(ctx context.Context, input pb.CreateProductRequest) (*pb.CreateProductResponse, error) {
+	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.CreateProduct")
+	defer span.End()
 	return r.ProductUseCase.CreateProduct(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &input)
 }
 
 // UpdateProductByID is the resolver for the updateProductById field.
 func (r *mutationResolver) UpdateProductByID(ctx context.Context, input pb.UpdateProductByIdRequest) (*pb.Product, error) {
+	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.UpdateProductByID")
+	defer span.End()
 	panic(fmt.Errorf("not implemented: UpdateProductByID - updateProductById"))
 }
 
 // DeleteProductByID is the resolver for the deleteProductById field.
 func (r *mutationResolver) DeleteProductByID(ctx context.Context, id string) (*pb.DeleteProductByIdResponse, error) {
+	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.DeleteProductByID")
+	defer span.End()
 	panic(fmt.Errorf("not implemented: DeleteProductByID - deleteProductById"))
 }

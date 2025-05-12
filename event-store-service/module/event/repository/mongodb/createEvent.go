@@ -9,6 +9,8 @@ import (
 )
 
 func (r *eventRepository) CreateEvent(ctx context.Context, requestId string, req *bson.Event) (string, error) {
+	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.CreateEvent")
+	defer span.End()
 	req.ID = primitive.NewObjectID()
 	if _, err := r.mongoDB.
 		GetCollection(enum.DatabaseEventStore, enum.CollectionEvent).

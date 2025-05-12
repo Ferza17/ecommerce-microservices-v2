@@ -9,8 +9,9 @@ import (
 )
 
 func (r *notificationRepository) FindNotificationTemplateByNotificationType(ctx context.Context, notificationType enum.NotificationType) (*model.NotificationTemplate, error) {
+	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.FindNotificationTemplateByNotificationType")
+	defer span.End()
 	resp := new(model.NotificationTemplate)
-
 	filter := bson.M{"type": notificationType.String()}
 	if err := r.mongoDB.
 		GetCollection(enum.DatabaseNotification, enum.CollectionNotificationTemplate).

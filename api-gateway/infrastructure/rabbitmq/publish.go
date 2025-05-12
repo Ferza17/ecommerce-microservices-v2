@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
 	"github.com/rabbitmq/amqp091-go"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 	"go.uber.org/zap"
 	"time"
 )
 
 func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, exchange enum.Exchange, queue enum.Queue, message []byte) error {
+	ctx, span := c.telemetryInfrastructure.Tracer(ctx, "RabbitMQInfrastructure.Publish")
 
 	amqpChannel, err := c.amqpConn.Channel()
 	if err != nil {
@@ -17,6 +20,8 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 		return err
 	}
 	defer func(amqpChannel *amqp091.Channel) {
+		span.AddEvent(queue.String())
+		defer span.End()
 		if err = amqpChannel.Close(); err != nil {
 			c.logger.Error(fmt.Sprintf("Failed to close a channel: %v", err))
 		}
@@ -35,6 +40,14 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 		return err
 	}
 
+	carrier := propagation.MapCarrier{}
+	otel.GetTextMapPropagator().Inject(ctx, carrier)
+	headers := amqp091.Table{}
+	for k, v := range carrier {
+		headers[k] = v
+	}
+	headers[enum.XRequestIDHeader.String()] = requestId
+
 	// Publish message
 	if err = amqpChannel.PublishWithContext(
 		ctx,
@@ -47,10 +60,7 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 			DeliveryMode: amqp091.Transient,
 			Timestamp:    time.Now(),
 			Body:         message,
-			Headers: amqp091.Table{
-				"pattern":                      queue.String(),
-				enum.XRequestIDHeader.String(): requestId,
-			},
+			Headers:      headers,
 		},
 	); err != nil {
 		c.logger.Error(fmt.Sprintf("Failed to publish a message: %v", err))

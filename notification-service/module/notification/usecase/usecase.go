@@ -4,6 +4,7 @@ import (
 	"context"
 	mailHogInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mailhog"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/rabbitmq"
+	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/pb"
 	notificationRepository "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/notification/repository/mongodb"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg"
@@ -16,10 +17,11 @@ type (
 	}
 
 	notificationUseCase struct {
-		notificationRepository notificationRepository.INotificationRepository
-		rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure
-		mailHogInfrastructure  mailHogInfrastructure.IMailhogInfrastructure
-		logger                 pkg.IZapLogger
+		notificationRepository  notificationRepository.INotificationRepository
+		rabbitmqInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
+		mailHogInfrastructure   mailHogInfrastructure.IMailhogInfrastructure
+		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
+		logger                  pkg.IZapLogger
 	}
 )
 
@@ -27,11 +29,13 @@ func NewEventStoreUseCase(
 	notificationRepository notificationRepository.INotificationRepository,
 	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
 	mailHogInfrastructure mailHogInfrastructure.IMailhogInfrastructure,
+	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	logger pkg.IZapLogger) INotificationUseCase {
 	return &notificationUseCase{
-		notificationRepository: notificationRepository,
-		rabbitmqInfrastructure: rabbitmqInfrastructure,
-		mailHogInfrastructure:  mailHogInfrastructure,
-		logger:                 logger,
+		notificationRepository:  notificationRepository,
+		rabbitmqInfrastructure:  rabbitmqInfrastructure,
+		mailHogInfrastructure:   mailHogInfrastructure,
+		telemetryInfrastructure: telemetryInfrastructure,
+		logger:                  logger,
 	}
 }

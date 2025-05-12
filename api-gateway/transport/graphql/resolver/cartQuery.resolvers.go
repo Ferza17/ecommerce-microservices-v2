@@ -14,6 +14,8 @@ import (
 
 // FindCartItemsWithPagination is the resolver for the findCartItemsWithPagination field.
 func (r *queryResolver) FindCartItemsWithPagination(ctx context.Context, input *pb.FindCartItemsWithPaginationRequest) (*pb.FindCartItemsWithPaginationResponse, error) {
+	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.FindCartItemsWithPagination")
+	defer span.End()
 	panic(fmt.Errorf("not implemented: FindCartItemsWithPagination - findCartItemsWithPagination"))
 }
 

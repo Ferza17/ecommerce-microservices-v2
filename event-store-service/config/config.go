@@ -27,6 +27,9 @@ type Config struct {
 	RabbitMQPassword string `mapstructure:"RABBITMQ_PASSWORD"`
 	RabbitMQHost     string `mapstructure:"RABBITMQ_HOST"`
 	RabbitMQPort     string `mapstructure:"RABBITMQ_PORT"`
+
+	JaegerTelemetryHost string `mapstructure:"JAEGER_TELEMETRY_HOST"`
+	JaegerTelemetryPort string `mapstructure:"JAEGER_TELEMETRY_PORT"`
 }
 
 func SetConfig(path string) {
@@ -83,6 +86,14 @@ func SetConfig(path string) {
 
 	if c.RabbitMQPort == "" {
 		log.Fatalf("SetConfig | RABBITMQ_PORT is required")
+	}
+
+	if c.JaegerTelemetryHost == "" {
+		log.Fatalf("SetConfig | JAEGER_TELEMETRY_HOST is required")
+	}
+
+	if c.JaegerTelemetryPort == "" {
+		log.Fatalf("SetConfig | JAEGER_TELEMETRY_PORT is required")
 	}
 
 	viper.WatchConfig()

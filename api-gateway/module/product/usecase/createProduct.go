@@ -23,8 +23,11 @@ func (u *ProductUseCase) CreateProduct(ctx context.Context, requestId string, re
 			UpdatedAt:     timestamppb.Now(),
 		}
 	)
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "CreateProduct")
 
 	defer func(err error, eventStore *pb.EventStore) {
+		defer span.End()
+
 		if err != nil {
 			eventStore.Status = enum.FAILED.String()
 		}

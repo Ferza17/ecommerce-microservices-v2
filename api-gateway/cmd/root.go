@@ -43,10 +43,13 @@ func init() {
 func Shutdown(ctx context.Context) (err error) {
 	if err = bootstrap.RabbitMQInfrastructure.Close(); err != nil {
 		bootstrap.Logger.Error(fmt.Sprintf("Failed to close a connection: %v", err))
-		return err
 	}
 
 	if err = bootstrap.RpcClientInfrastructure.Close(); err != nil {
+		bootstrap.Logger.Error(fmt.Sprintf("Failed to close a connection: %v", err))
+	}
+
+	if err = bootstrap.TelemetryInfrastructure.Close(ctx); err != nil {
 		bootstrap.Logger.Error(fmt.Sprintf("Failed to close a connection: %v", err))
 	}
 

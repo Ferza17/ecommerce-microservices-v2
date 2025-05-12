@@ -11,6 +11,8 @@ func (u *userUseCase) FindUserByEmailAndPassword(ctx context.Context, requestId 
 	var (
 		tx = u.userPostgresqlRepository.OpenTransactionWithContext(ctx)
 	)
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.FindUserByEmailAndPassword")
+	defer span.End()
 
 	user, err := u.userPostgresqlRepository.FindUserByEmailWithTransaction(ctx, requestId, request.Email, tx)
 	if err != nil {

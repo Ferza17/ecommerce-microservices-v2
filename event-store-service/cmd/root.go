@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/bootstrap"
 	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/config"
+	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/transport/rabbitmq"
 	"github.com/spf13/cobra"
 	"log"
 )
@@ -25,12 +26,14 @@ func Run() {
 }
 
 var (
-	dependency *bootstrap.Bootstrap
+	dependency     *bootstrap.Bootstrap
+	rabbitMQServer *rabbitmq.RabbitMQTransport
 )
 
 func init() {
 	config.SetConfig(".")
 	dependency = bootstrap.NewBootstrap()
+	rabbitMQServer = rabbitmq.NewServer(dependency)
 }
 
 func Shutdown(ctx context.Context) (err error) {

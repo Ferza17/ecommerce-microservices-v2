@@ -20,6 +20,8 @@ func (u *eventUseCase) CreateEventStore(ctx context.Context, requestId string, r
 			UpdatedAt: now,
 		}
 	)
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.CreateEventStore")
+	defer span.End()
 
 	if req.Payload != nil {
 		p := req.Payload.AsMap()

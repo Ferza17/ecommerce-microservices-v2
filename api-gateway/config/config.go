@@ -32,6 +32,9 @@ type Config struct {
 	ProductServiceURL string `mapstructure:"PRODUCT_SERVICE_URL"`
 	UserServiceURL    string `mapstructure:"USER_SERVICE_URL"`
 
+	JaegerTelemetryHost string `mapstructure:"JAEGER_TELEMETRY_HOST"`
+	JaegerTelemetryPort string `mapstructure:"JAEGER_TELEMETRY_PORT"`
+
 	HttpHost string `mapstructure:"HTTP_HOST"`
 	HttpPort string `mapstructure:"HTTP_PORT"`
 }
@@ -106,6 +109,14 @@ func SetConfig(path string) {
 
 	if c.UserServiceURL == "" {
 		log.Fatalf("SetConfig | USER_SERVICE_URL is required")
+	}
+
+	if c.JaegerTelemetryHost == "" {
+		log.Fatalf("SetConfig | JAEGER_TELEMETRY_HOST is required")
+	}
+
+	if c.JaegerTelemetryPort == "" {
+		log.Fatalf("SetConfig | JAEGER_TELEMETRY_PORT is required")
 	}
 
 	viper.WatchConfig()

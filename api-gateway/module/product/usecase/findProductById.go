@@ -7,6 +7,9 @@ import (
 )
 
 func (u *ProductUseCase) FindProductById(ctx context.Context, requestId string, req *pb.FindProductByIdRequest) (*pb.Product, error) {
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "FindProductById")
+	defer span.End()
+
 	product, err := u.rpcClient.GetProductService().FindProductById(ctx, req)
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("error finding product by id: %v", err))

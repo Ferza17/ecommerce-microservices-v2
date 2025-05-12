@@ -3,6 +3,7 @@ package consumer
 import (
 	"context"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
+	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	userUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
 )
@@ -13,16 +14,22 @@ type (
 		UserUpdated(ctx context.Context) error
 	}
 	userConsumer struct {
-		rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure
-		userUseCase            userUseCase.IUserUseCase
-		logger                 pkg.IZapLogger
+		rabbitmqInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
+		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
+		userUseCase             userUseCase.IUserUseCase
+		logger                  pkg.IZapLogger
 	}
 )
 
-func NewUserConsumer(rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure, userUseCase userUseCase.IUserUseCase, logger pkg.IZapLogger) IUserConsumer {
+func NewUserConsumer(
+	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
+	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
+	userUseCase userUseCase.IUserUseCase,
+	logger pkg.IZapLogger) IUserConsumer {
 	return &userConsumer{
-		rabbitmqInfrastructure: rabbitmqInfrastructure,
-		userUseCase:            userUseCase,
-		logger:                 logger,
+		rabbitmqInfrastructure:  rabbitmqInfrastructure,
+		telemetryInfrastructure: telemetryInfrastructure,
+		userUseCase:             userUseCase,
+		logger:                  logger,
 	}
 }

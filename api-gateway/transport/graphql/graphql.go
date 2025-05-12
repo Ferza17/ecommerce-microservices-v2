@@ -44,10 +44,11 @@ func NewServer(address, port string, option ...Option) *GraphQLTransport {
 func (srv *GraphQLTransport) Serve() {
 	server := handler.New(gen.NewExecutableSchema(gen.Config{
 		Resolvers: &resolver.Resolver{
-			UserUseCase:    srv.bootstrap.UserUseCase,
-			ProductUseCase: srv.bootstrap.ProductUseCase,
-			CartUseCase:    srv.bootstrap.CartUseCase,
-			AuthUseCase:    srv.bootstrap.AuthUseCase,
+			UserUseCase:             srv.bootstrap.UserUseCase,
+			ProductUseCase:          srv.bootstrap.ProductUseCase,
+			CartUseCase:             srv.bootstrap.CartUseCase,
+			AuthUseCase:             srv.bootstrap.AuthUseCase,
+			TelemetryInfrastructure: srv.bootstrap.TelemetryInfrastructure,
 		},
 		Directives: gen.DirectiveRoot{
 			//Jwt: middleware.DirectiveJwtRequired,

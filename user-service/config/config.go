@@ -55,6 +55,9 @@ type Config struct {
 	RpcPort string `mapstructure:"RPC_PORT"`
 
 	VerificationUserLoginUrl string `mapstructure:"VERIFICATION_USER_LOGIN_URL"`
+
+	JaegerTelemetryHost string `mapstructure:"JAEGER_TELEMETRY_HOST"`
+	JaegerTelemetryPort string `mapstructure:"JAEGER_TELEMETRY_PORT"`
 }
 
 func SetConfig(path string) {
@@ -180,6 +183,14 @@ func SetConfig(path string) {
 	//if c.RedisPassword == "" {
 	//	log.Fatalf("SetConfig | REDIS_PASSWORD is required")
 	//}
+
+	if c.JaegerTelemetryHost == "" {
+		log.Fatalf("SetConfig | JAEGER_TELEMETRY_HOST is required")
+	}
+
+	if c.JaegerTelemetryPort == "" {
+		log.Fatalf("SetConfig | JAEGER_TELEMETRY_PORT is required")
+	}
 
 	viper.WatchConfig()
 }

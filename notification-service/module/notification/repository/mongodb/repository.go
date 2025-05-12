@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/enum"
 	mongodbInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mongodb"
+	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/model/bson"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg"
 )
@@ -14,14 +15,19 @@ type (
 	}
 
 	notificationRepository struct {
-		mongoDB mongodbInfrastructure.IMongoDBInfrastructure
-		logger  pkg.IZapLogger
+		mongoDB                 mongodbInfrastructure.IMongoDBInfrastructure
+		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
+		logger                  pkg.IZapLogger
 	}
 )
 
-func NewEventRepository(mongodb mongodbInfrastructure.IMongoDBInfrastructure, logger pkg.IZapLogger) INotificationRepository {
+func NewEventRepository(
+	mongodb mongodbInfrastructure.IMongoDBInfrastructure,
+	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
+	logger pkg.IZapLogger) INotificationRepository {
 	return &notificationRepository{
-		mongoDB: mongodb,
-		logger:  logger,
+		mongoDB:                 mongodb,
+		logger:                  logger,
+		telemetryInfrastructure: telemetryInfrastructure,
 	}
 }

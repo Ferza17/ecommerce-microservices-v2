@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	rabbitMQServer "github.com/ferza17/ecommerce-microservices-v2/event-store-service/transport/rabbitmq"
 	"github.com/spf13/cobra"
 	"os"
 	"os/signal"
@@ -19,12 +18,7 @@ var runCommand = &cobra.Command{
 
 		go func() {
 			dependency.Logger.Info("========== Starting GraphQL RabbitMQTransport ==========")
-			rabbitMQServer.
-				NewServer(
-					rabbitMQServer.NewLogger(dependency.Logger),
-					rabbitMQServer.NewMongoDBInfrastructure(dependency.MongoDBInfrastructure),
-				).
-				Serve()
+			rabbitMQServer.Serve()
 		}()
 
 		<-quit

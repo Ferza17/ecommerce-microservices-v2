@@ -4,6 +4,7 @@ import (
 	"context"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/rabbitmq"
 	rpcClientInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/service"
+	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/pkg"
 )
@@ -15,20 +16,23 @@ type (
 	}
 
 	CartUseCase struct {
-		rpcClient rpcClientInfrastructure.IService
-		rabbitMQ  rabbitmqInfrastructure.IRabbitMQInfrastructure
-		logger    pkg.IZapLogger
+		rpcClient               rpcClientInfrastructure.IService
+		rabbitMQ                rabbitmqInfrastructure.IRabbitMQInfrastructure
+		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
+		logger                  pkg.IZapLogger
 	}
 )
 
 func NewCartUseCase(
 	rpcClient rpcClientInfrastructure.IService,
 	rabbitMQ rabbitmqInfrastructure.IRabbitMQInfrastructure,
+	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	logger pkg.IZapLogger,
 ) ICartUseCase {
 	return &CartUseCase{
-		rpcClient: rpcClient,
-		rabbitMQ:  rabbitMQ,
-		logger:    logger,
+		rpcClient:               rpcClient,
+		rabbitMQ:                rabbitMQ,
+		telemetryInfrastructure: telemetryInfrastructure,
+		logger:                  logger,
 	}
 }

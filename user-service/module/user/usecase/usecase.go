@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
+	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
 	userPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/postgresql"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
@@ -19,14 +20,20 @@ type (
 	userUseCase struct {
 		userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository
 		rabbitmqInfrastructure   rabbitmqInfrastructure.IRabbitMQInfrastructure
+		telemetryInfrastructure  telemetryInfrastructure.ITelemetryInfrastructure
 		logger                   pkg.IZapLogger
 	}
 )
 
-func NewUserUseCase(userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository, rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure, logger pkg.IZapLogger) IUserUseCase {
+func NewUserUseCase(
+	userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository,
+	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
+	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
+	logger pkg.IZapLogger) IUserUseCase {
 	return &userUseCase{
 		userPostgresqlRepository: userPostgresqlRepository,
 		rabbitmqInfrastructure:   rabbitmqInfrastructure,
+		telemetryInfrastructure:  telemetryInfrastructure,
 		logger:                   logger,
 	}
 }

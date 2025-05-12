@@ -13,10 +13,14 @@ import (
 
 // FindUserByID is the resolver for the findUserById field.
 func (r *queryResolver) FindUserByID(ctx context.Context, id string) (*pb.User, error) {
+	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.FindUserByID")
+	defer span.End()
 	panic(fmt.Errorf("not implemented: FindUserByID - findUserById"))
 }
 
 // FindUserByEmailAndPassword is the resolver for the findUserByEmailAndPassword field.
 func (r *queryResolver) FindUserByEmailAndPassword(ctx context.Context, input pb.FindUserByEmailAndPasswordRequest) (*pb.User, error) {
+	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.FindUserByEmailAndPassword")
+	defer span.End()
 	panic(fmt.Errorf("not implemented: FindUserByEmailAndPassword - findUserByEmailAndPassword"))
 }

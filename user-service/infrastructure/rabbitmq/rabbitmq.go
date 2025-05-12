@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
+	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
 	"github.com/rabbitmq/amqp091-go"
 )
@@ -16,12 +17,15 @@ type (
 		Close() error
 	}
 	RabbitMQInfrastructure struct {
-		amqpConn *amqp091.Connection
-		logger   pkg.IZapLogger
+		amqpConn                *amqp091.Connection
+		logger                  pkg.IZapLogger
+		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 	}
 )
 
-func NewRabbitMQInfrastructure(logger pkg.IZapLogger) IRabbitMQInfrastructure {
+func NewRabbitMQInfrastructure(
+	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
+	logger pkg.IZapLogger) IRabbitMQInfrastructure {
 	amqpConn, err := amqp091.Dial(
 		fmt.Sprintf("amqp://%s:%s@%s:%s/",
 			config.Get().RabbitMQUsername,
@@ -34,8 +38,9 @@ func NewRabbitMQInfrastructure(logger pkg.IZapLogger) IRabbitMQInfrastructure {
 	}
 
 	return &RabbitMQInfrastructure{
-		amqpConn: amqpConn,
-		logger:   logger,
+		amqpConn:                amqpConn,
+		telemetryInfrastructure: telemetryInfrastructure,
+		logger:                  logger,
 	}
 }
 

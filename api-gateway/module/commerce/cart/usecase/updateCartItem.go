@@ -25,8 +25,10 @@ func (u *CartUseCase) UpdateCartItemById(ctx context.Context, requestId string, 
 		}
 		event = enum.CART_UPDATED.String()
 	)
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UpdateCartItemById")
 
 	defer func(err error, eventStore *pb.EventStore) {
+		defer span.End()
 		if err != nil {
 			eventStore.Status = enum.FAILED.String()
 		}

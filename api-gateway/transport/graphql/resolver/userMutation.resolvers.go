@@ -12,15 +12,21 @@ import (
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
+	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.CreateUser")
+	defer span.End()
 	return r.UserUseCase.CreateUser(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &input)
 }
 
 // UpdateUserByID is the resolver for the updateUserById field.
 func (r *mutationResolver) UpdateUserByID(ctx context.Context, input pb.UpdateUserByIdRequest) (*pb.UpdateUserByIdResponse, error) {
+	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.UpdateUserByID")
+	defer span.End()
 	return r.UserUseCase.UpdateUserById(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &input)
 }
 
 // UserLoginByEmailAndPassword is the resolver for the userLoginByEmailAndPassword field.
 func (r *mutationResolver) UserLoginByEmailAndPassword(ctx context.Context, input *pb.UserLoginByEmailAndPasswordRequest) (*pb.UserLoginByEmailAndPasswordResponse, error) {
+	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.UserLoginByEmailAndPassword")
+	defer span.End()
 	return r.AuthUseCase.UserLoginByEmailAndPassword(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), input)
 }
