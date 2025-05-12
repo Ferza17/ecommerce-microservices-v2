@@ -10,11 +10,14 @@ import (
 )
 
 func (p *ProductGrpcPresenter) FindProductById(ctx context.Context, req *pb.FindProductByIdRequest) (*pb.Product, error) {
+	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.FindProductById")
+	defer span.End()
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.InvalidArgument, "metadata not found")
 	}
 	requestID := ""
+
 	if values := md.Get(enum.XRequestIDHeader.String()); len(values) > 0 {
 		requestID = values[0]
 	}

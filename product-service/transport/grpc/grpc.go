@@ -6,6 +6,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/presenter"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -37,17 +38,14 @@ func (srv *GrpcTransport) Serve() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
 	opts := []grpc.ServerOption{
-		//grpc.ChainUnaryInterceptor(
-		//grpcMiddleware.ChainUnaryServer(
-		//	otgrpc.OpenTracingServerInterceptor(srv.tracer),
-		//),
-		//),
+		grpc.StatsHandler(otelgrpc.NewServerHandler()),
 	}
 	srv.grpcServer = grpc.NewServer(opts...)
 	pb.RegisterProductServiceServer(
 		srv.grpcServer,
-		presenter.NewProductGrpcPresenter(srv.dependency.ProductUseCase, srv.dependency.Logger),
+		presenter.NewProductGrpcPresenter(srv.dependency.ProductUseCase, srv.dependency.TelemetryInfrastructure, srv.dependency.Logger),
 	)
 
 	// Enable Reflection to Evans grpc client

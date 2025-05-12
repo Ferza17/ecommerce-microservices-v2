@@ -1,6 +1,7 @@
 package presenter
 
 import (
+	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
 	productUseCase "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
@@ -9,13 +10,18 @@ import (
 type ProductGrpcPresenter struct {
 	pb.UnimplementedProductServiceServer
 
-	productUseCase productUseCase.IProductUseCase
-	logger         pkg.IZapLogger
+	productUseCase          productUseCase.IProductUseCase
+	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
+	logger                  pkg.IZapLogger
 }
 
-func NewProductGrpcPresenter(productUseCase productUseCase.IProductUseCase, logger pkg.IZapLogger) *ProductGrpcPresenter {
+func NewProductGrpcPresenter(
+	productUseCase productUseCase.IProductUseCase,
+	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
+	logger pkg.IZapLogger) *ProductGrpcPresenter {
 	return &ProductGrpcPresenter{
-		productUseCase: productUseCase,
-		logger:         logger,
+		productUseCase:          productUseCase,
+		telemetryInfrastructure: telemetryInfrastructure,
+		logger:                  logger,
 	}
 }

@@ -7,7 +7,8 @@ import (
 )
 
 func (r *ProductPostgresqlRepository) CreateProduct(ctx context.Context, product *orm.Product, tx *gorm.DB) (string, error) {
-
+	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.CreateProduct")
+	defer span.End()
 	if err := tx.WithContext(ctx).
 		Table("products").
 		Create(product).

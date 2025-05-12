@@ -10,6 +10,8 @@ import (
 )
 
 func (p *ProductGrpcPresenter) CreateProduct(ctx context.Context, req *pb.CreateProductRequest) (*pb.CreateProductResponse, error) {
+	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.CreateProduct")
+	defer span.End()
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.InvalidArgument, "metadata not found")

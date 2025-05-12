@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
+	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -20,13 +21,16 @@ type (
 	}
 
 	PostgreSQLInfrastructure struct {
-		gormDB *gorm.DB
-		sqlDB  *sql.DB
-		logger pkg.IZapLogger
+		gormDB                  *gorm.DB
+		sqlDB                   *sql.DB
+		logger                  pkg.IZapLogger
+		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 	}
 )
 
-func NewPostgresqlInfrastructure(logger pkg.IZapLogger) IPostgreSQLInfrastructure {
+func NewPostgresqlInfrastructure(
+	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
+	logger pkg.IZapLogger) IPostgreSQLInfrastructure {
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		config.Get().PostgresHost,
 		config.Get().PostgresPort,
@@ -70,8 +74,9 @@ func NewPostgresqlInfrastructure(logger pkg.IZapLogger) IPostgreSQLInfrastructur
 	gormSqlDB.SetConnMaxLifetime(time.Duration(300 * time.Second))
 
 	return &PostgreSQLInfrastructure{
-		gormDB: gormdb,
-		sqlDB:  sqldb,
+		gormDB:                  gormdb,
+		sqlDB:                   sqldb,
+		telemetryInfrastructure: telemetryInfrastructure,
 	}
 }
 

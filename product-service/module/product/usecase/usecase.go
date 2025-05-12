@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/rabbitmq"
+	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
 	productRepo "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/repository/postgresql"
 
@@ -19,20 +20,23 @@ type (
 	}
 
 	productUseCase struct {
-		productPgsqlRepository productRepo.IProductPostgresqlRepository
-		rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure
-		logger                 pkg.IZapLogger
+		productPgsqlRepository  productRepo.IProductPostgresqlRepository
+		rabbitmqInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
+		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
+		logger                  pkg.IZapLogger
 	}
 )
 
 func NewProductUseCase(
 	productPgsqlRepository productRepo.IProductPostgresqlRepository,
 	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
+	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	logger pkg.IZapLogger,
 ) IProductUseCase {
 	return &productUseCase{
-		productPgsqlRepository: productPgsqlRepository,
-		rabbitmqInfrastructure: rabbitmqInfrastructure,
-		logger:                 logger,
+		productPgsqlRepository:  productPgsqlRepository,
+		rabbitmqInfrastructure:  rabbitmqInfrastructure,
+		telemetryInfrastructure: telemetryInfrastructure,
+		logger:                  logger,
 	}
 }

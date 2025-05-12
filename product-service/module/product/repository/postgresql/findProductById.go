@@ -8,8 +8,9 @@ import (
 )
 
 func (r *ProductPostgresqlRepository) FindProductById(ctx context.Context, id string, tx *gorm.DB) (*orm.Product, error) {
+	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.FindProductById")
+	defer span.End()
 	product := new(orm.Product)
-
 	if err := tx.WithContext(ctx).
 		Table("products").
 		Where("id = ?", id).

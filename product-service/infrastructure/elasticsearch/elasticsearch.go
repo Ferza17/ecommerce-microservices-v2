@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
+	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
 )
 
@@ -11,12 +12,15 @@ type (
 	IElasticsearchInfrastructure interface{}
 
 	elasticsearchInfrastructure struct {
-		logger pkg.IZapLogger
-		client *elasticsearch.Client
+		logger                  pkg.IZapLogger
+		client                  *elasticsearch.Client
+		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 	}
 )
 
-func NewElasticsearchInfrastructure(logger pkg.IZapLogger) IElasticsearchInfrastructure {
+func NewElasticsearchInfrastructure(
+	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
+	logger pkg.IZapLogger) IElasticsearchInfrastructure {
 	client, err := elasticsearch.NewClient(elasticsearch.Config{
 		Addresses: []string{
 			fmt.Sprintf("http://%s:%s", config.Get().ElasticsearchHost, config.Get().ElasticsearchPort),
@@ -35,6 +39,7 @@ func NewElasticsearchInfrastructure(logger pkg.IZapLogger) IElasticsearchInfrast
 	}
 
 	return &elasticsearchInfrastructure{
-		logger: logger,
+		telemetryInfrastructure: telemetryInfrastructure,
+		logger:                  logger,
 	}
 }

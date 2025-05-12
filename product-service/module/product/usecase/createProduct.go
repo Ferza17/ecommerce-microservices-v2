@@ -28,8 +28,10 @@ func (u *productUseCase) CreateProduct(ctx context.Context, requestId string, re
 			UpdatedAt:     timestamppb.Now(),
 		}
 	)
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.CreateProduct")
 
 	defer func(err error, eventStore *pb.EventStore) {
+		defer span.End()
 		payload, err := util.ConvertStructToProtoStruct(req)
 		if err != nil {
 			u.logger.Error(fmt.Sprintf("error converting struct to proto struct: %s", err.Error()))

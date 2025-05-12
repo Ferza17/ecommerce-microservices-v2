@@ -2,9 +2,10 @@ package consumer
 
 import (
 	"context"
+	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/rabbitmq"
+	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
 	productUseCase "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
-	"github.com/rabbitmq/amqp091-go"
 )
 
 type (
@@ -15,16 +16,23 @@ type (
 	}
 
 	productConsumer struct {
-		amqpChannel    *amqp091.Channel
-		productUseCase productUseCase.IProductUseCase
-		logger         pkg.IZapLogger
+		rabbitMQInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
+		productUseCase          productUseCase.IProductUseCase
+		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
+		logger                  pkg.IZapLogger
 	}
 )
 
-func NewProductConsumer(amqpChannel *amqp091.Channel, productUseCase productUseCase.IProductUseCase, logger pkg.IZapLogger) IProductConsumer {
+func NewProductConsumer(
+	rabbitMQInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
+	productUseCase productUseCase.IProductUseCase,
+	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
+	logger pkg.IZapLogger,
+) IProductConsumer {
 	return &productConsumer{
-		amqpChannel:    amqpChannel,
-		productUseCase: productUseCase,
-		logger:         logger,
+		rabbitMQInfrastructure:  rabbitMQInfrastructure,
+		productUseCase:          productUseCase,
+		telemetryInfrastructure: telemetryInfrastructure,
+		logger:                  logger,
 	}
 }

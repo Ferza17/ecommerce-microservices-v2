@@ -37,6 +37,9 @@ type Config struct {
 
 	RpcHost string `mapstructure:"RPC_HOST"`
 	RpcPort string `mapstructure:"RPC_PORT"`
+
+	JaegerTelemetryHost string `mapstructure:"JAEGER_TELEMETRY_HOST"`
+	JaegerTelemetryPort string `mapstructure:"JAEGER_TELEMETRY_PORT"`
 }
 
 func SetConfig(path string) {
@@ -116,6 +119,13 @@ func SetConfig(path string) {
 	if c.ElasticsearchPort == "" {
 		log.Fatalf("SetConfig | ELASTICSEARCH_PORT is required")
 	}
+	if c.JaegerTelemetryHost == "" {
+		log.Fatalf("SetConfig | JAEGER_TELEMETRY_HOST is required")
+	}
 
+	if c.JaegerTelemetryPort == "" {
+		log.Fatalf("SetConfig | JAEGER_TELEMETRY_PORT is required")
+	}
+	
 	viper.WatchConfig()
 }

@@ -3,6 +3,7 @@ package postgresql
 import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/postgresql"
+	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/orm"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
 	"gorm.io/gorm"
@@ -21,13 +22,18 @@ type (
 
 	ProductPostgresqlRepository struct {
 		postgreSQLInfrastructure postgresql.IPostgreSQLInfrastructure
+		telemetryInfrastructure  telemetryInfrastructure.ITelemetryInfrastructure
 		logger                   pkg.IZapLogger
 	}
 )
 
-func NewProductPostgresqlRepository(infrastructure postgresql.IPostgreSQLInfrastructure, logger pkg.IZapLogger) IProductPostgresqlRepository {
+func NewProductPostgresqlRepository(
+	infrastructure postgresql.IPostgreSQLInfrastructure,
+	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
+	logger pkg.IZapLogger) IProductPostgresqlRepository {
 	return &ProductPostgresqlRepository{
 		postgreSQLInfrastructure: infrastructure,
+		telemetryInfrastructure:  telemetryInfrastructure,
 		logger:                   logger,
 	}
 }

@@ -6,10 +6,11 @@ import (
 )
 
 func (p *ProductGrpcPresenter) FindProductsWithPagination(ctx context.Context, req *pb.FindProductsWithPaginationRequest) (*pb.FindProductsWithPaginationResponse, error) {
-
+	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.FindProductsWithPagination")
+	defer span.End()
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
-	
+
 	return nil, nil
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
+	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
 	"github.com/rabbitmq/amqp091-go"
 )
@@ -12,15 +13,19 @@ import (
 type (
 	IRabbitMQInfrastructure interface {
 		Publish(ctx context.Context, requestId string, exchange enum.Exchange, queue enum.Queue, message []byte) error
+		GetConnection() *amqp091.Connection
 		Close() error
 	}
 	RabbitMQInfrastructure struct {
-		amqpConn *amqp091.Connection
-		logger   pkg.IZapLogger
+		amqpConn                *amqp091.Connection
+		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
+		logger                  pkg.IZapLogger
 	}
 )
 
-func NewRabbitMQInfrastructure(logger pkg.IZapLogger) IRabbitMQInfrastructure {
+func NewRabbitMQInfrastructure(
+	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
+	logger pkg.IZapLogger) IRabbitMQInfrastructure {
 	amqpConn, err := amqp091.Dial(
 		fmt.Sprintf("amqp://%s:%s@%s:%s/",
 			config.Get().RabbitMQUsername,
@@ -33,8 +38,9 @@ func NewRabbitMQInfrastructure(logger pkg.IZapLogger) IRabbitMQInfrastructure {
 	}
 
 	return &RabbitMQInfrastructure{
-		amqpConn: amqpConn,
-		logger:   logger,
+		amqpConn:                amqpConn,
+		telemetryInfrastructure: telemetryInfrastructure,
+		logger:                  logger,
 	}
 }
 
@@ -44,4 +50,8 @@ func (c *RabbitMQInfrastructure) Close() error {
 		return err
 	}
 	return nil
+}
+
+func (c *RabbitMQInfrastructure) GetConnection() *amqp091.Connection {
+	return c.amqpConn
 }

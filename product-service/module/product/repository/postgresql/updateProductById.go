@@ -7,6 +7,8 @@ import (
 )
 
 func (r *ProductPostgresqlRepository) UpdateProductById(ctx context.Context, product *orm.Product, tx *gorm.DB) (*orm.Product, error) {
+	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.UpdateProductById")
+	defer span.End()
 	//TODO implement me
 	panic("implement me")
 }

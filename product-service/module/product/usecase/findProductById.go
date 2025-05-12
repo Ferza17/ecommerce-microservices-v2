@@ -8,6 +8,8 @@ import (
 
 func (u *productUseCase) FindProductById(ctx context.Context, requestId string, req *pb.FindProductByIdRequest) (*pb.Product, error) {
 	tx := u.productPgsqlRepository.OpenTransactionWithContext(ctx)
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.UserLoginByEmailAndPassword")
+	defer span.End()
 
 	fetchProduct, err := u.productPgsqlRepository.FindProductById(ctx, req.GetId(), tx)
 	if err != nil {
