@@ -12,7 +12,8 @@ func (r *userPostgresqlRepository) UpdateUserByIdWithTransaction(ctx context.Con
 		now      = time.Now().UTC()
 		buildReq = map[string]any{}
 	)
-
+	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.UpdateUserByIdWithTransaction")
+	defer span.End()
 	if req.Password != nil {
 		buildReq["password"] = req.GetPassword()
 	}

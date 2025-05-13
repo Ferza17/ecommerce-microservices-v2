@@ -1,0 +1,14 @@
+{
+  "name": "elasticsearch-sink-connector",
+  "config": {
+    "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+    "connection.url": "http://elastic-local:9200",
+    "connection.username": "",
+    "connection.password": "",
+    "type.name": "_doc",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "topics": "product.public.products",
+    "index.name": "products"
+  }
+}

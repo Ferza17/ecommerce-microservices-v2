@@ -18,6 +18,8 @@ import { Queue } from '../../enum/queue';
 import { ProductRpcService } from '../../infrastructure/rpc/product.rpc.service';
 import { FindProductByIdRequest } from '../../model/rpc/productMessage';
 import { UserRpcService } from '../../infrastructure/rpc/user.rpc.service';
+import { JaegerTelemetryService } from '../../infrastructure/telemetry/jaeger.telemetry.service';
+import { Context } from '@opentelemetry/api';
 
 @Injectable()
 export class CartService {
@@ -28,10 +30,12 @@ export class CartService {
     private readonly rabbitMQInfrastructure: RabbitmqInfrastructure,
     private readonly productRpcService: ProductRpcService,
     private readonly userRpcService: UserRpcService,
+    private readonly otel: JaegerTelemetryService,
   ) {
   }
 
-  async CreateCartItem(requestId: string, req: CreateCartItemRequest): Promise<CreateCartItemResponse> {
+  async CreateCartItem(requestId: string, req: CreateCartItemRequest, context?: Context): Promise<CreateCartItemResponse> {
+    const span = this.otel.tracer('Service.CreateCartItem', context);
     let id: string = '';
     let event: EventStore = {
       service: Service.CommerceService.toString(),
@@ -49,6 +53,7 @@ export class CartService {
       const user = await this.userRpcService.findUserById(
         requestId,
         FindProductByIdRequest.create({ id: req.userId }),
+        context,
       );
 
       if (user === null) {
@@ -59,6 +64,7 @@ export class CartService {
       const product = await this.productRpcService.findProductById(
         requestId,
         FindProductByIdRequest.create({ id: req.productId }),
+        context,
       );
 
       if (product === null) {
@@ -77,27 +83,31 @@ export class CartService {
           qty: req.qty + cartItem.qty,
           userId: req.userId,
           productId: req.productId,
-        });
+        }, context);
         id = cartItem._id.toString() || '';
       } else {
         req.price = product.price * req.qty;
-        const result = await this.cartItemRepository.CreateCartItem(requestId, req);
+        const result = await this.cartItemRepository.CreateCartItem(requestId, req, context);
         if (result !== null) {
         }
       }
 
       event.status = SagaStatus.SUCCESS.toString();
       event.previousState = cartItem || undefined;
-      await this.rabbitMQInfrastructure.publishEventCreated(requestId, event);
+      await this.rabbitMQInfrastructure.publishEventCreated(requestId, event, context);
       return { id: id };
     } catch (e) {
       event.status = SagaStatus.FAILED.toString();
-      await this.rabbitMQInfrastructure.publishEventCreated(requestId, event);
+      await this.rabbitMQInfrastructure.publishEventCreated(requestId, event, context);
+      span.recordException(e);
       throw e;
+    } finally {
+      span.end();
     }
   }
 
-  async FindCartItemById(requestId: string, req: FindCartItemByIdRequest): Promise<CartItem> {
+  async FindCartItemById(requestId: string, req: FindCartItemByIdRequest, context?: Context): Promise<CartItem> {
+    const span = this.otel.tracer('Service.FindCartItemById', context);
     try {
       const cartItem = await this.cartItemRepository.FindCartItemById(requestId, req.id);
       if (!cartItem) {
@@ -114,20 +124,28 @@ export class CartService {
       };
     } catch (e) {
       this.logger.error(`requestId: ${requestId} , error: ${e.message}`);
+      span.recordException(e);
       throw e;
+    } finally {
+      span.end();
     }
   }
 
-  async FindCartItemsWithPagination(requestId: string, req: FindCartItemsWithPaginationRequest): Promise<FindCartItemsWithPaginationResponse> {
+  async FindCartItemsWithPagination(requestId: string, req: FindCartItemsWithPaginationRequest, context?: Context): Promise<FindCartItemsWithPaginationResponse> {
+    const span = this.otel.tracer('Service.FindCartItemsWithPagination', context);
     try {
       return await this.cartItemRepository.FindCartItemsWithPagination(requestId, req);
     } catch (e) {
       this.logger.error(`requestId: ${requestId} , error: ${e.message}`);
+      span.recordException(e);
       throw e;
+    } finally {
+      span.end();
     }
   }
 
-  async UpdateCartItemByIdRequest(requestId: string, req: UpdateCartItemByIdRequest): Promise<UpdateCartItemByIdResponse> {
+  async UpdateCartItemByIdRequest(requestId: string, req: UpdateCartItemByIdRequest, context?: Context): Promise<UpdateCartItemByIdResponse> {
+    const span = this.otel.tracer('Service.UpdateCartItemByIdRequest', context);
     let event: EventStore = {
       service: Service.CommerceService.toString(),
       eventType: Queue.CART_UPDATED.toString(),
@@ -175,11 +193,15 @@ export class CartService {
       this.logger.error(`requestId: ${requestId} , error: ${e.message}`);
       event.status = SagaStatus.FAILED.toString();
       await this.rabbitMQInfrastructure.publishEventCreated(requestId, event);
+      span.recordException(e);
       throw e;
+    } finally {
+      span.end();
     }
   }
 
-  async DeleteCartItemById(requestId: string, req: DeleteCartItemByIdRequest): Promise<DeleteCartItemByIdResponse> {
+  async DeleteCartItemById(requestId: string, req: DeleteCartItemByIdRequest, context?: Context): Promise<DeleteCartItemByIdResponse> {
+    const span = this.otel.tracer('Service.DeleteCartItemById', context);
     try {
       await this.cartItemRepository.DeleteCartItemById(requestId, req.id);
       return {
@@ -187,7 +209,10 @@ export class CartService {
       };
     } catch (e) {
       this.logger.error(`requestId: ${requestId} , error: ${e.message}`);
+      span.recordException(e);
       throw e;
+    } finally {
+      span.end();
     }
   }
 }

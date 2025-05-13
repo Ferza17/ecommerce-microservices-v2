@@ -30,6 +30,8 @@ export const configRoot = ConfigModule.forRoot({
     PRODUCT_SERVICE_RPC_PORT: joi.number().required(),
     USER_SERVICE_RPC_HOST: joi.string().required(),
     USER_SERVICE_RPC_PORT: joi.number().required(),
+    JAEGER_TELEMETRY_HOST: joi.string().required(),
+    JAEGER_TELEMETRY_PORT: joi.number().required(),
   }),
 });
 

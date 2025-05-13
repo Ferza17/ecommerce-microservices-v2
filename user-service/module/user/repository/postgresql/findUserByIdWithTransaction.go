@@ -7,6 +7,8 @@ import (
 )
 
 func (r *userPostgresqlRepository) FindUserByIdWithTransaction(ctx context.Context, requestId string, id string, tx *gorm.DB) (*orm.User, error) {
+	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.FindUserByIdWithTransaction")
+	defer span.End()
 	//TODO implement me
 	panic("implement me")
 }

@@ -5,6 +5,7 @@ import (
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
+	productElasticsearchRepository "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/repository/elasticsearch"
 	productRepo "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/repository/postgresql"
 
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
@@ -20,23 +21,26 @@ type (
 	}
 
 	productUseCase struct {
-		productPgsqlRepository  productRepo.IProductPostgresqlRepository
-		rabbitmqInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
-		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
-		logger                  pkg.IZapLogger
+		productPgsqlRepository         productRepo.IProductPostgresqlRepository
+		productElasticsearchRepository productElasticsearchRepository.IProductElasticsearchRepository
+		rabbitmqInfrastructure         rabbitmqInfrastructure.IRabbitMQInfrastructure
+		telemetryInfrastructure        telemetryInfrastructure.ITelemetryInfrastructure
+		logger                         pkg.IZapLogger
 	}
 )
 
 func NewProductUseCase(
 	productPgsqlRepository productRepo.IProductPostgresqlRepository,
 	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
+	productElasticsearchRepository productElasticsearchRepository.IProductElasticsearchRepository,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	logger pkg.IZapLogger,
 ) IProductUseCase {
 	return &productUseCase{
-		productPgsqlRepository:  productPgsqlRepository,
-		rabbitmqInfrastructure:  rabbitmqInfrastructure,
-		telemetryInfrastructure: telemetryInfrastructure,
-		logger:                  logger,
+		productPgsqlRepository:         productPgsqlRepository,
+		rabbitmqInfrastructure:         rabbitmqInfrastructure,
+		telemetryInfrastructure:        telemetryInfrastructure,
+		productElasticsearchRepository: productElasticsearchRepository,
+		logger:                         logger,
 	}
 }

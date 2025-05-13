@@ -8,7 +8,8 @@ import (
 )
 
 func (r *userPostgresqlRepository) CreateUserWithTransaction(ctx context.Context, requestId string, req *orm.User, tx *gorm.DB) (string, error) {
-
+	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.CreateUserWithTransaction")
+	defer span.End()
 	if err := tx.WithContext(ctx).
 		Table(userTable).
 		Create(req).

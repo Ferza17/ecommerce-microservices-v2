@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"context"
 	"database/sql"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/bootstrap"
 	"github.com/pressly/goose/v3"
 	"github.com/spf13/cobra"
 	"log"
@@ -22,6 +24,11 @@ var migrationCommand = &cobra.Command{
 			}
 		} else if args[0] == "down" {
 			if err := Down(dependency.PostgreSQLInfrastructure.SqlDB()); err != nil {
+				log.Fatalf(err.Error())
+				return
+			}
+		} else if args[0] == "elasticsearch" {
+			if err := elasticsearch(context.Background(), dependency); err != nil {
 				log.Fatalf(err.Error())
 				return
 			}
@@ -50,6 +57,23 @@ func Down(db *sql.DB) error {
 	}
 
 	if err := goose.Down(db, "dbMigration/postgres"); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func elasticsearch(ctx context.Context, dependency *bootstrap.Bootstrap) error {
+	tx := dependency.ProductPostgresSQLRepository.OpenTransactionWithContext(ctx)
+
+	products, err := dependency.ProductPostgresSQLRepository.FindAllProductForElasticIndex(ctx, tx)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err = dependency.ProductElasticsearchRepository.BulkCreateProduct(ctx, products); err != nil {
+		tx.Rollback()
 		return err
 	}
 

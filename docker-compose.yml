@@ -90,7 +90,7 @@ services:
       - "cluster.name=products"
       - "node.name=node1"
       - "bootstrap.memory_lock=true"
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
       - "xpack.security.enabled=false"
     ports:
       - '9200:9200'
@@ -107,7 +107,7 @@ services:
       - '5601:5601'
     environment:
       - 'ELASTICSEARCH_HOSTS=http://elasticsearch-local:9200'
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
     networks:
       - local
 

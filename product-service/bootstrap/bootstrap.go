@@ -39,7 +39,7 @@ func NewBootstrap() *Bootstrap {
 	newProductPostgresqlRepository := productPostgresqlRepository.NewProductPostgresqlRepository(newPostgreSQLInfrastructure, newTelemetryInfrastructure, logger)
 	NewProductElasticsearchRepository := productElasticsearchRepository.NewProductElasticsearchRepository(newElasticsearchInfrastructure, newTelemetryInfrastructure, logger)
 	// UseCase
-	newProductUseCase := productUseCase.NewProductUseCase(newProductPostgresqlRepository, newRabbitMQInfrastructure, newTelemetryInfrastructure, logger)
+	newProductUseCase := productUseCase.NewProductUseCase(newProductPostgresqlRepository, newRabbitMQInfrastructure, NewProductElasticsearchRepository, newTelemetryInfrastructure, logger)
 	// Consumer
 	productConsumer := productConsumer.NewProductConsumer(newRabbitMQInfrastructure, newProductUseCase, newTelemetryInfrastructure, logger)
 

@@ -9,6 +9,7 @@ import { join } from 'path';
 import { Service } from '../enum/service';
 import { ProductRpcService } from './rpc/product.rpc.service';
 import { UserRpcService } from './rpc/user.rpc.service';
+import { JaegerTelemetryService } from './telemetry/jaeger.telemetry.service';
 
 
 @Module({
@@ -70,8 +71,8 @@ import { UserRpcService } from './rpc/user.rpc.service';
       }),
     }),
   ],
-  providers: [RabbitmqInfrastructure, ProductRpcService, UserRpcService],
-  exports: [RabbitmqInfrastructure, ProductRpcService, UserRpcService],
+  providers: [RabbitmqInfrastructure, ProductRpcService, UserRpcService, JaegerTelemetryService],
+  exports: [RabbitmqInfrastructure, ProductRpcService, UserRpcService, JaegerTelemetryService],
 })
 export class InfrastructureModule {
 }
