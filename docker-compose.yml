@@ -81,6 +81,7 @@ services:
       - '14269:14269'
       - '9411:9411'
 
+#ELASTIC
   elasticsearch-local:
     container_name: elasticsearch-local
     image: elasticsearch:8.4.1
@@ -98,6 +99,7 @@ services:
     networks:
       - local
 
+#Kibana
   kibana-local:
     container_name: kibana-local
     image: kibana:8.4.1
@@ -108,6 +110,21 @@ services:
     environment:
       - 'ELASTICSEARCH_HOSTS=http://elasticsearch-local:9200'
       - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+    networks:
+      - local
+
+  # Service Discovery
+  consul-local:
+    container_name: consul-local
+    image: consul:1.10.0
+    ports:
+      - "8500:8500"
+      - "8600:8600/tcp"
+      - "8600:8600/udp"
+    command: agent -dev -client=0.0.0.0 -ui
+    volumes:
+      - ./entrypoint/consul/init.sh:/init.sh
+    entrypoint: [ "/bin/sh", "-c", "consul agent -dev -client=0.0.0.0 -ui & sleep 5 && sh /init.sh && tail -f /dev/null" ]
     networks:
       - local
 

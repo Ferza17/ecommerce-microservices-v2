@@ -27,12 +27,6 @@ type Config struct {
 	PostgresPort         string `mapstructure:"POSTGRES_PORT"`
 	PostgresDatabaseName string `mapstructure:"POSTGRES_DATABASE_NAME"`
 
-	MongoUsername     string `mapstructure:"MONGO_USERNAME"`
-	MongoPassword     string `mapstructure:"MONGO_PASSWORD"`
-	MongoHost         string `mapstructure:"MONGO_HOST"`
-	MongoPort         string `mapstructure:"MONGO_PORT"`
-	MongoDatabaseName string `mapstructure:"MONGO_DATABASE_NAME"`
-
 	RabbitMQUsername string `mapstructure:"RABBITMQ_USERNAME"`
 	RabbitMQPassword string `mapstructure:"RABBITMQ_PASSWORD"`
 	RabbitMQHost     string `mapstructure:"RABBITMQ_HOST"`
@@ -108,26 +102,6 @@ func SetConfig(path string) {
 
 	if c.RpcPort == "" {
 		log.Fatalf("SetConfig | RPC_PORT is required")
-	}
-
-	if c.MongoUsername == "" {
-		log.Fatalf("SetConfig | MONGO_USERNAME is required")
-	}
-
-	if c.MongoPassword == "" {
-		log.Fatalf("SetConfig | MONGO_PASSWORD is required")
-	}
-
-	if c.MongoHost == "" {
-		log.Fatalf("SetConfig | MONGO_HOST is required")
-	}
-
-	if c.MongoPort == "" {
-		log.Fatalf("SetConfig | MONGO_PORT is required")
-	}
-
-	if c.MongoDatabaseName == "" {
-		log.Fatalf("SetConfig | MONGO_DATABASE_NAME is required")
 	}
 
 	if c.RabbitMQUsername == "" {
