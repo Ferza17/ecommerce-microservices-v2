@@ -2,7 +2,10 @@ package config
 
 import (
 	"fmt"
+	"github.com/hashicorp/consul/api"
 	"log"
+	"strconv"
+	"sync"
 
 	"github.com/spf13/viper"
 )
@@ -14,84 +17,209 @@ func Get() *Config {
 }
 
 type Config struct {
-	Env         string `mapstructure:"ENV"`
-	ServiceName string `mapstructure:"SERVICE_NAME"`
-	AppURL      string `mapstructure:"APP_URL"`
+	// From ENV
+	Env        string `mapstructure:"ENV"`
+	ConsulHost string `mapstructure:"CONSUL_HOST"`
+	ConsulPort string `mapstructure:"CONSUL_PORT"`
+	// From Consul
+	ServiceName string
 
-	RabbitMQUsername string `mapstructure:"RABBITMQ_USERNAME"`
-	RabbitMQPassword string `mapstructure:"RABBITMQ_PASSWORD"`
-	RabbitMQHost     string `mapstructure:"RABBITMQ_HOST"`
-	RabbitMQPort     string `mapstructure:"RABBITMQ_PORT"`
+	JaegerTelemetryHost string
+	JaegerTelemetryPort string
 
-	ProductServiceURL string `mapstructure:"PRODUCT_SERVICE_URL"`
-	UserServiceURL    string `mapstructure:"USER_SERVICE_URL"`
+	RabbitMQUsername string
+	RabbitMQPassword string
+	RabbitMQHost     string
+	RabbitMQPort     string
 
-	JaegerTelemetryHost string `mapstructure:"JAEGER_TELEMETRY_HOST"`
-	JaegerTelemetryPort string `mapstructure:"JAEGER_TELEMETRY_PORT"`
+	ProductServiceURL string
+	UserServiceURL    string
 
-	HttpHost string `mapstructure:"HTTP_HOST"`
-	HttpPort string `mapstructure:"HTTP_PORT"`
+	HttpHost string
+	HttpPort string
 }
 
 func SetConfig(path string) {
 	viper.SetConfigType("env")
 	viper.AddConfigPath(path)
 	viper.SetConfigName(".env")
-
 	if err := viper.ReadInConfig(); err != nil {
 		panic(fmt.Sprintf("config not found: %s", err.Error()))
 	}
-
 	if err := viper.Unmarshal(&c); err != nil {
 		log.Fatalf("SetConfig | could not parse config: %v", err)
 	}
 
 	if c.Env == "" {
-		c.Env = "local"
+		log.Fatal("SetConfig | env is required")
+	}
+	if c.ConsulHost == "" {
+		log.Fatal("SetConfig | consul host is required")
+	}
+	if c.ConsulPort == "" {
+		log.Fatal("SetConfig | consul port is required")
 	}
 
-	if c.ServiceName == "" {
-		log.Fatalf("SetConfig | SERVICE_NAME is required")
+	consulClient, err := api.NewClient(&api.Config{
+		Address: fmt.Sprintf("%s:%s", c.ConsulHost, c.ConsulPort),
+	})
+	if err != nil {
+		log.Fatalf("SetConfig | could not connect to consul: %v", err)
 	}
 
-	if c.HttpHost == "" {
-		log.Fatalf("SetConfig | HTTP_HOST is required")
-	}
+	// Get Consul Key / Value
+	kv := consulClient.KV()
+	wg := &sync.WaitGroup{}
 
-	if c.HttpPort == "" {
-		log.Fatalf("SetConfig | HTTP_PORT is required")
-	}
+	// Telemetry Config
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		pair, _, err := kv.Get(fmt.Sprintf("%s/telemetry/jaeger/JAEGER_TELEMETRY_HOST", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get telemetry host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | telemetry host is required")
+		}
+		c.JaegerTelemetryHost = string(pair.Value)
+		pair, _, err = kv.Get(fmt.Sprintf("%s/telemetry/jaeger/JAEGER_TELEMETRY_PORT", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get telemetry host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | telemetry host is required")
+		}
+		c.JaegerTelemetryPort = string(pair.Value)
+	}()
 
-	if c.RabbitMQUsername == "" {
-		log.Fatalf("SetConfig | RABBITMQ_USERNAME is required")
-	}
-	if c.RabbitMQPassword == "" {
-		log.Fatalf("SetConfig | RABBITMQ_PASSWORD is required")
-	}
+	// RabbitMQ Config
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		pair, _, err := kv.Get(fmt.Sprintf("%s/broker/rabbitmq/RABBITMQ_USERNAME", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get RABBITMQ_USERNAME host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | RABBITMQ_USERNAME host is required")
+		}
+		c.RabbitMQUsername = string(pair.Value)
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/RABBITMQ_PASSWORD", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get RABBITMQ_PASSWORD host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | RABBITMQ_PASSWORD host is required")
+		}
+		c.RabbitMQPassword = string(pair.Value)
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/RABBITMQ_HOST", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get RABBITMQ_HOST host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | RABBITMQ_HOST host is required")
+		}
+		c.RabbitMQHost = string(pair.Value)
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/RABBITMQ_PORT", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get RABBITMQ_PORT host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | RABBITMQ_PORT host is required")
+		}
+		c.RabbitMQPort = string(pair.Value)
+	}()
 
-	if c.RabbitMQHost == "" {
-		log.Fatalf("SetConfig | RABBITMQ_HOST is required")
-	}
+	// Product Service
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		pair, _, err := kv.Get(fmt.Sprintf("%s/services/product/RPC_HOST", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get PRODUCT RPC_HOST host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | PRODUCT RPC_HOST host is required")
+		}
+		productServiceRpcHost := string(pair.Value)
+		pair, _, err = kv.Get(fmt.Sprintf("%s/services/product/RPC_PORT", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get PRODUCT RPC_PORT host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | PRODUCT RPC_PORT host is required")
+		}
+		productServiceRpcPort := string(pair.Value)
+		c.ProductServiceURL = fmt.Sprintf("http://%s:%s", productServiceRpcHost, productServiceRpcPort)
+	}()
 
-	if c.RabbitMQPort == "" {
-		log.Fatalf("SetConfig | RABBITMQ_PORT is required")
-	}
+	// User Service
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		pair, _, err := kv.Get(fmt.Sprintf("%s/services/user/RPC_HOST", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get USER RPC_HOST host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | USER RPC_HOST host is required")
+		}
+		userServiceRpcHost := string(pair.Value)
+		pair, _, err = kv.Get(fmt.Sprintf("%s/services/user/RPC_PORT", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get USER RPC_PORT host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | USER RPC_PORT host is required")
+		}
+		userServiceRpcPort := string(pair.Value)
+		c.UserServiceURL = fmt.Sprintf("http://%s:%s", userServiceRpcHost, userServiceRpcPort)
+	}()
 
-	if c.ProductServiceURL == "" {
-		log.Fatalf("SetConfig | PRODUCT_SERVICE_URL is required")
-	}
+	// API GATEWAY
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		pair, _, err := kv.Get(fmt.Sprintf("%s/services/api-gateway/SERVICE_NAME", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get API-GATEWAY SERVICE_NAME host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | USER SERVICE_NAME host is required")
+		}
+		c.ServiceName = string(pair.Value)
+		pair, _, err = kv.Get(fmt.Sprintf("%s/services/api-gateway/HTTP_HOST", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get API-GATEWAY HTTP_HOST host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | USER HTTP_HOST host is required")
+		}
+		c.HttpHost = string(pair.Value)
+		pair, _, err = kv.Get(fmt.Sprintf("%s/services/api-gateway/HTTP_PORT", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get API-GATEWAY HTTP_PORT host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | USER HTTP_PORT host is required")
+		}
+		c.HttpPort = string(pair.Value)
+	}()
 
-	if c.UserServiceURL == "" {
-		log.Fatalf("SetConfig | USER_SERVICE_URL is required")
-	}
+	wg.Wait()
 
-	if c.JaegerTelemetryHost == "" {
-		log.Fatalf("SetConfig | JAEGER_TELEMETRY_HOST is required")
+	httpPortInt, err := strconv.ParseInt(c.HttpPort, 10, 64)
+	if err != nil {
+		log.Fatalf("SetConfig | could not parse HTTP_PORT to int: %v", err)
 	}
-
-	if c.JaegerTelemetryPort == "" {
-		log.Fatalf("SetConfig | JAEGER_TELEMETRY_PORT is required")
+	if err = consulClient.Agent().ServiceRegister(&api.AgentServiceRegistration{
+		Name:    c.ServiceName,
+		Address: c.HttpHost,
+		Port:    int(httpPortInt),
+		Tags:    []string{"v1"},
+	}); err != nil {
+		log.Fatalf("Error registering service: %v", err)
 	}
-
 	viper.WatchConfig()
 }
