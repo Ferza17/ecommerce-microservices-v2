@@ -181,7 +181,27 @@ func SetConfig(path string) {
 		c.MongoDatabaseName = string(pair.Value)
 	}()
 
+	// Event Store Config
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		pair, _, err := kv.Get(fmt.Sprintf("%s/services/event-store/SERVICE_NAME", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get SERVICE_NAME host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | SERVICE_NAME host is required")
+		}
+		c.ServiceName = string(pair.Value)
+	}()
+
 	wg.Wait()
 
+	if err = consulClient.Agent().ServiceRegister(&api.AgentServiceRegistration{
+		Name: c.ServiceName,
+		Tags: []string{"v1"},
+	}); err != nil {
+		log.Fatalf("Error registering service: %v", err)
+	}
 	viper.WatchConfig()
 }

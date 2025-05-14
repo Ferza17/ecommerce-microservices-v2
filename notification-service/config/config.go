@@ -2,7 +2,9 @@ package config
 
 import (
 	"fmt"
+	"github.com/hashicorp/consul/api"
 	"log"
+	"sync"
 
 	"github.com/spf13/viper"
 )
@@ -14,28 +16,33 @@ func Get() *Config {
 }
 
 type Config struct {
-	Env         string `mapstructure:"ENV"`
-	ServiceName string `mapstructure:"SERVICE_NAME"`
+	// From ENV
+	Env        string `mapstructure:"ENV"`
+	ConsulHost string `mapstructure:"CONSUL_HOST"`
+	ConsulPort string `mapstructure:"CONSUL_PORT"`
 
-	MongoUsername     string `mapstructure:"MONGO_USERNAME"`
-	MongoPassword     string `mapstructure:"MONGO_PASSWORD"`
-	MongoHost         string `mapstructure:"MONGO_HOST"`
-	MongoPort         string `mapstructure:"MONGO_PORT"`
-	MongoDatabaseName string `mapstructure:"MONGO_DATABASE_NAME"`
+	// From Consul
+	ServiceName string
 
-	RabbitMQUsername string `mapstructure:"RABBITMQ_USERNAME"`
-	RabbitMQPassword string `mapstructure:"RABBITMQ_PASSWORD"`
-	RabbitMQHost     string `mapstructure:"RABBITMQ_HOST"`
-	RabbitMQPort     string `mapstructure:"RABBITMQ_PORT"`
+	JaegerTelemetryHost string
+	JaegerTelemetryPort string
 
-	SmtpSenderEmail string `mapstructure:"SMTP_SENDER_EMAIL"`
-	SmtpUsername    string `mapstructure:"SMTP_USERNAME"`
-	SmtpPassword    string `mapstructure:"SMTP_PASSWORD"`
-	SmtpHost        string `mapstructure:"SMTP_HOST"`
-	SmtpPort        int    `mapstructure:"SMTP_PORT"`
+	RabbitMQUsername string
+	RabbitMQPassword string
+	RabbitMQHost     string
+	RabbitMQPort     string
 
-	JaegerTelemetryHost string `mapstructure:"JAEGER_TELEMETRY_HOST"`
-	JaegerTelemetryPort string `mapstructure:"JAEGER_TELEMETRY_PORT"`
+	SmtpSenderEmail string
+	SmtpHost        string
+	SmtpPort        string
+	SmtpUsername    string
+	SmtpPassword    string
+
+	MongoUsername     string
+	MongoPassword     string
+	MongoHost         string
+	MongoPort         string
+	MongoDatabaseName string
 }
 
 func SetConfig(path string) {
@@ -46,80 +53,212 @@ func SetConfig(path string) {
 	if err := viper.ReadInConfig(); err != nil {
 		panic(fmt.Sprintf("config not found: %s", err.Error()))
 	}
-
 	if err := viper.Unmarshal(&c); err != nil {
 		log.Fatalf("SetConfig | could not parse config: %v", err)
 	}
 
 	if c.Env == "" {
-		c.Env = "local"
+		log.Fatal("SetConfig | env is required")
+	}
+	if c.ConsulHost == "" {
+		log.Fatal("SetConfig | consul host is required")
+	}
+	if c.ConsulPort == "" {
+		log.Fatal("SetConfig | consul port is required")
 	}
 
-	if c.ServiceName == "" {
-		log.Fatalf("SetConfig | SERVICE_NAME is required")
+	consulClient, err := api.NewClient(&api.Config{
+		Address: fmt.Sprintf("%s:%s", c.ConsulHost, c.ConsulPort),
+	})
+	if err != nil {
+		log.Fatalf("SetConfig | could not connect to consul: %v", err)
 	}
 
-	if c.MongoUsername == "" {
-		log.Fatalf("SetConfig | MONGO_USERNAME is required")
-	}
+	// Get Consul Key / Value
+	kv := consulClient.KV()
+	wg := &sync.WaitGroup{}
 
-	if c.MongoPassword == "" {
-		log.Fatalf("SetConfig | MONGO_PASSWORD is required")
-	}
+	// Telemetry Config
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		pair, _, err := kv.Get(fmt.Sprintf("%s/telemetry/jaeger/JAEGER_TELEMETRY_HOST", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get telemetry host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | telemetry host is required")
+		}
+		c.JaegerTelemetryHost = string(pair.Value)
+		pair, _, err = kv.Get(fmt.Sprintf("%s/telemetry/jaeger/JAEGER_TELEMETRY_PORT", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get telemetry host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | telemetry host is required")
+		}
+		c.JaegerTelemetryPort = string(pair.Value)
+	}()
 
-	if c.MongoHost == "" {
-		log.Fatalf("SetConfig | MONGO_HOST is required")
-	}
+	// RabbitMQ Config
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		pair, _, err := kv.Get(fmt.Sprintf("%s/broker/rabbitmq/RABBITMQ_USERNAME", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get RABBITMQ_USERNAME host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | RABBITMQ_USERNAME host is required")
+		}
+		c.RabbitMQUsername = string(pair.Value)
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/RABBITMQ_PASSWORD", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get RABBITMQ_PASSWORD host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | RABBITMQ_PASSWORD host is required")
+		}
+		c.RabbitMQPassword = string(pair.Value)
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/RABBITMQ_HOST", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get RABBITMQ_HOST host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | RABBITMQ_HOST host is required")
+		}
+		c.RabbitMQHost = string(pair.Value)
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/RABBITMQ_PORT", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get RABBITMQ_PORT host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | RABBITMQ_PORT host is required")
+		}
+		c.RabbitMQPort = string(pair.Value)
+	}()
 
-	if c.MongoPort == "" {
-		log.Fatalf("SetConfig | MONGO_PORT is required")
-	}
+	// SMTP Config
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		pair, _, err := kv.Get(fmt.Sprintf("%s/smtp/SMTP_SENDER_EMAIL", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get SMTP_SENDER_EMAIL host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | SMTP_SENDER_EMAIL host is required")
+		}
+		c.SmtpSenderEmail = string(pair.Value)
 
-	if c.MongoDatabaseName == "" {
-		log.Fatalf("SetConfig | MONGO_DATABASE_NAME is required")
-	}
+		pair, _, err = kv.Get(fmt.Sprintf("%s/smtp/SMTP_USERNAME", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get SMTP_USERNAME host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | SMTP_USERNAME host is required")
+		}
+		c.SmtpUsername = string(pair.Value)
 
-	if c.RabbitMQUsername == "" {
-		log.Fatalf("SetConfig | RABBITMQ_USERNAME is required")
-	}
-	if c.RabbitMQPassword == "" {
-		log.Fatalf("SetConfig | RABBITMQ_PASSWORD is required")
-	}
+		pair, _, err = kv.Get(fmt.Sprintf("%s/smtp/SMTP_PASSWORD", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get SMTP_PASSWORD host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | SMTP_PASSWORD host is required")
+		}
+		c.SmtpPassword = string(pair.Value)
 
-	if c.RabbitMQHost == "" {
-		log.Fatalf("SetConfig | RABBITMQ_HOST is required")
-	}
+		pair, _, err = kv.Get(fmt.Sprintf("%s/smtp/SMTP_HOST", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get SMTP_HOST host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | SMTP_HOST host is required")
+		}
+		c.SmtpHost = string(pair.Value)
 
-	if c.RabbitMQPort == "" {
-		log.Fatalf("SetConfig | RABBITMQ_PORT is required")
-	}
+		pair, _, err = kv.Get(fmt.Sprintf("%s/smtp/SMTP_PORT", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get SMTP_PORT host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | SMTP_PORT host is required")
+		}
+		c.SmtpPort = string(pair.Value)
+	}()
 
-	if c.SmtpSenderEmail == "" {
-		log.Fatalf("SetConfig | SMTP_SENDER_EMAIL is required")
-	}
+	// MongoDB Config
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		pair, _, err := kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_USERNAME", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get MONGO_USERNAME host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | MONGO_USERNAME host is required")
+		}
+		c.MongoUsername = string(pair.Value)
 
-	//if c.SmtpUsername == "" {
-	//	log.Fatalf("SetConfig | SMTP_USERNAME is required")
-	//}
-	//
-	//if c.SmtpPassword == "" {
-	//	log.Fatalf("SetConfig | SMTP_PASSWORD is required")
-	//}
+		pair, _, err = kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_PASSWORD", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get MONGO_PASSWORD host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | MONGO_PASSWORD host is required")
+		}
+		c.MongoPassword = string(pair.Value)
 
-	if c.SmtpHost == "" {
-		log.Fatalf("SetConfig | SMTP_HOST is required")
-	}
+		pair, _, err = kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_HOST", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get MONGO_HOST host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | MONGO_HOST host is required")
+		}
+		c.MongoHost = string(pair.Value)
 
-	if c.SmtpPort == 0 {
-		log.Fatalf("SetConfig | SMTP_PORT is required")
-	}
+		pair, _, err = kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_PORT", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get MONGO_PORT host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | MONGO_PORT host is required")
+		}
+		c.MongoPort = string(pair.Value)
 
-	if c.JaegerTelemetryHost == "" {
-		log.Fatalf("SetConfig | JAEGER_TELEMETRY_HOST is required")
-	}
+		pair, _, err = kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_DATABASE_NAME/NOTIFICATION", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get MONGO_DATABASE_NAME/NOTIFICATION host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | MONGO_DATABASE_NAME/NOTIFICATION host is required")
+		}
+		c.MongoDatabaseName = string(pair.Value)
+	}()
 
-	if c.JaegerTelemetryPort == "" {
-		log.Fatalf("SetConfig | JAEGER_TELEMETRY_PORT is required")
+	// Notification Service Config
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		pair, _, err := kv.Get(fmt.Sprintf("%s/services/notification/SERVICE_NAME", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get SERVICE_NAME host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | SERVICE_NAME host is required")
+		}
+		c.ServiceName = string(pair.Value)
+	}()
+
+	wg.Wait()
+
+	if err = consulClient.Agent().ServiceRegister(&api.AgentServiceRegistration{
+		Name: c.ServiceName,
+		Tags: []string{"v1"},
+	}); err != nil {
+		log.Fatalf("Error registering service: %v", err)
 	}
 
 	viper.WatchConfig()
