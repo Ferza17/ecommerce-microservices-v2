@@ -24,34 +24,43 @@ var File_userService_proto protoreflect.FileDescriptor
 
 const file_userService_proto_rawDesc = "" +
 	"\n" +
-	"\x11userService.proto\x12\x05proto\x1a\x11userMessage.proto2\xd4\x02\n" +
+	"\x11userService.proto\x12\x05proto\x1a\x11userMessage.proto2\xeb\x03\n" +
 	"\vUserService\x127\n" +
 	"\fFindUserById\x12\x1a.proto.FindUserByIdRequest\x1a\v.proto.User\x12S\n" +
 	"\x1aFindUserByEmailAndPassword\x12(.proto.FindUserByEmailAndPasswordRequest\x1a\v.proto.User\x12A\n" +
 	"\n" +
 	"CreateUser\x12\x18.proto.CreateUserRequest\x1a\x19.proto.CreateUserResponse\x12t\n" +
-	"\x1bUserLoginByEmailAndPassword\x12).proto.UserLoginByEmailAndPasswordRequest\x1a*.proto.UserLoginByEmailAndPasswordResponseBHZFgithub.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pbb\x06proto3"
+	"\x1bUserLoginByEmailAndPassword\x12).proto.UserLoginByEmailAndPasswordRequest\x1a*.proto.UserLoginByEmailAndPasswordResponse\x12V\n" +
+	"\x11UserLogoutByToken\x12\x1f.proto.UserLogoutByTokenRequest\x1a .proto.UserLogoutByTokenResponse\x12=\n" +
+	"\x0fFindUserByToken\x12\x1d.proto.FindUserByTokenRequest\x1a\v.proto.UserBHZFgithub.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pbb\x06proto3"
 
 var file_userService_proto_goTypes = []any{
-	(*FindUserByIdRequest)(nil),                // 0: proto.FindUserByIdRequest
-	(*FindUserByEmailAndPasswordRequest)(nil),  // 1: proto.FindUserByEmailAndPasswordRequest
-	(*CreateUserRequest)(nil),                  // 2: proto.CreateUserRequest
-	(*UserLoginByEmailAndPasswordRequest)(nil), // 3: proto.UserLoginByEmailAndPasswordRequest
-	(*User)(nil),                                // 4: proto.User
-	(*CreateUserResponse)(nil),                  // 5: proto.CreateUserResponse
-	(*UserLoginByEmailAndPasswordResponse)(nil), // 6: proto.UserLoginByEmailAndPasswordResponse
+	(*FindUserByIdRequest)(nil),                 // 0: proto.FindUserByIdRequest
+	(*FindUserByEmailAndPasswordRequest)(nil),   // 1: proto.FindUserByEmailAndPasswordRequest
+	(*CreateUserRequest)(nil),                   // 2: proto.CreateUserRequest
+	(*UserLoginByEmailAndPasswordRequest)(nil),  // 3: proto.UserLoginByEmailAndPasswordRequest
+	(*UserLogoutByTokenRequest)(nil),            // 4: proto.UserLogoutByTokenRequest
+	(*FindUserByTokenRequest)(nil),              // 5: proto.FindUserByTokenRequest
+	(*User)(nil),                                // 6: proto.User
+	(*CreateUserResponse)(nil),                  // 7: proto.CreateUserResponse
+	(*UserLoginByEmailAndPasswordResponse)(nil), // 8: proto.UserLoginByEmailAndPasswordResponse
+	(*UserLogoutByTokenResponse)(nil),           // 9: proto.UserLogoutByTokenResponse
 }
 var file_userService_proto_depIdxs = []int32{
 	0, // 0: proto.UserService.FindUserById:input_type -> proto.FindUserByIdRequest
 	1, // 1: proto.UserService.FindUserByEmailAndPassword:input_type -> proto.FindUserByEmailAndPasswordRequest
 	2, // 2: proto.UserService.CreateUser:input_type -> proto.CreateUserRequest
 	3, // 3: proto.UserService.UserLoginByEmailAndPassword:input_type -> proto.UserLoginByEmailAndPasswordRequest
-	4, // 4: proto.UserService.FindUserById:output_type -> proto.User
-	4, // 5: proto.UserService.FindUserByEmailAndPassword:output_type -> proto.User
-	5, // 6: proto.UserService.CreateUser:output_type -> proto.CreateUserResponse
-	6, // 7: proto.UserService.UserLoginByEmailAndPassword:output_type -> proto.UserLoginByEmailAndPasswordResponse
-	4, // [4:8] is the sub-list for method output_type
-	0, // [0:4] is the sub-list for method input_type
+	4, // 4: proto.UserService.UserLogoutByToken:input_type -> proto.UserLogoutByTokenRequest
+	5, // 5: proto.UserService.FindUserByToken:input_type -> proto.FindUserByTokenRequest
+	6, // 6: proto.UserService.FindUserById:output_type -> proto.User
+	6, // 7: proto.UserService.FindUserByEmailAndPassword:output_type -> proto.User
+	7, // 8: proto.UserService.CreateUser:output_type -> proto.CreateUserResponse
+	8, // 9: proto.UserService.UserLoginByEmailAndPassword:output_type -> proto.UserLoginByEmailAndPasswordResponse
+	9, // 10: proto.UserService.UserLogoutByToken:output_type -> proto.UserLogoutByTokenResponse
+	6, // 11: proto.UserService.FindUserByToken:output_type -> proto.User
+	6, // [6:12] is the sub-list for method output_type
+	0, // [0:6] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name

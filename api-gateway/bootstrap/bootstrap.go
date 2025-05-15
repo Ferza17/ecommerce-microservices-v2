@@ -4,6 +4,7 @@ import (
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/rabbitmq"
 	rpcClientInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/service"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/telemetry"
+	authPresenter "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/auth/presenter"
 	authUseCase "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/auth/usecase"
 	newCartUseCase "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/commerce/cart/usecase"
 	productUseCase "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/product/usecase"
@@ -17,6 +18,8 @@ type Bootstrap struct {
 	RabbitMQInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
 	RpcClientInfrastructure rpcClientInfrastructure.IService
 	TelemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
+
+	AuthPresenter authPresenter.IAuthPresenter
 
 	// For Injection to GraphQL Resolver
 	UserUseCase    userUseCase.IUserUseCase
@@ -40,6 +43,9 @@ func NewBootstrap() *Bootstrap {
 	newCartUseCase := newCartUseCase.NewCartUseCase(newRpcClientInfrastructure, newRabbitMQInfrastructure, newTelemetryInfrastructure, logger)
 	newAuthUseCase := authUseCase.NewAuthUseCase(newRabbitMQInfrastructure, newTelemetryInfrastructure, newRpcClientInfrastructure, logger)
 
+	// Presenter (Only for REST public API)
+	newAuthPresenter := authPresenter.NewAuthPresenter(newAuthUseCase, newUserUseCase, newTelemetryInfrastructure, logger)
+
 	return &Bootstrap{
 		Logger:                  logger,
 		RabbitMQInfrastructure:  newRabbitMQInfrastructure,
@@ -49,5 +55,6 @@ func NewBootstrap() *Bootstrap {
 		ProductUseCase:          newProductUseCase,
 		CartUseCase:             newCartUseCase,
 		AuthUseCase:             newAuthUseCase,
+		AuthPresenter:           newAuthPresenter,
 	}
 }

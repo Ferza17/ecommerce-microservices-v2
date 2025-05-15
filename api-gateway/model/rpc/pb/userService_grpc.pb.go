@@ -23,6 +23,8 @@ const (
 	UserService_FindUserByEmailAndPassword_FullMethodName  = "/proto.UserService/FindUserByEmailAndPassword"
 	UserService_CreateUser_FullMethodName                  = "/proto.UserService/CreateUser"
 	UserService_UserLoginByEmailAndPassword_FullMethodName = "/proto.UserService/UserLoginByEmailAndPassword"
+	UserService_UserLogoutByToken_FullMethodName           = "/proto.UserService/UserLogoutByToken"
+	UserService_FindUserByToken_FullMethodName             = "/proto.UserService/FindUserByToken"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -33,6 +35,8 @@ type UserServiceClient interface {
 	FindUserByEmailAndPassword(ctx context.Context, in *FindUserByEmailAndPasswordRequest, opts ...grpc.CallOption) (*User, error)
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	UserLoginByEmailAndPassword(ctx context.Context, in *UserLoginByEmailAndPasswordRequest, opts ...grpc.CallOption) (*UserLoginByEmailAndPasswordResponse, error)
+	UserLogoutByToken(ctx context.Context, in *UserLogoutByTokenRequest, opts ...grpc.CallOption) (*UserLogoutByTokenResponse, error)
+	FindUserByToken(ctx context.Context, in *FindUserByTokenRequest, opts ...grpc.CallOption) (*User, error)
 }
 
 type userServiceClient struct {
@@ -83,6 +87,26 @@ func (c *userServiceClient) UserLoginByEmailAndPassword(ctx context.Context, in 
 	return out, nil
 }
 
+func (c *userServiceClient) UserLogoutByToken(ctx context.Context, in *UserLogoutByTokenRequest, opts ...grpc.CallOption) (*UserLogoutByTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserLogoutByTokenResponse)
+	err := c.cc.Invoke(ctx, UserService_UserLogoutByToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) FindUserByToken(ctx context.Context, in *FindUserByTokenRequest, opts ...grpc.CallOption) (*User, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(User)
+	err := c.cc.Invoke(ctx, UserService_FindUserByToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations should embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -91,6 +115,8 @@ type UserServiceServer interface {
 	FindUserByEmailAndPassword(context.Context, *FindUserByEmailAndPasswordRequest) (*User, error)
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	UserLoginByEmailAndPassword(context.Context, *UserLoginByEmailAndPasswordRequest) (*UserLoginByEmailAndPasswordResponse, error)
+	UserLogoutByToken(context.Context, *UserLogoutByTokenRequest) (*UserLogoutByTokenResponse, error)
+	FindUserByToken(context.Context, *FindUserByTokenRequest) (*User, error)
 }
 
 // UnimplementedUserServiceServer should be embedded to have
@@ -111,6 +137,12 @@ func (UnimplementedUserServiceServer) CreateUser(context.Context, *CreateUserReq
 }
 func (UnimplementedUserServiceServer) UserLoginByEmailAndPassword(context.Context, *UserLoginByEmailAndPasswordRequest) (*UserLoginByEmailAndPasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserLoginByEmailAndPassword not implemented")
+}
+func (UnimplementedUserServiceServer) UserLogoutByToken(context.Context, *UserLogoutByTokenRequest) (*UserLogoutByTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserLogoutByToken not implemented")
+}
+func (UnimplementedUserServiceServer) FindUserByToken(context.Context, *FindUserByTokenRequest) (*User, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindUserByToken not implemented")
 }
 func (UnimplementedUserServiceServer) testEmbeddedByValue() {}
 
@@ -204,6 +236,42 @@ func _UserService_UserLoginByEmailAndPassword_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_UserLogoutByToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserLogoutByTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UserLogoutByToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UserLogoutByToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UserLogoutByToken(ctx, req.(*UserLogoutByTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_FindUserByToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindUserByTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).FindUserByToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_FindUserByToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).FindUserByToken(ctx, req.(*FindUserByTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -226,6 +294,14 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UserLoginByEmailAndPassword",
 			Handler:    _UserService_UserLoginByEmailAndPassword_Handler,
+		},
+		{
+			MethodName: "UserLogoutByToken",
+			Handler:    _UserService_UserLogoutByToken_Handler,
+		},
+		{
+			MethodName: "FindUserByToken",
+			Handler:    _UserService_FindUserByToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

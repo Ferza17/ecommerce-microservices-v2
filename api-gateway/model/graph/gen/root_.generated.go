@@ -88,15 +88,14 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateCartItem              func(childComplexity int, input *pb.CreateCartItemRequest) int
-		CreateProduct               func(childComplexity int, input pb.CreateProductRequest) int
-		CreateUser                  func(childComplexity int, input pb.CreateUserRequest) int
-		DeleteCartItem              func(childComplexity int, input *pb.DeleteCartItemRequest) int
-		DeleteProductByID           func(childComplexity int, id string) int
-		UpdateCartItemByID          func(childComplexity int, input *pb.UpdateCartItemByIdRequest) int
-		UpdateProductByID           func(childComplexity int, input pb.UpdateProductByIdRequest) int
-		UpdateUserByID              func(childComplexity int, input pb.UpdateUserByIdRequest) int
-		UserLoginByEmailAndPassword func(childComplexity int, input *pb.UserLoginByEmailAndPasswordRequest) int
+		CreateCartItem     func(childComplexity int, input *pb.CreateCartItemRequest) int
+		CreateProduct      func(childComplexity int, input pb.CreateProductRequest) int
+		CreateUser         func(childComplexity int, input pb.CreateUserRequest) int
+		DeleteCartItem     func(childComplexity int, input *pb.DeleteCartItemRequest) int
+		DeleteProductByID  func(childComplexity int, id string) int
+		UpdateCartItemByID func(childComplexity int, input *pb.UpdateCartItemByIdRequest) int
+		UpdateProductByID  func(childComplexity int, input pb.UpdateProductByIdRequest) int
+		UpdateUserByID     func(childComplexity int, input pb.UpdateUserByIdRequest) int
 	}
 
 	Product struct {
@@ -136,11 +135,6 @@ type ComplexityRoot struct {
 		Name        func(childComplexity int) int
 		Password    func(childComplexity int) int
 		UpdatedAt   func(childComplexity int) int
-	}
-
-	UserLoginByEmailAndPasswordResponse struct {
-		RefreshToken func(childComplexity int) int
-		Token        func(childComplexity int) int
 	}
 }
 
@@ -392,18 +386,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Mutation.UpdateUserByID(childComplexity, args["input"].(pb.UpdateUserByIdRequest)), true
 
-	case "Mutation.userLoginByEmailAndPassword":
-		if e.complexity.Mutation.UserLoginByEmailAndPassword == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_userLoginByEmailAndPassword_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.UserLoginByEmailAndPassword(childComplexity, args["input"].(*pb.UserLoginByEmailAndPasswordRequest)), true
-
 	case "Product.createdAt":
 		if e.complexity.Product.CreatedAt == nil {
 			break
@@ -597,20 +579,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.User.UpdatedAt(childComplexity), true
 
-	case "UserLoginByEmailAndPasswordResponse.refreshToken":
-		if e.complexity.UserLoginByEmailAndPasswordResponse.RefreshToken == nil {
-			break
-		}
-
-		return e.complexity.UserLoginByEmailAndPasswordResponse.RefreshToken(childComplexity), true
-
-	case "UserLoginByEmailAndPasswordResponse.token":
-		if e.complexity.UserLoginByEmailAndPasswordResponse.Token == nil {
-			break
-		}
-
-		return e.complexity.UserLoginByEmailAndPasswordResponse.Token(childComplexity), true
-
 	}
 	return 0, false
 }
@@ -629,7 +597,6 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputUpdateCartItemByIdRequest,
 		ec.unmarshalInputUpdateProductByIdRequest,
 		ec.unmarshalInputUpdateUserByIdRequest,
-		ec.unmarshalInputUserLoginByEmailAndPasswordRequest,
 	)
 	first := true
 
@@ -889,23 +856,10 @@ type UpdateUserByIdResponse {
 input FindUserByEmailAndPasswordRequest {
     email: String!
     password: String!
-}
-
-input UserLoginByEmailAndPasswordRequest {
-    email: String!
-    password: String!
-}
-
-type UserLoginByEmailAndPasswordResponse {
-    token: String!
-    refreshToken: String!
-}
-`, BuiltIn: false},
+}`, BuiltIn: false},
 	{Name: "../schema/userMutation.graphqls", Input: `extend type Mutation {
     createUser(input: CreateUserRequest!): CreateUserResponse!
     updateUserById(input: UpdateUserByIdRequest!): UpdateUserByIdResponse
-    userLoginByEmailAndPassword(input: UserLoginByEmailAndPasswordRequest): UserLoginByEmailAndPasswordResponse
-    
 }`, BuiltIn: false},
 	{Name: "../schema/userQuery.graphqls", Input: `extend type Query {
     findUserById(id: String!): User

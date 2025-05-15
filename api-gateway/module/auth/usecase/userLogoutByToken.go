@@ -11,35 +11,37 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId string, req *pb.UserLoginByEmailAndPasswordRequest) (*pb.UserLoginByEmailAndPasswordResponse, error) {
+func (u *authUseCase) UserLogoutByToken(ctx context.Context, requestId string, req *pb.UserLogoutByTokenRequest) (*pb.UserLogoutByTokenResponse, error) {
 	var (
 		err        error = nil
 		eventStore       = &pb.EventStore{
 			RequestId:     requestId,
 			Service:       enum.UserService.String(),
-			EventType:     enum.USER_LOGIN.String(),
+			EventType:     enum.USER_LOGOUT.String(),
 			Status:        enum.PENDING.String(),
 			PreviousState: nil,
 			CreatedAt:     timestamppb.Now(),
 			UpdatedAt:     timestamppb.Now(),
 		}
 	)
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.UserLoginByEmailAndPassword")
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.UserLogoutByToken")
 	defer span.End()
 
 	// Validation If User Exists
 	ctx = metadata.NewOutgoingContext(ctx, metadata.New(map[string]string{
 		enum.XRequestIDHeader.String(): requestId,
 	}))
-	user, err := u.rpcClient.GetUserService().FindUserByEmailAndPassword(ctx, &pb.FindUserByEmailAndPasswordRequest{
-		Email:    req.Email,
-		Password: req.Password,
+
+	user, err := u.rpcClient.GetUserService().FindUserByToken(ctx, &pb.FindUserByTokenRequest{
+		Token: req.Token,
 	})
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("error finding user by email and password: %s", err.Error()))
 		return nil, err
 	}
+
 	if user == nil {
+		u.logger.Error(fmt.Sprintf("user not found"))
 		return nil, fmt.Errorf("user not found")
 	}
 
@@ -66,17 +68,14 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 		return nil, err
 	}
 	eventStore.Payload = payload
-
 	message, err := proto.Marshal(req)
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("error marshaling message: %s", err.Error()))
 		return nil, err
 	}
-
-	if err = u.rabbitMQ.Publish(ctx, requestId, enum.UserExchange, enum.USER_LOGIN, message); err != nil {
+	if err = u.rabbitMQ.Publish(ctx, requestId, enum.UserExchange, enum.USER_LOGOUT, message); err != nil {
 		u.logger.Error(fmt.Sprintf("error publishing message to rabbitmq: %s", err.Error()))
 		return nil, err
 	}
-
-	return &pb.UserLoginByEmailAndPasswordResponse{}, nil
+	return &pb.UserLogoutByTokenResponse{}, nil
 }

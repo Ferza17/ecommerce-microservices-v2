@@ -53,3 +53,13 @@ message UserLoginByEmailAndPasswordResponse {
   string token = 1;
   string refreshToken = 2;
 }
+
+message UserLogoutByTokenRequest {
+  string token = 1;
+}
+
+message UserLogoutByTokenResponse {}
+
+message FindUserByTokenRequest {
+  string token = 1;
+}

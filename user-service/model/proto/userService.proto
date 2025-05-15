@@ -8,4 +8,6 @@ service UserService {
   rpc FindUserById(FindUserByIdRequest) returns (User);
   rpc FindUserByEmailAndPassword(FindUserByEmailAndPasswordRequest) returns (User);
   rpc UserLoginByEmailAndPassword(UserLoginByEmailAndPasswordRequest) returns (UserLoginByEmailAndPasswordResponse);
+  rpc UserLogoutByToken(UserLogoutByTokenRequest) returns (UserLogoutByTokenResponse);
+  rpc FindUserByToken(FindUserByTokenRequest) returns (User);
 }

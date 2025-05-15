@@ -24,7 +24,6 @@ type MutationResolver interface {
 	DeleteProductByID(ctx context.Context, id string) (*pb.DeleteProductByIdResponse, error)
 	CreateUser(ctx context.Context, input pb.CreateUserRequest) (*pb.CreateUserResponse, error)
 	UpdateUserByID(ctx context.Context, input pb.UpdateUserByIdRequest) (*pb.UpdateUserByIdResponse, error)
-	UserLoginByEmailAndPassword(ctx context.Context, input *pb.UserLoginByEmailAndPasswordRequest) (*pb.UserLoginByEmailAndPasswordResponse, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -212,29 +211,6 @@ func (ec *executionContext) field_Mutation_updateUserById_argsInput(
 	}
 
 	var zeroVal pb.UpdateUserByIdRequest
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_Mutation_userLoginByEmailAndPassword_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := ec.field_Mutation_userLoginByEmailAndPassword_argsInput(ctx, rawArgs)
-	if err != nil {
-		return nil, err
-	}
-	args["input"] = arg0
-	return args, nil
-}
-func (ec *executionContext) field_Mutation_userLoginByEmailAndPassword_argsInput(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*pb.UserLoginByEmailAndPasswordRequest, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalOUserLoginByEmailAndPasswordRequest2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐUserLoginByEmailAndPasswordRequest(ctx, tmp)
-	}
-
-	var zeroVal *pb.UserLoginByEmailAndPasswordRequest
 	return zeroVal, nil
 }
 
@@ -724,64 +700,6 @@ func (ec *executionContext) fieldContext_Mutation_updateUserById(ctx context.Con
 	return fc, nil
 }
 
-func (ec *executionContext) _Mutation_userLoginByEmailAndPassword(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_userLoginByEmailAndPassword(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UserLoginByEmailAndPassword(rctx, fc.Args["input"].(*pb.UserLoginByEmailAndPasswordRequest))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*pb.UserLoginByEmailAndPasswordResponse)
-	fc.Result = res
-	return ec.marshalOUserLoginByEmailAndPasswordResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐUserLoginByEmailAndPasswordResponse(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_userLoginByEmailAndPassword(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "token":
-				return ec.fieldContext_UserLoginByEmailAndPasswordResponse_token(ctx, field)
-			case "refreshToken":
-				return ec.fieldContext_UserLoginByEmailAndPasswordResponse_refreshToken(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type UserLoginByEmailAndPasswordResponse", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_userLoginByEmailAndPassword_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
 // endregion **************************** field.gotpl *****************************
 
 // region    **************************** input.gotpl *****************************
@@ -856,10 +774,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "updateUserById":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_updateUserById(ctx, field)
-			})
-		case "userLoginByEmailAndPassword":
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_userLoginByEmailAndPassword(ctx, field)
 			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))

@@ -94,8 +94,16 @@ func (srv *GraphQLTransport) Serve() {
 
 	// HTTP GraphQLTransport Routes
 	r.Route("/api/v1", func(r chi.Router) {
-		r.Handle("/query", server)
-		r.Handle("/docs", playground.Handler("GraphQL playground", "/api/v1/query"))
+		r.Route("/public", func(r chi.Router) {
+			r.Post("/user/register", srv.bootstrap.AuthPresenter.CreateUser)
+			r.Post("/user/login", srv.bootstrap.AuthPresenter.UserLoginByEmailAndPassword)
+			r.Post("/user/logout", srv.bootstrap.AuthPresenter.UserLogoutByToken)
+		})
+		r.Route("/private", func(r chi.Router) {
+			// TODO: Implement JWT Authentication
+			r.Handle("/query", server)
+			r.Handle("/docs", playground.Handler("GraphQL playground", "/api/v1/private/query"))
+		})
 	})
 
 	walkFunc := func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {

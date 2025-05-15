@@ -13,6 +13,7 @@ import (
 type (
 	IAuthUseCase interface {
 		UserLoginByEmailAndPassword(ctx context.Context, requestId string, input *pb.UserLoginByEmailAndPasswordRequest) (*pb.UserLoginByEmailAndPasswordResponse, error)
+		UserLogoutByToken(ctx context.Context, requestId string, input *pb.UserLogoutByTokenRequest) (*pb.UserLogoutByTokenResponse, error)
 	}
 	authUseCase struct {
 		rabbitMQ                rabbitmqInfrastructure.IRabbitMQInfrastructure

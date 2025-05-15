@@ -33,13 +33,3 @@ input FindUserByEmailAndPasswordRequest {
     email: String!
     password: String!
 }
-
-input UserLoginByEmailAndPasswordRequest {
-    email: String!
-    password: String!
-}
-
-type UserLoginByEmailAndPasswordResponse {
-    token: String!
-    refreshToken: String!
-}
