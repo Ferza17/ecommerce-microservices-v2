@@ -1,4 +1,4 @@
-package service
+package util
 
 import "google.golang.org/grpc/metadata"
 

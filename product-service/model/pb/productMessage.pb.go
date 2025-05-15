@@ -210,9 +210,10 @@ func (x *FindProductsWithPaginationRequest) GetLimit() int32 {
 
 type FindProductsWithPaginationResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Products      map[string]*Product    `protobuf:"bytes,1,rep,name=products,proto3" json:"products,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Data          []*Product             `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
 	Limit         int32                  `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
 	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	Total         int32                  `protobuf:"varint,4,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -247,9 +248,9 @@ func (*FindProductsWithPaginationResponse) Descriptor() ([]byte, []int) {
 	return file_productMessage_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *FindProductsWithPaginationResponse) GetProducts() map[string]*Product {
+func (x *FindProductsWithPaginationResponse) GetData() []*Product {
 	if x != nil {
-		return x.Products
+		return x.Data
 	}
 	return nil
 }
@@ -264,6 +265,13 @@ func (x *FindProductsWithPaginationResponse) GetLimit() int32 {
 func (x *FindProductsWithPaginationResponse) GetPage() int32 {
 	if x != nil {
 		return x.Page
+	}
+	return 0
+}
+
+func (x *FindProductsWithPaginationResponse) GetTotal() int32 {
+	if x != nil {
+		return x.Total
 	}
 	return 0
 }
@@ -641,14 +649,12 @@ const file_productMessage_proto_rawDesc = "" +
 	"\x03ids\x18\x01 \x03(\tR\x03ids\x12\x12\n" +
 	"\x04name\x18\x02 \x03(\tR\x04name\x12\x12\n" +
 	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x14\n" +
-	"\x05limit\x18\x04 \x01(\x05R\x05limit\"\xf0\x01\n" +
-	"\"FindProductsWithPaginationResponse\x12S\n" +
-	"\bproducts\x18\x01 \x03(\v27.proto.FindProductsWithPaginationResponse.ProductsEntryR\bproducts\x12\x14\n" +
+	"\x05limit\x18\x04 \x01(\x05R\x05limit\"\x88\x01\n" +
+	"\"FindProductsWithPaginationResponse\x12\"\n" +
+	"\x04data\x18\x01 \x03(\v2\x0e.proto.ProductR\x04data\x12\x14\n" +
 	"\x05limit\x18\x02 \x01(\x05R\x05limit\x12\x12\n" +
-	"\x04page\x18\x03 \x01(\x05R\x04page\x1aK\n" +
-	"\rProductsEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12$\n" +
-	"\x05value\x18\x02 \x01(\v2\x0e.proto.ProductR\x05value:\x028\x01\"(\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x14\n" +
+	"\x05total\x18\x04 \x01(\x05R\x05total\"(\n" +
 	"\x16FindProductByIdRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\xa0\x01\n" +
 	"\x14CreateProductRequest\x12\x12\n" +
@@ -691,7 +697,7 @@ func file_productMessage_proto_rawDescGZIP() []byte {
 	return file_productMessage_proto_rawDescData
 }
 
-var file_productMessage_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_productMessage_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_productMessage_proto_goTypes = []any{
 	(*Product)(nil), // 0: proto.Product
 	(*FindProductsWithPaginationRequest)(nil),  // 1: proto.FindProductsWithPaginationRequest
@@ -702,20 +708,18 @@ var file_productMessage_proto_goTypes = []any{
 	(*UpdateProductByIdRequest)(nil),           // 6: proto.UpdateProductByIdRequest
 	(*DeleteProductByIdRequest)(nil),           // 7: proto.DeleteProductByIdRequest
 	(*DeleteProductByIdResponse)(nil),          // 8: proto.DeleteProductByIdResponse
-	nil,                                        // 9: proto.FindProductsWithPaginationResponse.ProductsEntry
-	(*timestamppb.Timestamp)(nil),              // 10: google.protobuf.Timestamp
+	(*timestamppb.Timestamp)(nil),              // 9: google.protobuf.Timestamp
 }
 var file_productMessage_proto_depIdxs = []int32{
-	10, // 0: proto.Product.createdAt:type_name -> google.protobuf.Timestamp
-	10, // 1: proto.Product.updatedAt:type_name -> google.protobuf.Timestamp
-	10, // 2: proto.Product.discardedAt:type_name -> google.protobuf.Timestamp
-	9,  // 3: proto.FindProductsWithPaginationResponse.products:type_name -> proto.FindProductsWithPaginationResponse.ProductsEntry
-	0,  // 4: proto.FindProductsWithPaginationResponse.ProductsEntry.value:type_name -> proto.Product
-	5,  // [5:5] is the sub-list for method output_type
-	5,  // [5:5] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	9, // 0: proto.Product.createdAt:type_name -> google.protobuf.Timestamp
+	9, // 1: proto.Product.updatedAt:type_name -> google.protobuf.Timestamp
+	9, // 2: proto.Product.discardedAt:type_name -> google.protobuf.Timestamp
+	0, // 3: proto.FindProductsWithPaginationResponse.data:type_name -> proto.Product
+	4, // [4:4] is the sub-list for method output_type
+	4, // [4:4] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_productMessage_proto_init() }
@@ -730,7 +734,7 @@ func file_productMessage_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_productMessage_proto_rawDesc), len(file_productMessage_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

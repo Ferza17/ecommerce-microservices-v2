@@ -34,7 +34,6 @@ type Config struct {
 
 type ResolverRoot interface {
 	CartItem() CartItemResolver
-	FindProductsWithPaginationResponse() FindProductsWithPaginationResponseResolver
 	Mutation() MutationResolver
 	Product() ProductResolver
 	Query() QueryResolver
@@ -82,9 +81,10 @@ type ComplexityRoot struct {
 	}
 
 	FindProductsWithPaginationResponse struct {
-		Limit    func(childComplexity int) int
-		Page     func(childComplexity int) int
-		Products func(childComplexity int) int
+		Data  func(childComplexity int) int
+		Limit func(childComplexity int) int
+		Page  func(childComplexity int) int
+		Total func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -268,6 +268,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.FindCartItemsWithPaginationResponse.Page(childComplexity), true
 
+	case "FindProductsWithPaginationResponse.data":
+		if e.complexity.FindProductsWithPaginationResponse.Data == nil {
+			break
+		}
+
+		return e.complexity.FindProductsWithPaginationResponse.Data(childComplexity), true
+
 	case "FindProductsWithPaginationResponse.limit":
 		if e.complexity.FindProductsWithPaginationResponse.Limit == nil {
 			break
@@ -282,12 +289,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.FindProductsWithPaginationResponse.Page(childComplexity), true
 
-	case "FindProductsWithPaginationResponse.products":
-		if e.complexity.FindProductsWithPaginationResponse.Products == nil {
+	case "FindProductsWithPaginationResponse.total":
+		if e.complexity.FindProductsWithPaginationResponse.Total == nil {
 			break
 		}
 
-		return e.complexity.FindProductsWithPaginationResponse.Products(childComplexity), true
+		return e.complexity.FindProductsWithPaginationResponse.Total(childComplexity), true
 
 	case "Mutation.createCartItem":
 		if e.complexity.Mutation.CreateCartItem == nil {
@@ -799,9 +806,10 @@ type Product {
 }
 
 type FindProductsWithPaginationResponse {
-    products: [Product!]!
+    data: [Product!]!
     limit: Int!
     page: Int!
+    total: Int!
 }
 
 type DeleteProductByIdResponse {
@@ -828,7 +836,7 @@ input UpdateProductByIdRequest {
 }
 
 input FindProductsWithPaginationRequest {
-    ids: [ID!]
+    ids: [ID]
     name: [String!]
     page: Int!
     limit: Int!

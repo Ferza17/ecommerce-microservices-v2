@@ -14,9 +14,10 @@ type Product {
 }
 
 type FindProductsWithPaginationResponse {
-    products: [Product!]!
+    data: [Product!]!
     limit: Int!
     page: Int!
+    total: Int!
 }
 
 type DeleteProductByIdResponse {
@@ -43,7 +44,7 @@ input UpdateProductByIdRequest {
 }
 
 input FindProductsWithPaginationRequest {
-    ids: [ID!]
+    ids: [ID]
     name: [String!]
     page: Int!
     limit: Int!

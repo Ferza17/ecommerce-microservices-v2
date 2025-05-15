@@ -29,9 +29,10 @@ message FindProductsWithPaginationRequest {
 }
 
 message FindProductsWithPaginationResponse {
-  map <string, Product> products = 1;
+  repeated Product data = 1;
   int32 limit = 2;
   int32 page = 3;
+  int32 total = 4;
 }
 
 message FindProductByIdRequest {
@@ -52,8 +53,7 @@ message CreateProductResponse {
 }
 
 message UpdateProductByIdRequest {
-  string id = 1;
-  optional string name = 2;
+  string id = 1;optional string name = 2;
   optional string description = 3;
   optional string uom = 4;
   optional string image = 5;

@@ -29,9 +29,10 @@ message FindProductsWithPaginationRequest {
 }
 
 message FindProductsWithPaginationResponse {
-    map <string, Product> products = 1;
+  repeated Product data = 1;
   int32 limit = 2;
   int32 page = 3;
+  int32 total = 4;
 }
 
 message FindProductByIdRequest {

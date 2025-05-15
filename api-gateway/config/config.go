@@ -151,7 +151,7 @@ func SetConfig(path string) {
 			log.Fatal("SetConfig | Consul | PRODUCT RPC_PORT host is required")
 		}
 		productServiceRpcPort := string(pair.Value)
-		c.ProductServiceURL = fmt.Sprintf("http://%s:%s", productServiceRpcHost, productServiceRpcPort)
+		c.ProductServiceURL = fmt.Sprintf("%s:%s", productServiceRpcHost, productServiceRpcPort)
 	}()
 
 	// User Service
@@ -174,7 +174,7 @@ func SetConfig(path string) {
 			log.Fatal("SetConfig | Consul | USER RPC_PORT host is required")
 		}
 		userServiceRpcPort := string(pair.Value)
-		c.UserServiceURL = fmt.Sprintf("http://%s:%s", userServiceRpcHost, userServiceRpcPort)
+		c.UserServiceURL = fmt.Sprintf("%s:%s", userServiceRpcHost, userServiceRpcPort)
 	}()
 
 	// API GATEWAY

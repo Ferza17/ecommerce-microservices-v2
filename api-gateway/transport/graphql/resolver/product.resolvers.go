@@ -6,18 +6,12 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/graph/gen"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/util"
 )
-
-// Products is the resolver for the products field.
-func (r *findProductsWithPaginationResponseResolver) Products(ctx context.Context, obj *pb.FindProductsWithPaginationResponse) ([]*pb.Product, error) {
-	panic(fmt.Errorf("not implemented: Products - products"))
-}
 
 // CreatedAt is the resolver for the createdAt field.
 func (r *productResolver) CreatedAt(ctx context.Context, obj *pb.Product) (*time.Time, error) {
@@ -34,13 +28,7 @@ func (r *productResolver) DiscardedAt(ctx context.Context, obj *pb.Product) (*ti
 	return util.ConvertProtoTimestampToTime(obj.DiscardedAt), nil
 }
 
-// FindProductsWithPaginationResponse returns gen.FindProductsWithPaginationResponseResolver implementation.
-func (r *Resolver) FindProductsWithPaginationResponse() gen.FindProductsWithPaginationResponseResolver {
-	return &findProductsWithPaginationResponseResolver{r}
-}
-
 // Product returns gen.ProductResolver implementation.
 func (r *Resolver) Product() gen.ProductResolver { return &productResolver{r} }
 
-type findProductsWithPaginationResponseResolver struct{ *Resolver }
 type productResolver struct{ *Resolver }

@@ -6,7 +6,6 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
@@ -14,7 +13,9 @@ import (
 
 // FindProductsWithPagination is the resolver for the findProductsWithPagination field.
 func (r *queryResolver) FindProductsWithPagination(ctx context.Context, filter pb.FindProductsWithPaginationRequest) (*pb.FindProductsWithPaginationResponse, error) {
-	panic(fmt.Errorf("not implemented: FindProductsWithPagination - findProductsWithPagination"))
+	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.FindProductsWithPagination")
+	defer span.End()
+	return r.ProductUseCase.FindProductsWithPagination(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &filter)
 }
 
 // FindProductByID is the resolver for the findProductById field.

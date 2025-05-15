@@ -10,18 +10,19 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func (u *ProductUseCase) FindProductById(ctx context.Context, requestId string, req *pb.FindProductByIdRequest) (*pb.Product, error) {
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.FindProductById")
+func (u *ProductUseCase) FindProductsWithPagination(ctx context.Context, requestId string, req *pb.FindProductsWithPaginationRequest) (*pb.FindProductsWithPaginationResponse, error) {
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.FindProductsWithPagination")
 	defer span.End()
 
 	md := metadata.New(map[string]string{enum.XRequestIDHeader.String(): requestId})
 	otel.GetTextMapPropagator().Inject(ctx, &util.MetadataHeaderCarrier{md})
 	ctx = metadata.NewOutgoingContext(ctx, md)
-	product, err := u.rpcClient.GetProductService().FindProductById(ctx, req)
+
+	products, err := u.rpcClient.GetProductService().FindProductsWithPagination(ctx, req)
 	if err != nil {
-		u.logger.Error(fmt.Sprintf("error finding product by id: %v", err))
+		u.logger.Error(fmt.Sprintf("error finding products with pagination: %v", err))
 		return nil, err
 	}
 
-	return product, nil
+	return products, nil
 }

@@ -366,55 +366,45 @@ func (m *FindProductsWithPaginationResponse) validate(all bool) error {
 
 	var errors []error
 
-	{
-		sorted_keys := make([]string, len(m.GetProducts()))
-		i := 0
-		for key := range m.GetProducts() {
-			sorted_keys[i] = key
-			i++
-		}
-		sort.Slice(sorted_keys, func(i, j int) bool { return sorted_keys[i] < sorted_keys[j] })
-		for _, key := range sorted_keys {
-			val := m.GetProducts()[key]
-			_ = val
+	for idx, item := range m.GetData() {
+		_, _ = idx, item
 
-			// no validation rules for Products[key]
-
-			if all {
-				switch v := interface{}(val).(type) {
-				case interface{ ValidateAll() error }:
-					if err := v.ValidateAll(); err != nil {
-						errors = append(errors, FindProductsWithPaginationResponseValidationError{
-							field:  fmt.Sprintf("Products[%v]", key),
-							reason: "embedded message failed validation",
-							cause:  err,
-						})
-					}
-				case interface{ Validate() error }:
-					if err := v.Validate(); err != nil {
-						errors = append(errors, FindProductsWithPaginationResponseValidationError{
-							field:  fmt.Sprintf("Products[%v]", key),
-							reason: "embedded message failed validation",
-							cause:  err,
-						})
-					}
-				}
-			} else if v, ok := interface{}(val).(interface{ Validate() error }); ok {
-				if err := v.Validate(); err != nil {
-					return FindProductsWithPaginationResponseValidationError{
-						field:  fmt.Sprintf("Products[%v]", key),
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, FindProductsWithPaginationResponseValidationError{
+						field:  fmt.Sprintf("Data[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
-					}
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, FindProductsWithPaginationResponseValidationError{
+						field:  fmt.Sprintf("Data[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
 				}
 			}
-
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return FindProductsWithPaginationResponseValidationError{
+					field:  fmt.Sprintf("Data[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
 		}
+
 	}
 
 	// no validation rules for Limit
 
 	// no validation rules for Page
+
+	// no validation rules for Total
 
 	if len(errors) > 0 {
 		return FindProductsWithPaginationResponseMultiError(errors)

@@ -32,7 +32,8 @@ func NewRpcClient(logger pkg.IZapLogger) IService {
 
 	insecureCredentials := grpc.WithTransportCredentials(insecure.NewCredentials()) // For Local Development
 
-	productClient, err := grpc.NewClient(config.Get().ProductServiceURL, insecureCredentials)
+	productServiceUrl := config.Get().ProductServiceURL
+	productClient, err := grpc.NewClient(productServiceUrl, insecureCredentials)
 	if err != nil {
 		logger.Error(fmt.Sprintf("Failed to create a product client: %v", err))
 		return nil

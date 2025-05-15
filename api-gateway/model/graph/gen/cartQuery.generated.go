@@ -273,12 +273,14 @@ func (ec *executionContext) fieldContext_Query_findProductsWithPagination(ctx co
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "products":
-				return ec.fieldContext_FindProductsWithPaginationResponse_products(ctx, field)
+			case "data":
+				return ec.fieldContext_FindProductsWithPaginationResponse_data(ctx, field)
 			case "limit":
 				return ec.fieldContext_FindProductsWithPaginationResponse_limit(ctx, field)
 			case "page":
 				return ec.fieldContext_FindProductsWithPaginationResponse_page(ctx, field)
+			case "total":
+				return ec.fieldContext_FindProductsWithPaginationResponse_total(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type FindProductsWithPaginationResponse", field.Name)
 		},

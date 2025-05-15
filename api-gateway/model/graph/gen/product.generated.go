@@ -19,9 +19,6 @@ import (
 
 // region    ************************** generated!.gotpl **************************
 
-type FindProductsWithPaginationResponseResolver interface {
-	Products(ctx context.Context, obj *pb.FindProductsWithPaginationResponse) ([]*pb.Product, error)
-}
 type ProductResolver interface {
 	CreatedAt(ctx context.Context, obj *pb.Product) (*time.Time, error)
 	UpdatedAt(ctx context.Context, obj *pb.Product) (*time.Time, error)
@@ -128,8 +125,8 @@ func (ec *executionContext) fieldContext_DeleteProductByIdResponse_message(_ con
 	return fc, nil
 }
 
-func (ec *executionContext) _FindProductsWithPaginationResponse_products(ctx context.Context, field graphql.CollectedField, obj *pb.FindProductsWithPaginationResponse) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_FindProductsWithPaginationResponse_products(ctx, field)
+func (ec *executionContext) _FindProductsWithPaginationResponse_data(ctx context.Context, field graphql.CollectedField, obj *pb.FindProductsWithPaginationResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_FindProductsWithPaginationResponse_data(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -142,7 +139,7 @@ func (ec *executionContext) _FindProductsWithPaginationResponse_products(ctx con
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.FindProductsWithPaginationResponse().Products(rctx, obj)
+		return obj.Data, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -159,12 +156,12 @@ func (ec *executionContext) _FindProductsWithPaginationResponse_products(ctx con
 	return ec.marshalNProduct2ᚕᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐProductᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_FindProductsWithPaginationResponse_products(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_FindProductsWithPaginationResponse_data(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "FindProductsWithPaginationResponse",
 		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -270,6 +267,50 @@ func (ec *executionContext) _FindProductsWithPaginationResponse_page(ctx context
 }
 
 func (ec *executionContext) fieldContext_FindProductsWithPaginationResponse_page(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "FindProductsWithPaginationResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _FindProductsWithPaginationResponse_total(ctx context.Context, field graphql.CollectedField, obj *pb.FindProductsWithPaginationResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_FindProductsWithPaginationResponse_total(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Total, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int32)
+	fc.Result = res
+	return ec.marshalNInt2int32(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_FindProductsWithPaginationResponse_total(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "FindProductsWithPaginationResponse",
 		Field:      field,
@@ -795,7 +836,7 @@ func (ec *executionContext) unmarshalInputFindProductsWithPaginationRequest(ctx 
 		switch k {
 		case "ids":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ids"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -993,51 +1034,25 @@ func (ec *executionContext) _FindProductsWithPaginationResponse(ctx context.Cont
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("FindProductsWithPaginationResponse")
-		case "products":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._FindProductsWithPaginationResponse_products(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
+		case "data":
+			out.Values[i] = ec._FindProductsWithPaginationResponse_data(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
 			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "limit":
 			out.Values[i] = ec._FindProductsWithPaginationResponse_limit(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+				out.Invalids++
 			}
 		case "page":
 			out.Values[i] = ec._FindProductsWithPaginationResponse_page(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+				out.Invalids++
+			}
+		case "total":
+			out.Values[i] = ec._FindProductsWithPaginationResponse_total(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))

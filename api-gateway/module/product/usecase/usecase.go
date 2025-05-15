@@ -13,6 +13,7 @@ type (
 	IProductUseCase interface {
 		CreateProduct(ctx context.Context, requestId string, req *pb.CreateProductRequest) (*pb.CreateProductResponse, error)
 		FindProductById(ctx context.Context, requestId string, req *pb.FindProductByIdRequest) (*pb.Product, error)
+		FindProductsWithPagination(ctx context.Context, requestId string, req *pb.FindProductsWithPaginationRequest) (*pb.FindProductsWithPaginationResponse, error)
 	}
 	ProductUseCase struct {
 		rpcClient               rpcClientInfrastructure.IService
