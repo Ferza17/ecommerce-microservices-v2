@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { RabbitmqInfrastructure } from './rabbitmq/rabbitmq';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { Exchange } from '../enum/exchange';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { ClientsModule, Transport } from '@nestjs/microservices';
@@ -10,6 +10,9 @@ import { Service } from '../enum/service';
 import { ProductRpcService } from './rpc/product.rpc.service';
 import { UserRpcService } from './rpc/user.rpc.service';
 import { JaegerTelemetryService } from './telemetry/jaeger.telemetry.service';
+import { ConsulModule } from '../config/consul.module';
+import { ConsulService } from '../config/consul.service';
+import { RabbitMQRootAsync } from '../config/configRoot';
 
 
 @Module({
@@ -18,12 +21,12 @@ import { JaegerTelemetryService } from './telemetry/jaeger.telemetry.service';
     ClientsModule.registerAsync([
       {
         name: Service.ProductService.toString(),
-        imports: [ConfigModule],
-        inject: [ConfigService],
-        useFactory: (configService: ConfigService) => ({
+        imports: [ConsulModule],
+        inject: [ConsulService],
+        useFactory: (config: ConsulService) => ({
           transport: Transport.GRPC,
           options: {
-            url: `${configService.get<number>('PRODUCT_SERVICE_RPC_HOST')}:${configService.get<number>('PRODUCT_SERVICE_RPC_PORT')}`,
+            url: `${config.get('/services/product/RPC_HOST')}:${config.get('/services/product/RPC_PORT')}`,
             package: 'proto',
             protoPath: glob.sync(['proto/*.proto'], {
               cwd: join(__dirname, '../../'),
@@ -39,12 +42,12 @@ import { JaegerTelemetryService } from './telemetry/jaeger.telemetry.service';
     ClientsModule.registerAsync([
       {
         name: Service.UserService.toString(),
-        imports: [ConfigModule],
-        inject: [ConfigService],
-        useFactory: (configService: ConfigService) => ({
+        imports: [ConsulModule],
+        inject: [ConsulService],
+        useFactory: (configService: ConsulService) => ({
           transport: Transport.GRPC,
           options: {
-            url: `${configService.get<number>('USER_SERVICE_RPC_HOST')}:${configService.get<number>('USER_SERVICE_RPC_PORT')}`,
+            url: `${configService.get('/services/user/RPC_HOST')}:${configService.get('/services/product/RPC_PORT')}`,
             package: 'proto',
             protoPath: glob.sync(['proto/*.proto'], {
               cwd: join(__dirname, '../../'),
@@ -57,19 +60,8 @@ import { JaegerTelemetryService } from './telemetry/jaeger.telemetry.service';
         }),
       },
     ]),
-    RabbitMQModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        uri: `amqp://${configService.get<string>('RABBITMQ_USERNAME')}:${configService.get<string>('RABBITMQ_PASSWORD')}@${configService.get<string>('RABBITMQ_HOST')}:${configService.get<number>('RABBITMQ_PORT')}`,
-        exchanges: [
-          {
-            name: Exchange.EventExchange.toString(),
-            type: 'direct',
-          },
-        ],
-      }),
-    }),
+    RabbitMQRootAsync,
+    ConsulModule,
   ],
   providers: [RabbitmqInfrastructure, ProductRpcService, UserRpcService, JaegerTelemetryService],
   exports: [RabbitmqInfrastructure, ProductRpcService, UserRpcService, JaegerTelemetryService],

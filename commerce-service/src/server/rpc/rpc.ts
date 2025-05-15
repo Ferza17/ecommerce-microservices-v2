@@ -15,7 +15,7 @@ export class GrpcServer {
   }
 
   async Serve() {
-    const app = await NestFactory.createMicroservice<MicroserviceOptions>(RpcServerModule, this.grpcClientOptions.getGRPCConfig);
+    const app = await NestFactory.createMicroservice<MicroserviceOptions>(RpcServerModule, await this.grpcClientOptions.getGRPCConfig());
     app.useGlobalInterceptors(new RequestIdInterceptor());
     await app.listen();
     this.logger.log('GRPC Server is running...');

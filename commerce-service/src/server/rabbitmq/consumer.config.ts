@@ -3,21 +3,22 @@ import { ConfigService } from '@nestjs/config';
 import { RmqOptions, Serializer, Transport } from '@nestjs/microservices';
 import { Queue } from '../../enum/queue';
 import { Exchange } from '../../enum/exchange';
+import { ConsulService } from '../../config/consul.service';
 
 
 @Injectable()
 export class RabbitmqOptions {
   constructor(
-    private readonly configService: ConfigService,
+    private readonly consulConfig: ConsulService,
     private queue: Queue,
   ) {
   }
 
-  getRabbitmqOptions(): RmqOptions {
-    const rmqUsername = this.configService.get<string>('RABBITMQ_USERNAME');
-    const rmqPassword = this.configService.get<string>('RABBITMQ_PASSWORD');
-    const rmqHost = this.configService.get<string>('RABBITMQ_HOST');
-    const rmqPort = this.configService.get<number>('RABBITMQ_PORT');
+  async getRabbitmqOptions(): Promise<RmqOptions> {
+    const rmqUsername = await this.consulConfig.get('/broker/rabbitmq/RABBITMQ_USERNAME');
+    const rmqPassword = await this.consulConfig.get('/broker/rabbitmq/RABBITMQ_PASSWORD');
+    const rmqHost = await this.consulConfig.get('/broker/rabbitmq/RABBITMQ_HOST');
+    const rmqPort = await this.consulConfig.get('/broker/rabbitmq/RABBITMQ_PORT');
     const url = `amqp://${rmqUsername}:${rmqPassword}@${rmqHost}:${rmqPort}`;
 
 

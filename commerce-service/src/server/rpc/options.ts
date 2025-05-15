@@ -3,16 +3,16 @@ import { GrpcOptions, Transport } from '@nestjs/microservices';
 import { glob } from 'fast-glob';
 import { join } from 'path';
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConsulService } from '../../config/consul.service';
+
 
 @Injectable()
 export class GrpcClientOptions {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly consulConfig: ConsulService) {}
 
-  get getGRPCConfig(): GrpcOptions {
-    const rpcHost = this.configService.get<number>('RPC_HOST') || 50054;
-    const rpcPort = this.configService.get<number>('RPC_PORT') || 5000;
-
+  async getGRPCConfig(): Promise<GrpcOptions> {
+    const rpcHost = await this.consulConfig.get('/services/commerce/RPC_HOST');
+    const rpcPort = await this.consulConfig.get('/services/commerce/RPC_PORT') || '5000';
 
     return addReflectionToGrpcConfig({
       transport: Transport.GRPC,

@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { configRoot, MongooseRootAsync } from '../../config/configRoot';
 import { ModuleModule } from '../../module/module.module';
-import { InfrastructureModule } from '../../infrastructure/infrastructure.module';
 
 @Module({
   imports: [

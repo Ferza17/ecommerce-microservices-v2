@@ -1,5 +1,4 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Service } from '../../enum/service';
 import { Context, Span, SpanOptions, Tracer } from '@opentelemetry/api';
 import { JaegerExporter } from '@opentelemetry/exporter-jaeger';
@@ -9,6 +8,7 @@ import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
 import { AsyncLocalStorageContextManager } from '@opentelemetry/context-async-hooks';
 import { CompositePropagator, W3CBaggagePropagator, W3CTraceContextPropagator } from '@opentelemetry/core';
 import { Resource } from '@opentelemetry/resources';
+import { ConsulService } from '../../config/consul.service';
 
 
 @Injectable()
@@ -16,12 +16,12 @@ export class JaegerTelemetryService implements OnModuleInit {
   private readonly logger = new Logger(JaegerTelemetryService.name);
   private tt: Tracer;
 
-  constructor(private configService: ConfigService) {
+  constructor(private configService: ConsulService,) {
   }
 
   async onModuleInit() {
     const exporter = new JaegerExporter({
-      endpoint: `http://${this.configService.get('JAEGER_TELEMETRY_HOST')}:${this.configService.get('JAEGER_TELEMETRY_PORT')}/api/traces`,
+      endpoint: `http://${await this.configService.get(`/telemetry/jaeger/JAEGER_TELEMETRY_HOST`)}:${await this.configService.get(`/telemetry/jaeger/JAEGER_TELEMETRY_HOST`)}/api/traces`,
     });
 
     const provider = new BasicTracerProvider({
