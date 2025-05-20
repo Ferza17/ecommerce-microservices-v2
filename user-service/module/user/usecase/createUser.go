@@ -83,12 +83,13 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 		return nil, err
 	}
 
+	expTime := config.Get().JwtAccessTokenExpirationTime
 	accessToken, err := pkg.GenerateToken(pkg.Claim{
 		UserID:    result,
 		CreatedAt: &now,
 		StandardClaims: jwt.StandardClaims{
 			Audience:  enum.UserService.String(),
-			ExpiresAt: now.Add(config.Get().JwtAccessTokenExpirationTime).Unix(),
+			ExpiresAt: now.Add(expTime).Unix(),
 		},
 	}, config.Get().JwtAccessTokenSecret)
 	if err != nil {

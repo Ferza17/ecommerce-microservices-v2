@@ -33,10 +33,10 @@ var (
 func init() {
 	config.SetConfig(".")
 	bootstrap = bootstrap2.NewBootstrap()
-	graphQLServer = graphql.NewServer(
+	graphQLServer = graphql.NewGraphQLTransport(
 		config.Get().HttpHost,
 		config.Get().HttpPort,
-		graphql.NewBootstrap(bootstrap),
+		bootstrap,
 	)
 }
 

@@ -2,6 +2,7 @@ package presenter
 
 import (
 	"context"
+	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
 	"google.golang.org/grpc/codes"
@@ -9,12 +10,12 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (p *UserPresenter) FindUserById(ctx context.Context, req *pb.FindUserByIdRequest) (*pb.User, error) {
+func (p *AuthPresenter) FindUserByToken(ctx context.Context, req *pb.FindUserByTokenRequest) (*pb.User, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.InvalidArgument, "metadata not found")
 	}
-	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.FindUserById")
+	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.FindUserByToken")
 	defer span.End()
 
 	requestID := ""
@@ -22,13 +23,12 @@ func (p *UserPresenter) FindUserById(ctx context.Context, req *pb.FindUserByIdRe
 		requestID = values[0]
 	}
 
-	if err := req.Validate(); err != nil {
+	resp, err := p.authUseCase.FindUserByToken(ctx, requestID, req)
+	if err != nil {
+		span.RecordError(err)
+		p.logger.Error(fmt.Sprintf("requestId : %s , error finding user by token: %v", requestID, err))
 		return nil, err
 	}
 
-	res, err := p.userUseCase.FindUserById(ctx, requestID, req)
-	if err != nil {
-		return nil, err
-	}
-	return res, nil
+	return resp, nil
 }

@@ -14,6 +14,8 @@ func (p *UserPresenter) FindUserByEmailAndPassword(ctx context.Context, req *pb.
 	if !ok {
 		return nil, status.Error(codes.InvalidArgument, "metadata not found")
 	}
+	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.FindUserByEmailAndPassword")
+	defer span.End()
 
 	requestID := ""
 	if values := md.Get(enum.XRequestIDHeader.String()); len(values) > 0 {

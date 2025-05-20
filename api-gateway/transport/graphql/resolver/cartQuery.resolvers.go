@@ -7,7 +7,6 @@ package resolver
 import (
 	"context"
 	"fmt"
-
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/graph/gen"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
 )

@@ -29,6 +29,7 @@ func (u *UserUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 		defer span.End()
 
 		if err != nil {
+			span.RecordError(err)
 			eventStore.Status = enum.FAILED.String()
 		}
 

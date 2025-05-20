@@ -15,11 +15,11 @@ func (r *productElasticsearchRepository) FindProductsWithPagination(ctx context.
 	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.Elasticsearch.FindProductsWithPagination")
 	defer span.End()
 
-	reqBody := map[string]interface{}{
-		"query": map[string]interface{}{},
-	}
+	reqBody := map[string]interface{}{}
 
 	if request.Name != nil || request.Ids != nil {
+		reqBody["query"] = map[string]interface{}{}
+
 		reqBody["query"].(map[string]interface{})["bool"] = map[string]interface{}{
 			"should": []interface{}{},
 		}

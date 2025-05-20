@@ -14,19 +14,26 @@ type (
 		Close() error
 		GetProductService() pb.ProductServiceClient
 		GetUserService() pb.UserServiceClient
+		GetAuthService() pb.AuthServiceClient
 	}
 
 	service struct {
 		user    pb.UserServiceClient
+		auth    pb.AuthServiceClient
 		product pb.ProductServiceClient
 
 		// For Closing purpose
 		productClient *grpc.ClientConn
+		authClient    *grpc.ClientConn
 		userClient    *grpc.ClientConn
 
 		logger pkg.IZapLogger
 	}
 )
+
+func (c *service) GetAuthService() pb.AuthServiceClient {
+	return c.auth
+}
 
 func NewRpcClient(logger pkg.IZapLogger) IService {
 
@@ -39,7 +46,7 @@ func NewRpcClient(logger pkg.IZapLogger) IService {
 		return nil
 	}
 
-	userClient, err := grpc.NewClient(config.Get().UserServiceURL, insecureCredentials)
+	userAndAuthClient, err := grpc.NewClient(config.Get().UserServiceURL, insecureCredentials)
 	if err != nil {
 		logger.Error(fmt.Sprintf("Failed to create a user client: %v", err))
 		return nil
@@ -48,8 +55,9 @@ func NewRpcClient(logger pkg.IZapLogger) IService {
 	return &service{
 		product:       pb.NewProductServiceClient(productClient),
 		productClient: productClient,
-		user:          pb.NewUserServiceClient(userClient),
-		userClient:    userClient,
+		user:          pb.NewUserServiceClient(userAndAuthClient),
+		userClient:    userAndAuthClient,
+		auth:          pb.NewAuthServiceClient(userAndAuthClient),
 		logger:        logger,
 	}
 }
