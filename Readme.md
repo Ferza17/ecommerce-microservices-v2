@@ -13,6 +13,7 @@
 - [X] Implement Distributed Tracing
 - [ ] Implement Circuit Breaker
 - [ ] Implement Payment Service
+- [ ] Implement Unit Test, mocking use mockery
 - [ ] Add Smart Contracts with Solidity
 
 ## Author
