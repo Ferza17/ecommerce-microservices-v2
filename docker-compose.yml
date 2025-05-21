@@ -1,5 +1,5 @@
 version: "3.8"
-name: "E-COMMERCE_V2"
+name: "ecommerce-v2"
 services:
 
   postgres-local:
