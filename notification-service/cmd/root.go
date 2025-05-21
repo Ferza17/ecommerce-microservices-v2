@@ -34,6 +34,7 @@ func init() {
 	config.SetConfig(".")
 	dependency = bootstrap.NewBootstrap()
 	rabbitMQTransport = rabbitmq.NewServer(dependency)
+
 }
 
 func Shutdown(ctx context.Context) (err error) {

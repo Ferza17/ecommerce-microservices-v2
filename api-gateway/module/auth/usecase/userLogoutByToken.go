@@ -32,7 +32,7 @@ func (u *authUseCase) UserLogoutByToken(ctx context.Context, requestId string, r
 		enum.XRequestIDHeader.String(): requestId,
 	}))
 
-	user, err := u.rpcClient.GetUserService().FindUserByToken(ctx, &pb.FindUserByTokenRequest{
+	user, err := u.rpcClient.GetAuthService().FindUserByToken(ctx, &pb.FindUserByTokenRequest{
 		Token: req.Token,
 	})
 	if err != nil {

@@ -13,6 +13,7 @@ import (
 type (
 	IAuthUseCase interface {
 		UserLoginByEmailAndPassword(ctx context.Context, requestId string, req *pb.UserLoginByEmailAndPasswordRequest) (*pb.UserLoginByEmailAndPasswordResponse, error)
+		FindUserByToken(ctx context.Context, requestId string, req *pb.FindUserByTokenRequest) (*pb.User, error)
 	}
 	authUseCase struct {
 		userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository

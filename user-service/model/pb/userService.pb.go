@@ -24,37 +24,23 @@ var File_userService_proto protoreflect.FileDescriptor
 
 const file_userService_proto_rawDesc = "" +
 	"\n" +
-	"\x11userService.proto\x12\x05proto\x1a\x11userMessage.proto2\xa8\x03\n" +
+	"\x11userService.proto\x12\x05proto\x1a\x11userMessage.proto2\x9b\x01\n" +
 	"\vUserService\x127\n" +
 	"\fFindUserById\x12\x1a.proto.FindUserByIdRequest\x1a\v.proto.User\x12S\n" +
-	"\x1aFindUserByEmailAndPassword\x12(.proto.FindUserByEmailAndPasswordRequest\x1a\v.proto.User\x12t\n" +
-	"\x1bUserLoginByEmailAndPassword\x12).proto.UserLoginByEmailAndPasswordRequest\x1a*.proto.UserLoginByEmailAndPasswordResponse\x12V\n" +
-	"\x11UserLogoutByToken\x12\x1f.proto.UserLogoutByTokenRequest\x1a .proto.UserLogoutByTokenResponse\x12=\n" +
-	"\x0fFindUserByToken\x12\x1d.proto.FindUserByTokenRequest\x1a\v.proto.UserBEZCgithub.com/ferza17/ecommerce-microservices-v2/user-service/model/pbb\x06proto3"
+	"\x1aFindUserByEmailAndPassword\x12(.proto.FindUserByEmailAndPasswordRequest\x1a\v.proto.UserBEZCgithub.com/ferza17/ecommerce-microservices-v2/user-service/model/pbb\x06proto3"
 
 var file_userService_proto_goTypes = []any{
-	(*FindUserByIdRequest)(nil),                 // 0: proto.FindUserByIdRequest
-	(*FindUserByEmailAndPasswordRequest)(nil),   // 1: proto.FindUserByEmailAndPasswordRequest
-	(*UserLoginByEmailAndPasswordRequest)(nil),  // 2: proto.UserLoginByEmailAndPasswordRequest
-	(*UserLogoutByTokenRequest)(nil),            // 3: proto.UserLogoutByTokenRequest
-	(*FindUserByTokenRequest)(nil),              // 4: proto.FindUserByTokenRequest
-	(*User)(nil),                                // 5: proto.User
-	(*UserLoginByEmailAndPasswordResponse)(nil), // 6: proto.UserLoginByEmailAndPasswordResponse
-	(*UserLogoutByTokenResponse)(nil),           // 7: proto.UserLogoutByTokenResponse
+	(*FindUserByIdRequest)(nil),               // 0: proto.FindUserByIdRequest
+	(*FindUserByEmailAndPasswordRequest)(nil), // 1: proto.FindUserByEmailAndPasswordRequest
+	(*User)(nil), // 2: proto.User
 }
 var file_userService_proto_depIdxs = []int32{
 	0, // 0: proto.UserService.FindUserById:input_type -> proto.FindUserByIdRequest
 	1, // 1: proto.UserService.FindUserByEmailAndPassword:input_type -> proto.FindUserByEmailAndPasswordRequest
-	2, // 2: proto.UserService.UserLoginByEmailAndPassword:input_type -> proto.UserLoginByEmailAndPasswordRequest
-	3, // 3: proto.UserService.UserLogoutByToken:input_type -> proto.UserLogoutByTokenRequest
-	4, // 4: proto.UserService.FindUserByToken:input_type -> proto.FindUserByTokenRequest
-	5, // 5: proto.UserService.FindUserById:output_type -> proto.User
-	5, // 6: proto.UserService.FindUserByEmailAndPassword:output_type -> proto.User
-	6, // 7: proto.UserService.UserLoginByEmailAndPassword:output_type -> proto.UserLoginByEmailAndPasswordResponse
-	7, // 8: proto.UserService.UserLogoutByToken:output_type -> proto.UserLogoutByTokenResponse
-	5, // 9: proto.UserService.FindUserByToken:output_type -> proto.User
-	5, // [5:10] is the sub-list for method output_type
-	0, // [0:5] is the sub-list for method input_type
+	2, // 2: proto.UserService.FindUserById:output_type -> proto.User
+	2, // 3: proto.UserService.FindUserByEmailAndPassword:output_type -> proto.User
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name

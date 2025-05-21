@@ -24,7 +24,7 @@ func (i *mailhogInfrastructure) SendMail(mailer *Mailer) error {
 	emailClient.Subject = mailer.Subject
 	emailClient.HTML = templateBuffer.Bytes()
 
-	if err := emailClient.Send(
+	if err = emailClient.Send(
 		fmt.Sprintf("%s:%s", config.Get().SmtpHost, config.Get().SmtpPort),
 		smtp.CRAMMD5Auth(config.Get().SmtpUsername, config.Get().SmtpPassword),
 	); err != nil {

@@ -43,23 +43,3 @@ message FindUserByEmailAndPasswordRequest {
   string email = 1;
   string password = 2;
 }
-
-message UserLoginByEmailAndPasswordRequest {
-  string email = 1;
-  string password = 2;
-}
-
-message UserLoginByEmailAndPasswordResponse {
-  string token = 1;
-  string refreshToken = 2;
-}
-
-message UserLogoutByTokenRequest {
-  string token = 1;
-}
-
-message UserLogoutByTokenResponse {}
-
-message FindUserByTokenRequest {
-  string token = 1;
-}

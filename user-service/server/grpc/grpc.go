@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/bootstrap"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
+	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
+	authPresenter "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/presenter"
+	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/presenter"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
@@ -17,20 +20,24 @@ import (
 
 type (
 	Server struct {
-		address     string
-		port        string
-		grpcServer  *grpc.Server
-		logger      pkg.IZapLogger
-		userUseCase usecase.IUserUseCase
+		address                 string
+		port                    string
+		grpcServer              *grpc.Server
+		logger                  pkg.IZapLogger
+		userUseCase             usecase.IUserUseCase
+		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
+		authUseCase             authUseCase.IAuthUseCase
 	}
 )
 
 func NewServer(dependency *bootstrap.Bootstrap) *Server {
 	return &Server{
-		address:     config.Get().RpcHost,
-		port:        config.Get().RpcPort,
-		logger:      dependency.Logger,
-		userUseCase: dependency.UserUseCase,
+		address:                 config.Get().RpcHost,
+		port:                    config.Get().RpcPort,
+		logger:                  dependency.Logger,
+		userUseCase:             dependency.UserUseCase,
+		telemetryInfrastructure: dependency.TelemetryInfrastructure,
+		authUseCase:             dependency.AuthUseCase,
 	}
 }
 
@@ -49,7 +56,12 @@ func (srv *Server) Serve() {
 	srv.grpcServer = grpc.NewServer(opts...)
 	pb.RegisterUserServiceServer(
 		srv.grpcServer,
-		presenter.NewUserPresenter(srv.userUseCase, srv.logger),
+		presenter.NewUserPresenter(srv.userUseCase, srv.telemetryInfrastructure, srv.logger),
+	)
+
+	pb.RegisterAuthServiceServer(
+		srv.grpcServer,
+		authPresenter.NewAuthPresenter(srv.authUseCase, srv.telemetryInfrastructure, srv.logger),
 	)
 
 	// Enable Reflection to Evans grpc client

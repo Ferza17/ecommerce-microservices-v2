@@ -298,10 +298,9 @@ func SetConfig(path string) {
 		if pair == nil {
 			log.Fatal("SetConfig | Consul | JWT_ACCESS_TOKEN_EXPIRATION_TIME is required")
 		}
-		expirationTime := string(pair.Value)
-		c.JwtRefreshTokenExpirationTime, err = str2duration.ParseDuration(expirationTime)
+		c.JwtAccessTokenExpirationTime, err = str2duration.ParseDuration(string(pair.Value))
 		if err != nil {
-			log.Fatalf("SetConfig | JWT_REFRESH_TOKEN_EXPIRATION_TIME is invalid")
+			log.Fatalf("SetConfig | JWT_ACCESS_TOKEN_EXPIRATION_TIME is invalid")
 		}
 
 		// Refresh Token Token Config
@@ -320,8 +319,7 @@ func SetConfig(path string) {
 		if pair == nil {
 			log.Fatal("SetConfig | Consul | JWT_REFRESH_TOKEN_EXPIRATION_TIME is required")
 		}
-		expirationTime = string(pair.Value)
-		c.JwtRefreshTokenExpirationTime, err = str2duration.ParseDuration(expirationTime)
+		c.JwtRefreshTokenExpirationTime, err = str2duration.ParseDuration(string(pair.Value))
 		if err != nil {
 			log.Fatalf("SetConfig | JWT_REFRESH_TOKEN_EXPIRATION_TIME is invalid")
 		}

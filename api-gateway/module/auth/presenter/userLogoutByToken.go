@@ -7,14 +7,16 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/auth/presenter/dto"
 	"github.com/go-chi/render"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 	"io"
 	"net/http"
 )
 
 func (p *authPresenter) UserLogoutByToken(w http.ResponseWriter, r *http.Request) {
-	ctx, span := p.telemetryInfrastructure.Tracer(r.Context(), "Presenter.UserLogoutByToken")
+	ctx := otel.GetTextMapPropagator().Extract(r.Context(), propagation.HeaderCarrier(r.Header))
+	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.UserLogoutByToken")
 	defer span.End()
-
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		p.logger.Error(fmt.Sprintf("error reading body: %v", err))

@@ -100,12 +100,13 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 		return nil, err
 	}
 
+	te := config.Get().JwtAccessTokenExpirationTime
 	accessToken, err := pkg.GenerateToken(pkg.Claim{
 		UserID:    user.ID,
 		CreatedAt: &now,
 		StandardClaims: jwt.StandardClaims{
 			Audience:  enum.UserService.String(),
-			ExpiresAt: now.Add(config.Get().JwtAccessTokenExpirationTime).Unix(),
+			ExpiresAt: now.Add(te).Unix(),
 		},
 	}, config.Get().JwtAccessTokenSecret)
 	if err != nil {

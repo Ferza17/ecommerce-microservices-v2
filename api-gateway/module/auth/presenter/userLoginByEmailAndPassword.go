@@ -7,12 +7,15 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/auth/presenter/dto"
 	"github.com/go-chi/render"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 	"io"
 	"net/http"
 )
 
 func (p *authPresenter) UserLoginByEmailAndPassword(w http.ResponseWriter, r *http.Request) {
-	ctx, span := p.telemetryInfrastructure.Tracer(r.Context(), "Presenter.UserLoginByEmailAndPasswordRequest")
+	ctx := otel.GetTextMapPropagator().Extract(r.Context(), propagation.HeaderCarrier(r.Header))
+	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.UserLoginByEmailAndPassword")
 	defer span.End()
 
 	body, err := io.ReadAll(r.Body)
