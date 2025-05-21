@@ -36,7 +36,7 @@ func (s *productService) Close() error {
 func NewProductService(cb pkg.ICircuitBreaker, logger pkg.IZapLogger) IProductService {
 	insecureCredentials := grpc.WithTransportCredentials(insecure.NewCredentials()) // For Local Development
 
-	conn, err := grpc.NewClient(config.Get().UserServiceURL, insecureCredentials)
+	conn, err := grpc.NewClient(config.Get().ProductServiceURL, insecureCredentials)
 	if err != nil {
 		logger.Error(fmt.Sprintf("Failed to create a user client: %v", err))
 		return nil

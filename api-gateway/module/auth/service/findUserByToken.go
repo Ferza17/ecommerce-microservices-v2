@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/util"
@@ -30,19 +29,12 @@ func (s *authService) FindUserByToken(ctx context.Context, requestId string, req
 			return nil, err
 		}
 		return resp, nil
+
 	})
 
 	if err != nil {
-		if err == gobreaker.ErrOpenState {
-			s.logger.Error(fmt.Sprintf("Circuit Breaker for User Service is open. Request Failed: %v\n", err))
-			return nil, status.Errorf(codes.Unavailable, "User Service is currently unavailable")
-		}
-		if err == gobreaker.ErrTooManyRequests {
-			s.logger.Error(fmt.Sprintf("Circuit Breaker for User Service in half-open mode and too many request: %v\n", err))
-			return nil, status.Errorf(codes.Unavailable, "User Service is busy, please try again later")
-		}
-		return nil, fmt.Errorf("failed to call User Service: %w", err)
+		return nil, err
 	}
 
-	return result.(*pb.User), nil
+	return result.(*pb.User), err
 }

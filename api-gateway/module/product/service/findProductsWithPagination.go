@@ -33,15 +33,8 @@ func (s *productService) FindProductsWithPagination(ctx context.Context, request
 	})
 
 	if err != nil {
-		if err == gobreaker.ErrOpenState {
-			s.logger.Error(fmt.Sprintf("Circuit Breaker for User Service is open. Request Failed: %v\n", err))
-			return nil, status.Errorf(codes.Unavailable, "User Service is currently unavailable")
-		}
-		if err == gobreaker.ErrTooManyRequests {
-			s.logger.Error(fmt.Sprintf("Circuit Breaker for User Service in half-open mode and too many request: %v\n", err))
-			return nil, status.Errorf(codes.Unavailable, "User Service is busy, please try again later")
-		}
-		return nil, fmt.Errorf("failed to call User Service: %w", err)
+		s.logger.Info(fmt.Sprintf("Error Breaker %v", err))
+		return nil, err
 	}
 
 	return result.(*pb.FindProductsWithPaginationResponse), nil

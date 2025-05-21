@@ -3,25 +3,43 @@ package pkg
 import (
 	"fmt"
 	"github.com/sony/gobreaker"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"time"
 )
 
 type (
 	ICircuitBreaker interface {
-		Execute(func() (interface{}, error)) (interface{}, error)
+		Execute(req func() (interface{}, error)) (interface{}, error)
 	}
 
 	circuitBreaker struct {
-		cb *gobreaker.CircuitBreaker
+		cb     *gobreaker.CircuitBreaker
+		logger IZapLogger
 	}
 )
 
-func (c *circuitBreaker) Execute(f func() (interface{}, error)) (interface{}, error) {
-	return c.Execute(f)
+func (c *circuitBreaker) Execute(req func() (interface{}, error)) (interface{}, error) {
+	result, err := c.cb.Execute(req)
+
+	if err != nil {
+		if err == gobreaker.ErrOpenState {
+			c.logger.Error(fmt.Sprintf("Circuit Breaker for User Service is open. Request Failed: %v\n", err))
+			return nil, status.Errorf(codes.Unavailable, "User Service is currently unavailable")
+		}
+		if err == gobreaker.ErrTooManyRequests {
+			c.logger.Error(fmt.Sprintf("Circuit Breaker for User Service in half-open mode and too many request: %v\n", err))
+			return nil, status.Errorf(codes.Unavailable, "User Service is busy, please try again later")
+		}
+		return nil, fmt.Errorf("failed to call User Service: %w", err)
+	}
+
+	return result, nil
 }
 
-func NewCircuitBreaker(svcName string) ICircuitBreaker {
+func NewCircuitBreaker(svcName string, logger IZapLogger) ICircuitBreaker {
 	return &circuitBreaker{
+		logger: logger,
 		cb: gobreaker.NewCircuitBreaker(gobreaker.Settings{
 			Name:        svcName,
 			MaxRequests: 3,
@@ -36,8 +54,4 @@ func NewCircuitBreaker(svcName string) ICircuitBreaker {
 			},
 		}),
 	}
-}
-
-func (c *circuitBreaker) GetCB() *gobreaker.CircuitBreaker {
-	return c.cb
 }

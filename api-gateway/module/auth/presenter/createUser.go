@@ -27,14 +27,19 @@ func (p *authPresenter) CreateUser(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	req := &dto.CreateUserRequest{}
+	res := &dto.Response{}
 	if err = json.Unmarshal(body, req); err != nil {
 		p.logger.Error(fmt.Sprintf("error unmarshaling body: %v", err))
-		render.Status(r, http.StatusInternalServerError)
+		if err = res.WriteResponse(w, http.StatusInternalServerError, "Internal Server Error"); err != nil {
+			p.logger.Error(fmt.Sprintf("Error while creating response %v", err))
+		}
 		return
 	}
 	if err = req.Validate(); err != nil {
 		p.logger.Error(fmt.Sprintf("error validating request: %v", err))
-		render.Status(r, http.StatusBadRequest)
+		if err = res.WriteResponse(w, http.StatusBadRequest, err.Error()); err != nil {
+			p.logger.Error(fmt.Sprintf("Error while creating response %v", err))
+		}
 		return
 	}
 
@@ -45,9 +50,14 @@ func (p *authPresenter) CreateUser(w http.ResponseWriter, r *http.Request) {
 		Password: req.Password,
 	}); err != nil {
 		p.logger.Error(fmt.Sprintf("error creating user: %v", err))
-		render.Status(r, http.StatusInternalServerError)
+		if err = res.WriteResponse(w, http.StatusInternalServerError, "Internal Server Error"); err != nil {
+			p.logger.Error(fmt.Sprintf("Error while creating response %v", err))
+		}
+		return
 	}
 
-	render.Status(r, http.StatusCreated)
+	if err = res.WriteResponse(w, http.StatusCreated, "success"); err != nil {
+		p.logger.Error(fmt.Sprintf("Error while creating response %v", err))
+	}
 	return
 }

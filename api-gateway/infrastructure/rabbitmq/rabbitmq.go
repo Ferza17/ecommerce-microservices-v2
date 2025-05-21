@@ -22,12 +22,14 @@ type (
 	RabbitMQInfrastructure struct {
 		amqpConn                *amqp091.Connection
 		logger                  pkg.IZapLogger
+		cb                      pkg.ICircuitBreaker
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 	}
 )
 
 func NewRabbitMQInfrastructure(
 	logger pkg.IZapLogger,
+	//cb pkg.ICircuitBreaker,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 ) IRabbitMQInfrastructure {
 	amqpConn, err := amqp091.Dial(
@@ -42,8 +44,9 @@ func NewRabbitMQInfrastructure(
 	}
 
 	return &RabbitMQInfrastructure{
-		amqpConn:                amqpConn,
-		logger:                  logger,
+		amqpConn: amqpConn,
+		logger:   logger,
+		//cb:                      cb,
 		telemetryInfrastructure: telemetryInfrastructure,
 	}
 }

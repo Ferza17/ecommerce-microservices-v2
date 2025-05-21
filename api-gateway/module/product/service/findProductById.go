@@ -20,6 +20,8 @@ func (s *productService) FindProductById(ctx context.Context, requestId string, 
 		otel.GetTextMapPropagator().Inject(ctx, &util.MetadataHeaderCarrier{md})
 		ctx = metadata.NewOutgoingContext(ctx, md)
 
+		s.logger.Info(fmt.Sprintf("RequestID %s ", requestId))
+
 		resp, err := s.svc.FindProductById(ctx, req)
 		if err != nil {
 			st, ok := status.FromError(err)
@@ -34,15 +36,8 @@ func (s *productService) FindProductById(ctx context.Context, requestId string, 
 	})
 
 	if err != nil {
-		if err == gobreaker.ErrOpenState {
-			s.logger.Error(fmt.Sprintf("Circuit Breaker for User Service is open. Request Failed: %v\n", err))
-			return nil, status.Errorf(codes.Unavailable, "User Service is currently unavailable")
-		}
-		if err == gobreaker.ErrTooManyRequests {
-			s.logger.Error(fmt.Sprintf("Circuit Breaker for User Service in half-open mode and too many request: %v\n", err))
-			return nil, status.Errorf(codes.Unavailable, "User Service is busy, please try again later")
-		}
-		return nil, fmt.Errorf("failed to call User Service: %w", err)
+		s.logger.Info(fmt.Sprintf("Error Circuit Breaker %v", err))
+		return nil, err
 	}
 
 	return result.(*pb.Product), nil

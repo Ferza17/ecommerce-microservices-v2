@@ -42,9 +42,9 @@ func NewBootstrap() *Bootstrap {
 	newRabbitMQInfrastructure := rabbitmqInfrastructure.NewRabbitMQInfrastructure(logger, newTelemetryInfrastructure)
 
 	// Initialize GRPC Service Client
-	newUserServiceInfrastructure := userServiceInfrastructure.NewUserService(pkg.NewCircuitBreaker(config.Get().UserServiceURL), logger)
-	newAuthServiceInfrastructure := authServiceInfrastructure.NewAuthService(pkg.NewCircuitBreaker(config.Get().UserServiceURL), logger)
-	newProductServiceInfrastructure := productServiceInfrastructure.NewProductService(pkg.NewCircuitBreaker(config.Get().ProductServiceName), logger)
+	newUserServiceInfrastructure := userServiceInfrastructure.NewUserService(pkg.NewCircuitBreaker(config.Get().UserServiceURL, logger), logger)
+	newAuthServiceInfrastructure := authServiceInfrastructure.NewAuthService(pkg.NewCircuitBreaker(config.Get().UserServiceURL, logger), logger)
+	newProductServiceInfrastructure := productServiceInfrastructure.NewProductService(pkg.NewCircuitBreaker(config.Get().ProductServiceName, logger), logger)
 
 	// UseCase
 	newUserUseCase := userUseCase.NewUserUseCase(newUserServiceInfrastructure, newRabbitMQInfrastructure, newTelemetryInfrastructure, logger)
