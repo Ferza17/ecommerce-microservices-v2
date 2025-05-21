@@ -16,6 +16,14 @@
 - [ ] Implement Unit Test, mocking use mockery
 - [ ] Add Smart Contracts with Solidity
 
+
+
+## STEP
+* Install Docker
+* Install buf
+* Install protoc-gen-validate with go install
+* For mac user do `chmod +x ./entrypoint/postgres/postgresql-initdb.sh` on root folder
+
 ## Author
 
 * Fery Reza Aditya

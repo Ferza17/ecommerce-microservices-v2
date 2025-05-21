@@ -32,8 +32,11 @@ type Config struct {
 	RabbitMQHost     string
 	RabbitMQPort     string
 
-	ProductServiceURL string
-	UserServiceURL    string
+	ProductServiceURL  string
+	ProductServiceName string
+
+	UserServiceName string
+	UserServiceURL  string
 
 	HttpHost string
 	HttpPort string
@@ -152,6 +155,15 @@ func SetConfig(path string) {
 		}
 		productServiceRpcPort := string(pair.Value)
 		c.ProductServiceURL = fmt.Sprintf("%s:%s", productServiceRpcHost, productServiceRpcPort)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/services/product/SERVICE_NAME", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get PRODUCT SERVICE_NAME host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | PRODUCT SERVICE_NAME host is required")
+		}
+		c.ProductServiceName = string(pair.Value)
 	}()
 
 	// User Service
@@ -175,6 +187,15 @@ func SetConfig(path string) {
 		}
 		userServiceRpcPort := string(pair.Value)
 		c.UserServiceURL = fmt.Sprintf("%s:%s", userServiceRpcHost, userServiceRpcPort)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/services/user/SERVICE_NAME", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get USER SERVICE_NAME host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | USER SERVICE_NAME host is required")
+		}
+		c.UserServiceName = string(pair.Value)
 	}()
 
 	// API GATEWAY

@@ -3,9 +3,9 @@ package usecase
 import (
 	"context"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/rabbitmq"
-	rpcClientInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/service"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	userService "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/user/service"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/pkg"
 )
 
@@ -15,7 +15,7 @@ type (
 		UpdateUserById(ctx context.Context, requestId string, req *pb.UpdateUserByIdRequest) (*pb.UpdateUserByIdResponse, error)
 	}
 	UserUseCase struct {
-		rpcClient               rpcClientInfrastructure.IService
+		userService             userService.IUserService
 		rabbitMQ                rabbitmqInfrastructure.IRabbitMQInfrastructure
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 		logger                  pkg.IZapLogger
@@ -23,13 +23,13 @@ type (
 )
 
 func NewUserUseCase(
-	rpcClient rpcClientInfrastructure.IService,
+	userService userService.IUserService,
 	rabbitMQ rabbitmqInfrastructure.IRabbitMQInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	logger pkg.IZapLogger,
 ) IUserUseCase {
 	return &UserUseCase{
-		rpcClient:               rpcClient,
+		userService:             userService,
 		rabbitMQ:                rabbitMQ,
 		telemetryInfrastructure: telemetryInfrastructure,
 		logger:                  logger,

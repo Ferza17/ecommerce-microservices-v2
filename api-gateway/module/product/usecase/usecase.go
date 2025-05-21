@@ -3,9 +3,9 @@ package usecase
 import (
 	"context"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/rabbitmq"
-	rpcClientInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/service"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	productService "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/product/service"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/pkg"
 )
 
@@ -16,7 +16,7 @@ type (
 		FindProductsWithPagination(ctx context.Context, requestId string, req *pb.FindProductsWithPaginationRequest) (*pb.FindProductsWithPaginationResponse, error)
 	}
 	ProductUseCase struct {
-		rpcClient               rpcClientInfrastructure.IService
+		productService          productService.IProductService
 		rabbitMQ                rabbitmqInfrastructure.IRabbitMQInfrastructure
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 		logger                  pkg.IZapLogger
@@ -24,13 +24,13 @@ type (
 )
 
 func NewProductUseCase(
-	rpcClient rpcClientInfrastructure.IService,
+	productService productService.IProductService,
 	rabbitMQ rabbitmqInfrastructure.IRabbitMQInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	logger pkg.IZapLogger,
 ) IProductUseCase {
 	return &ProductUseCase{
-		rpcClient:               rpcClient,
+		productService:          productService,
 		rabbitMQ:                rabbitMQ,
 		telemetryInfrastructure: telemetryInfrastructure,
 		logger:                  logger,

@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/service"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/auth/service"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
 	"google.golang.org/grpc/metadata"
@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-func Authorization(svc service.IService, tele telemetry.ITelemetryInfrastructure) func(http.Handler) http.Handler {
+func Authorization(svc service.IAuthService, tele telemetry.ITelemetryInfrastructure) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := otel.GetTextMapPropagator().Extract(r.Context(), propagation.HeaderCarrier(r.Header))
@@ -33,7 +33,7 @@ func Authorization(svc service.IService, tele telemetry.ITelemetryInfrastructure
 				enum.XRequestIDHeader.String(): ctx.Value(enum.XRequestIDHeader.String()).(string),
 			}))
 			// access user service find user by token
-			user, err := svc.GetAuthService().FindUserByToken(ctx, &pb.FindUserByTokenRequest{
+			user, err := svc.FindUserByToken(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &pb.FindUserByTokenRequest{
 				Token: token,
 			})
 			if user.Id == "" {

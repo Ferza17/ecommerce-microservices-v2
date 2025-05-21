@@ -45,8 +45,16 @@ func Shutdown(ctx context.Context) (err error) {
 		bootstrap.Logger.Error(fmt.Sprintf("Failed to close a connection: %v", err))
 	}
 
-	if err = bootstrap.RpcClientInfrastructure.Close(); err != nil {
-		bootstrap.Logger.Error(fmt.Sprintf("Failed to close a connection: %v", err))
+	if err = bootstrap.AuthServiceInfrastructure.Close(); err != nil {
+		bootstrap.Logger.Error(fmt.Sprintf("Error Close AuthService"))
+	}
+
+	if err = bootstrap.ProductServiceInfrastructure.Close(); err != nil {
+		bootstrap.Logger.Error(fmt.Sprintf("Error Close ProductService"))
+	}
+
+	if err = bootstrap.UserServiceInfrastructure.Close(); err != nil {
+		bootstrap.Logger.Error(fmt.Sprintf("Error Close UserService"))
 	}
 
 	if err = bootstrap.TelemetryInfrastructure.Close(ctx); err != nil {

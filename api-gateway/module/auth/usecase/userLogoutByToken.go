@@ -6,7 +6,6 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/util"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -28,11 +27,7 @@ func (u *authUseCase) UserLogoutByToken(ctx context.Context, requestId string, r
 	defer span.End()
 
 	// Validation If User Exists
-	ctx = metadata.NewOutgoingContext(ctx, metadata.New(map[string]string{
-		enum.XRequestIDHeader.String(): requestId,
-	}))
-
-	user, err := u.rpcClient.GetAuthService().FindUserByToken(ctx, &pb.FindUserByTokenRequest{
+	user, err := u.authService.FindUserByToken(ctx, requestId, &pb.FindUserByTokenRequest{
 		Token: req.Token,
 	})
 	if err != nil {

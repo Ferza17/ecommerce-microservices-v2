@@ -75,7 +75,7 @@ func (srv *GraphQLTransport) Serve() {
 	public.HandleFunc("/user/logout", srv.bootstrap.AuthPresenter.UserLogoutByToken).Methods(http.MethodPost)
 
 	private := apiV1.PathPrefix("/private").Subrouter()
-	private.Use(middleware.Authorization(srv.bootstrap.RpcClientInfrastructure, srv.bootstrap.TelemetryInfrastructure))
+	private.Use(middleware.Authorization(srv.bootstrap.AuthServiceInfrastructure, srv.bootstrap.TelemetryInfrastructure))
 	private.Handle("/query", server)
 	private.Handle("/docs", playground.Handler("GraphQL playground", "/api/v1/private/query"))
 
