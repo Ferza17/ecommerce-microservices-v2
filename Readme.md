@@ -11,7 +11,7 @@
 - [X] Implement gRPC
 - [X] Implement message queuing
 - [X] Implement Distributed Tracing
-- [ ] Implement Circuit Breaker
+- [X] Implement Circuit Breaker
 - [ ] Implement Payment Service
 - [ ] Implement Unit Test, mocking use mockery
 - [ ] Add Smart Contracts with Solidity
