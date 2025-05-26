@@ -20,10 +20,10 @@ import (
 type GraphQLTransport struct {
 	httpServer *http.Server
 	host, port string
-	bootstrap  *bootstrap2.Bootstrap
+	bootstrap  *bootstrap2.Dependency
 }
 
-func NewGraphQLTransport(host, port string, b *bootstrap2.Bootstrap) *GraphQLTransport {
+func NewGraphQLTransport(host, port string, b *bootstrap2.Dependency) *GraphQLTransport {
 	return &GraphQLTransport{
 		host:      host,
 		port:      port,

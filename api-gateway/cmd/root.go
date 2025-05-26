@@ -26,7 +26,7 @@ func Run() {
 }
 
 var (
-	bootstrap     *bootstrap2.Bootstrap
+	bootstrap     *bootstrap2.Dependency
 	graphQLServer *graphql.GraphQLTransport
 )
 

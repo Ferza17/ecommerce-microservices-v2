@@ -15,7 +15,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/pkg"
 )
 
-type Bootstrap struct {
+type Dependency struct {
 	Logger pkg.IZapLogger
 
 	RabbitMQInfrastructure       rabbitmqInfrastructure.IRabbitMQInfrastructure
@@ -33,7 +33,7 @@ type Bootstrap struct {
 	AuthUseCase    authUseCase.IAuthUseCase
 }
 
-func NewBootstrap() *Bootstrap {
+func NewBootstrap() *Dependency {
 	//pkg
 	logger := pkg.NewZapLogger()
 
@@ -55,7 +55,7 @@ func NewBootstrap() *Bootstrap {
 	// Presenter (Only for REST public API)
 	newAuthPresenter := authPresenter.NewAuthPresenter(newAuthUseCase, newUserUseCase, newTelemetryInfrastructure, logger)
 
-	return &Bootstrap{
+	return &Dependency{
 		Logger:                       logger,
 		RabbitMQInfrastructure:       newRabbitMQInfrastructure,
 		UserServiceInfrastructure:    newUserServiceInfrastructure,
