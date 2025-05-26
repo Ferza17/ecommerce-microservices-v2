@@ -15,6 +15,9 @@ import (
 
 // CreateCartItem is the resolver for the createCartItem field.
 func (r *mutationResolver) CreateCartItem(ctx context.Context, input *pb.CreateCartItemRequest) (*pb.CreateCartItemResponse, error) {
+	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.CreateCartItem")
+	defer span.End()
+	input.UserId = ctx.Value(enum.ContextKeyUserID).(string)
 	return r.CartUseCase.CreateCart(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), input)
 }
 
@@ -27,6 +30,8 @@ func (r *mutationResolver) UpdateCartItemByID(ctx context.Context, input *pb.Upd
 
 // DeleteCartItem is the resolver for the deleteCartItem field.
 func (r *mutationResolver) DeleteCartItem(ctx context.Context, input *pb.DeleteCartItemRequest) (*pb.DeleteCartItemResponse, error) {
+	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.DeleteCartItem")
+	defer span.End()
 	panic(fmt.Errorf("not implemented: DeleteCartItem - deleteCartItem"))
 }
 

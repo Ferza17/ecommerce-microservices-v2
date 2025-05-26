@@ -3,11 +3,11 @@ import { ProductServiceService } from '../../model/rpc/productServices';
 import { ClientGrpc } from '@nestjs/microservices';
 import { Service } from '../../enum/service';
 import { FindProductByIdRequest, Product } from '../../model/rpc/productMessage';
-import { lastValueFrom, Observable } from 'rxjs';
 import { Metadata } from '@grpc/grpc-js';
 import { Header } from '../../enum/header';
 import { JaegerTelemetryService } from '../telemetry/jaeger.telemetry.service';
 import { Context } from '@opentelemetry/api';
+import CircuitBreaker from 'opossum';
 
 @Injectable()
 export class ProductRpcService implements OnModuleInit {
@@ -29,10 +29,34 @@ export class ProductRpcService implements OnModuleInit {
     try {
       const metadata = new Metadata();
       metadata.set(Header.X_REQUEST_ID, requestId);
-      return await lastValueFrom(this.productService.findProductById(req, metadata));
+      const breaker = new CircuitBreaker(this.productService.findProductById(req, metadata), {
+        timeout: 1000,
+        errorThresholdPercentage: 50,
+        resetTimeout: 10000,
+      });
+
+      breaker.on('success', (result, latencyMs) => {
+        this.logger.log(`findUserById requestId: ${requestId} , latencyMs: ${latencyMs}`);
+      })
+      breaker.on('failure', (result, latencyMs) => {
+        this.logger.log(`findUserById requestId: ${requestId} , latencyMs: ${latencyMs}`);
+      })
+      breaker.on('open', () => {
+        this.logger.log(`findUserById requestId: ${requestId} , circuit breaker is open`);
+      })
+      breaker.on('close', () => {
+        this.logger.log(`findUserById requestId: ${requestId} , circuit breaker is closed`);
+      })
+      breaker.on('halfOpen', () => {
+        this.logger.log(`findUserById requestId: ${requestId} , circuit breaker is half open`);
+      })
+      return await breaker.fire() as Product;
     } catch (e) {
+      span.recordException(e);
       this.logger.error(`requestId: ${requestId} , error: ${e.message}`);
       throw e;
+    }finally {
+      span.end();
     }
   }
 }

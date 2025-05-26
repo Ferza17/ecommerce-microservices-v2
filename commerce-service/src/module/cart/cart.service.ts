@@ -16,10 +16,11 @@ import { SagaStatus } from '../../enum/sagaStatus';
 import { Service } from '../../enum/service';
 import { Queue } from '../../enum/queue';
 import { ProductRpcService } from '../../infrastructure/rpc/product.rpc.service';
-import { FindProductByIdRequest } from '../../model/rpc/productMessage';
+import { FindProductByIdRequest, Product } from '../../model/rpc/productMessage';
 import { UserRpcService } from '../../infrastructure/rpc/user.rpc.service';
 import { JaegerTelemetryService } from '../../infrastructure/telemetry/jaeger.telemetry.service';
 import { Context } from '@opentelemetry/api';
+import { FindUserByIdRequest, User } from '../../model/rpc/userMessage';
 
 @Injectable()
 export class CartService {
@@ -50,9 +51,9 @@ export class CartService {
 
     try {
       // Validate User
-      const user = await this.userRpcService.findUserById(
+      const user: User = await this.userRpcService.findUserById(
         requestId,
-        FindProductByIdRequest.create({ id: req.userId }),
+        FindUserByIdRequest.create({ id: req.userId }),
         context,
       );
 
@@ -61,7 +62,7 @@ export class CartService {
       }
 
       // Validate Product
-      const product = await this.productRpcService.findProductById(
+      const product: Product = await this.productRpcService.findProductById(
         requestId,
         FindProductByIdRequest.create({ id: req.productId }),
         context,
@@ -81,7 +82,7 @@ export class CartService {
         await this.cartItemRepository.UpdateCartItemById(requestId, cartItem._id.toString(), {
           price: product.price * (req.qty + cartItem.qty),
           qty: req.qty + cartItem.qty,
-          userId: req.userId,
+          userId: user.id,
           productId: req.productId,
         }, context);
         id = cartItem._id.toString() || '';

@@ -23,10 +23,10 @@ import { RabbitMQRootAsync } from '../config/configRoot';
         name: Service.ProductService.toString(),
         imports: [ConsulModule],
         inject: [ConsulService],
-        useFactory: (config: ConsulService) => ({
+        useFactory: async (config: ConsulService) => ({
           transport: Transport.GRPC,
           options: {
-            url: `${config.get('/services/product/RPC_HOST')}:${config.get('/services/product/RPC_PORT')}`,
+            url: `${await config.get('/services/product/RPC_HOST')}:${await config.get('/services/product/RPC_PORT')}`,
             package: 'proto',
             protoPath: glob.sync(['proto/*.proto'], {
               cwd: join(__dirname, '../../'),
@@ -44,10 +44,10 @@ import { RabbitMQRootAsync } from '../config/configRoot';
         name: Service.UserService.toString(),
         imports: [ConsulModule],
         inject: [ConsulService],
-        useFactory: (configService: ConsulService) => ({
+        useFactory: async (configService: ConsulService) => ({
           transport: Transport.GRPC,
           options: {
-            url: `${configService.get('/services/user/RPC_HOST')}:${configService.get('/services/product/RPC_PORT')}`,
+            url: `${ await configService.get('/services/user/RPC_HOST')}:${await configService.get('/services/user/RPC_PORT')}`,
             package: 'proto',
             protoPath: glob.sync(['proto/*.proto'], {
               cwd: join(__dirname, '../../'),

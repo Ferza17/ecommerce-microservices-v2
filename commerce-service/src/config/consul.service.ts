@@ -16,9 +16,9 @@ export class ConsulService implements OnModuleInit {
 
   async onModuleInit() {
     await this.consul.agent.service.register({
-      name: await this.get("/services/commerce/SERVICE_NAME"),
-      port: parseInt(await this.get("/services/commerce/RPC_PORT")),
-      address: await this.get("/services/commerce/RPC_HOST"),
+      name: await this.get('/services/commerce/SERVICE_NAME'),
+      port: parseInt(await this.get('/services/commerce/RPC_PORT')),
+      address: await this.get('/services/commerce/RPC_HOST'),
       tags: ['v1'],
     });
   }
