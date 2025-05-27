@@ -21,7 +21,7 @@ export class JaegerTelemetryService implements OnModuleInit {
 
   async onModuleInit() {
     const exporter = new JaegerExporter({
-      endpoint: `http://${await this.configService.get(`/telemetry/jaeger/JAEGER_TELEMETRY_HOST`)}:${await this.configService.get(`/telemetry/jaeger/JAEGER_TELEMETRY_HOST`)}/api/traces`,
+      endpoint: `${await this.configService.get(`/telemetry/jaeger/JAEGER_TELEMETRY_HOST`)}:${await this.configService.get(`/telemetry/jaeger/JAEGER_TELEMETRY_HOST`)}/api/traces`,
     });
 
     const provider = new BasicTracerProvider({

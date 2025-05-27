@@ -6,8 +6,11 @@ import { FindProductByIdRequest, Product } from '../../model/rpc/productMessage'
 import { Metadata } from '@grpc/grpc-js';
 import { Header } from '../../enum/header';
 import { JaegerTelemetryService } from '../telemetry/jaeger.telemetry.service';
-import { Context } from '@opentelemetry/api';
+import { Context, propagation } from '@opentelemetry/api';
 import CircuitBreaker from 'opossum';
+import { FindUserByIdRequest, User } from '../../model/rpc/userMessage';
+import { lastValueFrom } from 'rxjs';
+import { ProductServiceCircuitOptions, UserServiceCircuitOptions } from '../../config/circuitOptions';
 
 @Injectable()
 export class ProductRpcService implements OnModuleInit {
@@ -27,35 +30,26 @@ export class ProductRpcService implements OnModuleInit {
   async findProductById(requestId: string, req: FindProductByIdRequest, context?: Context): Promise<Product> {
     const span = this.otel.tracer('RpcService.findProductById', context);
     try {
-      const metadata = new Metadata();
-      metadata.set(Header.X_REQUEST_ID, requestId);
-      const breaker = new CircuitBreaker(this.productService.findProductById(req, metadata), {
-        timeout: 1000,
-        errorThresholdPercentage: 50,
-        resetTimeout: 10000,
-      });
+      const breakerFn: (requestId: string, req: FindProductByIdRequest, context?: Context) => Promise<Product> =
+        async (requestId, req, context) => {
+          const metadata = new Metadata();
+          metadata.set(Header.X_REQUEST_ID, requestId);
+          if (context) {
+            propagation.inject(context, metadata, {
+              set: (metadata, key, value) => metadata.set(key, value as string),
+            });
+          }
+          const observableResult = this.productService.findProductById(req, metadata);
+          return lastValueFrom(observableResult);
+        };
 
-      breaker.on('success', (result, latencyMs) => {
-        this.logger.log(`findUserById requestId: ${requestId} , latencyMs: ${latencyMs}`);
-      })
-      breaker.on('failure', (result, latencyMs) => {
-        this.logger.log(`findUserById requestId: ${requestId} , latencyMs: ${latencyMs}`);
-      })
-      breaker.on('open', () => {
-        this.logger.log(`findUserById requestId: ${requestId} , circuit breaker is open`);
-      })
-      breaker.on('close', () => {
-        this.logger.log(`findUserById requestId: ${requestId} , circuit breaker is closed`);
-      })
-      breaker.on('halfOpen', () => {
-        this.logger.log(`findUserById requestId: ${requestId} , circuit breaker is half open`);
-      })
-      return await breaker.fire() as Product;
+      const cb = new CircuitBreaker<[string, FindProductByIdRequest, Context], Product>(breakerFn, ProductServiceCircuitOptions);
+      return await cb.fire(requestId, req, <Context>context);
     } catch (e) {
       span.recordException(e);
       this.logger.error(`requestId: ${requestId} , error: ${e.message}`);
       throw e;
-    }finally {
+    } finally {
       span.end();
     }
   }
