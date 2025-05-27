@@ -163,7 +163,7 @@ export class CartService {
         requestId,
         FindProductByIdRequest.create({ id: req.userId }),
       );
-      if (user === null) {
+      if (user === null || user === undefined) {
         throw new Error('User not found');
       }
 

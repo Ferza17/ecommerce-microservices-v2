@@ -7,12 +7,16 @@ import { Header } from '../../enum/header';
 import { JaegerTelemetryService } from '../telemetry/jaeger.telemetry.service';
 import { Context } from '@opentelemetry/api';
 import { UserServiceService } from '../../model/rpc/userService';
-import CircuitBreaker from 'opossum';
+import CircuitBreaker, { Options as CircuitBreakerOptions } from 'opossum';
+import { lastValueFrom } from 'rxjs';
+import {UserServiceCircuitOptions} from '../../config/circuitOptions'
 
 @Injectable()
 export class UserRpcService implements OnModuleInit {
   private readonly logger = new Logger(UserRpcService.name);
   private userService: any;
+  private findUserByIdBreaker: CircuitBreaker<[FindUserByIdRequest, Metadata], User>;
+
 
   constructor(
     @Inject(Service.UserService.toString()) private client: ClientGrpc,
@@ -21,7 +25,15 @@ export class UserRpcService implements OnModuleInit {
   }
 
   onModuleInit() {
-    this.userService = this.client.getService<typeof UserServiceService>("UserService");
+    this.userService = this.client.getService<typeof UserServiceService>('UserService');
+
+    const breakerFn: (req: FindUserByIdRequest, metadata: Metadata) => Promise<User> =
+      async (req, metadata) => {
+        const observableResult = this.userService.findUserById(req, metadata);
+        return lastValueFrom(observableResult);
+      };
+
+    this.findUserByIdBreaker = new CircuitBreaker<[FindUserByIdRequest, Metadata], User>(breakerFn, UserServiceCircuitOptions);
   }
 
   async findUserById(requestId: string, req: FindUserByIdRequest, context?: Context): Promise<User> {
@@ -29,29 +41,7 @@ export class UserRpcService implements OnModuleInit {
     try {
       const metadata = new Metadata();
       metadata.set(Header.X_REQUEST_ID, requestId);
-
-      const breaker = new CircuitBreaker(this.userService.findUserById(req, metadata), {
-        timeout: 1000,
-        errorThresholdPercentage: 50,
-        resetTimeout: 10000,
-      });
-
-      breaker.on('success', (result, latencyMs) => {
-        this.logger.log(`findUserById requestId: ${requestId} , latencyMs: ${latencyMs}`);
-      })
-      breaker.on('failure', (result, latencyMs) => {
-        this.logger.log(`findUserById requestId: ${requestId} , latencyMs: ${latencyMs}`);
-      })
-      breaker.on('open', () => {
-        this.logger.log(`findUserById requestId: ${requestId} , circuit breaker is open`);
-      })
-      breaker.on('close', () => {
-        this.logger.log(`findUserById requestId: ${requestId} , circuit breaker is closed`);
-      })
-      breaker.on('halfOpen', () => {
-        this.logger.log(`findUserById requestId: ${requestId} , circuit breaker is half open`);
-      })
-      return await breaker.fire() as User;
+      return await this.findUserByIdBreaker.fire(req, metadata)
     } catch (e) {
       this.logger.error(`requestId: ${requestId} , error: ${e.message}`);
       span.recordException(e);
