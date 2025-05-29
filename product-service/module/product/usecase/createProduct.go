@@ -8,6 +8,8 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/util"
 	"github.com/google/uuid"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
@@ -65,9 +67,9 @@ func (u *productUseCase) CreateProduct(ctx context.Context, requestId string, re
 		UpdatedAt:   &now,
 	}, tx)
 	if err != nil {
-		defer tx.Rollback()
+		tx.Rollback()
 		u.logger.Error(fmt.Sprintf("requestId : %s , error creating product: %v", requestId, err))
-		return nil, err
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	tx.Commit()

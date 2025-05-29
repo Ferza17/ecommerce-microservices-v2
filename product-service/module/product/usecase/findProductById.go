@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/util"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (u *productUseCase) FindProductById(ctx context.Context, requestId string, req *pb.FindProductByIdRequest) (*pb.Product, error) {
@@ -14,7 +16,7 @@ func (u *productUseCase) FindProductById(ctx context.Context, requestId string, 
 	fetchProduct, err := u.productElasticsearchRepository.FindProductById(ctx, requestId, req.GetId())
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("requestId : %s , error finding product by id: %v", requestId, err))
-		return nil, err
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &pb.Product{

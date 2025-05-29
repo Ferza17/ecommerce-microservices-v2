@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -14,7 +16,7 @@ func (u *productUseCase) FindProductsWithPagination(ctx context.Context, request
 	fetchedProducts, total, err := u.productElasticsearchRepository.FindProductsWithPagination(ctx, requestId, req)
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("requestId : %s , error finding products: %v", requestId, err))
-		return nil, err
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	var products []*pb.Product

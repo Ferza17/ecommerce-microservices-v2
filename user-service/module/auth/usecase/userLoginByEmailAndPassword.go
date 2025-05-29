@@ -10,6 +10,8 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/util"
 	"golang.org/x/crypto/bcrypt"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
@@ -84,20 +86,20 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 	user, err := u.userPostgresqlRepository.FindUserByEmailWithTransaction(ctx, requestId, req.Email, tx)
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("requestId : %s , error finding user by email and password: %v", requestId, err))
-		return nil, err
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	reqHashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		tx.Rollback()
 		u.logger.Error(fmt.Sprintf("requestId : %s , error hashing password: %v", requestId, err))
-		return nil, err
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	if err = bcrypt.CompareHashAndPassword(reqHashedPassword, []byte(req.Password)); err != nil {
 		tx.Rollback()
 		u.logger.Error(fmt.Sprintf("requestId : %s , error comparing password: %v", requestId, err))
-		return nil, err
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	te := config.Get().JwtAccessTokenExpirationTime
@@ -111,7 +113,7 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 	}, config.Get().JwtAccessTokenSecret)
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("requestId : %s , error generating token: %v", requestId, err))
-		return nil, err
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	refreshToken, err := pkg.GenerateToken(pkg.Claim{
@@ -124,6 +126,7 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 	}, config.Get().JwtRefreshTokenSecret)
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("requestId : %s , error generating refresh token: %v", requestId, err))
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	reqUserLoginNotification = &pb.SendLoginEmailNotificationRequest{
@@ -137,11 +140,12 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 	message, err := proto.Marshal(reqUserLoginNotification)
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("error marshaling message: %s", err.Error()))
-		return nil, err
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, enum.NotificationExchange, enum.NOTIFICATION_LOGIN_CREATED, message); err != nil {
-		return nil, err
+		u.logger.Error(fmt.Sprintf("error publish message err : %v", err))
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	tx.Commit()

@@ -6,6 +6,8 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (u *authUseCase) FindUserByToken(ctx context.Context, requestId string, req *pb.FindUserByTokenRequest) (*pb.User, error) {
@@ -16,14 +18,14 @@ func (u *authUseCase) FindUserByToken(ctx context.Context, requestId string, req
 	if err != nil {
 		span.RecordError(err)
 		u.logger.Error(fmt.Sprintf("requestId : %s , error parsing token: %v", requestId, err))
-		return nil, err
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	user, err := u.userPostgresqlRepository.FindUserById(ctx, requestId, claimedToken.UserID)
 	if err != nil {
 		span.RecordError(err)
 		u.logger.Error(fmt.Sprintf("requestId : %s , error finding user by id: %v", requestId, err))
-		return nil, err
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &pb.User{
