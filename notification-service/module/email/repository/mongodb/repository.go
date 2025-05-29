@@ -10,11 +10,11 @@ import (
 )
 
 type (
-	INotificationRepository interface {
+	INotificationEmailRepository interface {
 		FindNotificationTemplateByNotificationType(ctx context.Context, notificationType enum.NotificationType) (*bson.NotificationTemplate, error)
 	}
 
-	notificationRepository struct {
+	notificationEmailRepository struct {
 		mongoDB                 mongodbInfrastructure.IMongoDBInfrastructure
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 		logger                  pkg.IZapLogger
@@ -24,8 +24,8 @@ type (
 func NewEventRepository(
 	mongodb mongodbInfrastructure.IMongoDBInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
-	logger pkg.IZapLogger) INotificationRepository {
-	return &notificationRepository{
+	logger pkg.IZapLogger) INotificationEmailRepository {
+	return &notificationEmailRepository{
 		mongoDB:                 mongodb,
 		logger:                  logger,
 		telemetryInfrastructure: telemetryInfrastructure,

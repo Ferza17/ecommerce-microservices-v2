@@ -13,7 +13,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func (c *notificationConsumer) NotificationLoginCreated(ctx context.Context) error {
+func (c *notificationEmailConsumer) NotificationEmailOTP(ctx context.Context) error {
 	amqpChannel, err := c.rabbitmqInfrastructure.GetConnection().Channel()
 	if err != nil {
 		c.logger.Error(fmt.Sprintf("Failed to create a channel: %v", err))
@@ -34,8 +34,8 @@ func (c *notificationConsumer) NotificationLoginCreated(ctx context.Context) err
 	}
 
 	if err = amqpChannel.QueueBind(
-		enum.NOTIFICATION_LOGIN_CREATED.String(),
-		enum.NOTIFICATION_LOGIN_CREATED.String(),
+		enum.NOTIFICATION_EMAIL_OTP.String(),
+		enum.NOTIFICATION_EMAIL_OTP.String(),
 		enum.UserExchange.String(),
 		false,
 		nil,
@@ -45,7 +45,7 @@ func (c *notificationConsumer) NotificationLoginCreated(ctx context.Context) err
 	}
 
 	msgs, err := amqpChannel.Consume(
-		enum.NOTIFICATION_LOGIN_CREATED.String(),
+		enum.NOTIFICATION_EMAIL_OTP.String(),
 		"",
 		true,
 		false,
@@ -60,7 +60,7 @@ func (c *notificationConsumer) NotificationLoginCreated(ctx context.Context) err
 	messages:
 		for d := range deliveries {
 			var (
-				request   pb.SendLoginEmailNotificationRequest
+				request   pb.SendOtpEmailNotificationRequest
 				requestId string
 			)
 			carrier := propagation.MapCarrier{}
@@ -104,7 +104,7 @@ func (c *notificationConsumer) NotificationLoginCreated(ctx context.Context) err
 			}
 
 			c.logger.Info(fmt.Sprintf("received a %s message: %s", d.RoutingKey, d.Body))
-			if _, err = c.notificationUseCase.SendLoginEmailNotification(ctx, requestId, &request); err != nil {
+			if err = c.notificationUseCase.SendNotificationEmailOTP(ctx, requestId, &request); err != nil {
 				span.End()
 				c.logger.Error(fmt.Sprintf("failed to login user : %v", zap.Error(err)))
 				continue messages

@@ -99,12 +99,7 @@
       "durable": true
     },
     {
-      "name": "notification.login.created",
-      "vhost": "/",
-      "durable": true
-    },
-    {
-      "name": "notification.user.created",
+      "name": "notification.email.otp",
       "vhost": "/",
       "durable": true
     },

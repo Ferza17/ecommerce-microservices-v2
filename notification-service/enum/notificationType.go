@@ -8,15 +8,13 @@ import (
 type NotificationType string
 
 const (
-	NotificationTypeEmailUserLogin   NotificationType = "NOTIFICATION.EMAIL.USER.LOGIN"
-	NotificationTypeEmailUserCreated NotificationType = "NOTIFICATION.EMAIL.USER.CREATED"
+	NotificationTypeEmailUserOtp NotificationType = "NOTIFICATION.EMAIL.USER.OTP"
 )
 
 func (t NotificationType) String() string {
 	switch t {
 	case
-		NotificationTypeEmailUserLogin,
-		NotificationTypeEmailUserCreated:
+		NotificationTypeEmailUserOtp:
 		return string(t)
 	default:
 		return "unknown"
@@ -25,11 +23,10 @@ func (t NotificationType) String() string {
 
 func NotificationTypeParseIntToNotificationType(i int) (NotificationType, error) {
 	switch i {
-	case int(pb.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_CREATED):
-		return NotificationTypeEmailUserCreated, nil
-	case int(pb.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_LOGIN):
-		return NotificationTypeEmailUserLogin, nil
+	case int(pb.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_OTP):
+		return NotificationTypeEmailUserOtp, nil
+
 	default:
-		return "unknown", errors.New("unknown notification type")
+		return "unknown", errors.New("unknown email type")
 	}
 }

@@ -8,9 +8,8 @@ import { Header } from '../../enum/header';
 import { JaegerTelemetryService } from '../telemetry/jaeger.telemetry.service';
 import { Context, propagation } from '@opentelemetry/api';
 import CircuitBreaker from 'opossum';
-import { FindUserByIdRequest, User } from '../../model/rpc/userMessage';
 import { lastValueFrom } from 'rxjs';
-import { ProductServiceCircuitOptions, UserServiceCircuitOptions } from '../../config/circuitOptions';
+import { ProductServiceCircuitOptions } from '../../config/circuitOptions';
 
 @Injectable()
 export class ProductRpcService implements OnModuleInit {

@@ -42,7 +42,7 @@ func NewBootstrap() *Bootstrap {
 	newAuthRedisRepository := authRedisRepository.NewAuthRedisRepository(newRedisInfrastructure, newTelemetryInfrastructure, logger)
 
 	// usecase
-	newUserUseCase := userUseCase.NewUserUseCase(newUserPostgresqlRepository, newRabbitMQInfrastructure, newTelemetryInfrastructure, logger)
+	newUserUseCase := userUseCase.NewUserUseCase(newUserPostgresqlRepository, newRabbitMQInfrastructure, newAuthRedisRepository, newTelemetryInfrastructure, logger)
 	newAuthUseCase := authUseCase.NewAuthUseCase(newUserPostgresqlRepository, newAuthRedisRepository, newRabbitMQInfrastructure, newTelemetryInfrastructure, logger)
 
 	// Consumer

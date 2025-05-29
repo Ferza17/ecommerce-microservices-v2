@@ -12,4 +12,4 @@ func main() {
 
 //TODO:
 // - add migration migration
-// - add table notification template
+// - add table email template

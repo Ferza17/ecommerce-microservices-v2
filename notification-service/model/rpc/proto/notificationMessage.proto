@@ -3,7 +3,7 @@ package proto;
 
 import "google/protobuf/struct.proto";
 
-option go_package = "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/pb";
+option go_package = "github.com/ferza17/ecommerce-microservices-v2/email-service/model/rpc/pb";
 
 message NotificationTemplate {
   string id = 1;
@@ -13,24 +13,11 @@ message NotificationTemplate {
 }
 
 enum NotificationTypeEnum {
-  NOTIFICATION_EMAIL_USER_LOGIN = 0;
-  NOTIFICATION_EMAIL_USER_CREATED = 1;
+  NOTIFICATION_EMAIL_USER_OTP = 0;
 }
 
-message SendLoginEmailNotificationRequest {
-  string username = 1;
+message SendOtpEmailNotificationRequest {
+  string otp = 1;
   string email = 2;
-  string accessToken = 3;
-  string refreshToken = 4;
-  NotificationTypeEnum notificationType = 5;
-}
-
-message SendLoginEmailNotificationResponse {
-  string status = 1;
-}
-
-message SendUserVerificationEmailNotificationRequest {
-  string verificationUrl = 1;
-  NotificationTypeEnum notificationType = 2;
-  string email = 3;
+  NotificationTypeEnum notificationType = 3;
 }

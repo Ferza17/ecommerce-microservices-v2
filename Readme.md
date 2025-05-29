@@ -22,7 +22,7 @@
 * Install Docker
 * Install buf
 * Install protoc-gen-validate with go install
-* For mac user do `chmod +x ./entrypoint/postgres/postgresql-initdb.sh` on root folder
+* For Mac user do `chmod +x ./entrypoint/postgres/postgresql-initdb.sh` on root folder
 
 ## Author
 

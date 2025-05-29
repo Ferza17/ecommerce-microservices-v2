@@ -13,8 +13,7 @@ const (
 	USER_CREATED Queue = "user.created"
 	USER_UPDATED Queue = "user.updated"
 
-	NOTIFICATION_LOGIN_CREATED Queue = "notification.login.created"
-	NOTIFICATION_USER_CREATED  Queue = "notification.user.created"
+	NOTIFICATION_EMAIL_OTP Queue = "notification.email.otp"
 
 	EVENT_CREATED Queue = "event.created"
 )
@@ -28,8 +27,7 @@ func (t Queue) String() string {
 		USER_UPDATED,
 		CART_CREATED,
 		CART_UPDATED,
-		NOTIFICATION_LOGIN_CREATED,
-		NOTIFICATION_USER_CREATED,
+		NOTIFICATION_EMAIL_OTP,
 		EVENT_CREATED:
 		return string(t)
 	default:

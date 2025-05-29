@@ -10,11 +10,6 @@ message UserLoginByEmailAndPasswordRequest {
   string password = 2;
 }
 
-message UserLoginByEmailAndPasswordResponse {
-  string token = 1;
-  string refreshToken = 2;
-}
-
 message UserLogoutByTokenRequest {
   string token = 1;
 }
@@ -23,4 +18,13 @@ message UserLogoutByTokenResponse {}
 
 message FindUserByTokenRequest {
   string token = 1;
+}
+
+message UserVerifyOtpRequest {
+  string otp = 1;
+}
+
+message UserVerifyOtpResponse {
+  string accessToken = 1;
+  string refreshToken = 2;
 }

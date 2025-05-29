@@ -13,6 +13,7 @@ import (
 type (
 	IAuthService interface {
 		FindUserByToken(ctx context.Context, requestId string, req *pb.FindUserByTokenRequest) (*pb.User, error)
+		UserVerifyOtp(ctx context.Context, requestId string, req *pb.UserVerifyOtpRequest) (*pb.UserVerifyOtpResponse, error)
 		Close() error
 	}
 

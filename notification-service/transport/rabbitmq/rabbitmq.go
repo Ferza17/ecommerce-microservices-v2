@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/bootstrap"
-	notificationConsumer "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/notification/consumer"
+	notificationConsumer "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/consumer"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg"
 	"go.uber.org/zap"
 	"log"
@@ -16,14 +16,14 @@ import (
 type (
 	RabbitMQTransport struct {
 		logger               pkg.IZapLogger
-		notificationConsumer notificationConsumer.INotificationConsumer
+		notificationConsumer notificationConsumer.INotificationEmailConsumer
 	}
 )
 
 func NewServer(dependency *bootstrap.Bootstrap) *RabbitMQTransport {
 	return &RabbitMQTransport{
 		logger:               dependency.Logger,
-		notificationConsumer: dependency.NotificationConsumer,
+		notificationConsumer: dependency.NotificationEmailConsumer,
 	}
 }
 
@@ -39,14 +39,7 @@ func (srv *RabbitMQTransport) Serve() {
 
 	go func() {
 		defer cancel()
-		if err := srv.notificationConsumer.NotificationLoginCreated(ctx); err != nil {
-			srv.logger.Error(fmt.Sprintf("failed to ProductCreated : %s", zap.Error(err).String))
-		}
-	}()
-
-	go func() {
-		defer cancel()
-		if err := srv.notificationConsumer.NotificationUserCreated(ctx); err != nil {
+		if err := srv.notificationConsumer.NotificationEmailOTP(ctx); err != nil {
 			srv.logger.Error(fmt.Sprintf("failed to ProductCreated : %s", zap.Error(err).String))
 		}
 	}()

@@ -7,7 +7,7 @@ import { Header } from '../../enum/header';
 import { JaegerTelemetryService } from '../telemetry/jaeger.telemetry.service';
 import { Context, propagation } from '@opentelemetry/api';
 import { UserServiceService } from '../../model/rpc/userService';
-import CircuitBreaker, { Options as CircuitBreakerOptions } from 'opossum';
+import CircuitBreaker from 'opossum';
 import { lastValueFrom } from 'rxjs';
 import { UserServiceCircuitOptions } from '../../config/circuitOptions';
 
@@ -54,3 +54,4 @@ export class UserRpcService implements OnModuleInit {
     }
   }
 }
+

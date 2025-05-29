@@ -7,7 +7,7 @@ import "authMessage.proto";
 option go_package = "github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb";
 
 service AuthService {
-  rpc UserLoginByEmailAndPassword(UserLoginByEmailAndPasswordRequest) returns (UserLoginByEmailAndPasswordResponse);
   rpc UserLogoutByToken(UserLogoutByTokenRequest) returns (UserLogoutByTokenResponse);
+  rpc UserVerifyOtp(UserVerifyOtpRequest) returns (UserVerifyOtpResponse);
   rpc FindUserByToken(FindUserByTokenRequest) returns (User);
 }

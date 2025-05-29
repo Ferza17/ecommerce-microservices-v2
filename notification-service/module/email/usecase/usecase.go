@@ -6,18 +6,17 @@ import (
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/pb"
-	notificationRepository "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/notification/repository/mongodb"
+	notificationRepository "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/repository/mongodb"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg"
 )
 
 type (
-	INotificationUseCase interface {
-		SendLoginEmailNotification(ctx context.Context, requestId string, req *pb.SendLoginEmailNotificationRequest) (*pb.SendLoginEmailNotificationResponse, error)
-		SendUserVerificationEmailNotification(ctx context.Context, requestId string, req *pb.SendUserVerificationEmailNotificationRequest) error
+	INotificationEmailUseCase interface {
+		SendNotificationEmailOTP(ctx context.Context, requestId string, req *pb.SendOtpEmailNotificationRequest) error
 	}
 
-	notificationUseCase struct {
-		notificationRepository  notificationRepository.INotificationRepository
+	notificationEmailUseCase struct {
+		notificationRepository  notificationRepository.INotificationEmailRepository
 		rabbitmqInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
 		mailHogInfrastructure   mailHogInfrastructure.IMailhogInfrastructure
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
@@ -26,12 +25,12 @@ type (
 )
 
 func NewEventStoreUseCase(
-	notificationRepository notificationRepository.INotificationRepository,
+	notificationRepository notificationRepository.INotificationEmailRepository,
 	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
 	mailHogInfrastructure mailHogInfrastructure.IMailhogInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
-	logger pkg.IZapLogger) INotificationUseCase {
-	return &notificationUseCase{
+	logger pkg.IZapLogger) INotificationEmailUseCase {
+	return &notificationEmailUseCase{
 		notificationRepository:  notificationRepository,
 		rabbitmqInfrastructure:  rabbitmqInfrastructure,
 		mailHogInfrastructure:   mailHogInfrastructure,

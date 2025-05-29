@@ -25,26 +25,26 @@ var File_authService_proto protoreflect.FileDescriptor
 
 const file_authService_proto_rawDesc = "" +
 	"\n" +
-	"\x11authService.proto\x12\x05proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x11userMessage.proto\x1a\x11authMessage.proto2\x9a\x02\n" +
-	"\vAuthService\x12t\n" +
-	"\x1bUserLoginByEmailAndPassword\x12).proto.UserLoginByEmailAndPasswordRequest\x1a*.proto.UserLoginByEmailAndPasswordResponse\x12V\n" +
-	"\x11UserLogoutByToken\x12\x1f.proto.UserLogoutByTokenRequest\x1a .proto.UserLogoutByTokenResponse\x12=\n" +
+	"\x11authService.proto\x12\x05proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x11userMessage.proto\x1a\x11authMessage.proto2\xf0\x01\n" +
+	"\vAuthService\x12V\n" +
+	"\x11UserLogoutByToken\x12\x1f.proto.UserLogoutByTokenRequest\x1a .proto.UserLogoutByTokenResponse\x12J\n" +
+	"\rUserVerifyOtp\x12\x1b.proto.UserVerifyOtpRequest\x1a\x1c.proto.UserVerifyOtpResponse\x12=\n" +
 	"\x0fFindUserByToken\x12\x1d.proto.FindUserByTokenRequest\x1a\v.proto.UserBEZCgithub.com/ferza17/ecommerce-microservices-v2/user-service/model/pbb\x06proto3"
 
 var file_authService_proto_goTypes = []any{
-	(*UserLoginByEmailAndPasswordRequest)(nil),  // 0: proto.UserLoginByEmailAndPasswordRequest
-	(*UserLogoutByTokenRequest)(nil),            // 1: proto.UserLogoutByTokenRequest
-	(*FindUserByTokenRequest)(nil),              // 2: proto.FindUserByTokenRequest
-	(*UserLoginByEmailAndPasswordResponse)(nil), // 3: proto.UserLoginByEmailAndPasswordResponse
-	(*UserLogoutByTokenResponse)(nil),           // 4: proto.UserLogoutByTokenResponse
-	(*User)(nil),                                // 5: proto.User
+	(*UserLogoutByTokenRequest)(nil),  // 0: proto.UserLogoutByTokenRequest
+	(*UserVerifyOtpRequest)(nil),      // 1: proto.UserVerifyOtpRequest
+	(*FindUserByTokenRequest)(nil),    // 2: proto.FindUserByTokenRequest
+	(*UserLogoutByTokenResponse)(nil), // 3: proto.UserLogoutByTokenResponse
+	(*UserVerifyOtpResponse)(nil),     // 4: proto.UserVerifyOtpResponse
+	(*User)(nil),                      // 5: proto.User
 }
 var file_authService_proto_depIdxs = []int32{
-	0, // 0: proto.AuthService.UserLoginByEmailAndPassword:input_type -> proto.UserLoginByEmailAndPasswordRequest
-	1, // 1: proto.AuthService.UserLogoutByToken:input_type -> proto.UserLogoutByTokenRequest
+	0, // 0: proto.AuthService.UserLogoutByToken:input_type -> proto.UserLogoutByTokenRequest
+	1, // 1: proto.AuthService.UserVerifyOtp:input_type -> proto.UserVerifyOtpRequest
 	2, // 2: proto.AuthService.FindUserByToken:input_type -> proto.FindUserByTokenRequest
-	3, // 3: proto.AuthService.UserLoginByEmailAndPassword:output_type -> proto.UserLoginByEmailAndPasswordResponse
-	4, // 4: proto.AuthService.UserLogoutByToken:output_type -> proto.UserLogoutByTokenResponse
+	3, // 3: proto.AuthService.UserLogoutByToken:output_type -> proto.UserLogoutByTokenResponse
+	4, // 4: proto.AuthService.UserVerifyOtp:output_type -> proto.UserVerifyOtpResponse
 	5, // 5: proto.AuthService.FindUserByToken:output_type -> proto.User
 	3, // [3:6] is the sub-list for method output_type
 	0, // [0:3] is the sub-list for method input_type

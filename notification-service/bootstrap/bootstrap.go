@@ -5,22 +5,22 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mongodb"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
-	notificationConsumer "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/notification/consumer"
-	notificationRepository "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/notification/repository/mongodb"
+	notificationConsumer "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/consumer"
+	notificationRepository "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/repository/mongodb"
 
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/module/notification/usecase"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg"
 )
 
 type Bootstrap struct {
-	Logger                  pkg.IZapLogger
-	RabbitMQInfrastructure  rabbitmq.IRabbitMQInfrastructure
-	MongoDBInfrastructure   mongodb.IMongoDBInfrastructure
-	MailHogInfrastructure   mailhog.IMailhogInfrastructure
-	TelemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
-	NotificationRepository  notificationRepository.INotificationRepository
-	NotificationUseCase     usecase.INotificationUseCase
-	NotificationConsumer    notificationConsumer.INotificationConsumer
+	Logger                      pkg.IZapLogger
+	RabbitMQInfrastructure      rabbitmq.IRabbitMQInfrastructure
+	MongoDBInfrastructure       mongodb.IMongoDBInfrastructure
+	MailHogInfrastructure       mailhog.IMailhogInfrastructure
+	TelemetryInfrastructure     telemetryInfrastructure.ITelemetryInfrastructure
+	NotificationEmailRepository notificationRepository.INotificationEmailRepository
+	NotificationEmailUseCase    usecase.INotificationEmailUseCase
+	NotificationEmailConsumer   notificationConsumer.INotificationEmailConsumer
 }
 
 func NewBootstrap() *Bootstrap {
@@ -42,13 +42,13 @@ func NewBootstrap() *Bootstrap {
 	notificationConsumer := notificationConsumer.NewNotificationConsumer(rabbitmqInfrastructure, notificationUseCase, newTelemetryInfrastructure, logger)
 
 	return &Bootstrap{
-		Logger:                  logger,
-		RabbitMQInfrastructure:  rabbitmqInfrastructure,
-		MongoDBInfrastructure:   mongodbInfrastructure,
-		MailHogInfrastructure:   mailHogInfrastructure,
-		TelemetryInfrastructure: newTelemetryInfrastructure,
-		NotificationRepository:  notificationRepository,
-		NotificationUseCase:     notificationUseCase,
-		NotificationConsumer:    notificationConsumer,
+		Logger:                      logger,
+		RabbitMQInfrastructure:      rabbitmqInfrastructure,
+		MongoDBInfrastructure:       mongodbInfrastructure,
+		MailHogInfrastructure:       mailHogInfrastructure,
+		TelemetryInfrastructure:     newTelemetryInfrastructure,
+		NotificationEmailRepository: notificationRepository,
+		NotificationEmailUseCase:    notificationUseCase,
+		NotificationEmailConsumer:   notificationConsumer,
 	}
 }

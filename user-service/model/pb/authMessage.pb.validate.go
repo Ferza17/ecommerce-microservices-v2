@@ -144,115 +144,6 @@ var _ interface {
 	ErrorName() string
 } = UserLoginByEmailAndPasswordRequestValidationError{}
 
-// Validate checks the field values on UserLoginByEmailAndPasswordResponse with
-// the rules defined in the proto definition for this message. If any rules
-// are violated, the first error encountered is returned, or nil if there are
-// no violations.
-func (m *UserLoginByEmailAndPasswordResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on UserLoginByEmailAndPasswordResponse
-// with the rules defined in the proto definition for this message. If any
-// rules are violated, the result is a list of violation errors wrapped in
-// UserLoginByEmailAndPasswordResponseMultiError, or nil if none found.
-func (m *UserLoginByEmailAndPasswordResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *UserLoginByEmailAndPasswordResponse) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Token
-
-	// no validation rules for RefreshToken
-
-	if len(errors) > 0 {
-		return UserLoginByEmailAndPasswordResponseMultiError(errors)
-	}
-
-	return nil
-}
-
-// UserLoginByEmailAndPasswordResponseMultiError is an error wrapping multiple
-// validation errors returned by
-// UserLoginByEmailAndPasswordResponse.ValidateAll() if the designated
-// constraints aren't met.
-type UserLoginByEmailAndPasswordResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m UserLoginByEmailAndPasswordResponseMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m UserLoginByEmailAndPasswordResponseMultiError) AllErrors() []error { return m }
-
-// UserLoginByEmailAndPasswordResponseValidationError is the validation error
-// returned by UserLoginByEmailAndPasswordResponse.Validate if the designated
-// constraints aren't met.
-type UserLoginByEmailAndPasswordResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e UserLoginByEmailAndPasswordResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e UserLoginByEmailAndPasswordResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e UserLoginByEmailAndPasswordResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e UserLoginByEmailAndPasswordResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e UserLoginByEmailAndPasswordResponseValidationError) ErrorName() string {
-	return "UserLoginByEmailAndPasswordResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e UserLoginByEmailAndPasswordResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sUserLoginByEmailAndPasswordResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = UserLoginByEmailAndPasswordResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = UserLoginByEmailAndPasswordResponseValidationError{}
-
 // Validate checks the field values on UserLogoutByTokenRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -562,3 +453,213 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = FindUserByTokenRequestValidationError{}
+
+// Validate checks the field values on UserVerifyOtpRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UserVerifyOtpRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UserVerifyOtpRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UserVerifyOtpRequestMultiError, or nil if none found.
+func (m *UserVerifyOtpRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UserVerifyOtpRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Otp
+
+	if len(errors) > 0 {
+		return UserVerifyOtpRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// UserVerifyOtpRequestMultiError is an error wrapping multiple validation
+// errors returned by UserVerifyOtpRequest.ValidateAll() if the designated
+// constraints aren't met.
+type UserVerifyOtpRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UserVerifyOtpRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UserVerifyOtpRequestMultiError) AllErrors() []error { return m }
+
+// UserVerifyOtpRequestValidationError is the validation error returned by
+// UserVerifyOtpRequest.Validate if the designated constraints aren't met.
+type UserVerifyOtpRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UserVerifyOtpRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UserVerifyOtpRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UserVerifyOtpRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UserVerifyOtpRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UserVerifyOtpRequestValidationError) ErrorName() string {
+	return "UserVerifyOtpRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UserVerifyOtpRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUserVerifyOtpRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UserVerifyOtpRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UserVerifyOtpRequestValidationError{}
+
+// Validate checks the field values on UserVerifyOtpResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UserVerifyOtpResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UserVerifyOtpResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UserVerifyOtpResponseMultiError, or nil if none found.
+func (m *UserVerifyOtpResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UserVerifyOtpResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for AccessToken
+
+	// no validation rules for RefreshToken
+
+	if len(errors) > 0 {
+		return UserVerifyOtpResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// UserVerifyOtpResponseMultiError is an error wrapping multiple validation
+// errors returned by UserVerifyOtpResponse.ValidateAll() if the designated
+// constraints aren't met.
+type UserVerifyOtpResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UserVerifyOtpResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UserVerifyOtpResponseMultiError) AllErrors() []error { return m }
+
+// UserVerifyOtpResponseValidationError is the validation error returned by
+// UserVerifyOtpResponse.Validate if the designated constraints aren't met.
+type UserVerifyOtpResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UserVerifyOtpResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UserVerifyOtpResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UserVerifyOtpResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UserVerifyOtpResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UserVerifyOtpResponseValidationError) ErrorName() string {
+	return "UserVerifyOtpResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UserVerifyOtpResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUserVerifyOtpResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UserVerifyOtpResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UserVerifyOtpResponseValidationError{}

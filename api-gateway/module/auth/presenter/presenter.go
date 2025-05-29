@@ -13,6 +13,7 @@ type (
 		UserLoginByEmailAndPassword(w http.ResponseWriter, r *http.Request)
 		UserLogoutByToken(w http.ResponseWriter, r *http.Request)
 		CreateUser(w http.ResponseWriter, r *http.Request)
+		UserVerifyOtp(w http.ResponseWriter, r *http.Request)
 	}
 	authPresenter struct {
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure

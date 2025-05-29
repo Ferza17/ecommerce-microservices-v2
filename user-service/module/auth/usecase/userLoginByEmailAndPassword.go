@@ -3,26 +3,21 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/util"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"time"
 )
 
-func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId string, req *pb.UserLoginByEmailAndPasswordRequest) (*pb.UserLoginByEmailAndPasswordResponse, error) {
+func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId string, req *pb.UserLoginByEmailAndPasswordRequest) error {
 	var (
 		err                      error
-		reqUserLoginNotification *pb.SendLoginEmailNotificationRequest
+		reqUserLoginNotification *pb.SendOtpEmailNotificationRequest
 		tx                       = u.userPostgresqlRepository.OpenTransactionWithContext(ctx)
-		now                      = time.Now().UTC()
 		eventStore               = &pb.EventStore{
 			RequestId:     requestId,
 			Service:       enum.UserService.String(),
@@ -65,7 +60,7 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 		}
 
 		eventStore.Payload = loginNotificationPayload
-		eventStore.EventType = enum.NOTIFICATION_LOGIN_CREATED.String()
+		eventStore.EventType = enum.NOTIFICATION_EMAIL_OTP.String()
 		eventStore.Service = enum.NotificationService.String()
 		eventStore.Status = enum.PENDING.String()
 
@@ -86,71 +81,44 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 	user, err := u.userPostgresqlRepository.FindUserByEmailWithTransaction(ctx, requestId, req.Email, tx)
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("requestId : %s , error finding user by email and password: %v", requestId, err))
-		return nil, status.Error(codes.Internal, err.Error())
+		return status.Error(codes.Internal, err.Error())
 	}
 
 	reqHashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		tx.Rollback()
 		u.logger.Error(fmt.Sprintf("requestId : %s , error hashing password: %v", requestId, err))
-		return nil, status.Error(codes.Internal, err.Error())
+		return status.Error(codes.Internal, err.Error())
 	}
 
 	if err = bcrypt.CompareHashAndPassword(reqHashedPassword, []byte(req.Password)); err != nil {
 		tx.Rollback()
 		u.logger.Error(fmt.Sprintf("requestId : %s , error comparing password: %v", requestId, err))
-		return nil, status.Error(codes.Internal, err.Error())
+		return status.Error(codes.Internal, err.Error())
 	}
 
-	te := config.Get().JwtAccessTokenExpirationTime
-	accessToken, err := pkg.GenerateToken(pkg.Claim{
-		UserID:    user.ID,
-		CreatedAt: &now,
-		StandardClaims: jwt.StandardClaims{
-			Audience:  enum.UserService.String(),
-			ExpiresAt: now.Add(te).Unix(),
-		},
-	}, config.Get().JwtAccessTokenSecret)
-	if err != nil {
-		u.logger.Error(fmt.Sprintf("requestId : %s , error generating token: %v", requestId, err))
-		return nil, status.Error(codes.Internal, err.Error())
+	otp := util.GenerateOTP()
+	if err = u.authRedisRepository.SetOtp(ctx, requestId, otp, user.ID); err != nil {
+		u.logger.Error(fmt.Sprintf("requestId : %s , error setting otp: %v", requestId, err))
+		return status.Error(codes.Internal, err.Error())
 	}
 
-	refreshToken, err := pkg.GenerateToken(pkg.Claim{
-		UserID:    user.ID,
-		CreatedAt: &now,
-		StandardClaims: jwt.StandardClaims{
-			Audience:  enum.UserService.String(),
-			ExpiresAt: now.Add(config.Get().JwtRefreshTokenExpirationTime).Unix(),
-		},
-	}, config.Get().JwtRefreshTokenSecret)
-	if err != nil {
-		u.logger.Error(fmt.Sprintf("requestId : %s , error generating refresh token: %v", requestId, err))
-		return nil, status.Error(codes.Internal, err.Error())
-	}
-
-	reqUserLoginNotification = &pb.SendLoginEmailNotificationRequest{
-		Username:         user.Name,
+	reqUserLoginNotification = &pb.SendOtpEmailNotificationRequest{
 		Email:            user.Email,
-		AccessToken:      accessToken,
-		RefreshToken:     refreshToken,
-		NotificationType: pb.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_LOGIN,
+		Otp:              otp,
+		NotificationType: pb.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_OTP,
 	}
 
 	message, err := proto.Marshal(reqUserLoginNotification)
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("error marshaling message: %s", err.Error()))
-		return nil, status.Error(codes.Internal, err.Error())
+		return status.Error(codes.Internal, err.Error())
 	}
 
-	if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, enum.NotificationExchange, enum.NOTIFICATION_LOGIN_CREATED, message); err != nil {
+	if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, enum.NotificationExchange, enum.NOTIFICATION_EMAIL_OTP, message); err != nil {
 		u.logger.Error(fmt.Sprintf("error publish message err : %v", err))
-		return nil, status.Error(codes.Internal, err.Error())
+		return status.Error(codes.Internal, err.Error())
 	}
 
-	tx.Commit()
-	return &pb.UserLoginByEmailAndPasswordResponse{
-		Token:        accessToken,
-		RefreshToken: refreshToken,
-	}, nil
+	return nil
 }

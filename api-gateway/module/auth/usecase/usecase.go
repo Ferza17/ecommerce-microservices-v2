@@ -13,8 +13,9 @@ import (
 
 type (
 	IAuthUseCase interface {
-		UserLoginByEmailAndPassword(ctx context.Context, requestId string, input *pb.UserLoginByEmailAndPasswordRequest) (*pb.UserLoginByEmailAndPasswordResponse, error)
+		UserLoginByEmailAndPassword(ctx context.Context, requestId string, input *pb.UserLoginByEmailAndPasswordRequest) error
 		UserLogoutByToken(ctx context.Context, requestId string, input *pb.UserLogoutByTokenRequest) (*pb.UserLogoutByTokenResponse, error)
+		UserVerifyOtp(ctx context.Context, requestId string, req *pb.UserVerifyOtpRequest) (*pb.UserVerifyOtpResponse, error)
 	}
 	authUseCase struct {
 		authService             authService.IAuthService

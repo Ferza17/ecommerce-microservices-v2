@@ -1,4 +1,4 @@
-import CircuitBreaker, { Options as CircuitBreakerOptions } from 'opossum';
+import { Options as CircuitBreakerOptions } from 'opossum';
 
 
 export const UserServiceCircuitOptions: CircuitBreakerOptions = {

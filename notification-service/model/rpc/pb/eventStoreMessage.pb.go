@@ -197,7 +197,7 @@ const file_eventStoreMessage_proto_rawDesc = "" +
 	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\x11\n" +
 	"\x0f_previous_state\"*\n" +
 	"\x18CreateEventStoreResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02idBQZOgithub.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/pbb\x06proto3"
+	"\x02id\x18\x01 \x01(\tR\x02idBJZHgithub.com/ferza17/ecommerce-microservices-v2/email-service/model/rpc/pbb\x06proto3"
 
 var (
 	file_eventStoreMessage_proto_rawDescOnce sync.Once

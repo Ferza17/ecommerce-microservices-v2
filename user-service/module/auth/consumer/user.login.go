@@ -97,7 +97,7 @@ func (c *authConsumer) UserLogin(ctx context.Context) error {
 				continue messages
 			}
 
-			if _, err = c.authUseCase.UserLoginByEmailAndPassword(ctx, requestId, &request); err != nil {
+			if err = c.authUseCase.UserLoginByEmailAndPassword(ctx, requestId, &request); err != nil {
 				c.logger.Error(fmt.Sprintf("failed to login user : %v", zap.Error(err)))
 				span.End()
 				continue messages

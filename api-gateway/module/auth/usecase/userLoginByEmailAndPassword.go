@@ -10,7 +10,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId string, req *pb.UserLoginByEmailAndPasswordRequest) (*pb.UserLoginByEmailAndPasswordResponse, error) {
+func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId string, req *pb.UserLoginByEmailAndPasswordRequest) error {
 	var (
 		err        error = nil
 		eventStore       = &pb.EventStore{
@@ -33,10 +33,10 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 	})
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("error finding user by email and password: %s", err.Error()))
-		return nil, err
+		return err
 	}
 	if user == nil {
-		return nil, fmt.Errorf("user not found")
+		return fmt.Errorf("user not found")
 	}
 
 	defer func(err error, eventStore *pb.EventStore) {
@@ -59,20 +59,20 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 	payload, err := util.ConvertStructToProtoStruct(req)
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("error converting struct to proto struct: %s", err.Error()))
-		return nil, err
+		return err
 	}
 	eventStore.Payload = payload
 
 	message, err := proto.Marshal(req)
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("error marshaling message: %s", err.Error()))
-		return nil, err
+		return err
 	}
 
 	if err = u.rabbitMQ.Publish(ctx, requestId, enum.UserExchange, enum.USER_LOGIN, message); err != nil {
 		u.logger.Error(fmt.Sprintf("error publishing message to rabbitmq: %s", err.Error()))
-		return nil, err
+		return err
 	}
 
-	return &pb.UserLoginByEmailAndPasswordResponse{}, nil
+	return nil
 }

@@ -73,6 +73,7 @@ func (srv *GraphQLTransport) Serve() {
 	public.HandleFunc("/user/register", srv.bootstrap.AuthPresenter.CreateUser).Methods(http.MethodPost)
 	public.HandleFunc("/user/login", srv.bootstrap.AuthPresenter.UserLoginByEmailAndPassword).Methods(http.MethodPost)
 	public.HandleFunc("/user/logout", srv.bootstrap.AuthPresenter.UserLogoutByToken).Methods(http.MethodPost)
+	public.HandleFunc("/user/verify_otp", srv.bootstrap.AuthPresenter.UserVerifyOtp).Methods(http.MethodPost)
 
 	private := apiV1.PathPrefix("/private").Subrouter()
 	private.Use(middleware.Authorization(srv.bootstrap.AuthServiceInfrastructure, srv.bootstrap.TelemetryInfrastructure))

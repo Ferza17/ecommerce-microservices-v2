@@ -3,15 +3,14 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/orm"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/util"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
@@ -20,11 +19,11 @@ import (
 func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 
 	var (
-		err                        error
-		reqNotificationUserCreated *pb.SendUserVerificationEmailNotificationRequest
-		tx                         = u.userPostgresqlRepository.OpenTransactionWithContext(ctx)
-		now                        = time.Now().UTC()
-		eventStore                 = &pb.EventStore{
+		err             error
+		reqUserEmailOtp *pb.SendOtpEmailNotificationRequest
+		tx              = u.userPostgresqlRepository.OpenTransactionWithContext(ctx)
+		now             = time.Now().UTC()
+		eventStore      = &pb.EventStore{
 			RequestId:     requestId,
 			Service:       enum.UserService.String(),
 			EventType:     enum.USER_CREATED.String(),
@@ -83,47 +82,28 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 		return nil, err
 	}
 
-	expTime := config.Get().JwtAccessTokenExpirationTime
-	accessToken, err := pkg.GenerateToken(pkg.Claim{
-		UserID:    result,
-		CreatedAt: &now,
-		StandardClaims: jwt.StandardClaims{
-			Audience:  enum.UserService.String(),
-			ExpiresAt: now.Add(expTime).Unix(),
-		},
-	}, config.Get().JwtAccessTokenSecret)
-	if err != nil {
-		u.logger.Error(fmt.Sprintf("requestId : %s , error generating token: %v", requestId, err))
-		return nil, err
+	otp := util.GenerateOTP()
+	if err = u.authRedisRepository.SetOtp(ctx, requestId, otp, result); err != nil {
+		u.logger.Error(fmt.Sprintf("requestId : %s , error setting otp: %v", requestId, err))
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	refreshToken, err := pkg.GenerateToken(pkg.Claim{
-		UserID:    result,
-		CreatedAt: &now,
-		StandardClaims: jwt.StandardClaims{
-			Audience:  enum.UserService.String(),
-			ExpiresAt: now.Add(config.Get().JwtRefreshTokenExpirationTime).Unix(),
-		},
-	}, config.Get().JwtRefreshTokenSecret)
-	if err != nil {
-		u.logger.Error(fmt.Sprintf("requestId : %s , error generating refresh token: %v", requestId, err))
-	}
-
-	reqNotificationUserCreated = &pb.SendUserVerificationEmailNotificationRequest{
-		VerificationUrl:  fmt.Sprintf(config.Get().VerificationUserLoginUrl, accessToken, refreshToken),
-		NotificationType: pb.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_CREATED,
+	reqUserEmailOtp = &pb.SendOtpEmailNotificationRequest{
 		Email:            req.Email,
+		Otp:              otp,
+		NotificationType: pb.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_OTP,
 	}
 
-	message, err := proto.Marshal(reqNotificationUserCreated)
+	message, err := proto.Marshal(reqUserEmailOtp)
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("error marshaling message: %s", err.Error()))
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, enum.NotificationExchange, enum.NOTIFICATION_USER_CREATED, message); err != nil {
-		return nil, err
+	if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, enum.NotificationExchange, enum.NOTIFICATION_EMAIL_OTP, message); err != nil {
+		u.logger.Error(fmt.Sprintf("error publish message err : %v", err))
+		return nil, status.Error(codes.Internal, err.Error())
 	}
-
 	tx.Commit()
 	return &pb.CreateUserResponse{
 		Id: result,

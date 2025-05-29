@@ -51,6 +51,7 @@ type Config struct {
 	JwtRefreshTokenSecret         string
 	JwtRefreshTokenExpirationTime time.Duration
 	VerificationUserLoginUrl      string
+	OtpExpirationTime             time.Duration
 
 	RpcHost string
 	RpcPort string
@@ -333,6 +334,20 @@ func SetConfig(path string) {
 			log.Fatal("SetConfig | Consul | VERIFICATION_USER_LOGIN_URL is required")
 		}
 		c.VerificationUserLoginUrl = string(pair.Value)
+
+		// OTP Expiration Time
+		pair, _, err = kv.Get(fmt.Sprintf("%s/services/user/OTP_EXPIRATION_TIME", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get  from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul |  is required")
+		}
+		c.OtpExpirationTime, err = str2duration.ParseDuration(string(pair.Value))
+		if err != nil {
+			log.Fatalf("SetConfig |  is invalid")
+		}
+
 	}()
 
 	wg.Wait()

@@ -1,9 +1,0 @@
-syntax = "proto3";
-package proto;
-
-import "notificationMessage.proto";
-option go_package = "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/pb";
-
-service NotificationService {
-  rpc SendLoginEmailNotification(SendLoginEmailNotificationRequest) returns (SendLoginEmailNotificationResponse);
-}

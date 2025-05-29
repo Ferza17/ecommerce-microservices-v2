@@ -4,19 +4,18 @@ import (
 	"context"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
-	notificationUseCase "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/notification/usecase"
+	notificationUseCase "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg"
 )
 
 type (
-	INotificationConsumer interface {
-		NotificationLoginCreated(ctx context.Context) error
-		NotificationUserCreated(ctx context.Context) error
+	INotificationEmailConsumer interface {
+		NotificationEmailOTP(ctx context.Context) error
 	}
 
-	notificationConsumer struct {
+	notificationEmailConsumer struct {
 		rabbitmqInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
-		notificationUseCase     notificationUseCase.INotificationUseCase
+		notificationUseCase     notificationUseCase.INotificationEmailUseCase
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 		logger                  pkg.IZapLogger
 	}
@@ -24,10 +23,10 @@ type (
 
 func NewNotificationConsumer(
 	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
-	notificationUseCase notificationUseCase.INotificationUseCase,
+	notificationUseCase notificationUseCase.INotificationEmailUseCase,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
-	logger pkg.IZapLogger) INotificationConsumer {
-	return &notificationConsumer{
+	logger pkg.IZapLogger) INotificationEmailConsumer {
+	return &notificationEmailConsumer{
 		rabbitmqInfrastructure:  rabbitmqInfrastructure,
 		notificationUseCase:     notificationUseCase,
 		telemetryInfrastructure: telemetryInfrastructure,

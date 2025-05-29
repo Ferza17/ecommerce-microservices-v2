@@ -176,6 +176,7 @@ curl --request PUT --data 'ecommerce-service-v2' http://localhost:8500/v1/kv/loc
 curl --request PUT --data '1h' http://localhost:8500/v1/kv/local/services/user/JWT_ACCESS_TOKEN_EXPIRATION_TIME
 curl --request PUT --data 'v2-service-ecommerce' http://localhost:8500/v1/kv/local/services/user/JWT_REFRESH_TOKEN_SECRET
 curl --request PUT --data '2d' http://localhost:8500/v1/kv/local/services/user/JWT_REFRESH_TOKEN_EXPIRATION_TIME
+curl --request PUT --data '10m' http://localhost:8500/v1/kv/local/services/user/OTP_EXPIRATION_TIME
 curl --request PUT --data 'http://localhost:4000?access_token=%s?refresh_token=?' http://localhost:8500/v1/kv/local/services/user/VERIFICATION_USER_LOGIN_URL
 ## Production
 curl --request PUT --data 'production' http://localhost:8500/v1/kv/production/services/user/ENV
@@ -186,6 +187,7 @@ curl --request PUT --data 'ecommerce-service-v2' http://localhost:8500/v1/kv/pro
 curl --request PUT --data '1h' http://localhost:8500/v1/kv/production/services/user/JWT_ACCESS_TOKEN_EXPIRATION_TIME
 curl --request PUT --data 'v2-service-ecommerce' http://localhost:8500/v1/kv/production/services/user/JWT_REFRESH_TOKEN_SECRET
 curl --request PUT --data '2d' http://localhost:8500/v1/kv/production/services/user/JWT_REFRESH_TOKEN_EXPIRATION_TIME
+curl --request PUT --data '1m' http://localhost:8500/v1/kv/production/services/user/OTP_EXPIRATION_TIME
 curl --request PUT --data 'http://localhost:4000?access_token=%s?refresh_token=?' http://localhost:8500/v1/kv/production/services/user/VERIFICATION_USER_LOGIN_URL
 
 echo "✅ Done setting key-values."

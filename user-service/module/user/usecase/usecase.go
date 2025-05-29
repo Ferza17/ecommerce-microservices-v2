@@ -5,6 +5,7 @@ import (
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
+	authRedisRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
 	userPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/postgresql"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
 )
@@ -21,6 +22,7 @@ type (
 		userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository
 		rabbitmqInfrastructure   rabbitmqInfrastructure.IRabbitMQInfrastructure
 		telemetryInfrastructure  telemetryInfrastructure.ITelemetryInfrastructure
+		authRedisRepository      authRedisRepository.IAuthRedisRepository
 		logger                   pkg.IZapLogger
 	}
 )
@@ -28,12 +30,14 @@ type (
 func NewUserUseCase(
 	userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository,
 	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
+	authRedisRepository authRedisRepository.IAuthRedisRepository,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	logger pkg.IZapLogger) IUserUseCase {
 	return &userUseCase{
 		userPostgresqlRepository: userPostgresqlRepository,
 		rabbitmqInfrastructure:   rabbitmqInfrastructure,
 		telemetryInfrastructure:  telemetryInfrastructure,
+		authRedisRepository:      authRedisRepository,
 		logger:                   logger,
 	}
 }

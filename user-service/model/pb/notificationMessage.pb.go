@@ -10,7 +10,6 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -26,19 +25,16 @@ const (
 type NotificationTypeEnum int32
 
 const (
-	NotificationTypeEnum_NOTIFICATION_EMAIL_USER_LOGIN   NotificationTypeEnum = 0
-	NotificationTypeEnum_NOTIFICATION_EMAIL_USER_CREATED NotificationTypeEnum = 1
+	NotificationTypeEnum_NOTIFICATION_EMAIL_USER_OTP NotificationTypeEnum = 0
 )
 
 // Enum value maps for NotificationTypeEnum.
 var (
 	NotificationTypeEnum_name = map[int32]string{
-		0: "NOTIFICATION_EMAIL_USER_LOGIN",
-		1: "NOTIFICATION_EMAIL_USER_CREATED",
+		0: "NOTIFICATION_EMAIL_USER_OTP",
 	}
 	NotificationTypeEnum_value = map[string]int32{
-		"NOTIFICATION_EMAIL_USER_LOGIN":   0,
-		"NOTIFICATION_EMAIL_USER_CREATED": 1,
+		"NOTIFICATION_EMAIL_USER_OTP": 0,
 	}
 )
 
@@ -137,31 +133,29 @@ func (x *NotificationTemplate) GetTemplateVars() *structpb.Struct {
 	return nil
 }
 
-type SendLoginEmailNotificationRequest struct {
+type SendOtpEmailNotificationRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	Username         string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Otp              string                 `protobuf:"bytes,1,opt,name=otp,proto3" json:"otp,omitempty"`
 	Email            string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
-	AccessToken      string                 `protobuf:"bytes,3,opt,name=accessToken,proto3" json:"accessToken,omitempty"`
-	RefreshToken     string                 `protobuf:"bytes,4,opt,name=refreshToken,proto3" json:"refreshToken,omitempty"`
-	NotificationType NotificationTypeEnum   `protobuf:"varint,5,opt,name=notificationType,proto3,enum=proto.NotificationTypeEnum" json:"notificationType,omitempty"`
+	NotificationType NotificationTypeEnum   `protobuf:"varint,3,opt,name=notificationType,proto3,enum=proto.NotificationTypeEnum" json:"notificationType,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
 
-func (x *SendLoginEmailNotificationRequest) Reset() {
-	*x = SendLoginEmailNotificationRequest{}
+func (x *SendOtpEmailNotificationRequest) Reset() {
+	*x = SendOtpEmailNotificationRequest{}
 	mi := &file_notificationMessage_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *SendLoginEmailNotificationRequest) String() string {
+func (x *SendOtpEmailNotificationRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SendLoginEmailNotificationRequest) ProtoMessage() {}
+func (*SendOtpEmailNotificationRequest) ProtoMessage() {}
 
-func (x *SendLoginEmailNotificationRequest) ProtoReflect() protoreflect.Message {
+func (x *SendOtpEmailNotificationRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_notificationMessage_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -173,175 +167,48 @@ func (x *SendLoginEmailNotificationRequest) ProtoReflect() protoreflect.Message 
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SendLoginEmailNotificationRequest.ProtoReflect.Descriptor instead.
-func (*SendLoginEmailNotificationRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use SendOtpEmailNotificationRequest.ProtoReflect.Descriptor instead.
+func (*SendOtpEmailNotificationRequest) Descriptor() ([]byte, []int) {
 	return file_notificationMessage_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *SendLoginEmailNotificationRequest) GetUsername() string {
+func (x *SendOtpEmailNotificationRequest) GetOtp() string {
 	if x != nil {
-		return x.Username
+		return x.Otp
 	}
 	return ""
 }
 
-func (x *SendLoginEmailNotificationRequest) GetEmail() string {
+func (x *SendOtpEmailNotificationRequest) GetEmail() string {
 	if x != nil {
 		return x.Email
 	}
 	return ""
 }
 
-func (x *SendLoginEmailNotificationRequest) GetAccessToken() string {
-	if x != nil {
-		return x.AccessToken
-	}
-	return ""
-}
-
-func (x *SendLoginEmailNotificationRequest) GetRefreshToken() string {
-	if x != nil {
-		return x.RefreshToken
-	}
-	return ""
-}
-
-func (x *SendLoginEmailNotificationRequest) GetNotificationType() NotificationTypeEnum {
+func (x *SendOtpEmailNotificationRequest) GetNotificationType() NotificationTypeEnum {
 	if x != nil {
 		return x.NotificationType
 	}
-	return NotificationTypeEnum_NOTIFICATION_EMAIL_USER_LOGIN
-}
-
-type SendLoginEmailNotificationResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Status        string                 `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *SendLoginEmailNotificationResponse) Reset() {
-	*x = SendLoginEmailNotificationResponse{}
-	mi := &file_notificationMessage_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SendLoginEmailNotificationResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SendLoginEmailNotificationResponse) ProtoMessage() {}
-
-func (x *SendLoginEmailNotificationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_notificationMessage_proto_msgTypes[2]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SendLoginEmailNotificationResponse.ProtoReflect.Descriptor instead.
-func (*SendLoginEmailNotificationResponse) Descriptor() ([]byte, []int) {
-	return file_notificationMessage_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *SendLoginEmailNotificationResponse) GetStatus() string {
-	if x != nil {
-		return x.Status
-	}
-	return ""
-}
-
-type SendUserVerificationEmailNotificationRequest struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	VerificationUrl  string                 `protobuf:"bytes,1,opt,name=verificationUrl,proto3" json:"verificationUrl,omitempty"`
-	NotificationType NotificationTypeEnum   `protobuf:"varint,2,opt,name=notificationType,proto3,enum=proto.NotificationTypeEnum" json:"notificationType,omitempty"`
-	Email            string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
-}
-
-func (x *SendUserVerificationEmailNotificationRequest) Reset() {
-	*x = SendUserVerificationEmailNotificationRequest{}
-	mi := &file_notificationMessage_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SendUserVerificationEmailNotificationRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SendUserVerificationEmailNotificationRequest) ProtoMessage() {}
-
-func (x *SendUserVerificationEmailNotificationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_notificationMessage_proto_msgTypes[3]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SendUserVerificationEmailNotificationRequest.ProtoReflect.Descriptor instead.
-func (*SendUserVerificationEmailNotificationRequest) Descriptor() ([]byte, []int) {
-	return file_notificationMessage_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *SendUserVerificationEmailNotificationRequest) GetVerificationUrl() string {
-	if x != nil {
-		return x.VerificationUrl
-	}
-	return ""
-}
-
-func (x *SendUserVerificationEmailNotificationRequest) GetNotificationType() NotificationTypeEnum {
-	if x != nil {
-		return x.NotificationType
-	}
-	return NotificationTypeEnum_NOTIFICATION_EMAIL_USER_LOGIN
-}
-
-func (x *SendUserVerificationEmailNotificationRequest) GetEmail() string {
-	if x != nil {
-		return x.Email
-	}
-	return ""
+	return NotificationTypeEnum_NOTIFICATION_EMAIL_USER_OTP
 }
 
 var File_notificationMessage_proto protoreflect.FileDescriptor
 
 const file_notificationMessage_proto_rawDesc = "" +
 	"\n" +
-	"\x19notificationMessage.proto\x12\x05proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x93\x01\n" +
+	"\x19notificationMessage.proto\x12\x05proto\x1a\x1cgoogle/protobuf/struct.proto\"\x93\x01\n" +
 	"\x14NotificationTemplate\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04type\x18\x02 \x01(\tR\x04type\x12\x1a\n" +
 	"\btemplate\x18\x03 \x01(\tR\btemplate\x12;\n" +
-	"\ftemplateVars\x18\x04 \x01(\v2\x17.google.protobuf.StructR\ftemplateVars\"\xe4\x01\n" +
-	"!SendLoginEmailNotificationRequest\x12\x1a\n" +
-	"\busername\x18\x01 \x01(\tR\busername\x12\x14\n" +
-	"\x05email\x18\x02 \x01(\tR\x05email\x12 \n" +
-	"\vaccessToken\x18\x03 \x01(\tR\vaccessToken\x12\"\n" +
-	"\frefreshToken\x18\x04 \x01(\tR\frefreshToken\x12G\n" +
-	"\x10notificationType\x18\x05 \x01(\x0e2\x1b.proto.NotificationTypeEnumR\x10notificationType\"<\n" +
-	"\"SendLoginEmailNotificationResponse\x12\x16\n" +
-	"\x06status\x18\x01 \x01(\tR\x06status\"\xb7\x01\n" +
-	",SendUserVerificationEmailNotificationRequest\x12(\n" +
-	"\x0fverificationUrl\x18\x01 \x01(\tR\x0fverificationUrl\x12G\n" +
-	"\x10notificationType\x18\x02 \x01(\x0e2\x1b.proto.NotificationTypeEnumR\x10notificationType\x12\x14\n" +
-	"\x05email\x18\x03 \x01(\tR\x05email*^\n" +
-	"\x14NotificationTypeEnum\x12!\n" +
-	"\x1dNOTIFICATION_EMAIL_USER_LOGIN\x10\x00\x12#\n" +
-	"\x1fNOTIFICATION_EMAIL_USER_CREATED\x10\x01BPZNmodule github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/pbb\x06proto3"
+	"\ftemplateVars\x18\x04 \x01(\v2\x17.google.protobuf.StructR\ftemplateVars\"\x92\x01\n" +
+	"\x1fSendOtpEmailNotificationRequest\x12\x10\n" +
+	"\x03otp\x18\x01 \x01(\tR\x03otp\x12\x14\n" +
+	"\x05email\x18\x02 \x01(\tR\x05email\x12G\n" +
+	"\x10notificationType\x18\x03 \x01(\x0e2\x1b.proto.NotificationTypeEnumR\x10notificationType*7\n" +
+	"\x14NotificationTypeEnum\x12\x1f\n" +
+	"\x1bNOTIFICATION_EMAIL_USER_OTP\x10\x00BPZNmodule github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/pbb\x06proto3"
 
 var (
 	file_notificationMessage_proto_rawDescOnce sync.Once
@@ -356,24 +223,21 @@ func file_notificationMessage_proto_rawDescGZIP() []byte {
 }
 
 var file_notificationMessage_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_notificationMessage_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_notificationMessage_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_notificationMessage_proto_goTypes = []any{
-	(NotificationTypeEnum)(0),                            // 0: proto.NotificationTypeEnum
-	(*NotificationTemplate)(nil),                         // 1: proto.NotificationTemplate
-	(*SendLoginEmailNotificationRequest)(nil),            // 2: proto.SendLoginEmailNotificationRequest
-	(*SendLoginEmailNotificationResponse)(nil),           // 3: proto.SendLoginEmailNotificationResponse
-	(*SendUserVerificationEmailNotificationRequest)(nil), // 4: proto.SendUserVerificationEmailNotificationRequest
-	(*structpb.Struct)(nil),                              // 5: google.protobuf.Struct
+	(NotificationTypeEnum)(0),               // 0: proto.NotificationTypeEnum
+	(*NotificationTemplate)(nil),            // 1: proto.NotificationTemplate
+	(*SendOtpEmailNotificationRequest)(nil), // 2: proto.SendOtpEmailNotificationRequest
+	(*structpb.Struct)(nil),                 // 3: google.protobuf.Struct
 }
 var file_notificationMessage_proto_depIdxs = []int32{
-	5, // 0: proto.NotificationTemplate.templateVars:type_name -> google.protobuf.Struct
-	0, // 1: proto.SendLoginEmailNotificationRequest.notificationType:type_name -> proto.NotificationTypeEnum
-	0, // 2: proto.SendUserVerificationEmailNotificationRequest.notificationType:type_name -> proto.NotificationTypeEnum
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	3, // 0: proto.NotificationTemplate.templateVars:type_name -> google.protobuf.Struct
+	0, // 1: proto.SendOtpEmailNotificationRequest.notificationType:type_name -> proto.NotificationTypeEnum
+	2, // [2:2] is the sub-list for method output_type
+	2, // [2:2] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_notificationMessage_proto_init() }
@@ -387,7 +251,7 @@ func file_notificationMessage_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_notificationMessage_proto_rawDesc), len(file_notificationMessage_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   4,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

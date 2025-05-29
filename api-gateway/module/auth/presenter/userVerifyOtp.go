@@ -13,9 +13,9 @@ import (
 	"net/http"
 )
 
-func (p *authPresenter) UserLoginByEmailAndPassword(w http.ResponseWriter, r *http.Request) {
+func (p *authPresenter) UserVerifyOtp(w http.ResponseWriter, r *http.Request) {
 	ctx := otel.GetTextMapPropagator().Extract(r.Context(), propagation.HeaderCarrier(r.Header))
-	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.UserLoginByEmailAndPassword")
+	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.UserVerifyOtp")
 	defer span.End()
 
 	body, err := io.ReadAll(r.Body)
@@ -26,7 +26,7 @@ func (p *authPresenter) UserLoginByEmailAndPassword(w http.ResponseWriter, r *ht
 	}
 	defer r.Body.Close()
 
-	req := &dto.UserLoginByEmailAndPasswordRequest{}
+	req := &dto.UserVerifyOtpRequest{}
 	if err = json.Unmarshal(body, req); err != nil {
 		p.logger.Error(fmt.Sprintf("error unmarshaling body: %v", err))
 		render.Status(r, http.StatusInternalServerError)
@@ -38,15 +38,15 @@ func (p *authPresenter) UserLoginByEmailAndPassword(w http.ResponseWriter, r *ht
 		return
 	}
 
-	if err = p.authUseCase.UserLoginByEmailAndPassword(ctx, r.Header.Get(enum.XRequestIDHeader.String()), &pb.UserLoginByEmailAndPasswordRequest{
-		Email:    req.Email,
-		Password: req.Password,
-	}); err != nil {
-		p.logger.Error(fmt.Sprintf("error creating user: %v", err))
+	resp, err := p.authUseCase.UserVerifyOtp(ctx, r.Header.Get(enum.XRequestIDHeader.String()), &pb.UserVerifyOtpRequest{
+		Otp: req.Otp,
+	})
+	if err != nil {
+		p.logger.Error(fmt.Sprintf("error verifying otp: %v", err))
 		render.Status(r, http.StatusInternalServerError)
 		return
 	}
 
-	render.Status(r, http.StatusOK)
+	render.JSON(w, r, resp)
 	return
 }

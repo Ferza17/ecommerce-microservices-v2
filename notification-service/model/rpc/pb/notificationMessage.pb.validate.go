@@ -172,54 +172,48 @@ var _ interface {
 	ErrorName() string
 } = NotificationTemplateValidationError{}
 
-// Validate checks the field values on SendLoginEmailNotificationRequest with
-// the rules defined in the proto definition for this message. If any rules
-// are violated, the first error encountered is returned, or nil if there are
-// no violations.
-func (m *SendLoginEmailNotificationRequest) Validate() error {
+// Validate checks the field values on SendOtpEmailNotificationRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *SendOtpEmailNotificationRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on SendLoginEmailNotificationRequest
-// with the rules defined in the proto definition for this message. If any
-// rules are violated, the result is a list of violation errors wrapped in
-// SendLoginEmailNotificationRequestMultiError, or nil if none found.
-func (m *SendLoginEmailNotificationRequest) ValidateAll() error {
+// ValidateAll checks the field values on SendOtpEmailNotificationRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// SendOtpEmailNotificationRequestMultiError, or nil if none found.
+func (m *SendOtpEmailNotificationRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *SendLoginEmailNotificationRequest) validate(all bool) error {
+func (m *SendOtpEmailNotificationRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	// no validation rules for Username
+	// no validation rules for Otp
 
 	// no validation rules for Email
-
-	// no validation rules for AccessToken
-
-	// no validation rules for RefreshToken
 
 	// no validation rules for NotificationType
 
 	if len(errors) > 0 {
-		return SendLoginEmailNotificationRequestMultiError(errors)
+		return SendOtpEmailNotificationRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// SendLoginEmailNotificationRequestMultiError is an error wrapping multiple
-// validation errors returned by
-// SendLoginEmailNotificationRequest.ValidateAll() if the designated
-// constraints aren't met.
-type SendLoginEmailNotificationRequestMultiError []error
+// SendOtpEmailNotificationRequestMultiError is an error wrapping multiple
+// validation errors returned by SendOtpEmailNotificationRequest.ValidateAll()
+// if the designated constraints aren't met.
+type SendOtpEmailNotificationRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m SendLoginEmailNotificationRequestMultiError) Error() string {
+func (m SendOtpEmailNotificationRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -228,12 +222,12 @@ func (m SendLoginEmailNotificationRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m SendLoginEmailNotificationRequestMultiError) AllErrors() []error { return m }
+func (m SendOtpEmailNotificationRequestMultiError) AllErrors() []error { return m }
 
-// SendLoginEmailNotificationRequestValidationError is the validation error
-// returned by SendLoginEmailNotificationRequest.Validate if the designated
+// SendOtpEmailNotificationRequestValidationError is the validation error
+// returned by SendOtpEmailNotificationRequest.Validate if the designated
 // constraints aren't met.
-type SendLoginEmailNotificationRequestValidationError struct {
+type SendOtpEmailNotificationRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -241,24 +235,24 @@ type SendLoginEmailNotificationRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e SendLoginEmailNotificationRequestValidationError) Field() string { return e.field }
+func (e SendOtpEmailNotificationRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e SendLoginEmailNotificationRequestValidationError) Reason() string { return e.reason }
+func (e SendOtpEmailNotificationRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e SendLoginEmailNotificationRequestValidationError) Cause() error { return e.cause }
+func (e SendOtpEmailNotificationRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e SendLoginEmailNotificationRequestValidationError) Key() bool { return e.key }
+func (e SendOtpEmailNotificationRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e SendLoginEmailNotificationRequestValidationError) ErrorName() string {
-	return "SendLoginEmailNotificationRequestValidationError"
+func (e SendOtpEmailNotificationRequestValidationError) ErrorName() string {
+	return "SendOtpEmailNotificationRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e SendLoginEmailNotificationRequestValidationError) Error() string {
+func (e SendOtpEmailNotificationRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -270,14 +264,14 @@ func (e SendLoginEmailNotificationRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sSendLoginEmailNotificationRequest.%s: %s%s",
+		"invalid %sSendOtpEmailNotificationRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = SendLoginEmailNotificationRequestValidationError{}
+var _ error = SendOtpEmailNotificationRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -285,224 +279,4 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = SendLoginEmailNotificationRequestValidationError{}
-
-// Validate checks the field values on SendLoginEmailNotificationResponse with
-// the rules defined in the proto definition for this message. If any rules
-// are violated, the first error encountered is returned, or nil if there are
-// no violations.
-func (m *SendLoginEmailNotificationResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on SendLoginEmailNotificationResponse
-// with the rules defined in the proto definition for this message. If any
-// rules are violated, the result is a list of violation errors wrapped in
-// SendLoginEmailNotificationResponseMultiError, or nil if none found.
-func (m *SendLoginEmailNotificationResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *SendLoginEmailNotificationResponse) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Status
-
-	if len(errors) > 0 {
-		return SendLoginEmailNotificationResponseMultiError(errors)
-	}
-
-	return nil
-}
-
-// SendLoginEmailNotificationResponseMultiError is an error wrapping multiple
-// validation errors returned by
-// SendLoginEmailNotificationResponse.ValidateAll() if the designated
-// constraints aren't met.
-type SendLoginEmailNotificationResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m SendLoginEmailNotificationResponseMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m SendLoginEmailNotificationResponseMultiError) AllErrors() []error { return m }
-
-// SendLoginEmailNotificationResponseValidationError is the validation error
-// returned by SendLoginEmailNotificationResponse.Validate if the designated
-// constraints aren't met.
-type SendLoginEmailNotificationResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e SendLoginEmailNotificationResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e SendLoginEmailNotificationResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e SendLoginEmailNotificationResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e SendLoginEmailNotificationResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e SendLoginEmailNotificationResponseValidationError) ErrorName() string {
-	return "SendLoginEmailNotificationResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e SendLoginEmailNotificationResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sSendLoginEmailNotificationResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = SendLoginEmailNotificationResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = SendLoginEmailNotificationResponseValidationError{}
-
-// Validate checks the field values on
-// SendUserVerificationEmailNotificationRequest with the rules defined in the
-// proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *SendUserVerificationEmailNotificationRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on
-// SendUserVerificationEmailNotificationRequest with the rules defined in the
-// proto definition for this message. If any rules are violated, the result is
-// a list of violation errors wrapped in
-// SendUserVerificationEmailNotificationRequestMultiError, or nil if none found.
-func (m *SendUserVerificationEmailNotificationRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *SendUserVerificationEmailNotificationRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for VerificationUrl
-
-	// no validation rules for NotificationType
-
-	// no validation rules for Email
-
-	if len(errors) > 0 {
-		return SendUserVerificationEmailNotificationRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// SendUserVerificationEmailNotificationRequestMultiError is an error wrapping
-// multiple validation errors returned by
-// SendUserVerificationEmailNotificationRequest.ValidateAll() if the
-// designated constraints aren't met.
-type SendUserVerificationEmailNotificationRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m SendUserVerificationEmailNotificationRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m SendUserVerificationEmailNotificationRequestMultiError) AllErrors() []error { return m }
-
-// SendUserVerificationEmailNotificationRequestValidationError is the
-// validation error returned by
-// SendUserVerificationEmailNotificationRequest.Validate if the designated
-// constraints aren't met.
-type SendUserVerificationEmailNotificationRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e SendUserVerificationEmailNotificationRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e SendUserVerificationEmailNotificationRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e SendUserVerificationEmailNotificationRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e SendUserVerificationEmailNotificationRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e SendUserVerificationEmailNotificationRequestValidationError) ErrorName() string {
-	return "SendUserVerificationEmailNotificationRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e SendUserVerificationEmailNotificationRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sSendUserVerificationEmailNotificationRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = SendUserVerificationEmailNotificationRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = SendUserVerificationEmailNotificationRequestValidationError{}
+} = SendOtpEmailNotificationRequestValidationError{}
