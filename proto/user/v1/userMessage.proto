@@ -1,0 +1,43 @@
+syntax = "proto3";
+package pb;
+import "google/protobuf/timestamp.proto";
+
+message User {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  string password = 4;
+  optional google.protobuf.Timestamp created_at = 5;
+  optional google.protobuf.Timestamp updated_at = 6;
+  optional google.protobuf.Timestamp discarded_at = 7;
+}
+
+message FindUserByIdRequest {
+  string id = 1;
+}
+
+message CreateUserRequest {
+  string name = 2;
+  string email = 3;
+  string password = 4;
+}
+
+message CreateUserResponse {
+  string id = 1;
+}
+
+message UpdateUserByIdRequest {
+  string id = 1;
+  optional string name = 2;
+  optional string email = 3;
+  optional string password = 4;
+}
+
+message UpdateUserByIdResponse {
+  string id = 1;
+}
+
+message FindUserByEmailAndPasswordRequest {
+  string email = 1;
+  string password = 2;
+}

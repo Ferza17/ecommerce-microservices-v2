@@ -1,0 +1,28 @@
+syntax = "proto3";
+package pb;
+import "google/protobuf/timestamp.proto";
+
+
+message UserLoginByEmailAndPasswordRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message UserLogoutByTokenRequest {
+  string token = 1;
+}
+
+message UserLogoutByTokenResponse {}
+
+message FindUserByTokenRequest {
+  string token = 1;
+}
+
+message UserVerifyOtpRequest {
+  string otp = 1;
+}
+
+message UserVerifyOtpResponse {
+  string accessToken = 1;
+  string refreshToken = 2;
+}

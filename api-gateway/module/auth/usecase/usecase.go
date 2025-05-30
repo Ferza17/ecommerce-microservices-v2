@@ -7,15 +7,15 @@ import (
 	authService "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/auth/service"
 	userService "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/user/service"
 
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/pkg"
 )
 
 type (
 	IAuthUseCase interface {
-		UserLoginByEmailAndPassword(ctx context.Context, requestId string, input *pb.UserLoginByEmailAndPasswordRequest) error
-		UserLogoutByToken(ctx context.Context, requestId string, input *pb.UserLogoutByTokenRequest) (*pb.UserLogoutByTokenResponse, error)
-		UserVerifyOtp(ctx context.Context, requestId string, req *pb.UserVerifyOtpRequest) (*pb.UserVerifyOtpResponse, error)
+		UserLoginByEmailAndPassword(ctx context.Context, requestId string, input *userRpc.UserLoginByEmailAndPasswordRequest) error
+		UserLogoutByToken(ctx context.Context, requestId string, input *userRpc.UserLogoutByTokenRequest) (*userRpc.UserLogoutByTokenResponse, error)
+		UserVerifyOtp(ctx context.Context, requestId string, req *userRpc.UserVerifyOtpRequest) (*userRpc.UserVerifyOtpResponse, error)
 	}
 	authUseCase struct {
 		authService             authService.IAuthService

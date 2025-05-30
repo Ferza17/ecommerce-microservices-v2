@@ -9,11 +9,11 @@ import (
 	"fmt"
 
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/graph/gen"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	gen1 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/commerce/v1"
 )
 
 // FindCartItemsWithPagination is the resolver for the findCartItemsWithPagination field.
-func (r *queryResolver) FindCartItemsWithPagination(ctx context.Context, input *pb.FindCartItemsWithPaginationRequest) (*pb.FindCartItemsWithPaginationResponse, error) {
+func (r *queryResolver) FindCartItemsWithPagination(ctx context.Context, input *gen1.FindCartItemsWithPaginationRequest) (*gen1.FindCartItemsWithPaginationResponse, error) {
 	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.FindCartItemsWithPagination")
 	defer span.End()
 	panic(fmt.Errorf("not implemented: FindCartItemsWithPagination - findCartItemsWithPagination"))

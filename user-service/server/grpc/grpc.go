@@ -5,7 +5,8 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/bootstrap"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+
 	authPresenter "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/presenter"
 	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/presenter"
@@ -54,12 +55,12 @@ func (srv *Server) Serve() {
 		//),
 	}
 	srv.grpcServer = grpc.NewServer(opts...)
-	pb.RegisterUserServiceServer(
+	userRpc.RegisterUserServiceServer(
 		srv.grpcServer,
 		presenter.NewUserPresenter(srv.userUseCase, srv.telemetryInfrastructure, srv.logger),
 	)
 
-	pb.RegisterAuthServiceServer(
+	userRpc.RegisterAuthServiceServer(
 		srv.grpcServer,
 		authPresenter.NewAuthPresenter(srv.authUseCase, srv.telemetryInfrastructure, srv.logger),
 	)

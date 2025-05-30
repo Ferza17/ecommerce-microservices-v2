@@ -10,7 +10,7 @@ import {
   FindCartItemByIdRequest,
   FindCartItemsWithPaginationRequest,
   FindCartItemsWithPaginationResponse,
-} from '../../model/rpc/cartMessage';
+} from '../../model/rpc/gen/commerce/v1/cartMessage';
 import { JaegerTelemetryService } from '../../infrastructure/telemetry/jaeger.telemetry.service';
 import { context, propagation } from '@opentelemetry/api';
 

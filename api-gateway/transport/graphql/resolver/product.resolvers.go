@@ -9,22 +9,22 @@ import (
 	"time"
 
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/graph/gen"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	gen1 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/product/v1"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/util"
 )
 
 // CreatedAt is the resolver for the createdAt field.
-func (r *productResolver) CreatedAt(ctx context.Context, obj *pb.Product) (*time.Time, error) {
+func (r *productResolver) CreatedAt(ctx context.Context, obj *gen1.Product) (*time.Time, error) {
 	return util.ConvertProtoTimestampToTime(obj.CreatedAt), nil
 }
 
 // UpdatedAt is the resolver for the updatedAt field.
-func (r *productResolver) UpdatedAt(ctx context.Context, obj *pb.Product) (*time.Time, error) {
+func (r *productResolver) UpdatedAt(ctx context.Context, obj *gen1.Product) (*time.Time, error) {
 	return util.ConvertProtoTimestampToTime(obj.UpdatedAt), nil
 }
 
 // DiscardedAt is the resolver for the discardedAt field.
-func (r *productResolver) DiscardedAt(ctx context.Context, obj *pb.Product) (*time.Time, error) {
+func (r *productResolver) DiscardedAt(ctx context.Context, obj *gen1.Product) (*time.Time, error) {
 	return util.ConvertProtoTimestampToTime(obj.DiscardedAt), nil
 }
 

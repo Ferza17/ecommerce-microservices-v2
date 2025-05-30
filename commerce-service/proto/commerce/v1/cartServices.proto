@@ -1,0 +1,12 @@
+syntax = "proto3";
+package pb;
+
+import "cartMessage.proto";
+
+service CartService {
+  rpc CreateCartItem(CreateCartItemRequest) returns (CreateCartItemResponse);
+  rpc FindCartItemById(FindCartItemByIdRequest) returns (CartItem);
+  rpc FindCartItemsWithPagination(FindCartItemsWithPaginationRequest) returns (FindCartItemsWithPaginationResponse);
+  rpc UpdateCartItemById(UpdateCartItemByIdRequest) returns (UpdateCartItemByIdResponse);
+  rpc DeleteCartItemById(DeleteCartItemByIdRequest) returns (DeleteCartItemByIdResponse);
+}

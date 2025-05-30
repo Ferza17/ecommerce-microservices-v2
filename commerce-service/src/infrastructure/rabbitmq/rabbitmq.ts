@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Queue } from '../../enum/queue';
-import { EventStore } from '../../model/rpc/eventStoreMessage';
+import { EventStore } from '../../model/rpc/gen/event/v1/eventStoreMessage';
 import { Header } from '../../enum/header';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Exchange } from '../../enum/exchange';

@@ -6,7 +6,7 @@ import {
   CreateCartItemRequest,
   FindCartItemsWithPaginationRequest,
   FindCartItemsWithPaginationResponse,
-} from '../../model/rpc/cartMessage';
+} from '../../model/rpc/gen/commerce/v1/cartMessage';
 import { JaegerTelemetryService } from '../../infrastructure/telemetry/jaeger.telemetry.service';
 import { Context } from '@opentelemetry/api';
 

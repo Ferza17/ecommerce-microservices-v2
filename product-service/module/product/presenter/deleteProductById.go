@@ -2,10 +2,10 @@ package presenter
 
 import (
 	"context"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
+	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
 )
 
-func (p *ProductGrpcPresenter) DeleteProductById(ctx context.Context, req *pb.DeleteProductByIdRequest) (*pb.DeleteProductByIdResponse, error) {
+func (p *ProductGrpcPresenter) DeleteProductById(ctx context.Context, req *productRpc.DeleteProductByIdRequest) (*productRpc.DeleteProductByIdResponse, error) {
 	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.DeleteProductById")
 	defer span.End()
 	return nil, nil

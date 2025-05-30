@@ -4,15 +4,16 @@ import (
 	"context"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/telemetry"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
+
 	userService "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/user/service"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/pkg"
 )
 
 type (
 	IUserUseCase interface {
-		CreateUser(ctx context.Context, requestId string, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error)
-		UpdateUserById(ctx context.Context, requestId string, req *pb.UpdateUserByIdRequest) (*pb.UpdateUserByIdResponse, error)
+		CreateUser(ctx context.Context, requestId string, req *userRpc.CreateUserRequest) (*userRpc.CreateUserResponse, error)
+		UpdateUserById(ctx context.Context, requestId string, req *userRpc.UpdateUserByIdRequest) (*userRpc.UpdateUserByIdResponse, error)
 	}
 	UserUseCase struct {
 		userService             userService.IUserService

@@ -4,16 +4,18 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	eventRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/event/v1"
+	productRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/product/v1"
+
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/util"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (u *ProductUseCase) CreateProduct(ctx context.Context, requestId string, req *pb.CreateProductRequest) (*pb.CreateProductResponse, error) {
+func (u *ProductUseCase) CreateProduct(ctx context.Context, requestId string, req *productRpc.CreateProductRequest) (*productRpc.CreateProductResponse, error) {
 	var (
 		err        error = nil
-		eventStore       = &pb.EventStore{
+		eventStore       = &eventRpc.EventStore{
 			RequestId:     requestId,
 			Service:       enum.ProductService.String(),
 			EventType:     enum.PRODUCT_CREATED.String(),
@@ -25,7 +27,7 @@ func (u *ProductUseCase) CreateProduct(ctx context.Context, requestId string, re
 	)
 	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "CreateProduct")
 
-	defer func(err error, eventStore *pb.EventStore) {
+	defer func(err error, eventStore *eventRpc.EventStore) {
 		defer span.End()
 
 		if err != nil {
@@ -62,5 +64,5 @@ func (u *ProductUseCase) CreateProduct(ctx context.Context, requestId string, re
 		return nil, err
 	}
 
-	return &pb.CreateProductResponse{}, nil
+	return &productRpc.CreateProductResponse{}, nil
 }

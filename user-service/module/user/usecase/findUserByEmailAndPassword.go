@@ -3,11 +3,12 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (u *userUseCase) FindUserByEmailAndPassword(ctx context.Context, requestId string, request *pb.FindUserByEmailAndPasswordRequest) (*pb.User, error) {
+func (u *userUseCase) FindUserByEmailAndPassword(ctx context.Context, requestId string, request *userRpc.FindUserByEmailAndPasswordRequest) (*userRpc.User, error) {
 	var (
 		tx = u.userPostgresqlRepository.OpenTransactionWithContext(ctx)
 	)
@@ -35,7 +36,7 @@ func (u *userUseCase) FindUserByEmailAndPassword(ctx context.Context, requestId 
 	}
 
 	tx.Commit()
-	return &pb.User{
+	return &userRpc.User{
 		Id:    user.ID,
 		Name:  user.Name,
 		Email: user.Email,

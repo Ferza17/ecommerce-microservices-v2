@@ -3,13 +3,14 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
+	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (u *productUseCase) FindProductsWithPagination(ctx context.Context, requestId string, req *pb.FindProductsWithPaginationRequest) (*pb.FindProductsWithPaginationResponse, error) {
+func (u *productUseCase) FindProductsWithPagination(ctx context.Context, requestId string, req *productRpc.FindProductsWithPaginationRequest) (*productRpc.FindProductsWithPaginationResponse, error) {
 	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.FindProductsWithPagination")
 	defer span.End()
 
@@ -19,9 +20,9 @@ func (u *productUseCase) FindProductsWithPagination(ctx context.Context, request
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	var products []*pb.Product
+	var products []*productRpc.Product
 	for _, product := range fetchedProducts {
-		products = append(products, &pb.Product{
+		products = append(products, &productRpc.Product{
 			Id:          product.ID,
 			Name:        product.Name,
 			Description: product.Description,
@@ -41,7 +42,7 @@ func (u *productUseCase) FindProductsWithPagination(ctx context.Context, request
 		}
 	}
 
-	response := &pb.FindProductsWithPaginationResponse{
+	response := &productRpc.FindProductsWithPaginationResponse{
 		Data:  products,
 		Total: int32(total),
 		Page:  req.GetPage(),

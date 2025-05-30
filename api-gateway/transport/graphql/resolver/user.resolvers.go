@@ -10,21 +10,21 @@ import (
 	"time"
 
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/graph/gen"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	gen1 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
 )
 
 // CreatedAt is the resolver for the createdAt field.
-func (r *userResolver) CreatedAt(ctx context.Context, obj *pb.User) (*time.Time, error) {
+func (r *userResolver) CreatedAt(ctx context.Context, obj *gen1.User) (*time.Time, error) {
 	panic(fmt.Errorf("not implemented: CreatedAt - createdAt"))
 }
 
 // UpdatedAt is the resolver for the updatedAt field.
-func (r *userResolver) UpdatedAt(ctx context.Context, obj *pb.User) (*time.Time, error) {
+func (r *userResolver) UpdatedAt(ctx context.Context, obj *gen1.User) (*time.Time, error) {
 	panic(fmt.Errorf("not implemented: UpdatedAt - updatedAt"))
 }
 
 // DiscardedAt is the resolver for the discardedAt field.
-func (r *userResolver) DiscardedAt(ctx context.Context, obj *pb.User) (*time.Time, error) {
+func (r *userResolver) DiscardedAt(ctx context.Context, obj *gen1.User) (*time.Time, error) {
 	panic(fmt.Errorf("not implemented: DiscardedAt - discardedAt"))
 }
 

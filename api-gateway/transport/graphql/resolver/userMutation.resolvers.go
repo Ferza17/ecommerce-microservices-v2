@@ -8,18 +8,18 @@ import (
 	"context"
 
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	gen "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
 )
 
 // CreateUser is the resolver for the createUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, input pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
+func (r *mutationResolver) CreateUser(ctx context.Context, input gen.CreateUserRequest) (*gen.CreateUserResponse, error) {
 	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.CreateUser")
 	defer span.End()
 	return r.UserUseCase.CreateUser(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &input)
 }
 
 // UpdateUserByID is the resolver for the updateUserById field.
-func (r *mutationResolver) UpdateUserByID(ctx context.Context, input pb.UpdateUserByIdRequest) (*pb.UpdateUserByIdResponse, error) {
+func (r *mutationResolver) UpdateUserByID(ctx context.Context, input gen.UpdateUserByIdRequest) (*gen.UpdateUserByIdResponse, error) {
 	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.UpdateUserByID")
 	defer span.End()
 	return r.UserUseCase.UpdateUserById(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &input)

@@ -8,7 +8,8 @@ import { ConsulService } from '../../config/consul.service';
 
 @Injectable()
 export class GrpcClientOptions {
-  constructor(private readonly consulConfig: ConsulService) {}
+  constructor(private readonly consulConfig: ConsulService) {
+  }
 
   async getGRPCConfig(): Promise<GrpcOptions> {
     const rpcHost = await this.consulConfig.get('/services/commerce/RPC_HOST');
@@ -18,8 +19,8 @@ export class GrpcClientOptions {
       transport: Transport.GRPC,
       options: {
         url: `${rpcHost}:${rpcPort}`,
-        package: 'proto',
-        protoPath: glob.sync(['proto/*.proto'], {
+        package: 'pb',
+        protoPath: glob.sync(['proto/**/*.proto'], {
           cwd: join(__dirname, '../../../'),
           absolute: true,
         }),

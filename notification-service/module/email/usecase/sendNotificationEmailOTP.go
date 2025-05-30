@@ -6,16 +6,18 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/enum"
 	mailHogInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mailhog"
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/pb"
+	eventRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/event/v1"
+	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/notification/v1"
+
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/util"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (u *notificationEmailUseCase) SendNotificationEmailOTP(ctx context.Context, requestId string, req *pb.SendOtpEmailNotificationRequest) error {
+func (u *notificationEmailUseCase) SendNotificationEmailOTP(ctx context.Context, requestId string, req *notificationRpc.SendOtpEmailNotificationRequest) error {
 	var (
 		err        error
-		eventStore = &pb.EventStore{
+		eventStore = &eventRpc.EventStore{
 			RequestId:     requestId,
 			Service:       enum.NotificationService.String(),
 			EventType:     enum.NOTIFICATION_EMAIL_OTP.String(),
@@ -27,7 +29,7 @@ func (u *notificationEmailUseCase) SendNotificationEmailOTP(ctx context.Context,
 	)
 
 	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.SendUserOtpEmailNotification")
-	defer func(err error, eventStore *pb.EventStore) {
+	defer func(err error, eventStore *eventRpc.EventStore) {
 		defer span.End()
 		if err != nil {
 			eventStore.Status = enum.FAILED.String()

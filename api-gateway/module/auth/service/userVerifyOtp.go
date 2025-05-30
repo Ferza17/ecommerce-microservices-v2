@@ -3,7 +3,8 @@ package service
 import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
+
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/util"
 	"github.com/sony/gobreaker"
 	"go.opentelemetry.io/otel"
@@ -12,7 +13,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *authService) UserVerifyOtp(ctx context.Context, requestId string, req *pb.UserVerifyOtpRequest) (*pb.UserVerifyOtpResponse, error) {
+func (s *authService) UserVerifyOtp(ctx context.Context, requestId string, req *userRpc.UserVerifyOtpRequest) (*userRpc.UserVerifyOtpResponse, error) {
 	result, err := s.cb.Execute(func() (interface{}, error) {
 		md := metadata.New(map[string]string{enum.XRequestIDHeader.String(): requestId})
 		otel.GetTextMapPropagator().Inject(ctx, &util.MetadataHeaderCarrier{md})
@@ -35,5 +36,5 @@ func (s *authService) UserVerifyOtp(ctx context.Context, requestId string, req *
 		return nil, err
 	}
 
-	return result.(*pb.UserVerifyOtpResponse), err
+	return result.(*userRpc.UserVerifyOtpResponse), err
 }

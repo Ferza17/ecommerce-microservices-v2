@@ -2,7 +2,7 @@ package enum
 
 import (
 	"errors"
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/pb"
+	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/notification/v1"
 )
 
 type NotificationType string
@@ -23,7 +23,7 @@ func (t NotificationType) String() string {
 
 func NotificationTypeParseIntToNotificationType(i int) (NotificationType, error) {
 	switch i {
-	case int(pb.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_OTP):
+	case int(notificationRpc.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_OTP):
 		return NotificationTypeEmailUserOtp, nil
 
 	default:

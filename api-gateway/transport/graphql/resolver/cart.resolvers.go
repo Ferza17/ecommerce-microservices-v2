@@ -9,17 +9,17 @@ import (
 	"time"
 
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/graph/gen"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	gen1 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/commerce/v1"
 )
 
 // CratedAt is the resolver for the crated_at field.
-func (r *cartItemResolver) CratedAt(ctx context.Context, obj *pb.CartItem) (*time.Time, error) {
+func (r *cartItemResolver) CratedAt(ctx context.Context, obj *gen1.CartItem) (*time.Time, error) {
 	c := obj.CratedAt.AsTime()
 	return &c, nil
 }
 
 // UpdatedAt is the resolver for the updated_at field.
-func (r *cartItemResolver) UpdatedAt(ctx context.Context, obj *pb.CartItem) (*time.Time, error) {
+func (r *cartItemResolver) UpdatedAt(ctx context.Context, obj *gen1.CartItem) (*time.Time, error) {
 	c := obj.UpdatedAt.AsTime()
 	return &c, nil
 }

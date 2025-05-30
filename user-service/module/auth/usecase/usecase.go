@@ -4,7 +4,8 @@ import (
 	"context"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+
 	authRedisRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
 	userPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/postgresql"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
@@ -12,9 +13,9 @@ import (
 
 type (
 	IAuthUseCase interface {
-		UserLoginByEmailAndPassword(ctx context.Context, requestId string, req *pb.UserLoginByEmailAndPasswordRequest) error
-		FindUserByToken(ctx context.Context, requestId string, req *pb.FindUserByTokenRequest) (*pb.User, error)
-		UserVerifyOtp(ctx context.Context, requestId string, req *pb.UserVerifyOtpRequest) (*pb.UserVerifyOtpResponse, error)
+		UserLoginByEmailAndPassword(ctx context.Context, requestId string, req *userRpc.UserLoginByEmailAndPasswordRequest) error
+		FindUserByToken(ctx context.Context, requestId string, req *userRpc.FindUserByTokenRequest) (*userRpc.User, error)
+		UserVerifyOtp(ctx context.Context, requestId string, req *userRpc.UserVerifyOtpRequest) (*userRpc.UserVerifyOtpResponse, error)
 	}
 	authUseCase struct {
 		userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository

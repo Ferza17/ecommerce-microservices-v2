@@ -4,13 +4,14 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (u *authUseCase) FindUserByToken(ctx context.Context, requestId string, req *pb.FindUserByTokenRequest) (*pb.User, error) {
+func (u *authUseCase) FindUserByToken(ctx context.Context, requestId string, req *userRpc.FindUserByTokenRequest) (*userRpc.User, error) {
 	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.FindUserByToken")
 	defer span.End()
 
@@ -28,7 +29,7 @@ func (u *authUseCase) FindUserByToken(ctx context.Context, requestId string, req
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &pb.User{
+	return &userRpc.User{
 		Id:    user.ID,
 		Name:  user.Name,
 		Email: user.Email,

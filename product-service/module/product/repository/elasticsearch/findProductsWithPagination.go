@@ -6,12 +6,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/orm"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
+	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
+
 	"log"
 	"strings"
 )
 
-func (r *productElasticsearchRepository) FindProductsWithPagination(ctx context.Context, requestId string, request *pb.FindProductsWithPaginationRequest) ([]*orm.Product, int64, error) {
+func (r *productElasticsearchRepository) FindProductsWithPagination(ctx context.Context, requestId string, request *productRpc.FindProductsWithPaginationRequest) ([]*orm.Product, int64, error) {
 	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.Elasticsearch.FindProductsWithPagination")
 	defer span.End()
 

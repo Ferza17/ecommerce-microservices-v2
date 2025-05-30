@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	gen "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/commerce/v1"
 	"github.com/vektah/gqlparser/v2/ast"
 	"golang.org/x/sync/semaphore"
 )
@@ -20,8 +20,8 @@ import (
 // region    ************************** generated!.gotpl **************************
 
 type CartItemResolver interface {
-	CratedAt(ctx context.Context, obj *pb.CartItem) (*time.Time, error)
-	UpdatedAt(ctx context.Context, obj *pb.CartItem) (*time.Time, error)
+	CratedAt(ctx context.Context, obj *gen.CartItem) (*time.Time, error)
+	UpdatedAt(ctx context.Context, obj *gen.CartItem) (*time.Time, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -36,7 +36,7 @@ type CartItemResolver interface {
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _CartItem_id(ctx context.Context, field graphql.CollectedField, obj *pb.CartItem) (ret graphql.Marshaler) {
+func (ec *executionContext) _CartItem_id(ctx context.Context, field graphql.CollectedField, obj *gen.CartItem) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CartItem_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -77,7 +77,7 @@ func (ec *executionContext) fieldContext_CartItem_id(_ context.Context, field gr
 	return fc, nil
 }
 
-func (ec *executionContext) _CartItem_productId(ctx context.Context, field graphql.CollectedField, obj *pb.CartItem) (ret graphql.Marshaler) {
+func (ec *executionContext) _CartItem_productId(ctx context.Context, field graphql.CollectedField, obj *gen.CartItem) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CartItem_productId(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -118,7 +118,7 @@ func (ec *executionContext) fieldContext_CartItem_productId(_ context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _CartItem_userId(ctx context.Context, field graphql.CollectedField, obj *pb.CartItem) (ret graphql.Marshaler) {
+func (ec *executionContext) _CartItem_userId(ctx context.Context, field graphql.CollectedField, obj *gen.CartItem) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CartItem_userId(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -159,7 +159,7 @@ func (ec *executionContext) fieldContext_CartItem_userId(_ context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _CartItem_qty(ctx context.Context, field graphql.CollectedField, obj *pb.CartItem) (ret graphql.Marshaler) {
+func (ec *executionContext) _CartItem_qty(ctx context.Context, field graphql.CollectedField, obj *gen.CartItem) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CartItem_qty(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -200,7 +200,7 @@ func (ec *executionContext) fieldContext_CartItem_qty(_ context.Context, field g
 	return fc, nil
 }
 
-func (ec *executionContext) _CartItem_price(ctx context.Context, field graphql.CollectedField, obj *pb.CartItem) (ret graphql.Marshaler) {
+func (ec *executionContext) _CartItem_price(ctx context.Context, field graphql.CollectedField, obj *gen.CartItem) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CartItem_price(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -241,7 +241,7 @@ func (ec *executionContext) fieldContext_CartItem_price(_ context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _CartItem_crated_at(ctx context.Context, field graphql.CollectedField, obj *pb.CartItem) (ret graphql.Marshaler) {
+func (ec *executionContext) _CartItem_crated_at(ctx context.Context, field graphql.CollectedField, obj *gen.CartItem) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CartItem_crated_at(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -282,7 +282,7 @@ func (ec *executionContext) fieldContext_CartItem_crated_at(_ context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _CartItem_updated_at(ctx context.Context, field graphql.CollectedField, obj *pb.CartItem) (ret graphql.Marshaler) {
+func (ec *executionContext) _CartItem_updated_at(ctx context.Context, field graphql.CollectedField, obj *gen.CartItem) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CartItem_updated_at(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -323,7 +323,7 @@ func (ec *executionContext) fieldContext_CartItem_updated_at(_ context.Context, 
 	return fc, nil
 }
 
-func (ec *executionContext) _CreateCartItemResponse_id(ctx context.Context, field graphql.CollectedField, obj *pb.CreateCartItemResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _CreateCartItemResponse_id(ctx context.Context, field graphql.CollectedField, obj *gen.CreateCartItemResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CreateCartItemResponse_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -364,7 +364,7 @@ func (ec *executionContext) fieldContext_CreateCartItemResponse_id(_ context.Con
 	return fc, nil
 }
 
-func (ec *executionContext) _DeleteCartItemResponse_userId(ctx context.Context, field graphql.CollectedField, obj *pb.DeleteCartItemResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _DeleteCartItemResponse_userId(ctx context.Context, field graphql.CollectedField, obj *DeleteCartItemResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_DeleteCartItemResponse_userId(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -378,7 +378,7 @@ func (ec *executionContext) _DeleteCartItemResponse_userId(ctx context.Context, 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.UserId, nil
+		return obj.UserID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -387,9 +387,9 @@ func (ec *executionContext) _DeleteCartItemResponse_userId(ctx context.Context, 
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalOString2string(ctx, field.Selections, res)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_DeleteCartItemResponse_userId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -405,7 +405,7 @@ func (ec *executionContext) fieldContext_DeleteCartItemResponse_userId(_ context
 	return fc, nil
 }
 
-func (ec *executionContext) _FindCartItemsWithPaginationResponse_items(ctx context.Context, field graphql.CollectedField, obj *pb.FindCartItemsWithPaginationResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _FindCartItemsWithPaginationResponse_items(ctx context.Context, field graphql.CollectedField, obj *gen.FindCartItemsWithPaginationResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_FindCartItemsWithPaginationResponse_items(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -428,9 +428,9 @@ func (ec *executionContext) _FindCartItemsWithPaginationResponse_items(ctx conte
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*pb.CartItem)
+	res := resTmp.([]*gen.CartItem)
 	fc.Result = res
-	return ec.marshalOCartItem2ᚕᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐCartItem(ctx, field.Selections, res)
+	return ec.marshalOCartItem2ᚕᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋcommerceᚋv1ᚐCartItem(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_FindCartItemsWithPaginationResponse_items(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -462,7 +462,7 @@ func (ec *executionContext) fieldContext_FindCartItemsWithPaginationResponse_ite
 	return fc, nil
 }
 
-func (ec *executionContext) _FindCartItemsWithPaginationResponse_page(ctx context.Context, field graphql.CollectedField, obj *pb.FindCartItemsWithPaginationResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _FindCartItemsWithPaginationResponse_page(ctx context.Context, field graphql.CollectedField, obj *gen.FindCartItemsWithPaginationResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_FindCartItemsWithPaginationResponse_page(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -503,7 +503,7 @@ func (ec *executionContext) fieldContext_FindCartItemsWithPaginationResponse_pag
 	return fc, nil
 }
 
-func (ec *executionContext) _FindCartItemsWithPaginationResponse_limit(ctx context.Context, field graphql.CollectedField, obj *pb.FindCartItemsWithPaginationResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _FindCartItemsWithPaginationResponse_limit(ctx context.Context, field graphql.CollectedField, obj *gen.FindCartItemsWithPaginationResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_FindCartItemsWithPaginationResponse_limit(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -544,7 +544,7 @@ func (ec *executionContext) fieldContext_FindCartItemsWithPaginationResponse_lim
 	return fc, nil
 }
 
-func (ec *executionContext) _UpdateCartItemByIdResponse_id(ctx context.Context, field graphql.CollectedField, obj *pb.UpdateCartItemByIdResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _UpdateCartItemByIdResponse_id(ctx context.Context, field graphql.CollectedField, obj *gen.UpdateCartItemByIdResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_UpdateCartItemByIdResponse_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -589,8 +589,8 @@ func (ec *executionContext) fieldContext_UpdateCartItemByIdResponse_id(_ context
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputCreateCartItemRequest(ctx context.Context, obj any) (pb.CreateCartItemRequest, error) {
-	var it pb.CreateCartItemRequest
+func (ec *executionContext) unmarshalInputCreateCartItemRequest(ctx context.Context, obj any) (gen.CreateCartItemRequest, error) {
+	var it gen.CreateCartItemRequest
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -637,8 +637,8 @@ func (ec *executionContext) unmarshalInputCreateCartItemRequest(ctx context.Cont
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputDeleteCartItemRequest(ctx context.Context, obj any) (pb.DeleteCartItemRequest, error) {
-	var it pb.DeleteCartItemRequest
+func (ec *executionContext) unmarshalInputDeleteCartItemRequest(ctx context.Context, obj any) (DeleteCartItemRequest, error) {
+	var it DeleteCartItemRequest
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -653,26 +653,26 @@ func (ec *executionContext) unmarshalInputDeleteCartItemRequest(ctx context.Cont
 		switch k {
 		case "productId":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("productId"))
-			data, err := ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ProductId = data
+			it.ProductID = data
 		case "userId":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-			data, err := ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.UserId = data
+			it.UserID = data
 		}
 	}
 
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputFindCartItemsWithPaginationRequest(ctx context.Context, obj any) (pb.FindCartItemsWithPaginationRequest, error) {
-	var it pb.FindCartItemsWithPaginationRequest
+func (ec *executionContext) unmarshalInputFindCartItemsWithPaginationRequest(ctx context.Context, obj any) (gen.FindCartItemsWithPaginationRequest, error) {
+	var it gen.FindCartItemsWithPaginationRequest
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -719,8 +719,8 @@ func (ec *executionContext) unmarshalInputFindCartItemsWithPaginationRequest(ctx
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputUpdateCartItemByIdRequest(ctx context.Context, obj any) (pb.UpdateCartItemByIdRequest, error) {
-	var it pb.UpdateCartItemByIdRequest
+func (ec *executionContext) unmarshalInputUpdateCartItemByIdRequest(ctx context.Context, obj any) (gen.UpdateCartItemByIdRequest, error) {
+	var it gen.UpdateCartItemByIdRequest
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -784,7 +784,7 @@ func (ec *executionContext) unmarshalInputUpdateCartItemByIdRequest(ctx context.
 
 var cartItemImplementors = []string{"CartItem"}
 
-func (ec *executionContext) _CartItem(ctx context.Context, sel ast.SelectionSet, obj *pb.CartItem) graphql.Marshaler {
+func (ec *executionContext) _CartItem(ctx context.Context, sel ast.SelectionSet, obj *gen.CartItem) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, cartItemImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -894,7 +894,7 @@ func (ec *executionContext) _CartItem(ctx context.Context, sel ast.SelectionSet,
 
 var createCartItemResponseImplementors = []string{"CreateCartItemResponse"}
 
-func (ec *executionContext) _CreateCartItemResponse(ctx context.Context, sel ast.SelectionSet, obj *pb.CreateCartItemResponse) graphql.Marshaler {
+func (ec *executionContext) _CreateCartItemResponse(ctx context.Context, sel ast.SelectionSet, obj *gen.CreateCartItemResponse) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, createCartItemResponseImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -930,7 +930,7 @@ func (ec *executionContext) _CreateCartItemResponse(ctx context.Context, sel ast
 
 var deleteCartItemResponseImplementors = []string{"DeleteCartItemResponse"}
 
-func (ec *executionContext) _DeleteCartItemResponse(ctx context.Context, sel ast.SelectionSet, obj *pb.DeleteCartItemResponse) graphql.Marshaler {
+func (ec *executionContext) _DeleteCartItemResponse(ctx context.Context, sel ast.SelectionSet, obj *DeleteCartItemResponse) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, deleteCartItemResponseImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -966,7 +966,7 @@ func (ec *executionContext) _DeleteCartItemResponse(ctx context.Context, sel ast
 
 var findCartItemsWithPaginationResponseImplementors = []string{"FindCartItemsWithPaginationResponse"}
 
-func (ec *executionContext) _FindCartItemsWithPaginationResponse(ctx context.Context, sel ast.SelectionSet, obj *pb.FindCartItemsWithPaginationResponse) graphql.Marshaler {
+func (ec *executionContext) _FindCartItemsWithPaginationResponse(ctx context.Context, sel ast.SelectionSet, obj *gen.FindCartItemsWithPaginationResponse) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, findCartItemsWithPaginationResponseImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -1006,7 +1006,7 @@ func (ec *executionContext) _FindCartItemsWithPaginationResponse(ctx context.Con
 
 var updateCartItemByIdResponseImplementors = []string{"UpdateCartItemByIdResponse"}
 
-func (ec *executionContext) _UpdateCartItemByIdResponse(ctx context.Context, sel ast.SelectionSet, obj *pb.UpdateCartItemByIdResponse) graphql.Marshaler {
+func (ec *executionContext) _UpdateCartItemByIdResponse(ctx context.Context, sel ast.SelectionSet, obj *gen.UpdateCartItemByIdResponse) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, updateCartItemByIdResponseImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -1044,7 +1044,7 @@ func (ec *executionContext) _UpdateCartItemByIdResponse(ctx context.Context, sel
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) marshalOCartItem2ᚕᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐCartItem(ctx context.Context, sel ast.SelectionSet, v []*pb.CartItem) graphql.Marshaler {
+func (ec *executionContext) marshalOCartItem2ᚕᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋcommerceᚋv1ᚐCartItem(ctx context.Context, sel ast.SelectionSet, v []*gen.CartItem) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -1075,7 +1075,7 @@ func (ec *executionContext) marshalOCartItem2ᚕᚖgithubᚗcomᚋferza17ᚋecom
 					wg.Done()
 				}()
 			}
-			ret[i] = ec.marshalOCartItem2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐCartItem(ctx, sel, v[i])
+			ret[i] = ec.marshalOCartItem2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋcommerceᚋv1ᚐCartItem(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -1093,14 +1093,14 @@ func (ec *executionContext) marshalOCartItem2ᚕᚖgithubᚗcomᚋferza17ᚋecom
 	return ret
 }
 
-func (ec *executionContext) marshalOCartItem2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐCartItem(ctx context.Context, sel ast.SelectionSet, v *pb.CartItem) graphql.Marshaler {
+func (ec *executionContext) marshalOCartItem2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋcommerceᚋv1ᚐCartItem(ctx context.Context, sel ast.SelectionSet, v *gen.CartItem) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._CartItem(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOCreateCartItemRequest2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐCreateCartItemRequest(ctx context.Context, v any) (*pb.CreateCartItemRequest, error) {
+func (ec *executionContext) unmarshalOCreateCartItemRequest2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋcommerceᚋv1ᚐCreateCartItemRequest(ctx context.Context, v any) (*gen.CreateCartItemRequest, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -1108,14 +1108,14 @@ func (ec *executionContext) unmarshalOCreateCartItemRequest2ᚖgithubᚗcomᚋfe
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOCreateCartItemResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐCreateCartItemResponse(ctx context.Context, sel ast.SelectionSet, v *pb.CreateCartItemResponse) graphql.Marshaler {
+func (ec *executionContext) marshalOCreateCartItemResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋcommerceᚋv1ᚐCreateCartItemResponse(ctx context.Context, sel ast.SelectionSet, v *gen.CreateCartItemResponse) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._CreateCartItemResponse(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalODeleteCartItemRequest2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐDeleteCartItemRequest(ctx context.Context, v any) (*pb.DeleteCartItemRequest, error) {
+func (ec *executionContext) unmarshalODeleteCartItemRequest2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐDeleteCartItemRequest(ctx context.Context, v any) (*DeleteCartItemRequest, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -1123,14 +1123,14 @@ func (ec *executionContext) unmarshalODeleteCartItemRequest2ᚖgithubᚗcomᚋfe
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalODeleteCartItemResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐDeleteCartItemResponse(ctx context.Context, sel ast.SelectionSet, v *pb.DeleteCartItemResponse) graphql.Marshaler {
+func (ec *executionContext) marshalODeleteCartItemResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐDeleteCartItemResponse(ctx context.Context, sel ast.SelectionSet, v *DeleteCartItemResponse) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._DeleteCartItemResponse(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOFindCartItemsWithPaginationRequest2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐFindCartItemsWithPaginationRequest(ctx context.Context, v any) (*pb.FindCartItemsWithPaginationRequest, error) {
+func (ec *executionContext) unmarshalOFindCartItemsWithPaginationRequest2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋcommerceᚋv1ᚐFindCartItemsWithPaginationRequest(ctx context.Context, v any) (*gen.FindCartItemsWithPaginationRequest, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -1138,14 +1138,14 @@ func (ec *executionContext) unmarshalOFindCartItemsWithPaginationRequest2ᚖgith
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOFindCartItemsWithPaginationResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐFindCartItemsWithPaginationResponse(ctx context.Context, sel ast.SelectionSet, v *pb.FindCartItemsWithPaginationResponse) graphql.Marshaler {
+func (ec *executionContext) marshalOFindCartItemsWithPaginationResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋcommerceᚋv1ᚐFindCartItemsWithPaginationResponse(ctx context.Context, sel ast.SelectionSet, v *gen.FindCartItemsWithPaginationResponse) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._FindCartItemsWithPaginationResponse(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOUpdateCartItemByIdRequest2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐUpdateCartItemByIdRequest(ctx context.Context, v any) (*pb.UpdateCartItemByIdRequest, error) {
+func (ec *executionContext) unmarshalOUpdateCartItemByIdRequest2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋcommerceᚋv1ᚐUpdateCartItemByIdRequest(ctx context.Context, v any) (*gen.UpdateCartItemByIdRequest, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -1153,7 +1153,7 @@ func (ec *executionContext) unmarshalOUpdateCartItemByIdRequest2ᚖgithubᚗcom�
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOUpdateCartItemByIdResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐUpdateCartItemByIdResponse(ctx context.Context, sel ast.SelectionSet, v *pb.UpdateCartItemByIdResponse) graphql.Marshaler {
+func (ec *executionContext) marshalOUpdateCartItemByIdResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋcommerceᚋv1ᚐUpdateCartItemByIdResponse(ctx context.Context, sel ast.SelectionSet, v *gen.UpdateCartItemByIdResponse) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

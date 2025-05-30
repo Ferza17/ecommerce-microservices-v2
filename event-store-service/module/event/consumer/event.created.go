@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/pb"
+	eventRpc "github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/event/v1"
 	"github.com/rabbitmq/amqp091-go"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
@@ -60,7 +60,7 @@ func (c *eventConsumer) EventCreated(ctx context.Context) error {
 	messages:
 		for d := range msgs {
 			var (
-				request   pb.EventStore
+				request   eventRpc.EventStore
 				requestId string
 			)
 			carrier := propagation.MapCarrier{}

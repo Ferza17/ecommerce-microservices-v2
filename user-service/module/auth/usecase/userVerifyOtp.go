@@ -6,14 +6,15 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"time"
 )
 
-func (u *authUseCase) UserVerifyOtp(ctx context.Context, requestId string, req *pb.UserVerifyOtpRequest) (*pb.UserVerifyOtpResponse, error) {
+func (u *authUseCase) UserVerifyOtp(ctx context.Context, requestId string, req *userRpc.UserVerifyOtpRequest) (*userRpc.UserVerifyOtpResponse, error) {
 	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.UserVerifyOtp")
 	defer span.End()
 
@@ -70,7 +71,7 @@ func (u *authUseCase) UserVerifyOtp(ctx context.Context, requestId string, req *
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &pb.UserVerifyOtpResponse{
+	return &userRpc.UserVerifyOtpResponse{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}, nil

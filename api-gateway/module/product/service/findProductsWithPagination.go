@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	productRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/product/v1"
+
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/util"
 	"github.com/sony/gobreaker"
 	"go.opentelemetry.io/otel"
@@ -13,7 +14,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *productService) FindProductsWithPagination(ctx context.Context, requestId string, req *pb.FindProductsWithPaginationRequest) (*pb.FindProductsWithPaginationResponse, error) {
+func (s *productService) FindProductsWithPagination(ctx context.Context, requestId string, req *productRpc.FindProductsWithPaginationRequest) (*productRpc.FindProductsWithPaginationResponse, error) {
 	result, err := s.cb.Execute(func() (interface{}, error) {
 		md := metadata.New(map[string]string{enum.XRequestIDHeader.String(): requestId})
 		otel.GetTextMapPropagator().Inject(ctx, &util.MetadataHeaderCarrier{md})
@@ -37,5 +38,5 @@ func (s *productService) FindProductsWithPagination(ctx context.Context, request
 		return nil, err
 	}
 
-	return result.(*pb.FindProductsWithPaginationResponse), nil
+	return result.(*productRpc.FindProductsWithPaginationResponse), nil
 }

@@ -4,7 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
+	eventRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/event/v1"
+	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/notification/v1"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/util"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
@@ -13,12 +16,12 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId string, req *pb.UserLoginByEmailAndPasswordRequest) error {
+func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId string, req *userRpc.UserLoginByEmailAndPasswordRequest) error {
 	var (
 		err                      error
-		reqUserLoginNotification *pb.SendOtpEmailNotificationRequest
+		reqUserLoginNotification *notificationRpc.SendOtpEmailNotificationRequest
 		tx                       = u.userPostgresqlRepository.OpenTransactionWithContext(ctx)
-		eventStore               = &pb.EventStore{
+		eventStore               = &eventRpc.EventStore{
 			RequestId:     requestId,
 			Service:       enum.UserService.String(),
 			EventType:     enum.USER_LOGIN.String(),
@@ -30,7 +33,7 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 	)
 	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.UserLoginByEmailAndPassword")
 
-	defer func(err error, eventStore *pb.EventStore) {
+	defer func(err error, eventStore *eventRpc.EventStore) {
 		defer span.End()
 		payload, err := util.ConvertStructToProtoStruct(req)
 		if err != nil {
@@ -103,10 +106,10 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 		return status.Error(codes.Internal, err.Error())
 	}
 
-	reqUserLoginNotification = &pb.SendOtpEmailNotificationRequest{
+	reqUserLoginNotification = &notificationRpc.SendOtpEmailNotificationRequest{
 		Email:            user.Email,
 		Otp:              otp,
-		NotificationType: pb.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_OTP,
+		NotificationType: notificationRpc.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_OTP,
 	}
 
 	message, err := proto.Marshal(reqUserLoginNotification)

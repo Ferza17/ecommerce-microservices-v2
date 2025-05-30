@@ -10,16 +10,16 @@ import (
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	gen "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
 // region    ************************** generated!.gotpl **************************
 
 type UserResolver interface {
-	CreatedAt(ctx context.Context, obj *pb.User) (*time.Time, error)
-	UpdatedAt(ctx context.Context, obj *pb.User) (*time.Time, error)
-	DiscardedAt(ctx context.Context, obj *pb.User) (*time.Time, error)
+	CreatedAt(ctx context.Context, obj *gen.User) (*time.Time, error)
+	UpdatedAt(ctx context.Context, obj *gen.User) (*time.Time, error)
+	DiscardedAt(ctx context.Context, obj *gen.User) (*time.Time, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -34,7 +34,7 @@ type UserResolver interface {
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _CreateUserResponse_id(ctx context.Context, field graphql.CollectedField, obj *pb.CreateUserResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _CreateUserResponse_id(ctx context.Context, field graphql.CollectedField, obj *gen.CreateUserResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CreateUserResponse_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -78,7 +78,7 @@ func (ec *executionContext) fieldContext_CreateUserResponse_id(_ context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _UpdateUserByIdResponse_id(ctx context.Context, field graphql.CollectedField, obj *pb.UpdateUserByIdResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _UpdateUserByIdResponse_id(ctx context.Context, field graphql.CollectedField, obj *gen.UpdateUserByIdResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_UpdateUserByIdResponse_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -122,7 +122,7 @@ func (ec *executionContext) fieldContext_UpdateUserByIdResponse_id(_ context.Con
 	return fc, nil
 }
 
-func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *pb.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *gen.User) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_User_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -166,7 +166,7 @@ func (ec *executionContext) fieldContext_User_id(_ context.Context, field graphq
 	return fc, nil
 }
 
-func (ec *executionContext) _User_name(ctx context.Context, field graphql.CollectedField, obj *pb.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_name(ctx context.Context, field graphql.CollectedField, obj *gen.User) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_User_name(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -210,7 +210,7 @@ func (ec *executionContext) fieldContext_User_name(_ context.Context, field grap
 	return fc, nil
 }
 
-func (ec *executionContext) _User_email(ctx context.Context, field graphql.CollectedField, obj *pb.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_email(ctx context.Context, field graphql.CollectedField, obj *gen.User) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_User_email(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -254,7 +254,7 @@ func (ec *executionContext) fieldContext_User_email(_ context.Context, field gra
 	return fc, nil
 }
 
-func (ec *executionContext) _User_password(ctx context.Context, field graphql.CollectedField, obj *pb.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_password(ctx context.Context, field graphql.CollectedField, obj *gen.User) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_User_password(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -295,7 +295,7 @@ func (ec *executionContext) fieldContext_User_password(_ context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _User_createdAt(ctx context.Context, field graphql.CollectedField, obj *pb.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_createdAt(ctx context.Context, field graphql.CollectedField, obj *gen.User) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_User_createdAt(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -336,7 +336,7 @@ func (ec *executionContext) fieldContext_User_createdAt(_ context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _User_updatedAt(ctx context.Context, field graphql.CollectedField, obj *pb.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_updatedAt(ctx context.Context, field graphql.CollectedField, obj *gen.User) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_User_updatedAt(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -377,7 +377,7 @@ func (ec *executionContext) fieldContext_User_updatedAt(_ context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _User_discardedAt(ctx context.Context, field graphql.CollectedField, obj *pb.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_discardedAt(ctx context.Context, field graphql.CollectedField, obj *gen.User) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_User_discardedAt(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -422,8 +422,8 @@ func (ec *executionContext) fieldContext_User_discardedAt(_ context.Context, fie
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputCreateUserRequest(ctx context.Context, obj any) (pb.CreateUserRequest, error) {
-	var it pb.CreateUserRequest
+func (ec *executionContext) unmarshalInputCreateUserRequest(ctx context.Context, obj any) (gen.CreateUserRequest, error) {
+	var it gen.CreateUserRequest
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -463,8 +463,8 @@ func (ec *executionContext) unmarshalInputCreateUserRequest(ctx context.Context,
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputFindUserByEmailAndPasswordRequest(ctx context.Context, obj any) (pb.FindUserByEmailAndPasswordRequest, error) {
-	var it pb.FindUserByEmailAndPasswordRequest
+func (ec *executionContext) unmarshalInputFindUserByEmailAndPasswordRequest(ctx context.Context, obj any) (gen.FindUserByEmailAndPasswordRequest, error) {
+	var it gen.FindUserByEmailAndPasswordRequest
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -497,8 +497,8 @@ func (ec *executionContext) unmarshalInputFindUserByEmailAndPasswordRequest(ctx 
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputUpdateUserByIdRequest(ctx context.Context, obj any) (pb.UpdateUserByIdRequest, error) {
-	var it pb.UpdateUserByIdRequest
+func (ec *executionContext) unmarshalInputUpdateUserByIdRequest(ctx context.Context, obj any) (gen.UpdateUserByIdRequest, error) {
+	var it gen.UpdateUserByIdRequest
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -555,7 +555,7 @@ func (ec *executionContext) unmarshalInputUpdateUserByIdRequest(ctx context.Cont
 
 var createUserResponseImplementors = []string{"CreateUserResponse"}
 
-func (ec *executionContext) _CreateUserResponse(ctx context.Context, sel ast.SelectionSet, obj *pb.CreateUserResponse) graphql.Marshaler {
+func (ec *executionContext) _CreateUserResponse(ctx context.Context, sel ast.SelectionSet, obj *gen.CreateUserResponse) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, createUserResponseImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -594,7 +594,7 @@ func (ec *executionContext) _CreateUserResponse(ctx context.Context, sel ast.Sel
 
 var updateUserByIdResponseImplementors = []string{"UpdateUserByIdResponse"}
 
-func (ec *executionContext) _UpdateUserByIdResponse(ctx context.Context, sel ast.SelectionSet, obj *pb.UpdateUserByIdResponse) graphql.Marshaler {
+func (ec *executionContext) _UpdateUserByIdResponse(ctx context.Context, sel ast.SelectionSet, obj *gen.UpdateUserByIdResponse) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, updateUserByIdResponseImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -633,7 +633,7 @@ func (ec *executionContext) _UpdateUserByIdResponse(ctx context.Context, sel ast
 
 var userImplementors = []string{"User"}
 
-func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj *pb.User) graphql.Marshaler {
+func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj *gen.User) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, userImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -785,16 +785,16 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) unmarshalNCreateUserRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐCreateUserRequest(ctx context.Context, v any) (pb.CreateUserRequest, error) {
+func (ec *executionContext) unmarshalNCreateUserRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋuserᚋv1ᚐCreateUserRequest(ctx context.Context, v any) (gen.CreateUserRequest, error) {
 	res, err := ec.unmarshalInputCreateUserRequest(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNCreateUserResponse2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐCreateUserResponse(ctx context.Context, sel ast.SelectionSet, v pb.CreateUserResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNCreateUserResponse2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋuserᚋv1ᚐCreateUserResponse(ctx context.Context, sel ast.SelectionSet, v gen.CreateUserResponse) graphql.Marshaler {
 	return ec._CreateUserResponse(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCreateUserResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐCreateUserResponse(ctx context.Context, sel ast.SelectionSet, v *pb.CreateUserResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNCreateUserResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋuserᚋv1ᚐCreateUserResponse(ctx context.Context, sel ast.SelectionSet, v *gen.CreateUserResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -804,24 +804,24 @@ func (ec *executionContext) marshalNCreateUserResponse2ᚖgithubᚗcomᚋferza17
 	return ec._CreateUserResponse(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNFindUserByEmailAndPasswordRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐFindUserByEmailAndPasswordRequest(ctx context.Context, v any) (pb.FindUserByEmailAndPasswordRequest, error) {
+func (ec *executionContext) unmarshalNFindUserByEmailAndPasswordRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋuserᚋv1ᚐFindUserByEmailAndPasswordRequest(ctx context.Context, v any) (gen.FindUserByEmailAndPasswordRequest, error) {
 	res, err := ec.unmarshalInputFindUserByEmailAndPasswordRequest(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNUpdateUserByIdRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐUpdateUserByIdRequest(ctx context.Context, v any) (pb.UpdateUserByIdRequest, error) {
+func (ec *executionContext) unmarshalNUpdateUserByIdRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋuserᚋv1ᚐUpdateUserByIdRequest(ctx context.Context, v any) (gen.UpdateUserByIdRequest, error) {
 	res, err := ec.unmarshalInputUpdateUserByIdRequest(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOUpdateUserByIdResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐUpdateUserByIdResponse(ctx context.Context, sel ast.SelectionSet, v *pb.UpdateUserByIdResponse) graphql.Marshaler {
+func (ec *executionContext) marshalOUpdateUserByIdResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋuserᚋv1ᚐUpdateUserByIdResponse(ctx context.Context, sel ast.SelectionSet, v *gen.UpdateUserByIdResponse) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._UpdateUserByIdResponse(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOUser2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋpbᚐUser(ctx context.Context, sel ast.SelectionSet, v *pb.User) graphql.Marshaler {
+func (ec *executionContext) marshalOUser2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋuserᚋv1ᚐUser(ctx context.Context, sel ast.SelectionSet, v *gen.User) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

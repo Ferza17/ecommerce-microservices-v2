@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/infrastructure/telemetry"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/auth/service"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
@@ -33,7 +33,7 @@ func Authorization(svc service.IAuthService, tele telemetry.ITelemetryInfrastruc
 				enum.XRequestIDHeader.String(): ctx.Value(enum.XRequestIDHeader.String()).(string),
 			}))
 			// access user service find user by token
-			user, err := svc.FindUserByToken(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &pb.FindUserByTokenRequest{
+			user, err := svc.FindUserByToken(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &userRpc.FindUserByTokenRequest{
 				Token: token,
 			})
 			if user.Id == "" {

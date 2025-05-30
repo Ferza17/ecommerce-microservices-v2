@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/auth/presenter/dto"
 	"github.com/go-chi/render"
 	"go.opentelemetry.io/otel"
@@ -36,7 +36,7 @@ func (p *authPresenter) UserLogoutByToken(w http.ResponseWriter, r *http.Request
 		render.Status(r, http.StatusBadRequest)
 	}
 
-	if _, err = p.authUseCase.UserLogoutByToken(ctx, r.Header.Get(enum.XRequestIDHeader.String()), &pb.UserLogoutByTokenRequest{Token: req.Token}); err != nil {
+	if _, err = p.authUseCase.UserLogoutByToken(ctx, r.Header.Get(enum.XRequestIDHeader.String()), &userRpc.UserLogoutByTokenRequest{Token: req.Token}); err != nil {
 		p.logger.Error(fmt.Sprintf("error creating user: %v", err))
 		render.Status(r, http.StatusInternalServerError)
 		return

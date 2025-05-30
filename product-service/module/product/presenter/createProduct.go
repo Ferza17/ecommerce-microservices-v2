@@ -3,13 +3,14 @@ package presenter
 import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
+	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
-func (p *ProductGrpcPresenter) CreateProduct(ctx context.Context, req *pb.CreateProductRequest) (*pb.CreateProductResponse, error) {
+func (p *ProductGrpcPresenter) CreateProduct(ctx context.Context, req *productRpc.CreateProductRequest) (*productRpc.CreateProductResponse, error) {
 	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.CreateProduct")
 	defer span.End()
 	md, ok := metadata.FromIncomingContext(ctx)
@@ -19,9 +20,6 @@ func (p *ProductGrpcPresenter) CreateProduct(ctx context.Context, req *pb.Create
 	requestID := ""
 	if values := md.Get(enum.XRequestIDHeader.String()); len(values) > 0 {
 		requestID = values[0]
-	}
-	if err := req.Validate(); err != nil {
-		return nil, err
 	}
 
 	res, err := p.productUseCase.CreateProduct(ctx, requestID, req)

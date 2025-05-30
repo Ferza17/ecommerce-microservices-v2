@@ -2,12 +2,13 @@ package postgresql
 
 import (
 	"context"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+
 	"gorm.io/gorm"
 	"time"
 )
 
-func (r *userPostgresqlRepository) UpdateUserByIdWithTransaction(ctx context.Context, requestId string, req *pb.UpdateUserByIdRequest, tx *gorm.DB) (string, error) {
+func (r *userPostgresqlRepository) UpdateUserByIdWithTransaction(ctx context.Context, requestId string, req *userRpc.UpdateUserByIdRequest, tx *gorm.DB) (string, error) {
 	var (
 		now      = time.Now().UTC()
 		buildReq = map[string]any{}

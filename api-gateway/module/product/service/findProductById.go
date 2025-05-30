@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	productRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/product/v1"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/util"
 	"github.com/sony/gobreaker"
 	"go.opentelemetry.io/otel"
@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *productService) FindProductById(ctx context.Context, requestId string, req *pb.FindProductByIdRequest) (*pb.Product, error) {
+func (s *productService) FindProductById(ctx context.Context, requestId string, req *productRpc.FindProductByIdRequest) (*productRpc.Product, error) {
 
 	result, err := s.cb.Execute(func() (interface{}, error) {
 		md := metadata.New(map[string]string{enum.XRequestIDHeader.String(): requestId})
@@ -40,6 +40,6 @@ func (s *productService) FindProductById(ctx context.Context, requestId string, 
 		return nil, err
 	}
 
-	return result.(*pb.Product), nil
+	return result.(*productRpc.Product), nil
 
 }

@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/config"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
+
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/pkg"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -12,13 +13,13 @@ import (
 
 type (
 	IUserService interface {
-		FindUserByEmailAndPassword(ctx context.Context, requestId string, req *pb.FindUserByEmailAndPasswordRequest) (*pb.User, error)
+		FindUserByEmailAndPassword(ctx context.Context, requestId string, req *userRpc.FindUserByEmailAndPasswordRequest) (*userRpc.User, error)
 		Close() error
 	}
 
 	userService struct {
 		conn   *grpc.ClientConn
-		svc    pb.UserServiceClient
+		svc    userRpc.UserServiceClient
 		cb     pkg.ICircuitBreaker
 		logger pkg.IZapLogger
 	}
@@ -43,7 +44,7 @@ func NewUserService(cb pkg.ICircuitBreaker, logger pkg.IZapLogger) IUserService 
 
 	return &userService{
 		conn:   conn,
-		svc:    pb.NewUserServiceClient(conn),
+		svc:    userRpc.NewUserServiceClient(conn),
 		cb:     cb,
 		logger: logger,
 	}

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/auth/presenter/dto"
 	"github.com/go-chi/render"
 	"go.opentelemetry.io/otel"
@@ -44,7 +44,7 @@ func (p *authPresenter) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	requestId := r.Header.Get(enum.XRequestIDHeader.String())
-	if _, err = p.userUseCase.CreateUser(ctx, requestId, &pb.CreateUserRequest{
+	if _, err = p.userUseCase.CreateUser(ctx, requestId, &userRpc.CreateUserRequest{
 		Name:     req.Name,
 		Email:    req.Email,
 		Password: req.Password,

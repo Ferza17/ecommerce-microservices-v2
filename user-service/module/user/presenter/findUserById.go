@@ -3,13 +3,14 @@ package presenter
 import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
-func (p *UserPresenter) FindUserById(ctx context.Context, req *pb.FindUserByIdRequest) (*pb.User, error) {
+func (p *UserPresenter) FindUserById(ctx context.Context, req *userRpc.FindUserByIdRequest) (*userRpc.User, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.InvalidArgument, "metadata not found")
@@ -20,10 +21,6 @@ func (p *UserPresenter) FindUserById(ctx context.Context, req *pb.FindUserByIdRe
 	requestID := ""
 	if values := md.Get(enum.XRequestIDHeader.String()); len(values) > 0 {
 		requestID = values[0]
-	}
-
-	if err := req.Validate(); err != nil {
-		return nil, err
 	}
 
 	res, err := p.userUseCase.FindUserById(ctx, requestID, req)

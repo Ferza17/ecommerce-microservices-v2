@@ -27,8 +27,8 @@ import { RabbitMQRootAsync } from '../config/configRoot';
           transport: Transport.GRPC,
           options: {
             url: `${await config.get('/services/product/RPC_HOST')}:${await config.get('/services/product/RPC_PORT')}`,
-            package: 'proto',
-            protoPath: glob.sync(['proto/*.proto'], {
+            package: 'pb',
+            protoPath: glob.sync(['proto/**/*.proto'], {
               cwd: join(__dirname, '../../'),
               absolute: true,
             }),
@@ -48,8 +48,8 @@ import { RabbitMQRootAsync } from '../config/configRoot';
           transport: Transport.GRPC,
           options: {
             url: `${ await configService.get('/services/user/RPC_HOST')}:${await configService.get('/services/user/RPC_PORT')}`,
-            package: 'proto',
-            protoPath: glob.sync(['proto/*.proto'], {
+            package: 'pb',
+            protoPath: glob.sync(['proto/**/*.proto'], {
               cwd: join(__dirname, '../../'),
               absolute: true,
             }),

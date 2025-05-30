@@ -4,19 +4,16 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
+	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
-func (p *ProductGrpcPresenter) FindProductsWithPagination(ctx context.Context, req *pb.FindProductsWithPaginationRequest) (*pb.FindProductsWithPaginationResponse, error) {
+func (p *ProductGrpcPresenter) FindProductsWithPagination(ctx context.Context, req *productRpc.FindProductsWithPaginationRequest) (*productRpc.FindProductsWithPaginationResponse, error) {
 	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.FindProductsWithPagination")
 	defer span.End()
-	if err := req.Validate(); err != nil {
-		p.logger.Error(fmt.Sprintf("error validating request: %v", err))
-		return nil, err
-	}
 
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {

@@ -5,16 +5,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	commerceRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/commerce/v1"
+	eventRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/event/v1"
+
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/util"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (u *CartUseCase) CreateCart(ctx context.Context, requestId string, req *pb.CreateCartItemRequest) (*pb.CreateCartItemResponse, error) {
+func (u *CartUseCase) CreateCart(ctx context.Context, requestId string, req *commerceRpc.CreateCartItemRequest) (*commerceRpc.CreateCartItemResponse, error) {
 	var (
 		err        error = nil
-		eventStore       = &pb.EventStore{
+		eventStore       = &eventRpc.EventStore{
 			RequestId:     requestId,
 			Service:       enum.ProductService.String(),
 			EventType:     enum.CART_CREATED.String(),
@@ -27,7 +29,7 @@ func (u *CartUseCase) CreateCart(ctx context.Context, requestId string, req *pb.
 	)
 	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "CreateCart")
 
-	defer func(err error, eventStore *pb.EventStore) {
+	defer func(err error, eventStore *eventRpc.EventStore) {
 		defer span.End()
 		if err != nil {
 			eventStore.Status = enum.FAILED.String()
@@ -67,5 +69,5 @@ func (u *CartUseCase) CreateCart(ctx context.Context, requestId string, req *pb.
 		return nil, err
 	}
 
-	return &pb.CreateCartItemResponse{}, nil
+	return &commerceRpc.CreateCartItemResponse{}, nil
 }

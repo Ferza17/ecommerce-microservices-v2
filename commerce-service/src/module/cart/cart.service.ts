@@ -9,18 +9,18 @@ import {
   FindCartItemsWithPaginationResponse,
   UpdateCartItemByIdRequest,
   UpdateCartItemByIdResponse,
-} from '../../model/rpc/cartMessage';
+} from '../../model/rpc/gen/commerce/v1/cartMessage';
 import { RabbitmqInfrastructure } from '../../infrastructure/rabbitmq/rabbitmq';
-import { EventStore } from '../../model/rpc/eventStoreMessage';
+import { EventStore } from '../../model/rpc/gen/event/v1/eventStoreMessage';
 import { SagaStatus } from '../../enum/sagaStatus';
 import { Service } from '../../enum/service';
 import { Queue } from '../../enum/queue';
 import { ProductRpcService } from '../../infrastructure/rpc/product.rpc.service';
-import { FindProductByIdRequest, Product } from '../../model/rpc/productMessage';
+import { FindProductByIdRequest, Product } from '../../model/rpc/gen/product/v1/productMessage';
 import { UserRpcService } from '../../infrastructure/rpc/user.rpc.service';
 import { JaegerTelemetryService } from '../../infrastructure/telemetry/jaeger.telemetry.service';
 import { Context } from '@opentelemetry/api';
-import { FindUserByIdRequest, User } from '../../model/rpc/userMessage';
+import { FindUserByIdRequest, User } from '../../model/rpc/gen/user/v1/userMessage';
 
 @Injectable()
 export class CartService {

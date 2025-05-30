@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/bson"
-	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/pb"
+	eventRpc "github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/event/v1"
 	"time"
 )
 
-func (u *eventUseCase) CreateEventStore(ctx context.Context, requestId string, req *pb.EventStore) (*pb.CreateEventStoreResponse, error) {
+func (u *eventUseCase) CreateEventStore(ctx context.Context, requestId string, req *eventRpc.EventStore) (*eventRpc.CreateEventStoreResponse, error) {
 	var (
 		now       = time.Now().UTC()
 		bsonEvent = &bson.Event{
@@ -38,7 +38,7 @@ func (u *eventUseCase) CreateEventStore(ctx context.Context, requestId string, r
 		u.logger.Error(fmt.Sprintf("requestId : %s , error creating userEventStore event: %v", requestId, err))
 	}
 
-	return &pb.CreateEventStoreResponse{
+	return &eventRpc.CreateEventStoreResponse{
 		Id: result,
 	}, err
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
+	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
 	productElasticsearchRepository "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/repository/elasticsearch"
 	productRepo "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/repository/postgresql"
 
@@ -13,11 +13,11 @@ import (
 
 type (
 	IProductUseCase interface {
-		FindProductById(ctx context.Context, requestId string, req *pb.FindProductByIdRequest) (*pb.Product, error)
-		FindProductsWithPagination(ctx context.Context, requestId string, req *pb.FindProductsWithPaginationRequest) (*pb.FindProductsWithPaginationResponse, error)
-		CreateProduct(ctx context.Context, requestId string, req *pb.CreateProductRequest) (*pb.CreateProductResponse, error)
-		UpdateProductById(ctx context.Context, requestId string, req *pb.UpdateProductByIdRequest) (*pb.Product, error)
-		DeleteProductById(ctx context.Context, requestId string, req *pb.DeleteProductByIdRequest) (*pb.DeleteProductByIdResponse, error)
+		FindProductById(ctx context.Context, requestId string, req *productRpc.FindProductByIdRequest) (*productRpc.Product, error)
+		FindProductsWithPagination(ctx context.Context, requestId string, req *productRpc.FindProductsWithPaginationRequest) (*productRpc.FindProductsWithPaginationResponse, error)
+		CreateProduct(ctx context.Context, requestId string, req *productRpc.CreateProductRequest) (*productRpc.CreateProductResponse, error)
+		UpdateProductById(ctx context.Context, requestId string, req *productRpc.UpdateProductByIdRequest) (*productRpc.Product, error)
+		DeleteProductById(ctx context.Context, requestId string, req *productRpc.DeleteProductByIdRequest) (*productRpc.DeleteProductByIdResponse, error)
 	}
 
 	productUseCase struct {

@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/bootstrap"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
+	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
+
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/presenter"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.uber.org/zap"
@@ -43,7 +44,7 @@ func (srv *GrpcTransport) Serve() {
 		grpc.StatsHandler(otelgrpc.NewServerHandler()),
 	}
 	srv.grpcServer = grpc.NewServer(opts...)
-	pb.RegisterProductServiceServer(
+	productRpc.RegisterProductServiceServer(
 		srv.grpcServer,
 		presenter.NewProductGrpcPresenter(srv.dependency.ProductUseCase, srv.dependency.TelemetryInfrastructure, srv.dependency.Logger),
 	)

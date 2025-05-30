@@ -4,16 +4,18 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	eventRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/event/v1"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
+
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/util"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (u *UserUseCase) UpdateUserById(ctx context.Context, requestId string, req *pb.UpdateUserByIdRequest) (*pb.UpdateUserByIdResponse, error) {
+func (u *UserUseCase) UpdateUserById(ctx context.Context, requestId string, req *userRpc.UpdateUserByIdRequest) (*userRpc.UpdateUserByIdResponse, error) {
 	var (
 		err        error = nil
-		eventStore       = &pb.EventStore{
+		eventStore       = &eventRpc.EventStore{
 			RequestId:     requestId,
 			Service:       enum.UserService.String(),
 			EventType:     enum.USER_UPDATED.String(),
@@ -25,9 +27,9 @@ func (u *UserUseCase) UpdateUserById(ctx context.Context, requestId string, req 
 	)
 	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UpdateUserById")
 
-	defer func(err error, eventStore *pb.EventStore) {
+	defer func(err error, eventStore *eventRpc.EventStore) {
 		defer span.End()
-		
+
 		if err != nil {
 			eventStore.Status = enum.FAILED.String()
 		}
@@ -62,6 +64,6 @@ func (u *UserUseCase) UpdateUserById(ctx context.Context, requestId string, req 
 		return nil, err
 	}
 
-	return &pb.UpdateUserByIdResponse{}, nil
+	return &userRpc.UpdateUserByIdResponse{}, nil
 
 }

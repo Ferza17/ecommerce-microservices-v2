@@ -3,13 +3,14 @@ package presenter
 import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
-func (p *UserPresenter) FindUserByEmailAndPassword(ctx context.Context, req *pb.FindUserByEmailAndPasswordRequest) (*pb.User, error) {
+func (p *UserPresenter) FindUserByEmailAndPassword(ctx context.Context, req *userRpc.FindUserByEmailAndPasswordRequest) (*userRpc.User, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.InvalidArgument, "metadata not found")

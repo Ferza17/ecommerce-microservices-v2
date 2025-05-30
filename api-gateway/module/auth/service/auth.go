@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/config"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/pkg"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -12,14 +12,14 @@ import (
 
 type (
 	IAuthService interface {
-		FindUserByToken(ctx context.Context, requestId string, req *pb.FindUserByTokenRequest) (*pb.User, error)
-		UserVerifyOtp(ctx context.Context, requestId string, req *pb.UserVerifyOtpRequest) (*pb.UserVerifyOtpResponse, error)
+		FindUserByToken(ctx context.Context, requestId string, req *userRpc.FindUserByTokenRequest) (*userRpc.User, error)
+		UserVerifyOtp(ctx context.Context, requestId string, req *userRpc.UserVerifyOtpRequest) (*userRpc.UserVerifyOtpResponse, error)
 		Close() error
 	}
 
 	authService struct {
 		conn   *grpc.ClientConn
-		svc    pb.AuthServiceClient
+		svc    userRpc.AuthServiceClient
 		cb     pkg.ICircuitBreaker
 		logger pkg.IZapLogger
 	}
@@ -44,7 +44,7 @@ func NewAuthService(cb pkg.ICircuitBreaker, logger pkg.IZapLogger) IAuthService 
 
 	return &authService{
 		conn:   conn,
-		svc:    pb.NewAuthServiceClient(conn),
+		svc:    userRpc.NewAuthServiceClient(conn),
 		cb:     cb,
 		logger: logger,
 	}

@@ -5,7 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+
 	"github.com/rabbitmq/amqp091-go"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
@@ -60,7 +61,7 @@ func (c *userConsumer) UserCreated(ctx context.Context) error {
 	messages:
 		for d := range deliveries {
 			var (
-				request   pb.CreateUserRequest
+				request   userRpc.CreateUserRequest
 				requestId string
 			)
 			carrier := propagation.MapCarrier{}

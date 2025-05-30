@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/orm"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
+	eventRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/event/v1"
+	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
+
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/util"
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
@@ -15,12 +17,12 @@ import (
 	"time"
 )
 
-func (u *productUseCase) CreateProduct(ctx context.Context, requestId string, req *pb.CreateProductRequest) (*pb.CreateProductResponse, error) {
+func (u *productUseCase) CreateProduct(ctx context.Context, requestId string, req *productRpc.CreateProductRequest) (*productRpc.CreateProductResponse, error) {
 	var (
 		err        error
 		tx         = u.productPgsqlRepository.OpenTransactionWithContext(ctx)
 		now        = time.Now().UTC()
-		eventStore = &pb.EventStore{
+		eventStore = &eventRpc.EventStore{
 			RequestId:     requestId,
 			Service:       enum.ProductService.String(),
 			EventType:     enum.PRODUCT_CREATED.String(),
@@ -32,7 +34,7 @@ func (u *productUseCase) CreateProduct(ctx context.Context, requestId string, re
 	)
 	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.CreateProduct")
 
-	defer func(err error, eventStore *pb.EventStore) {
+	defer func(err error, eventStore *eventRpc.EventStore) {
 		defer span.End()
 		payload, err := util.ConvertStructToProtoStruct(req)
 		if err != nil {
@@ -73,7 +75,7 @@ func (u *productUseCase) CreateProduct(ctx context.Context, requestId string, re
 	}
 
 	tx.Commit()
-	return &pb.CreateProductResponse{
+	return &productRpc.CreateProductResponse{
 		Id: result,
 	}, nil
 }

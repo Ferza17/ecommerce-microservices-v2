@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
+	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
 	"github.com/rabbitmq/amqp091-go"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
@@ -60,7 +60,7 @@ func (c *productConsumer) ProductCreated(ctx context.Context) error {
 	messages:
 		for d := range msgs {
 			var (
-				request   pb.CreateProductRequest
+				request   productRpc.CreateProductRequest
 				requestId string
 			)
 			carrier := propagation.MapCarrier{}

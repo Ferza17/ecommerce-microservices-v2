@@ -35,6 +35,9 @@ type Config struct {
 	ProductServiceURL  string
 	ProductServiceName string
 
+	CommerceServiceURL  string
+	CommerceServiceName string
+
 	UserServiceName string
 	UserServiceURL  string
 
@@ -196,6 +199,38 @@ func SetConfig(path string) {
 			log.Fatal("SetConfig | Consul | USER SERVICE_NAME host is required")
 		}
 		c.UserServiceName = string(pair.Value)
+	}()
+
+	// Commerce Service
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		pair, _, err := kv.Get(fmt.Sprintf("%s/services/commerce/RPC_HOST", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get COMMERCE RPC_HOST host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | COMMERCE RPC_HOST host is required")
+		}
+		commerceServiceRpcHost := string(pair.Value)
+		pair, _, err = kv.Get(fmt.Sprintf("%s/services/commerce/RPC_PORT", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get COMMERCE RPC_PORT host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | COMMERCE RPC_PORT host is required")
+		}
+		commerceServiceRpcPort := string(pair.Value)
+		c.CommerceServiceURL = fmt.Sprintf("%s:%s", commerceServiceRpcHost, commerceServiceRpcPort)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/services/commerce/SERVICE_NAME", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get COMMERCE SERVICE_NAME host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | COMMERCE SERVICE_NAME host is required")
+		}
+		c.CommerceServiceName = string(pair.Value)
 	}()
 
 	// API GATEWAY

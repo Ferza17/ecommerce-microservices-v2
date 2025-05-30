@@ -4,14 +4,14 @@ import (
 	"context"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/event-store-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/event-store-service/infrastructure/telemetry"
-	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/pb"
+	eventRpc "github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/event/v1"
 	eventRepository "github.com/ferza17/ecommerce-microservices-v2/event-store-service/module/event/repository/mongodb"
 	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/pkg"
 )
 
 type (
 	IEventUseCase interface {
-		CreateEventStore(ctx context.Context, requestId string, req *pb.EventStore) (*pb.CreateEventStoreResponse, error)
+		CreateEventStore(ctx context.Context, requestId string, req *eventRpc.EventStore) (*eventRpc.CreateEventStoreResponse, error)
 	}
 
 	eventUseCase struct {

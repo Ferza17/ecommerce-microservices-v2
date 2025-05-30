@@ -2,6 +2,15 @@
 
 package gen
 
+type DeleteCartItemRequest struct {
+	ProductID *string `json:"productId,omitempty"`
+	UserID    *string `json:"userId,omitempty"`
+}
+
+type DeleteCartItemResponse struct {
+	UserID *string `json:"userId,omitempty"`
+}
+
 type Mutation struct {
 }
 

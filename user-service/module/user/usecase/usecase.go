@@ -4,7 +4,8 @@ import (
 	"context"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+
 	authRedisRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
 	userPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/postgresql"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
@@ -12,10 +13,10 @@ import (
 
 type (
 	IUserUseCase interface {
-		CreateUser(ctx context.Context, requestId string, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error)
-		FindUserById(ctx context.Context, requestId string, req *pb.FindUserByIdRequest) (*pb.User, error)
-		UpdateUserById(ctx context.Context, requestId string, req *pb.UpdateUserByIdRequest) (*pb.UpdateUserByIdResponse, error)
-		FindUserByEmailAndPassword(context.Context, string, *pb.FindUserByEmailAndPasswordRequest) (*pb.User, error)
+		CreateUser(ctx context.Context, requestId string, req *userRpc.CreateUserRequest) (*userRpc.CreateUserResponse, error)
+		FindUserById(ctx context.Context, requestId string, req *userRpc.FindUserByIdRequest) (*userRpc.User, error)
+		UpdateUserById(ctx context.Context, requestId string, req *userRpc.UpdateUserByIdRequest) (*userRpc.UpdateUserByIdResponse, error)
+		FindUserByEmailAndPassword(context.Context, string, *userRpc.FindUserByEmailAndPasswordRequest) (*userRpc.User, error)
 	}
 
 	userUseCase struct {

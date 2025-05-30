@@ -1,0 +1,21 @@
+syntax = "proto3";
+package pb;
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+message EventStore {
+  string id = 1;
+  string request_id = 2;
+  string service = 3;
+  string event_type = 4;
+  string status = 5; // pending, completed, failed, rolled_back
+  google.protobuf.Struct payload = 6;
+  optional google.protobuf.Struct previous_state = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+
+message CreateEventStoreResponse {
+  string id = 1;
+}

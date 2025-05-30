@@ -6,7 +6,7 @@ import {
   CreateCartItemResponse, DeleteCartItemByIdRequest, DeleteCartItemByIdResponse,
   UpdateCartItemByIdRequest,
   UpdateCartItemByIdResponse,
-} from '../../model/rpc/cartMessage';
+} from '../../model/rpc/gen/commerce/v1/cartMessage';
 import { CartService } from './cart.service';
 import { Queue } from '../../enum/queue';
 import { JaegerTelemetryService } from '../../infrastructure/telemetry/jaeger.telemetry.service';

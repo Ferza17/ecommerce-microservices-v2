@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
 	"github.com/sony/gobreaker"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
-func (s *userService) FindUserByEmailAndPassword(ctx context.Context, requestId string, req *pb.FindUserByEmailAndPasswordRequest) (*pb.User, error) {
+func (s *userService) FindUserByEmailAndPassword(ctx context.Context, requestId string, req *userRpc.FindUserByEmailAndPasswordRequest) (*userRpc.User, error) {
 	result, err := s.cb.Execute(func() (interface{}, error) {
 		ctx = metadata.NewOutgoingContext(ctx, metadata.New(map[string]string{
 			enum.XRequestIDHeader.String(): requestId,
@@ -34,5 +34,5 @@ func (s *userService) FindUserByEmailAndPassword(ctx context.Context, requestId 
 		return nil, err
 	}
 
-	return result.(*pb.User), nil
+	return result.(*userRpc.User), nil
 }

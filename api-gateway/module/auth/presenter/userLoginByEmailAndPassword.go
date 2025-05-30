@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/auth/presenter/dto"
 	"github.com/go-chi/render"
 	"go.opentelemetry.io/otel"
@@ -38,7 +38,7 @@ func (p *authPresenter) UserLoginByEmailAndPassword(w http.ResponseWriter, r *ht
 		return
 	}
 
-	if err = p.authUseCase.UserLoginByEmailAndPassword(ctx, r.Header.Get(enum.XRequestIDHeader.String()), &pb.UserLoginByEmailAndPasswordRequest{
+	if err = p.authUseCase.UserLoginByEmailAndPassword(ctx, r.Header.Get(enum.XRequestIDHeader.String()), &userRpc.UserLoginByEmailAndPasswordRequest{
 		Email:    req.Email,
 		Password: req.Password,
 	}); err != nil {

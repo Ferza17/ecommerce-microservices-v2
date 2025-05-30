@@ -1,8 +1,8 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { ProductServiceService } from '../../model/rpc/productServices';
+import { ProductServiceService } from '../../model/rpc/gen/product/v1/productServices';
 import { ClientGrpc } from '@nestjs/microservices';
 import { Service } from '../../enum/service';
-import { FindProductByIdRequest, Product } from '../../model/rpc/productMessage';
+import { FindProductByIdRequest, Product } from '../../model/rpc/gen/product/v1/productMessage';
 import { Metadata } from '@grpc/grpc-js';
 import { Header } from '../../enum/header';
 import { JaegerTelemetryService } from '../telemetry/jaeger.telemetry.service';

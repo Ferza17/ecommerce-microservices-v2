@@ -8,19 +8,19 @@ import (
 	"context"
 
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	gen "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/product/v1"
 )
 
 // FindProductsWithPagination is the resolver for the findProductsWithPagination field.
-func (r *queryResolver) FindProductsWithPagination(ctx context.Context, filter pb.FindProductsWithPaginationRequest) (*pb.FindProductsWithPaginationResponse, error) {
+func (r *queryResolver) FindProductsWithPagination(ctx context.Context, filter gen.FindProductsWithPaginationRequest) (*gen.FindProductsWithPaginationResponse, error) {
 	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.FindProductsWithPagination")
 	defer span.End()
 	return r.ProductUseCase.FindProductsWithPagination(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &filter)
 }
 
 // FindProductByID is the resolver for the findProductById field.
-func (r *queryResolver) FindProductByID(ctx context.Context, id string) (*pb.Product, error) {
+func (r *queryResolver) FindProductByID(ctx context.Context, id string) (*gen.Product, error) {
 	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.FindProductByID")
 	defer span.End()
-	return r.ProductUseCase.FindProductById(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &pb.FindProductByIdRequest{Id: id})
+	return r.ProductUseCase.FindProductById(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &gen.FindProductByIdRequest{Id: id})
 }

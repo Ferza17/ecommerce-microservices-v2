@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/orm"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
+	eventRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/event/v1"
+	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/notification/v1"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/util"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -16,14 +19,14 @@ import (
 	"time"
 )
 
-func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
+func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *userRpc.CreateUserRequest) (*userRpc.CreateUserResponse, error) {
 
 	var (
 		err             error
-		reqUserEmailOtp *pb.SendOtpEmailNotificationRequest
+		reqUserEmailOtp *notificationRpc.SendOtpEmailNotificationRequest
 		tx              = u.userPostgresqlRepository.OpenTransactionWithContext(ctx)
 		now             = time.Now().UTC()
-		eventStore      = &pb.EventStore{
+		eventStore      = &eventRpc.EventStore{
 			RequestId:     requestId,
 			Service:       enum.UserService.String(),
 			EventType:     enum.USER_CREATED.String(),
@@ -35,7 +38,7 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 	)
 	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.CreateUser")
 
-	defer func(err error, eventStore *pb.EventStore) {
+	defer func(err error, eventStore *eventRpc.EventStore) {
 		defer span.End()
 		payload, err := util.ConvertStructToProtoStruct(req)
 		if err != nil {
@@ -88,10 +91,10 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	reqUserEmailOtp = &pb.SendOtpEmailNotificationRequest{
+	reqUserEmailOtp = &notificationRpc.SendOtpEmailNotificationRequest{
 		Email:            req.Email,
 		Otp:              otp,
-		NotificationType: pb.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_OTP,
+		NotificationType: notificationRpc.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_OTP,
 	}
 
 	message, err := proto.Marshal(reqUserEmailOtp)
@@ -105,7 +108,7 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 	tx.Commit()
-	return &pb.CreateUserResponse{
+	return &userRpc.CreateUserResponse{
 		Id: result,
 	}, nil
 }

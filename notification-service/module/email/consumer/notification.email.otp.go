@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/pb"
+	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/notification/v1"
 	"github.com/rabbitmq/amqp091-go"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
@@ -60,7 +60,7 @@ func (c *notificationEmailConsumer) NotificationEmailOTP(ctx context.Context) er
 	messages:
 		for d := range deliveries {
 			var (
-				request   pb.SendOtpEmailNotificationRequest
+				request   notificationRpc.SendOtpEmailNotificationRequest
 				requestId string
 			)
 			carrier := propagation.MapCarrier{}
@@ -81,12 +81,6 @@ func (c *notificationEmailConsumer) NotificationEmailOTP(ctx context.Context) er
 			case enum.XProtobuf.String():
 				if err = proto.Unmarshal(d.Body, &request); err != nil {
 					c.logger.Error(fmt.Sprintf("requsetID : %s , failed to unmarshal request : %v", requestId, zap.Error(err)))
-					span.End()
-					continue messages
-				}
-
-				if err = request.Validate(); err != nil {
-					c.logger.Error(fmt.Sprintf("failed to validate request : %v", zap.Error(err)))
 					span.End()
 					continue messages
 				}

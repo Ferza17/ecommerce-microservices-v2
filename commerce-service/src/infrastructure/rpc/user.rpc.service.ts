@@ -1,12 +1,12 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Service } from '../../enum/service';
 import { ClientGrpc } from '@nestjs/microservices';
-import { FindUserByIdRequest, User } from '../../model/rpc/userMessage';
+import { FindUserByIdRequest, User } from '../../model/rpc/gen/user/v1/userMessage';
 import { Metadata } from '@grpc/grpc-js';
 import { Header } from '../../enum/header';
 import { JaegerTelemetryService } from '../telemetry/jaeger.telemetry.service';
 import { Context, propagation } from '@opentelemetry/api';
-import { UserServiceService } from '../../model/rpc/userService';
+import { UserServiceService } from '../../model/rpc/gen/user/v1/userServices';
 import CircuitBreaker from 'opossum';
 import { lastValueFrom } from 'rxjs';
 import { UserServiceCircuitOptions } from '../../config/circuitOptions';

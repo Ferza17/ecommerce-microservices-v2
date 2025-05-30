@@ -7,6 +7,7 @@ import (
 	authPresenter "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/auth/presenter"
 	authServiceInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/auth/service"
 	authUseCase "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/auth/usecase"
+	commerceCartService "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/commerce/cart/service"
 	newCartUseCase "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/commerce/cart/usecase"
 	productServiceInfrastructure "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/product/service"
 	productUseCase "github.com/ferza17/ecommerce-microservices-v2/api-gateway/module/product/usecase"
@@ -23,6 +24,7 @@ type Dependency struct {
 	UserServiceInfrastructure    userServiceInfrastructure.IUserService
 	AuthServiceInfrastructure    authServiceInfrastructure.IAuthService
 	ProductServiceInfrastructure productServiceInfrastructure.IProductService
+	CommerceCartService          commerceCartService.ICommerceCartService
 
 	AuthPresenter authPresenter.IAuthPresenter
 
@@ -49,7 +51,9 @@ func NewBootstrap() *Dependency {
 	// UseCase
 	newUserUseCase := userUseCase.NewUserUseCase(newUserServiceInfrastructure, newRabbitMQInfrastructure, newTelemetryInfrastructure, logger)
 	newProductUseCase := productUseCase.NewProductUseCase(newProductServiceInfrastructure, newRabbitMQInfrastructure, newTelemetryInfrastructure, logger)
-	newCartUseCase := newCartUseCase.NewCartUseCase(newRabbitMQInfrastructure, newTelemetryInfrastructure, logger)
+
+	newCommerceCartService := commerceCartService.NewCommerceCartService(pkg.NewCircuitBreaker(config.Get().CommerceServiceName, logger), logger)
+	newCartUseCase := newCartUseCase.NewCartUseCase(newRabbitMQInfrastructure, newCommerceCartService, newTelemetryInfrastructure, logger)
 	newAuthUseCase := authUseCase.NewAuthUseCase(newAuthServiceInfrastructure, newUserServiceInfrastructure, newRabbitMQInfrastructure, newTelemetryInfrastructure, logger)
 
 	// Presenter (Only for REST public API)
@@ -61,6 +65,7 @@ func NewBootstrap() *Dependency {
 		UserServiceInfrastructure:    newUserServiceInfrastructure,
 		AuthServiceInfrastructure:    newAuthServiceInfrastructure,
 		ProductServiceInfrastructure: newProductServiceInfrastructure,
+		CommerceCartService:          newCommerceCartService,
 		TelemetryInfrastructure:      newTelemetryInfrastructure,
 		UserUseCase:                  newUserUseCase,
 		ProductUseCase:               newProductUseCase,

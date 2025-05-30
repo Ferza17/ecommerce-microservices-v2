@@ -4,18 +4,20 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
+	eventRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/event/v1"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/util"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (u *userUseCase) UpdateUserById(ctx context.Context, requestId string, req *pb.UpdateUserByIdRequest) (*pb.UpdateUserByIdResponse, error) {
+func (u *userUseCase) UpdateUserById(ctx context.Context, requestId string, req *userRpc.UpdateUserByIdRequest) (*userRpc.UpdateUserByIdResponse, error) {
 	var (
 		err        error
 		tx         = u.userPostgresqlRepository.OpenTransactionWithContext(ctx)
-		eventStore = &pb.EventStore{
+		eventStore = &eventRpc.EventStore{
 			RequestId:     requestId,
 			Service:       enum.ProductService.String(),
 			EventType:     enum.USER_UPDATED.String(),
@@ -27,7 +29,7 @@ func (u *userUseCase) UpdateUserById(ctx context.Context, requestId string, req 
 	)
 	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.UpdateUserById")
 
-	defer func(err error, eventStore *pb.EventStore) {
+	defer func(err error, eventStore *eventRpc.EventStore) {
 		defer span.End()
 		payload, err := util.ConvertStructToProtoStruct(req)
 		if err != nil {
@@ -69,7 +71,7 @@ func (u *userUseCase) UpdateUserById(ctx context.Context, requestId string, req 
 	}
 
 	tx.Commit()
-	return &pb.UpdateUserByIdResponse{
+	return &userRpc.UpdateUserByIdResponse{
 		Id: result,
 	}, nil
 }

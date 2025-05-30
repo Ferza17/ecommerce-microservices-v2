@@ -5,7 +5,8 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/postgresql"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/orm"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/pb"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
 	"gorm.io/gorm"
 )
@@ -18,7 +19,7 @@ type (
 		FindUserByIdWithTransaction(ctx context.Context, requestId string, id string, tx *gorm.DB) (*orm.User, error)
 		FindUserByEmailWithTransaction(ctx context.Context, requestId string, email string, tx *gorm.DB) (*orm.User, error)
 
-		UpdateUserByIdWithTransaction(ctx context.Context, requestId string, req *pb.UpdateUserByIdRequest, tx *gorm.DB) (string, error)
+		UpdateUserByIdWithTransaction(ctx context.Context, requestId string, req *userRpc.UpdateUserByIdRequest, tx *gorm.DB) (string, error)
 
 		// OpenTransactionWithContext
 		OpenTransactionWithContext(ctx context.Context) *gorm.DB

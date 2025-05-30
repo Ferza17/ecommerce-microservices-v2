@@ -4,16 +4,18 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb"
+	eventRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/event/v1"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
+
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/util"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (u *authUseCase) UserLogoutByToken(ctx context.Context, requestId string, req *pb.UserLogoutByTokenRequest) (*pb.UserLogoutByTokenResponse, error) {
+func (u *authUseCase) UserLogoutByToken(ctx context.Context, requestId string, req *userRpc.UserLogoutByTokenRequest) (*userRpc.UserLogoutByTokenResponse, error) {
 	var (
 		err        error = nil
-		eventStore       = &pb.EventStore{
+		eventStore       = &eventRpc.EventStore{
 			RequestId:     requestId,
 			Service:       enum.UserService.String(),
 			EventType:     enum.USER_LOGOUT.String(),
@@ -27,7 +29,7 @@ func (u *authUseCase) UserLogoutByToken(ctx context.Context, requestId string, r
 	defer span.End()
 
 	// Validation If User Exists
-	user, err := u.authService.FindUserByToken(ctx, requestId, &pb.FindUserByTokenRequest{
+	user, err := u.authService.FindUserByToken(ctx, requestId, &userRpc.FindUserByTokenRequest{
 		Token: req.Token,
 	})
 	if err != nil {
@@ -40,7 +42,7 @@ func (u *authUseCase) UserLogoutByToken(ctx context.Context, requestId string, r
 		return nil, fmt.Errorf("user not found")
 	}
 
-	defer func(err error, eventStore *pb.EventStore) {
+	defer func(err error, eventStore *eventRpc.EventStore) {
 		if err != nil {
 			eventStore.Status = enum.FAILED.String()
 		}
@@ -72,5 +74,5 @@ func (u *authUseCase) UserLogoutByToken(ctx context.Context, requestId string, r
 		u.logger.Error(fmt.Sprintf("error publishing message to rabbitmq: %s", err.Error()))
 		return nil, err
 	}
-	return &pb.UserLogoutByTokenResponse{}, nil
+	return &userRpc.UserLogoutByTokenResponse{}, nil
 }

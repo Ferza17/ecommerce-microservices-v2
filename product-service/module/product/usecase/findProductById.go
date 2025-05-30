@@ -3,13 +3,14 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/pb"
+	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
+
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/util"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (u *productUseCase) FindProductById(ctx context.Context, requestId string, req *pb.FindProductByIdRequest) (*pb.Product, error) {
+func (u *productUseCase) FindProductById(ctx context.Context, requestId string, req *productRpc.FindProductByIdRequest) (*productRpc.Product, error) {
 	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.FindProductById")
 	defer span.End()
 
@@ -19,7 +20,7 @@ func (u *productUseCase) FindProductById(ctx context.Context, requestId string, 
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &pb.Product{
+	return &productRpc.Product{
 		Id:          fetchProduct.ID,
 		Name:        fetchProduct.Name,
 		Description: fetchProduct.Description,
