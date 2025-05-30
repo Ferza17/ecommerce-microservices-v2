@@ -1,9 +1,6 @@
 syntax = "proto3";
-package proto;
-
+package pb;
 import "google/protobuf/struct.proto";
-
-option go_package = "module github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/pb";
 
 message NotificationTemplate {
   string id = 1;

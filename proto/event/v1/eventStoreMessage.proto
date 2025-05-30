@@ -1,10 +1,7 @@
 syntax = "proto3";
-
-package proto;
-
+package pb;
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
-option go_package = "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb";
 
 message EventStore {
   string id = 1;

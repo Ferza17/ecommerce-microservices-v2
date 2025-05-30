@@ -1,10 +1,8 @@
 syntax = "proto3";
-package proto;
+package pb;
 import "google/protobuf/timestamp.proto";
-import "userMessage.proto";
-import "authMessage.proto";
-
-option go_package = "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/pb";
+import "user/v1/userMessage.proto";
+import "user/v1/authMessage.proto";
 
 service AuthService {
   rpc UserLogoutByToken(UserLogoutByTokenRequest) returns (UserLogoutByTokenResponse);
