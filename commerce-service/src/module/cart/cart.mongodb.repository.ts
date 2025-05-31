@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CartDocument, CartItem } from '../../model/mongo/cart';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import {
   CreateCartItemRequest,
   FindCartItemsWithPaginationRequest,
@@ -71,8 +71,19 @@ export class CartMongodbRepository {
     const span = this.otel.tracer('Repository.FindCartItemsWithPagination', context);
     try {
       const skip = (request.page - 1) * request.limit;
+      const query: mongoose.FilterQuery<CartDocument> = {};
+      if (request.userId && request.userId.trim() !== '') {
+        query.userId = request.userId;
+      }
+
+      if (request.productIds && request.productIds.length > 0) {
+        query.productId = {
+          '$in': request.productIds,
+        };
+      }
+
       const cartItems = await this.cartModel
-        .find()
+        .find(query)
         .skip(skip)
         .limit(request.limit)
         .exec();

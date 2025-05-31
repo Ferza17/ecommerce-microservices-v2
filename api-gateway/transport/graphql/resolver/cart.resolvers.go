@@ -6,11 +6,39 @@ package resolver
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/graph/gen"
 	gen1 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/commerce/v1"
+	gen2 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/product/v1"
+	gen3 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
 )
+
+// Product is the resolver for the product field.
+func (r *cartItemResolver) Product(ctx context.Context, obj *gen1.CartItem) (*gen2.Product, error) {
+	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.CartItem.Product")
+	defer span.End()
+	product, err := r.ProductUseCase.FindProductById(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &gen2.FindProductByIdRequest{Id: obj.ProductId})
+	if err != nil {
+		r.Logger.Error(fmt.Sprintf("error resolver CartItem - Product : %v", err))
+		return nil, err
+	}
+	return product, nil
+}
+
+// User is the resolver for the user field.
+func (r *cartItemResolver) User(ctx context.Context, obj *gen1.CartItem) (*gen3.User, error) {
+	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.CartItem.User")
+	defer span.End()
+	user, err := r.UserUseCase.FindUserById(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &gen3.FindUserByIdRequest{Id: obj.UserId})
+	if err != nil {
+		r.Logger.Error(fmt.Sprintf("error resolver CartItem - User : %v", err))
+		return nil, err
+	}
+	return user, nil
+}
 
 // CratedAt is the resolver for the crated_at field.
 func (r *cartItemResolver) CratedAt(ctx context.Context, obj *gen1.CartItem) (*time.Time, error) {

@@ -41,7 +41,7 @@ func Authorization(svc service.IAuthService, tele telemetry.ITelemetryInfrastruc
 				http.Error(w, "invalid access token", http.StatusUnauthorized)
 				return
 			}
-			ctx = context.WithValue(ctx, enum.ContextKeyUserID, user.Id)
+			ctx = context.WithValue(ctx, enum.ContextKeyUserID.String(), user.Id)
 			span.End()
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})

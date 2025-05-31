@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/config"
 	commerceRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/commerce/v1"
@@ -11,6 +12,8 @@ import (
 
 type (
 	ICommerceCartService interface {
+		FindCartItemById(ctx context.Context, requestId string, req *commerceRpc.FindCartItemByIdRequest) (*commerceRpc.CartItem, error)
+		FindCartItemsWithPagination(ctx context.Context, requestId string, req *commerceRpc.FindCartItemsWithPaginationRequest) (*commerceRpc.FindCartItemsWithPaginationResponse, error)
 		Close() error
 	}
 	commerceCartService struct {

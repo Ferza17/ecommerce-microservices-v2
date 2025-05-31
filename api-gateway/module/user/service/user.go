@@ -13,6 +13,7 @@ import (
 
 type (
 	IUserService interface {
+		FindUserById(ctx context.Context, requestId string, req *userRpc.FindUserByIdRequest) (*userRpc.User, error)
 		FindUserByEmailAndPassword(ctx context.Context, requestId string, req *userRpc.FindUserByEmailAndPasswordRequest) (*userRpc.User, error)
 		Close() error
 	}

@@ -1,7 +1,11 @@
+
+
 type CartItem {
     id: String
     productId: String
+    product: Product
     userId: String
+    user: User
     qty: Int
     price: Float
     crated_at: Time
@@ -41,7 +45,6 @@ type DeleteCartItemResponse {
 }
 
 input FindCartItemsWithPaginationRequest {
-    userId: String
     productIds: [String]
     page: Int
     limit: Int

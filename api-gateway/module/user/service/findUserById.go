@@ -11,12 +11,12 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *userService) FindUserByEmailAndPassword(ctx context.Context, requestId string, req *userRpc.FindUserByEmailAndPasswordRequest) (*userRpc.User, error) {
+func (s *userService) FindUserById(ctx context.Context, requestId string, req *userRpc.FindUserByIdRequest) (*userRpc.User, error) {
 	result, err := s.cb.Execute(func() (interface{}, error) {
 		ctx = metadata.NewOutgoingContext(ctx, metadata.New(map[string]string{
 			enum.XRequestIDHeader.String(): requestId,
 		}))
-		resp, err := s.svc.FindUserByEmailAndPassword(ctx, req)
+		resp, err := s.svc.FindUserById(ctx, req)
 		if err != nil {
 			st, ok := status.FromError(err)
 			if ok {
@@ -32,5 +32,5 @@ func (s *userService) FindUserByEmailAndPassword(ctx context.Context, requestId 
 		s.logger.Error(fmt.Sprintf("Error Breaker %v", err))
 		return nil, err
 	}
-	return result.(*userRpc.User), nil
+	return result.(*userRpc.User), err
 }

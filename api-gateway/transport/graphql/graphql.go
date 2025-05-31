@@ -40,6 +40,7 @@ func (srv *GraphQLTransport) Serve() {
 			CartUseCase:             srv.bootstrap.CartUseCase,
 			AuthUseCase:             srv.bootstrap.AuthUseCase,
 			TelemetryInfrastructure: srv.bootstrap.TelemetryInfrastructure,
+			Logger:                  srv.bootstrap.Logger,
 		},
 		Directives: gen.DirectiveRoot{
 			//Jwt: middleware.DirectiveJwtRequired,

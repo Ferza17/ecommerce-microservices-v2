@@ -11,6 +11,9 @@ import (
 
 type (
 	ICartUseCase interface {
+		FindCartItemById(ctx context.Context, requestId string, req *commerceRpc.FindCartItemByIdRequest) (*commerceRpc.CartItem, error)
+		FindCartItemsWithPagination(ctx context.Context, requestId string, req *commerceRpc.FindCartItemsWithPaginationRequest) (*commerceRpc.FindCartItemsWithPaginationResponse, error)
+
 		CreateCart(ctx context.Context, requestId string, req *commerceRpc.CreateCartItemRequest) (*commerceRpc.CreateCartItemResponse, error)
 		UpdateCartItemById(ctx context.Context, requestId string, req *commerceRpc.UpdateCartItemByIdRequest) (*commerceRpc.UpdateCartItemByIdResponse, error)
 	}

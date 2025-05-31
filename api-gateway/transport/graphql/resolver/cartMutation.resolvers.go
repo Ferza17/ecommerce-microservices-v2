@@ -17,7 +17,7 @@ import (
 func (r *mutationResolver) CreateCartItem(ctx context.Context, input *gen1.CreateCartItemRequest) (*gen1.CreateCartItemResponse, error) {
 	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.CreateCartItem")
 	defer span.End()
-	input.UserId = ctx.Value(enum.ContextKeyUserID).(string)
+	input.UserId = ctx.Value(enum.ContextKeyUserID.String()).(string)
 	return r.CartUseCase.CreateCart(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), input)
 }
 

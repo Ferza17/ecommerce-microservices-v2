@@ -13,6 +13,8 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	gen "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/commerce/v1"
+	gen1 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/product/v1"
+	gen2 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
 	"github.com/vektah/gqlparser/v2/ast"
 	"golang.org/x/sync/semaphore"
 )
@@ -20,6 +22,10 @@ import (
 // region    ************************** generated!.gotpl **************************
 
 type CartItemResolver interface {
+	Product(ctx context.Context, obj *gen.CartItem) (*gen1.Product, error)
+
+	User(ctx context.Context, obj *gen.CartItem) (*gen2.User, error)
+
 	CratedAt(ctx context.Context, obj *gen.CartItem) (*time.Time, error)
 	UpdatedAt(ctx context.Context, obj *gen.CartItem) (*time.Time, error)
 }
@@ -118,6 +124,69 @@ func (ec *executionContext) fieldContext_CartItem_productId(_ context.Context, f
 	return fc, nil
 }
 
+func (ec *executionContext) _CartItem_product(ctx context.Context, field graphql.CollectedField, obj *gen.CartItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CartItem_product(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.CartItem().Product(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*gen1.Product)
+	fc.Result = res
+	return ec.marshalOProduct2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋproductᚋv1ᚐProduct(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CartItem_product(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CartItem",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Product_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Product_name(ctx, field)
+			case "description":
+				return ec.fieldContext_Product_description(ctx, field)
+			case "uom":
+				return ec.fieldContext_Product_uom(ctx, field)
+			case "image":
+				return ec.fieldContext_Product_image(ctx, field)
+			case "price":
+				return ec.fieldContext_Product_price(ctx, field)
+			case "stock":
+				return ec.fieldContext_Product_stock(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Product_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Product_updatedAt(ctx, field)
+			case "discardedAt":
+				return ec.fieldContext_Product_discardedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Product", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _CartItem_userId(ctx context.Context, field graphql.CollectedField, obj *gen.CartItem) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CartItem_userId(ctx, field)
 	if err != nil {
@@ -154,6 +223,63 @@ func (ec *executionContext) fieldContext_CartItem_userId(_ context.Context, fiel
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CartItem_user(ctx context.Context, field graphql.CollectedField, obj *gen.CartItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CartItem_user(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.CartItem().User(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*gen2.User)
+	fc.Result = res
+	return ec.marshalOUser2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋuserᚋv1ᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CartItem_user(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CartItem",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "password":
+				return ec.fieldContext_User_password(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_User_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_User_updatedAt(ctx, field)
+			case "discardedAt":
+				return ec.fieldContext_User_discardedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
 	}
 	return fc, nil
@@ -445,8 +571,12 @@ func (ec *executionContext) fieldContext_FindCartItemsWithPaginationResponse_ite
 				return ec.fieldContext_CartItem_id(ctx, field)
 			case "productId":
 				return ec.fieldContext_CartItem_productId(ctx, field)
+			case "product":
+				return ec.fieldContext_CartItem_product(ctx, field)
 			case "userId":
 				return ec.fieldContext_CartItem_userId(ctx, field)
+			case "user":
+				return ec.fieldContext_CartItem_user(ctx, field)
 			case "qty":
 				return ec.fieldContext_CartItem_qty(ctx, field)
 			case "price":
@@ -678,20 +808,13 @@ func (ec *executionContext) unmarshalInputFindCartItemsWithPaginationRequest(ctx
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"userId", "productIds", "page", "limit"}
+	fieldsInOrder := [...]string{"productIds", "page", "limit"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "userId":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-			data, err := ec.unmarshalOString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.UserId = data
 		case "productIds":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("productIds"))
 			data, err := ec.unmarshalOString2ᚕstring(ctx, v)
@@ -797,8 +920,74 @@ func (ec *executionContext) _CartItem(ctx context.Context, sel ast.SelectionSet,
 			out.Values[i] = ec._CartItem_id(ctx, field, obj)
 		case "productId":
 			out.Values[i] = ec._CartItem_productId(ctx, field, obj)
+		case "product":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._CartItem_product(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "userId":
 			out.Values[i] = ec._CartItem_userId(ctx, field, obj)
+		case "user":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._CartItem_user(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "qty":
 			out.Values[i] = ec._CartItem_qty(ctx, field, obj)
 		case "price":

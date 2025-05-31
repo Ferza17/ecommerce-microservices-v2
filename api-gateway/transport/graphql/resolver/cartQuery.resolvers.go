@@ -6,8 +6,7 @@ package resolver
 
 import (
 	"context"
-	"fmt"
-
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/graph/gen"
 	gen1 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/commerce/v1"
 )
@@ -16,7 +15,12 @@ import (
 func (r *queryResolver) FindCartItemsWithPagination(ctx context.Context, input *gen1.FindCartItemsWithPaginationRequest) (*gen1.FindCartItemsWithPaginationResponse, error) {
 	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.FindCartItemsWithPagination")
 	defer span.End()
-	panic(fmt.Errorf("not implemented: FindCartItemsWithPagination - findCartItemsWithPagination"))
+	userId := ctx.Value(enum.ContextKeyUserID.String()).(string)
+	if input == nil {
+		input = &gen1.FindCartItemsWithPaginationRequest{}
+	}
+	input.UserId = userId
+	return r.CartUseCase.FindCartItemsWithPagination(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), input)
 }
 
 // Query returns gen.QueryResolver implementation.

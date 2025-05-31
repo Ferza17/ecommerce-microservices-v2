@@ -50,9 +50,11 @@ type ComplexityRoot struct {
 		CratedAt  func(childComplexity int) int
 		Id        func(childComplexity int) int
 		Price     func(childComplexity int) int
+		Product   func(childComplexity int) int
 		ProductId func(childComplexity int) int
 		Qty       func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
+		User      func(childComplexity int) int
 		UserId    func(childComplexity int) int
 	}
 
@@ -180,6 +182,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.CartItem.Price(childComplexity), true
 
+	case "CartItem.product":
+		if e.complexity.CartItem.Product == nil {
+			break
+		}
+
+		return e.complexity.CartItem.Product(childComplexity), true
+
 	case "CartItem.productId":
 		if e.complexity.CartItem.ProductId == nil {
 			break
@@ -200,6 +209,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.CartItem.UpdatedAt(childComplexity), true
+
+	case "CartItem.user":
+		if e.complexity.CartItem.User == nil {
+			break
+		}
+
+		return e.complexity.CartItem.User(childComplexity), true
 
 	case "CartItem.userId":
 		if e.complexity.CartItem.UserId == nil {
@@ -696,10 +712,14 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "../schema/cart.graphqls", Input: `type CartItem {
+	{Name: "../schema/cart.graphqls", Input: `
+
+type CartItem {
     id: String
     productId: String
+    product: Product
     userId: String
+    user: User
     qty: Int
     price: Float
     crated_at: Time
@@ -739,7 +759,6 @@ type DeleteCartItemResponse {
 }
 
 input FindCartItemsWithPaginationRequest {
-    userId: String
     productIds: [String]
     page: Int
     limit: Int
