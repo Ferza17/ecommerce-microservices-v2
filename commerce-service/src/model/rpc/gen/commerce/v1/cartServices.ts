@@ -30,12 +30,12 @@ import {
   UpdateCartItemByIdResponse,
 } from "./cartMessage";
 
-export const protobufPackage = "pb";
+export const protobufPackage = "commerce_v1";
 
 export type CartServiceService = typeof CartServiceService;
 export const CartServiceService = {
   createCartItem: {
-    path: "/pb.CartService/CreateCartItem",
+    path: "/commerce_v1.CartService/CreateCartItem",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: CreateCartItemRequest) => Buffer.from(CreateCartItemRequest.encode(value).finish()),
@@ -44,7 +44,7 @@ export const CartServiceService = {
     responseDeserialize: (value: Buffer) => CreateCartItemResponse.decode(value),
   },
   findCartItemById: {
-    path: "/pb.CartService/FindCartItemById",
+    path: "/commerce_v1.CartService/FindCartItemById",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: FindCartItemByIdRequest) => Buffer.from(FindCartItemByIdRequest.encode(value).finish()),
@@ -53,7 +53,7 @@ export const CartServiceService = {
     responseDeserialize: (value: Buffer) => CartItem.decode(value),
   },
   findCartItemsWithPagination: {
-    path: "/pb.CartService/FindCartItemsWithPagination",
+    path: "/commerce_v1.CartService/FindCartItemsWithPagination",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: FindCartItemsWithPaginationRequest) =>
@@ -64,7 +64,7 @@ export const CartServiceService = {
     responseDeserialize: (value: Buffer) => FindCartItemsWithPaginationResponse.decode(value),
   },
   updateCartItemById: {
-    path: "/pb.CartService/UpdateCartItemById",
+    path: "/commerce_v1.CartService/UpdateCartItemById",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: UpdateCartItemByIdRequest) =>
@@ -75,7 +75,7 @@ export const CartServiceService = {
     responseDeserialize: (value: Buffer) => UpdateCartItemByIdResponse.decode(value),
   },
   deleteCartItemById: {
-    path: "/pb.CartService/DeleteCartItemById",
+    path: "/commerce_v1.CartService/DeleteCartItemById",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: DeleteCartItemByIdRequest) =>
@@ -173,7 +173,10 @@ export interface CartServiceClient extends Client {
   ): ClientUnaryCall;
 }
 
-export const CartServiceClient = makeGenericClientConstructor(CartServiceService, "pb.CartService") as unknown as {
+export const CartServiceClient = makeGenericClientConstructor(
+  CartServiceService,
+  "commerce_v1.CartService",
+) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): CartServiceClient;
   service: typeof CartServiceService;
   serviceName: string;

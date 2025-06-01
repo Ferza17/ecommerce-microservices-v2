@@ -26,12 +26,12 @@ import {
 } from "./authMessage";
 import { User } from "./userMessage";
 
-export const protobufPackage = "pb";
+export const protobufPackage = "user_v1";
 
 export type AuthServiceService = typeof AuthServiceService;
 export const AuthServiceService = {
   userLogoutByToken: {
-    path: "/pb.AuthService/UserLogoutByToken",
+    path: "/user_v1.AuthService/UserLogoutByToken",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: UserLogoutByTokenRequest) => Buffer.from(UserLogoutByTokenRequest.encode(value).finish()),
@@ -41,7 +41,7 @@ export const AuthServiceService = {
     responseDeserialize: (value: Buffer) => UserLogoutByTokenResponse.decode(value),
   },
   userVerifyOtp: {
-    path: "/pb.AuthService/UserVerifyOtp",
+    path: "/user_v1.AuthService/UserVerifyOtp",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: UserVerifyOtpRequest) => Buffer.from(UserVerifyOtpRequest.encode(value).finish()),
@@ -50,7 +50,7 @@ export const AuthServiceService = {
     responseDeserialize: (value: Buffer) => UserVerifyOtpResponse.decode(value),
   },
   findUserByToken: {
-    path: "/pb.AuthService/FindUserByToken",
+    path: "/user_v1.AuthService/FindUserByToken",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: FindUserByTokenRequest) => Buffer.from(FindUserByTokenRequest.encode(value).finish()),
@@ -114,7 +114,7 @@ export interface AuthServiceClient extends Client {
   ): ClientUnaryCall;
 }
 
-export const AuthServiceClient = makeGenericClientConstructor(AuthServiceService, "pb.AuthService") as unknown as {
+export const AuthServiceClient = makeGenericClientConstructor(AuthServiceService, "user_v1.AuthService") as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): AuthServiceClient;
   service: typeof AuthServiceService;
   serviceName: string;

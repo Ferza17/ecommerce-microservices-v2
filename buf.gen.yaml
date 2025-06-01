@@ -24,7 +24,9 @@ plugins:
       - Mcommerce/v1/orderMessage.proto=event-store-service/model/rpc/gen
       - Mcommerce/v1/wishlistMessage.proto=event-store-service/model/rpc/gen
       - Mcommerce/v1/wishlistServices.proto=event-store-service/model/rpc/gen
-
+      # Payment Service Proto
+      - Mpayment/v1/paymentMessage.proto=event-store-service/model/rpc/gen
+      - Mpayment/v1/paymentServices.proto=event-store-service/model/rpc/gen
   - plugin: go-grpc
     out: event-store-service/model/rpc/gen
     opt:
@@ -48,6 +50,9 @@ plugins:
       - Mcommerce/v1/orderMessage.proto=event-store-service/model/rpc/gen
       - Mcommerce/v1/wishlistMessage.proto=event-store-service/model/rpc/gen
       - Mcommerce/v1/wishlistServices.proto=event-store-service/model/rpc/gen
+      # Payment Service Proto
+      - Mpayment/v1/paymentMessage.proto=event-store-service/model/rpc/gen
+      - Mpayment/v1/paymentServices.proto=event-store-service/model/rpc/gen
 
   #====================== API Gateway Service =======================================
   - plugin: go
@@ -72,7 +77,9 @@ plugins:
       - Mcommerce/v1/orderMessage.proto=api-gateway/model/rpc/gen
       - Mcommerce/v1/wishlistMessage.proto=api-gateway/model/rpc/gen
       - Mcommerce/v1/wishlistServices.proto=api-gateway/model/rpc/gen
-
+      # Payment Service Proto
+      - Mpayment/v1/paymentMessage.proto=api-gateway/model/rpc/gen
+      - Mpayment/v1/paymentServices.proto=api-gateway/model/rpc/gen
   - plugin: go-grpc
     out: api-gateway/model/rpc/gen
     opt:
@@ -96,6 +103,9 @@ plugins:
       - Mcommerce/v1/orderMessage.proto=api-gateway/model/rpc/gen
       - Mcommerce/v1/wishlistMessage.proto=api-gateway/model/rpc/gen
       - Mcommerce/v1/wishlistServices.proto=api-gateway/model/rpc/gen
+      # Payment Service Proto
+      - Mpayment/v1/paymentMessage.proto=api-gateway/model/rpc/gen
+      - Mpayment/v1/paymentServices.proto=api-gateway/model/rpc/gen
 
   #====================== Notification Service =======================================
   - plugin: go
@@ -120,7 +130,9 @@ plugins:
       - Mcommerce/v1/orderMessage.proto=notification-service/model/rpc/gen
       - Mcommerce/v1/wishlistMessage.proto=notification-service/model/rpc/gen
       - Mcommerce/v1/wishlistServices.proto=notification-service/model/rpc/gen
-
+      # Payment Service Proto
+      - Mpayment/v1/paymentMessage.proto=notification-service/model/rpc/gen
+      - Mpayment/v1/paymentServices.proto=notification-service/model/rpc/gen
   - plugin: go-grpc
     out: notification-service/model/rpc/gen
     opt:
@@ -144,6 +156,9 @@ plugins:
       - Mcommerce/v1/orderMessage.proto=notification-service/model/rpc/gen
       - Mcommerce/v1/wishlistMessage.proto=notification-service/model/rpc/gen
       - Mcommerce/v1/wishlistServices.proto=notification-service/model/rpc/gen
+      # Payment Service Proto
+      - Mpayment/v1/paymentMessage.proto=notification-service/model/rpc/gen
+      - Mpayment/v1/paymentServices.proto=notification-service/model/rpc/gen
 
   #====================== Product Service =======================================
   - plugin: go
@@ -168,7 +183,9 @@ plugins:
       - Mcommerce/v1/orderMessage.proto=product-service/model/rpc/gen
       - Mcommerce/v1/wishlistMessage.proto=product-service/model/rpc/gen
       - Mcommerce/v1/wishlistServices.proto=product-service/model/rpc/gen
-
+      # Payment Service Proto
+      - Mpayment/v1/paymentMessage.proto=product-service/model/rpc/gen
+      - Mpayment/v1/paymentServices.proto=product-service/model/rpc/gen
   - plugin: go-grpc
     out: product-service/model/rpc/gen
     opt:
@@ -192,6 +209,9 @@ plugins:
       - Mcommerce/v1/orderMessage.proto=product-service/model/rpc/gen
       - Mcommerce/v1/wishlistMessage.proto=product-service/model/rpc/gen
       - Mcommerce/v1/wishlistServices.proto=product-service/model/rpc/gen
+      # Payment Service Proto
+      - Mpayment/v1/paymentMessage.proto=product-service/model/rpc/gen
+      - Mpayment/v1/paymentServices.proto=product-service/model/rpc/gen
 
   #====================== User Service =======================================
   - plugin: go
@@ -216,7 +236,9 @@ plugins:
       - Mcommerce/v1/orderMessage.proto=user-service/model/rpc/gen
       - Mcommerce/v1/wishlistMessage.proto=user-service/model/rpc/gen
       - Mcommerce/v1/wishlistServices.proto=user-service/model/rpc/gen
-
+      # Payment Service Proto
+      - Mpayment/v1/paymentMessage.proto=user-service/model/rpc/gen
+      - Mpayment/v1/paymentServices.proto=user-service/model/rpc/gen
   - plugin: go-grpc
     out: user-service/model/rpc/gen
     opt:
@@ -240,6 +262,9 @@ plugins:
       - Mcommerce/v1/orderMessage.proto=user-service/model/rpc/gen
       - Mcommerce/v1/wishlistMessage.proto=user-service/model/rpc/gen
       - Mcommerce/v1/wishlistServices.proto=user-service/model/rpc/gen
+      # Payment Service Proto
+      - Mpayment/v1/paymentMessage.proto=user-service/model/rpc/gen
+      - Mpayment/v1/paymentServices.proto=user-service/model/rpc/gen
 
   #====================== Commerce Service =======================================
   - plugin: buf.build/community/stephenh-ts-proto

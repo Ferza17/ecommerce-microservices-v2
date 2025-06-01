@@ -1,10 +1,10 @@
 syntax = "proto3";
-package pb;
+package commerce_v1;
 
 import "commerce/v1/wishlistMessage.proto";
 
 service WishlistService {
-  rpc CreateWishlistItem(CreateWishlistItemRequest) returns (CreateWishlistItemResponse);
-  rpc FindWishlistItemWithPagination(FindWishlistItemWithPaginationRequest) returns (FindWishlistItemWithPaginationResponse);
-  rpc DeleteWishlistItemById(DeleteWishlistItemByIdRequest) returns (DeleteWishlistItemByIdResponse);
+  rpc CreateWishlistItem(commerce_v1.CreateWishlistItemRequest) returns (commerce_v1.CreateWishlistItemResponse);
+  rpc FindWishlistItemWithPagination(commerce_v1.FindWishlistItemWithPaginationRequest) returns (commerce_v1.FindWishlistItemWithPaginationResponse);
+  rpc DeleteWishlistItemById(commerce_v1.DeleteWishlistItemByIdRequest) returns (commerce_v1.DeleteWishlistItemByIdResponse);
 }

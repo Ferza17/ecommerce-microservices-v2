@@ -1,2 +1,13 @@
 syntax = "proto3";
-package pb;
+package commerce_v1;
+
+import "google/protobuf/timestamp.proto";
+
+message OrderItem {
+  string id = 1;
+  string productId = 2;
+  int32 qty = 4;
+  double price = 5;
+  google.protobuf.Timestamp crated_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}

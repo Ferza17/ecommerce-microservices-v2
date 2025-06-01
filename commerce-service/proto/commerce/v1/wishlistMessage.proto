@@ -1,5 +1,5 @@
 syntax = "proto3";
-package pb;
+package commerce_v1;
 
 message WishlistItem {
   string id = 1;

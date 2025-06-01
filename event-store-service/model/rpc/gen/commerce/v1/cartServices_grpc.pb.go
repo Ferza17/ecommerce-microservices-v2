@@ -39,7 +39,7 @@ func NewCartServiceClient(cc grpc.ClientConnInterface) CartServiceClient {
 
 func (c *cartServiceClient) CreateCartItem(ctx context.Context, in *CreateCartItemRequest, opts ...grpc.CallOption) (*CreateCartItemResponse, error) {
 	out := new(CreateCartItemResponse)
-	err := c.cc.Invoke(ctx, "/pb.CartService/CreateCartItem", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/commerce_v1.CartService/CreateCartItem", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (c *cartServiceClient) CreateCartItem(ctx context.Context, in *CreateCartIt
 
 func (c *cartServiceClient) FindCartItemById(ctx context.Context, in *FindCartItemByIdRequest, opts ...grpc.CallOption) (*CartItem, error) {
 	out := new(CartItem)
-	err := c.cc.Invoke(ctx, "/pb.CartService/FindCartItemById", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/commerce_v1.CartService/FindCartItemById", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (c *cartServiceClient) FindCartItemById(ctx context.Context, in *FindCartIt
 
 func (c *cartServiceClient) FindCartItemsWithPagination(ctx context.Context, in *FindCartItemsWithPaginationRequest, opts ...grpc.CallOption) (*FindCartItemsWithPaginationResponse, error) {
 	out := new(FindCartItemsWithPaginationResponse)
-	err := c.cc.Invoke(ctx, "/pb.CartService/FindCartItemsWithPagination", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/commerce_v1.CartService/FindCartItemsWithPagination", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (c *cartServiceClient) FindCartItemsWithPagination(ctx context.Context, in 
 
 func (c *cartServiceClient) UpdateCartItemById(ctx context.Context, in *UpdateCartItemByIdRequest, opts ...grpc.CallOption) (*UpdateCartItemByIdResponse, error) {
 	out := new(UpdateCartItemByIdResponse)
-	err := c.cc.Invoke(ctx, "/pb.CartService/UpdateCartItemById", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/commerce_v1.CartService/UpdateCartItemById", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (c *cartServiceClient) UpdateCartItemById(ctx context.Context, in *UpdateCa
 
 func (c *cartServiceClient) DeleteCartItemById(ctx context.Context, in *DeleteCartItemByIdRequest, opts ...grpc.CallOption) (*DeleteCartItemByIdResponse, error) {
 	out := new(DeleteCartItemByIdResponse)
-	err := c.cc.Invoke(ctx, "/pb.CartService/DeleteCartItemById", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/commerce_v1.CartService/DeleteCartItemById", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +134,7 @@ func _CartService_CreateCartItem_Handler(srv interface{}, ctx context.Context, d
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.CartService/CreateCartItem",
+		FullMethod: "/commerce_v1.CartService/CreateCartItem",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CartServiceServer).CreateCartItem(ctx, req.(*CreateCartItemRequest))
@@ -152,7 +152,7 @@ func _CartService_FindCartItemById_Handler(srv interface{}, ctx context.Context,
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.CartService/FindCartItemById",
+		FullMethod: "/commerce_v1.CartService/FindCartItemById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CartServiceServer).FindCartItemById(ctx, req.(*FindCartItemByIdRequest))
@@ -170,7 +170,7 @@ func _CartService_FindCartItemsWithPagination_Handler(srv interface{}, ctx conte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.CartService/FindCartItemsWithPagination",
+		FullMethod: "/commerce_v1.CartService/FindCartItemsWithPagination",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CartServiceServer).FindCartItemsWithPagination(ctx, req.(*FindCartItemsWithPaginationRequest))
@@ -188,7 +188,7 @@ func _CartService_UpdateCartItemById_Handler(srv interface{}, ctx context.Contex
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.CartService/UpdateCartItemById",
+		FullMethod: "/commerce_v1.CartService/UpdateCartItemById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CartServiceServer).UpdateCartItemById(ctx, req.(*UpdateCartItemByIdRequest))
@@ -206,7 +206,7 @@ func _CartService_DeleteCartItemById_Handler(srv interface{}, ctx context.Contex
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.CartService/DeleteCartItemById",
+		FullMethod: "/commerce_v1.CartService/DeleteCartItemById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CartServiceServer).DeleteCartItemById(ctx, req.(*DeleteCartItemByIdRequest))
@@ -218,7 +218,7 @@ func _CartService_DeleteCartItemById_Handler(srv interface{}, ctx context.Contex
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var CartService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "pb.CartService",
+	ServiceName: "commerce_v1.CartService",
 	HandlerType: (*CartServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

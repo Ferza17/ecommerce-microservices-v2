@@ -36,7 +36,7 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 
 func (c *userServiceClient) FindUserById(ctx context.Context, in *FindUserByIdRequest, opts ...grpc.CallOption) (*User, error) {
 	out := new(User)
-	err := c.cc.Invoke(ctx, "/pb.UserService/FindUserById", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user_v1.UserService/FindUserById", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (c *userServiceClient) FindUserById(ctx context.Context, in *FindUserByIdRe
 
 func (c *userServiceClient) FindUserByEmailAndPassword(ctx context.Context, in *FindUserByEmailAndPasswordRequest, opts ...grpc.CallOption) (*User, error) {
 	out := new(User)
-	err := c.cc.Invoke(ctx, "/pb.UserService/FindUserByEmailAndPassword", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user_v1.UserService/FindUserByEmailAndPassword", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +92,7 @@ func _UserService_FindUserById_Handler(srv interface{}, ctx context.Context, dec
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.UserService/FindUserById",
+		FullMethod: "/user_v1.UserService/FindUserById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).FindUserById(ctx, req.(*FindUserByIdRequest))
@@ -110,7 +110,7 @@ func _UserService_FindUserByEmailAndPassword_Handler(srv interface{}, ctx contex
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.UserService/FindUserByEmailAndPassword",
+		FullMethod: "/user_v1.UserService/FindUserByEmailAndPassword",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).FindUserByEmailAndPassword(ctx, req.(*FindUserByEmailAndPasswordRequest))
@@ -122,7 +122,7 @@ func _UserService_FindUserByEmailAndPassword_Handler(srv interface{}, ctx contex
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var UserService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "pb.UserService",
+	ServiceName: "user_v1.UserService",
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

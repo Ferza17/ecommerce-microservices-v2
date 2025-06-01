@@ -5,5 +5,199 @@
 // source: commerce/v1/orderMessage.proto
 
 /* eslint-disable */
+import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+import { Timestamp } from "../../google/protobuf/timestamp";
 
-export const protobufPackage = "pb";
+export const protobufPackage = "commerce_v1";
+
+export interface OrderItem {
+  id: string;
+  productId: string;
+  qty: number;
+  price: number;
+  cratedAt: Date | undefined;
+  updatedAt: Date | undefined;
+}
+
+function createBaseOrderItem(): OrderItem {
+  return { id: "", productId: "", qty: 0, price: 0, cratedAt: undefined, updatedAt: undefined };
+}
+
+export const OrderItem: MessageFns<OrderItem> = {
+  encode(message: OrderItem, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.productId !== "") {
+      writer.uint32(18).string(message.productId);
+    }
+    if (message.qty !== 0) {
+      writer.uint32(32).int32(message.qty);
+    }
+    if (message.price !== 0) {
+      writer.uint32(41).double(message.price);
+    }
+    if (message.cratedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.cratedAt), writer.uint32(50).fork()).join();
+    }
+    if (message.updatedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.updatedAt), writer.uint32(58).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): OrderItem {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseOrderItem();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.productId = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.qty = reader.int32();
+          continue;
+        }
+        case 5: {
+          if (tag !== 41) {
+            break;
+          }
+
+          message.price = reader.double();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.cratedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.updatedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): OrderItem {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      productId: isSet(object.productId) ? globalThis.String(object.productId) : "",
+      qty: isSet(object.qty) ? globalThis.Number(object.qty) : 0,
+      price: isSet(object.price) ? globalThis.Number(object.price) : 0,
+      cratedAt: isSet(object.cratedAt) ? fromJsonTimestamp(object.cratedAt) : undefined,
+      updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
+    };
+  },
+
+  toJSON(message: OrderItem): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.productId !== "") {
+      obj.productId = message.productId;
+    }
+    if (message.qty !== 0) {
+      obj.qty = Math.round(message.qty);
+    }
+    if (message.price !== 0) {
+      obj.price = message.price;
+    }
+    if (message.cratedAt !== undefined) {
+      obj.cratedAt = message.cratedAt.toISOString();
+    }
+    if (message.updatedAt !== undefined) {
+      obj.updatedAt = message.updatedAt.toISOString();
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<OrderItem>): OrderItem {
+    return OrderItem.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<OrderItem>): OrderItem {
+    const message = createBaseOrderItem();
+    message.id = object.id ?? "";
+    message.productId = object.productId ?? "";
+    message.qty = object.qty ?? 0;
+    message.price = object.price ?? 0;
+    message.cratedAt = object.cratedAt ?? undefined;
+    message.updatedAt = object.updatedAt ?? undefined;
+    return message;
+  },
+};
+
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+
+export type DeepPartial<T> = T extends Builtin ? T
+  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
+  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
+  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
+  : Partial<T>;
+
+function toTimestamp(date: Date): Timestamp {
+  const seconds = Math.trunc(date.getTime() / 1_000);
+  const nanos = (date.getTime() % 1_000) * 1_000_000;
+  return { seconds, nanos };
+}
+
+function fromTimestamp(t: Timestamp): Date {
+  let millis = (t.seconds || 0) * 1_000;
+  millis += (t.nanos || 0) / 1_000_000;
+  return new globalThis.Date(millis);
+}
+
+function fromJsonTimestamp(o: any): Date {
+  if (o instanceof globalThis.Date) {
+    return o;
+  } else if (typeof o === "string") {
+    return new globalThis.Date(o);
+  } else {
+    return fromTimestamp(Timestamp.fromJSON(o));
+  }
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
+}
+
+export interface MessageFns<T> {
+  encode(message: T, writer?: BinaryWriter): BinaryWriter;
+  decode(input: BinaryReader | Uint8Array, length?: number): T;
+  fromJSON(object: any): T;
+  toJSON(message: T): unknown;
+  create(base?: DeepPartial<T>): T;
+  fromPartial(object: DeepPartial<T>): T;
+}

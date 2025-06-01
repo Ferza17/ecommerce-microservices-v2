@@ -15,6 +15,9 @@ import { ConsulService } from '../config/consul.service';
 import { RabbitMQRootAsync } from '../config/configRoot';
 
 
+const projectRoot = join(__dirname, '../../');
+
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -27,12 +30,15 @@ import { RabbitMQRootAsync } from '../config/configRoot';
           transport: Transport.GRPC,
           options: {
             url: `${await config.get('/services/product/RPC_HOST')}:${await config.get('/services/product/RPC_PORT')}`,
-            package: 'pb',
-            protoPath: glob.sync(['proto/**/*.proto'], {
-              cwd: join(__dirname, '../../'),
+            package: `product_v1`,
+            protoPath: glob.sync?.(['proto/**/*.proto'], {
+              cwd: projectRoot,
               absolute: true,
             }),
             loader: {
+              includeDirs: [
+                join(projectRoot, 'proto'),
+              ],
               oneofs: true,
             },
           },
@@ -48,12 +54,15 @@ import { RabbitMQRootAsync } from '../config/configRoot';
           transport: Transport.GRPC,
           options: {
             url: `${ await configService.get('/services/user/RPC_HOST')}:${await configService.get('/services/user/RPC_PORT')}`,
-            package: 'pb',
-            protoPath: glob.sync(['proto/**/*.proto'], {
-              cwd: join(__dirname, '../../'),
+            package: 'user_v1',
+            protoPath: glob.sync?.(['proto/**/*.proto'], {
+              cwd: projectRoot,
               absolute: true,
             }),
             loader: {
+              includeDirs: [
+                join(projectRoot, 'proto'),
+              ],
               oneofs: true,
             },
           },

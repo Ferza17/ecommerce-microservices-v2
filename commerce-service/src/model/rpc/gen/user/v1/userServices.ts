@@ -19,12 +19,12 @@ import {
 } from "@grpc/grpc-js";
 import { FindUserByEmailAndPasswordRequest, FindUserByIdRequest, User } from "./userMessage";
 
-export const protobufPackage = "pb";
+export const protobufPackage = "user_v1";
 
 export type UserServiceService = typeof UserServiceService;
 export const UserServiceService = {
   findUserById: {
-    path: "/pb.UserService/FindUserById",
+    path: "/user_v1.UserService/FindUserById",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: FindUserByIdRequest) => Buffer.from(FindUserByIdRequest.encode(value).finish()),
@@ -33,7 +33,7 @@ export const UserServiceService = {
     responseDeserialize: (value: Buffer) => User.decode(value),
   },
   findUserByEmailAndPassword: {
-    path: "/pb.UserService/FindUserByEmailAndPassword",
+    path: "/user_v1.UserService/FindUserByEmailAndPassword",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: FindUserByEmailAndPasswordRequest) =>
@@ -82,7 +82,7 @@ export interface UserServiceClient extends Client {
   ): ClientUnaryCall;
 }
 
-export const UserServiceClient = makeGenericClientConstructor(UserServiceService, "pb.UserService") as unknown as {
+export const UserServiceClient = makeGenericClientConstructor(UserServiceService, "user_v1.UserService") as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): UserServiceClient;
   service: typeof UserServiceService;
   serviceName: string;

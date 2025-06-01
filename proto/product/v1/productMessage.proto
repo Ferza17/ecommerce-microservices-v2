@@ -1,5 +1,5 @@
 syntax = "proto3";
-package pb;
+package product_v1;
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 

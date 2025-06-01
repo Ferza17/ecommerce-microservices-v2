@@ -37,7 +37,7 @@ func NewWishlistServiceClient(cc grpc.ClientConnInterface) WishlistServiceClient
 
 func (c *wishlistServiceClient) CreateWishlistItem(ctx context.Context, in *CreateWishlistItemRequest, opts ...grpc.CallOption) (*CreateWishlistItemResponse, error) {
 	out := new(CreateWishlistItemResponse)
-	err := c.cc.Invoke(ctx, "/pb.WishlistService/CreateWishlistItem", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/commerce_v1.WishlistService/CreateWishlistItem", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (c *wishlistServiceClient) CreateWishlistItem(ctx context.Context, in *Crea
 
 func (c *wishlistServiceClient) FindWishlistItemWithPagination(ctx context.Context, in *FindWishlistItemWithPaginationRequest, opts ...grpc.CallOption) (*FindWishlistItemWithPaginationResponse, error) {
 	out := new(FindWishlistItemWithPaginationResponse)
-	err := c.cc.Invoke(ctx, "/pb.WishlistService/FindWishlistItemWithPagination", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/commerce_v1.WishlistService/FindWishlistItemWithPagination", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (c *wishlistServiceClient) FindWishlistItemWithPagination(ctx context.Conte
 
 func (c *wishlistServiceClient) DeleteWishlistItemById(ctx context.Context, in *DeleteWishlistItemByIdRequest, opts ...grpc.CallOption) (*DeleteWishlistItemByIdResponse, error) {
 	out := new(DeleteWishlistItemByIdResponse)
-	err := c.cc.Invoke(ctx, "/pb.WishlistService/DeleteWishlistItemById", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/commerce_v1.WishlistService/DeleteWishlistItemById", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +106,7 @@ func _WishlistService_CreateWishlistItem_Handler(srv interface{}, ctx context.Co
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.WishlistService/CreateWishlistItem",
+		FullMethod: "/commerce_v1.WishlistService/CreateWishlistItem",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(WishlistServiceServer).CreateWishlistItem(ctx, req.(*CreateWishlistItemRequest))
@@ -124,7 +124,7 @@ func _WishlistService_FindWishlistItemWithPagination_Handler(srv interface{}, ct
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.WishlistService/FindWishlistItemWithPagination",
+		FullMethod: "/commerce_v1.WishlistService/FindWishlistItemWithPagination",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(WishlistServiceServer).FindWishlistItemWithPagination(ctx, req.(*FindWishlistItemWithPaginationRequest))
@@ -142,7 +142,7 @@ func _WishlistService_DeleteWishlistItemById_Handler(srv interface{}, ctx contex
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.WishlistService/DeleteWishlistItemById",
+		FullMethod: "/commerce_v1.WishlistService/DeleteWishlistItemById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(WishlistServiceServer).DeleteWishlistItemById(ctx, req.(*DeleteWishlistItemByIdRequest))
@@ -154,7 +154,7 @@ func _WishlistService_DeleteWishlistItemById_Handler(srv interface{}, ctx contex
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var WishlistService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "pb.WishlistService",
+	ServiceName: "commerce_v1.WishlistService",
 	HandlerType: (*WishlistServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

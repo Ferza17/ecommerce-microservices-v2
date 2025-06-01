@@ -1,8 +1,8 @@
 syntax = "proto3";
-package pb;
+package user_v1;
 import "google/protobuf/timestamp.proto";
-import "userMessage.proto";
-import "authMessage.proto";
+import "user/v1/userMessage.proto";
+import "user/v1/authMessage.proto";
 
 service AuthService {
   rpc UserLogoutByToken(UserLogoutByTokenRequest) returns (UserLogoutByTokenResponse);

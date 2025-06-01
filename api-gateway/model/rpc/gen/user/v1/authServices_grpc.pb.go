@@ -37,7 +37,7 @@ func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
 
 func (c *authServiceClient) UserLogoutByToken(ctx context.Context, in *UserLogoutByTokenRequest, opts ...grpc.CallOption) (*UserLogoutByTokenResponse, error) {
 	out := new(UserLogoutByTokenResponse)
-	err := c.cc.Invoke(ctx, "/pb.AuthService/UserLogoutByToken", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user_v1.AuthService/UserLogoutByToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (c *authServiceClient) UserLogoutByToken(ctx context.Context, in *UserLogou
 
 func (c *authServiceClient) UserVerifyOtp(ctx context.Context, in *UserVerifyOtpRequest, opts ...grpc.CallOption) (*UserVerifyOtpResponse, error) {
 	out := new(UserVerifyOtpResponse)
-	err := c.cc.Invoke(ctx, "/pb.AuthService/UserVerifyOtp", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user_v1.AuthService/UserVerifyOtp", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (c *authServiceClient) UserVerifyOtp(ctx context.Context, in *UserVerifyOtp
 
 func (c *authServiceClient) FindUserByToken(ctx context.Context, in *FindUserByTokenRequest, opts ...grpc.CallOption) (*User, error) {
 	out := new(User)
-	err := c.cc.Invoke(ctx, "/pb.AuthService/FindUserByToken", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user_v1.AuthService/FindUserByToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +106,7 @@ func _AuthService_UserLogoutByToken_Handler(srv interface{}, ctx context.Context
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.AuthService/UserLogoutByToken",
+		FullMethod: "/user_v1.AuthService/UserLogoutByToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServiceServer).UserLogoutByToken(ctx, req.(*UserLogoutByTokenRequest))
@@ -124,7 +124,7 @@ func _AuthService_UserVerifyOtp_Handler(srv interface{}, ctx context.Context, de
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.AuthService/UserVerifyOtp",
+		FullMethod: "/user_v1.AuthService/UserVerifyOtp",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServiceServer).UserVerifyOtp(ctx, req.(*UserVerifyOtpRequest))
@@ -142,7 +142,7 @@ func _AuthService_FindUserByToken_Handler(srv interface{}, ctx context.Context, 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.AuthService/FindUserByToken",
+		FullMethod: "/user_v1.AuthService/FindUserByToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServiceServer).FindUserByToken(ctx, req.(*FindUserByTokenRequest))
@@ -154,7 +154,7 @@ func _AuthService_FindUserByToken_Handler(srv interface{}, ctx context.Context, 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AuthService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "pb.AuthService",
+	ServiceName: "user_v1.AuthService",
 	HandlerType: (*AuthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

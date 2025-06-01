@@ -39,7 +39,7 @@ func NewProductServiceClient(cc grpc.ClientConnInterface) ProductServiceClient {
 
 func (c *productServiceClient) FindProductsWithPagination(ctx context.Context, in *FindProductsWithPaginationRequest, opts ...grpc.CallOption) (*FindProductsWithPaginationResponse, error) {
 	out := new(FindProductsWithPaginationResponse)
-	err := c.cc.Invoke(ctx, "/pb.ProductService/FindProductsWithPagination", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/product_v1.ProductService/FindProductsWithPagination", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (c *productServiceClient) FindProductsWithPagination(ctx context.Context, i
 
 func (c *productServiceClient) FindProductById(ctx context.Context, in *FindProductByIdRequest, opts ...grpc.CallOption) (*Product, error) {
 	out := new(Product)
-	err := c.cc.Invoke(ctx, "/pb.ProductService/FindProductById", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/product_v1.ProductService/FindProductById", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (c *productServiceClient) FindProductById(ctx context.Context, in *FindProd
 
 func (c *productServiceClient) CreateProduct(ctx context.Context, in *CreateProductRequest, opts ...grpc.CallOption) (*CreateProductResponse, error) {
 	out := new(CreateProductResponse)
-	err := c.cc.Invoke(ctx, "/pb.ProductService/CreateProduct", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/product_v1.ProductService/CreateProduct", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (c *productServiceClient) CreateProduct(ctx context.Context, in *CreateProd
 
 func (c *productServiceClient) UpdateProductById(ctx context.Context, in *UpdateProductByIdRequest, opts ...grpc.CallOption) (*Product, error) {
 	out := new(Product)
-	err := c.cc.Invoke(ctx, "/pb.ProductService/UpdateProductById", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/product_v1.ProductService/UpdateProductById", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (c *productServiceClient) UpdateProductById(ctx context.Context, in *Update
 
 func (c *productServiceClient) DeleteProductById(ctx context.Context, in *DeleteProductByIdRequest, opts ...grpc.CallOption) (*DeleteProductByIdResponse, error) {
 	out := new(DeleteProductByIdResponse)
-	err := c.cc.Invoke(ctx, "/pb.ProductService/DeleteProductById", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/product_v1.ProductService/DeleteProductById", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +134,7 @@ func _ProductService_FindProductsWithPagination_Handler(srv interface{}, ctx con
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.ProductService/FindProductsWithPagination",
+		FullMethod: "/product_v1.ProductService/FindProductsWithPagination",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProductServiceServer).FindProductsWithPagination(ctx, req.(*FindProductsWithPaginationRequest))
@@ -152,7 +152,7 @@ func _ProductService_FindProductById_Handler(srv interface{}, ctx context.Contex
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.ProductService/FindProductById",
+		FullMethod: "/product_v1.ProductService/FindProductById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProductServiceServer).FindProductById(ctx, req.(*FindProductByIdRequest))
@@ -170,7 +170,7 @@ func _ProductService_CreateProduct_Handler(srv interface{}, ctx context.Context,
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.ProductService/CreateProduct",
+		FullMethod: "/product_v1.ProductService/CreateProduct",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProductServiceServer).CreateProduct(ctx, req.(*CreateProductRequest))
@@ -188,7 +188,7 @@ func _ProductService_UpdateProductById_Handler(srv interface{}, ctx context.Cont
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.ProductService/UpdateProductById",
+		FullMethod: "/product_v1.ProductService/UpdateProductById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProductServiceServer).UpdateProductById(ctx, req.(*UpdateProductByIdRequest))
@@ -206,7 +206,7 @@ func _ProductService_DeleteProductById_Handler(srv interface{}, ctx context.Cont
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.ProductService/DeleteProductById",
+		FullMethod: "/product_v1.ProductService/DeleteProductById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProductServiceServer).DeleteProductById(ctx, req.(*DeleteProductByIdRequest))
@@ -218,7 +218,7 @@ func _ProductService_DeleteProductById_Handler(srv interface{}, ctx context.Cont
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ProductService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "pb.ProductService",
+	ServiceName: "product_v1.ProductService",
 	HandlerType: (*ProductServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

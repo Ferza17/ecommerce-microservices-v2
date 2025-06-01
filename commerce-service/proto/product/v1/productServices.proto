@@ -1,12 +1,12 @@
 syntax = "proto3";
-package pb;
+package product_v1;
 
-import "productMessage.proto";
+import "product/v1/productMessage.proto";
 
 service ProductService {
-  rpc FindProductsWithPagination(FindProductsWithPaginationRequest) returns (FindProductsWithPaginationResponse);
-  rpc FindProductById(FindProductByIdRequest) returns (Product);
-  rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse);
-  rpc UpdateProductById(UpdateProductByIdRequest) returns (Product);
-  rpc DeleteProductById(DeleteProductByIdRequest) returns (DeleteProductByIdResponse);
+  rpc FindProductsWithPagination(product_v1.FindProductsWithPaginationRequest) returns (product_v1.FindProductsWithPaginationResponse);
+  rpc FindProductById(product_v1.FindProductByIdRequest) returns (product_v1.Product);
+  rpc CreateProduct(product_v1.CreateProductRequest) returns (product_v1.CreateProductResponse);
+  rpc UpdateProductById(product_v1.UpdateProductByIdRequest) returns (product_v1.Product);
+  rpc DeleteProductById(product_v1.DeleteProductByIdRequest) returns (product_v1.DeleteProductByIdResponse);
 }

@@ -29,12 +29,12 @@ import {
   UpdateProductByIdRequest,
 } from "./productMessage";
 
-export const protobufPackage = "pb";
+export const protobufPackage = "product_v1";
 
 export type ProductServiceService = typeof ProductServiceService;
 export const ProductServiceService = {
   findProductsWithPagination: {
-    path: "/pb.ProductService/FindProductsWithPagination",
+    path: "/product_v1.ProductService/FindProductsWithPagination",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: FindProductsWithPaginationRequest) =>
@@ -45,7 +45,7 @@ export const ProductServiceService = {
     responseDeserialize: (value: Buffer) => FindProductsWithPaginationResponse.decode(value),
   },
   findProductById: {
-    path: "/pb.ProductService/FindProductById",
+    path: "/product_v1.ProductService/FindProductById",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: FindProductByIdRequest) => Buffer.from(FindProductByIdRequest.encode(value).finish()),
@@ -54,7 +54,7 @@ export const ProductServiceService = {
     responseDeserialize: (value: Buffer) => Product.decode(value),
   },
   createProduct: {
-    path: "/pb.ProductService/CreateProduct",
+    path: "/product_v1.ProductService/CreateProduct",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: CreateProductRequest) => Buffer.from(CreateProductRequest.encode(value).finish()),
@@ -63,7 +63,7 @@ export const ProductServiceService = {
     responseDeserialize: (value: Buffer) => CreateProductResponse.decode(value),
   },
   updateProductById: {
-    path: "/pb.ProductService/UpdateProductById",
+    path: "/product_v1.ProductService/UpdateProductById",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: UpdateProductByIdRequest) => Buffer.from(UpdateProductByIdRequest.encode(value).finish()),
@@ -72,7 +72,7 @@ export const ProductServiceService = {
     responseDeserialize: (value: Buffer) => Product.decode(value),
   },
   deleteProductById: {
-    path: "/pb.ProductService/DeleteProductById",
+    path: "/product_v1.ProductService/DeleteProductById",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: DeleteProductByIdRequest) => Buffer.from(DeleteProductByIdRequest.encode(value).finish()),
@@ -171,7 +171,7 @@ export interface ProductServiceClient extends Client {
 
 export const ProductServiceClient = makeGenericClientConstructor(
   ProductServiceService,
-  "pb.ProductService",
+  "product_v1.ProductService",
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): ProductServiceClient;
   service: typeof ProductServiceService;

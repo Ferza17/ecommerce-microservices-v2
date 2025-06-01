@@ -9,7 +9,7 @@ import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { Struct } from "../../google/protobuf/struct";
 import { Timestamp } from "../../google/protobuf/timestamp";
 
-export const protobufPackage = "pb";
+export const protobufPackage = "event_v1";
 
 export interface EventStore {
   id: string;

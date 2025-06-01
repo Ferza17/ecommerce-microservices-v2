@@ -8,7 +8,7 @@
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { Timestamp } from "../../google/protobuf/timestamp";
 
-export const protobufPackage = "pb";
+export const protobufPackage = "commerce_v1";
 
 export interface CartItem {
   id: string;

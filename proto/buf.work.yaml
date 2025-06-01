@@ -1,8 +1,9 @@
 version: v1
 directories:
   - common
-  - user-service
-  - product-service
-  - commerce-service
-  - event-store-service
-  - notification-service
+  - user
+  - product
+  - commerce
+  - event
+  - notification
+  - payment

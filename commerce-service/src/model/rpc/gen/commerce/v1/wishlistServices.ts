@@ -26,12 +26,12 @@ import {
   FindWishlistItemWithPaginationResponse,
 } from "./wishlistMessage";
 
-export const protobufPackage = "pb";
+export const protobufPackage = "commerce_v1";
 
 export type WishlistServiceService = typeof WishlistServiceService;
 export const WishlistServiceService = {
   createWishlistItem: {
-    path: "/pb.WishlistService/CreateWishlistItem",
+    path: "/commerce_v1.WishlistService/CreateWishlistItem",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: CreateWishlistItemRequest) =>
@@ -42,7 +42,7 @@ export const WishlistServiceService = {
     responseDeserialize: (value: Buffer) => CreateWishlistItemResponse.decode(value),
   },
   findWishlistItemWithPagination: {
-    path: "/pb.WishlistService/FindWishlistItemWithPagination",
+    path: "/commerce_v1.WishlistService/FindWishlistItemWithPagination",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: FindWishlistItemWithPaginationRequest) =>
@@ -53,7 +53,7 @@ export const WishlistServiceService = {
     responseDeserialize: (value: Buffer) => FindWishlistItemWithPaginationResponse.decode(value),
   },
   deleteWishlistItemById: {
-    path: "/pb.WishlistService/DeleteWishlistItemById",
+    path: "/commerce_v1.WishlistService/DeleteWishlistItemById",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: DeleteWishlistItemByIdRequest) =>
@@ -124,7 +124,7 @@ export interface WishlistServiceClient extends Client {
 
 export const WishlistServiceClient = makeGenericClientConstructor(
   WishlistServiceService,
-  "pb.WishlistService",
+  "commerce_v1.WishlistService",
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): WishlistServiceClient;
   service: typeof WishlistServiceService;

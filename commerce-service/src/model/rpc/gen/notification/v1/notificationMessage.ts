@@ -8,7 +8,7 @@
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { Struct } from "../../google/protobuf/struct";
 
-export const protobufPackage = "pb";
+export const protobufPackage = "notification_v1";
 
 export enum NotificationTypeEnum {
   NOTIFICATION_EMAIL_USER_OTP = 0,

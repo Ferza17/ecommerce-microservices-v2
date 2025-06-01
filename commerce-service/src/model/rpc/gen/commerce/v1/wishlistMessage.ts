@@ -7,7 +7,7 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 
-export const protobufPackage = "pb";
+export const protobufPackage = "commerce_v1";
 
 export interface WishlistItem {
   id: string;
