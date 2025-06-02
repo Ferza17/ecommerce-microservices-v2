@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	eventRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/event/v1"
 	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/notification/v1"
 	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
@@ -23,9 +23,9 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 		tx                       = u.userPostgresqlRepository.OpenTransactionWithContext(ctx)
 		eventStore               = &eventRpc.EventStore{
 			RequestId:     requestId,
-			Service:       enum.UserService.String(),
-			EventType:     enum.USER_LOGIN.String(),
-			Status:        enum.SUCCESS.String(),
+			Service:       config.Get().ServiceName,
+			EventType:     config.Get().QueueUserLogin,
+			Status:        config.Get().CommonSagaStatusSuccess,
 			PreviousState: nil,
 			CreatedAt:     timestamppb.Now(),
 			UpdatedAt:     timestamppb.Now(),
@@ -48,11 +48,11 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 
 		if err != nil {
 			tx.Rollback()
-			eventStore.Status = enum.FAILED.String()
+			eventStore.Status = config.Get().CommonSagaStatusFailed
 		}
 
 		// Success Login
-		if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, enum.EventExchange, enum.EVENT_CREATED, eventStoreMessage); err != nil {
+		if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, config.Get().ExchangeEvent, config.Get().QueueEventCreated, eventStoreMessage); err != nil {
 			u.logger.Error(fmt.Sprintf("error creating product event store: %s", err.Error()))
 			return
 		}
@@ -63,9 +63,9 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 		}
 
 		eventStore.Payload = loginNotificationPayload
-		eventStore.EventType = enum.NOTIFICATION_EMAIL_OTP.String()
-		eventStore.Service = enum.NotificationService.String()
-		eventStore.Status = enum.PENDING.String()
+		eventStore.EventType = config.Get().QueueNotificationEmailOtpCreated
+		eventStore.Service = config.Get().NotificationServiceName
+		eventStore.Status = config.Get().CommonSagaStatusPending
 
 		eventStoreMessage, err = proto.Marshal(eventStore)
 		if err != nil {
@@ -73,7 +73,7 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 		}
 
 		// PENDING Notification Login
-		if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, enum.EventExchange, enum.EVENT_CREATED, eventStoreMessage); err != nil {
+		if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, config.Get().ExchangeEvent, config.Get().QueueEventCreated, eventStoreMessage); err != nil {
 			u.logger.Error(fmt.Sprintf("error creating product event store: %s", err.Error()))
 			return
 		}
@@ -118,7 +118,7 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 		return status.Error(codes.Internal, err.Error())
 	}
 
-	if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, enum.NotificationExchange, enum.NOTIFICATION_EMAIL_OTP, message); err != nil {
+	if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, config.Get().ExchangeNotification, config.Get().QueueNotificationEmailOtpCreated, message); err != nil {
 		u.logger.Error(fmt.Sprintf("error publish message err : %v", err))
 		return status.Error(codes.Internal, err.Error())
 	}

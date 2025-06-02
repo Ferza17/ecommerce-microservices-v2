@@ -17,7 +17,7 @@ import {
   type ServiceError,
   type UntypedServiceImplementation,
 } from "@grpc/grpc-js";
-import { FindPaymentByIdRequest, Payment } from "./paymentMessage";
+import { FindPaymentByIdRequest, FindPaymentByUserIdAndStatusRequest, Payment } from "./paymentMessage";
 
 export const protobufPackage = "payment_v1";
 
@@ -32,10 +32,25 @@ export const PaymentServiceService = {
     responseSerialize: (value: Payment) => Buffer.from(Payment.encode(value).finish()),
     responseDeserialize: (value: Buffer) => Payment.decode(value),
   },
+  findPaymentByUserIdAndStatus: {
+    path: "/payment_v1.PaymentService/FindPaymentByUserIdAndStatus",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: FindPaymentByUserIdAndStatusRequest) =>
+      Buffer.from(FindPaymentByUserIdAndStatusRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => FindPaymentByUserIdAndStatusRequest.decode(value),
+    responseSerialize: (value: FindPaymentByUserIdAndStatusRequest) =>
+      Buffer.from(FindPaymentByUserIdAndStatusRequest.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => FindPaymentByUserIdAndStatusRequest.decode(value),
+  },
 } as const;
 
 export interface PaymentServiceServer extends UntypedServiceImplementation {
   findPaymentById: handleUnaryCall<FindPaymentByIdRequest, Payment>;
+  findPaymentByUserIdAndStatus: handleUnaryCall<
+    FindPaymentByUserIdAndStatusRequest,
+    FindPaymentByUserIdAndStatusRequest
+  >;
 }
 
 export interface PaymentServiceClient extends Client {
@@ -53,6 +68,21 @@ export interface PaymentServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: Payment) => void,
+  ): ClientUnaryCall;
+  findPaymentByUserIdAndStatus(
+    request: FindPaymentByUserIdAndStatusRequest,
+    callback: (error: ServiceError | null, response: FindPaymentByUserIdAndStatusRequest) => void,
+  ): ClientUnaryCall;
+  findPaymentByUserIdAndStatus(
+    request: FindPaymentByUserIdAndStatusRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: FindPaymentByUserIdAndStatusRequest) => void,
+  ): ClientUnaryCall;
+  findPaymentByUserIdAndStatus(
+    request: FindPaymentByUserIdAndStatusRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: FindPaymentByUserIdAndStatusRequest) => void,
   ): ClientUnaryCall;
 }
 

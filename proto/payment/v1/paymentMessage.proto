@@ -1,18 +1,26 @@
 syntax = "proto3";
 package payment_v1;
 import "google/protobuf/timestamp.proto";
-import "commerce/v1/orderMessage.proto";
 
 enum PaymentStatus {
   PENDING = 0;
-  SUCCESS = 1;
-  FAILED = 2;
+  PARTIAL = 1;
+  SUCCESS = 2;
+  FAILED = 3;
+}
+
+message Item {
+  string id = 1;
+  string productId = 2;
+  int32 qty = 4;
+  google.protobuf.Timestamp crated_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
 }
 
 message Payment {
   string id = 1;
   string code = 2;
-  repeated commerce_v1.OrderItem items = 3;
+  repeated Item Items = 3;
   double totalPrice = 4;
   PaymentStatus status = 5;
   Provider provider = 6;
@@ -34,7 +42,7 @@ message Provider {
 }
 
 message CreatePayment {
-  commerce_v1.OrderItem items = 1;
+  Item items = 1;
   string userId = 2;
   double amount = 3;
 }
@@ -46,4 +54,9 @@ message CallBackPaymentRequest {
 
 message FindPaymentByIdRequest {
   string id = 1;
+}
+
+message FindPaymentByUserIdAndStatusRequest {
+  string userId = 1;
+  PaymentStatus status = 2;
 }

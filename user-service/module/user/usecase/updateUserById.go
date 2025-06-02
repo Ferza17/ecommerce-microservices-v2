@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	eventRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/event/v1"
 	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
 
@@ -19,9 +19,9 @@ func (u *userUseCase) UpdateUserById(ctx context.Context, requestId string, req 
 		tx         = u.userPostgresqlRepository.OpenTransactionWithContext(ctx)
 		eventStore = &eventRpc.EventStore{
 			RequestId:     requestId,
-			Service:       enum.ProductService.String(),
-			EventType:     enum.USER_UPDATED.String(),
-			Status:        enum.SUCCESS.String(),
+			Service:       config.Get().ServiceName,
+			EventType:     config.Get().QueueUserUpdated,
+			Status:        config.Get().CommonSagaStatusSuccess,
 			PreviousState: nil,
 			CreatedAt:     timestamppb.Now(),
 			UpdatedAt:     timestamppb.Now(),
@@ -43,10 +43,10 @@ func (u *userUseCase) UpdateUserById(ctx context.Context, requestId string, req 
 		}
 
 		if err != nil {
-			eventStore.Status = enum.FAILED.String()
+			eventStore.Status = config.Get().CommonSagaStatusFailed
 		}
 
-		if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, enum.EventExchange, enum.EVENT_CREATED, eventStoreMessage); err != nil {
+		if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, config.Get().ExchangeEvent, config.Get().QueueEventCreated, eventStoreMessage); err != nil {
 			u.logger.Error(fmt.Sprintf("error creating product event store: %s", err.Error()))
 			return
 		}

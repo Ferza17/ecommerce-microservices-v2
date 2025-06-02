@@ -21,7 +21,6 @@ plugins:
       # Commerce Service Proto
       - Mcommerce/v1/cartMessage.proto=event-store-service/model/rpc/gen
       - Mcommerce/v1/cartServices.proto=event-store-service/model/rpc/gen
-      - Mcommerce/v1/orderMessage.proto=event-store-service/model/rpc/gen
       - Mcommerce/v1/wishlistMessage.proto=event-store-service/model/rpc/gen
       - Mcommerce/v1/wishlistServices.proto=event-store-service/model/rpc/gen
       # Payment Service Proto
@@ -47,7 +46,6 @@ plugins:
       # Commerce Service Proto
       - Mcommerce/v1/cartMessage.proto=event-store-service/model/rpc/gen
       - Mcommerce/v1/cartServices.proto=event-store-service/model/rpc/gen
-      - Mcommerce/v1/orderMessage.proto=event-store-service/model/rpc/gen
       - Mcommerce/v1/wishlistMessage.proto=event-store-service/model/rpc/gen
       - Mcommerce/v1/wishlistServices.proto=event-store-service/model/rpc/gen
       # Payment Service Proto
@@ -74,7 +72,6 @@ plugins:
       # Commerce Service Proto
       - Mcommerce/v1/cartMessage.proto=api-gateway/model/rpc/gen
       - Mcommerce/v1/cartServices.proto=api-gateway/model/rpc/gen
-      - Mcommerce/v1/orderMessage.proto=api-gateway/model/rpc/gen
       - Mcommerce/v1/wishlistMessage.proto=api-gateway/model/rpc/gen
       - Mcommerce/v1/wishlistServices.proto=api-gateway/model/rpc/gen
       # Payment Service Proto
@@ -100,7 +97,6 @@ plugins:
       # Commerce Service Proto
       - Mcommerce/v1/cartMessage.proto=api-gateway/model/rpc/gen
       - Mcommerce/v1/cartServices.proto=api-gateway/model/rpc/gen
-      - Mcommerce/v1/orderMessage.proto=api-gateway/model/rpc/gen
       - Mcommerce/v1/wishlistMessage.proto=api-gateway/model/rpc/gen
       - Mcommerce/v1/wishlistServices.proto=api-gateway/model/rpc/gen
       # Payment Service Proto
@@ -127,7 +123,6 @@ plugins:
       # Commerce Service Proto
       - Mcommerce/v1/cartMessage.proto=notification-service/model/rpc/gen
       - Mcommerce/v1/cartServices.proto=notification-service/model/rpc/gen
-      - Mcommerce/v1/orderMessage.proto=notification-service/model/rpc/gen
       - Mcommerce/v1/wishlistMessage.proto=notification-service/model/rpc/gen
       - Mcommerce/v1/wishlistServices.proto=notification-service/model/rpc/gen
       # Payment Service Proto
@@ -153,7 +148,6 @@ plugins:
       # Commerce Service Proto
       - Mcommerce/v1/cartMessage.proto=notification-service/model/rpc/gen
       - Mcommerce/v1/cartServices.proto=notification-service/model/rpc/gen
-      - Mcommerce/v1/orderMessage.proto=notification-service/model/rpc/gen
       - Mcommerce/v1/wishlistMessage.proto=notification-service/model/rpc/gen
       - Mcommerce/v1/wishlistServices.proto=notification-service/model/rpc/gen
       # Payment Service Proto
@@ -180,7 +174,6 @@ plugins:
       # Commerce Service Proto
       - Mcommerce/v1/cartMessage.proto=product-service/model/rpc/gen
       - Mcommerce/v1/cartServices.proto=product-service/model/rpc/gen
-      - Mcommerce/v1/orderMessage.proto=product-service/model/rpc/gen
       - Mcommerce/v1/wishlistMessage.proto=product-service/model/rpc/gen
       - Mcommerce/v1/wishlistServices.proto=product-service/model/rpc/gen
       # Payment Service Proto
@@ -206,7 +199,6 @@ plugins:
       # Commerce Service Proto
       - Mcommerce/v1/cartMessage.proto=product-service/model/rpc/gen
       - Mcommerce/v1/cartServices.proto=product-service/model/rpc/gen
-      - Mcommerce/v1/orderMessage.proto=product-service/model/rpc/gen
       - Mcommerce/v1/wishlistMessage.proto=product-service/model/rpc/gen
       - Mcommerce/v1/wishlistServices.proto=product-service/model/rpc/gen
       # Payment Service Proto
@@ -233,7 +225,6 @@ plugins:
       # Commerce Service Proto
       - Mcommerce/v1/cartMessage.proto=user-service/model/rpc/gen
       - Mcommerce/v1/cartServices.proto=user-service/model/rpc/gen
-      - Mcommerce/v1/orderMessage.proto=user-service/model/rpc/gen
       - Mcommerce/v1/wishlistMessage.proto=user-service/model/rpc/gen
       - Mcommerce/v1/wishlistServices.proto=user-service/model/rpc/gen
       # Payment Service Proto
@@ -259,12 +250,62 @@ plugins:
       # Commerce Service Proto
       - Mcommerce/v1/cartMessage.proto=user-service/model/rpc/gen
       - Mcommerce/v1/cartServices.proto=user-service/model/rpc/gen
-      - Mcommerce/v1/orderMessage.proto=user-service/model/rpc/gen
       - Mcommerce/v1/wishlistMessage.proto=user-service/model/rpc/gen
       - Mcommerce/v1/wishlistServices.proto=user-service/model/rpc/gen
       # Payment Service Proto
       - Mpayment/v1/paymentMessage.proto=user-service/model/rpc/gen
       - Mpayment/v1/paymentServices.proto=user-service/model/rpc/gen
+
+  #====================== Payment Service =======================================
+  - plugin: go
+    out: payment-service/model/rpc/gen
+    opt:
+      - paths=source_relative
+      # Event Store service Proto
+      - Mevent/v1/eventStoreMessage.proto=payment-service/model/rpc/gen
+      # Notification Service Proto
+      - Mnotification/v1/notificationMessage.proto=payment-service/model/rpc/gen
+      # Product Service Proto
+      - Mproduct/v1/productMessage.proto=payment-service/model/rpc/gen
+      - Mproduct/v1/productServices.proto=payment-service/model/rpc/gen
+      # User Service Proto
+      - Muser/v1/userMessage.proto=payment-service/model/rpc/gen
+      - Muser/v1/userServices.proto=payment-service/model/rpc/gen
+      - Muser/v1/authMessage.proto=payment-service/model/rpc/gen
+      - Muser/v1/authServices.proto=payment-service/model/rpc/gen
+      # Commerce Service Proto
+      - Mcommerce/v1/cartMessage.proto=payment-service/model/rpc/gen
+      - Mcommerce/v1/cartServices.proto=payment-service/model/rpc/gen
+      - Mcommerce/v1/wishlistMessage.proto=payment-service/model/rpc/gen
+      - Mcommerce/v1/wishlistServices.proto=payment-service/model/rpc/gen
+      # Payment Service Proto
+      - Mpayment/v1/paymentMessage.proto=payment-service/model/rpc/gen
+      - Mpayment/v1/paymentServices.proto=payment-service/model/rpc/gen
+  - plugin: go-grpc
+    out: payment-service/model/rpc/gen
+    opt:
+      - paths=source_relative
+      - require_unimplemented_servers=false
+      # Event Store service Proto
+      - Mevent/v1/eventStoreMessage.proto=payment-service/model/rpc/gen
+      # Notification Service Proto
+      - Mnotification/v1/notificationMessage.proto=payment-service/model/rpc/gen
+      # Product Service Proto
+      - Mproduct/v1/productMessage.proto=payment-service/model/rpc/gen
+      - Mproduct/v1/productServices.proto=payment-service/model/rpc/gen
+      # User Service Proto
+      - Muser/v1/userMessage.proto=payment-service/model/rpc/gen
+      - Muser/v1/userServices.proto=payment-service/model/rpc/gen
+      - Muser/v1/authMessage.proto=payment-service/model/rpc/gen
+      - Muser/v1/authServices.proto=payment-service/model/rpc/gen
+      # Commerce Service Proto
+      - Mcommerce/v1/cartMessage.proto=payment-service/model/rpc/gen
+      - Mcommerce/v1/cartServices.proto=payment-service/model/rpc/gen
+      - Mcommerce/v1/wishlistMessage.proto=payment-service/model/rpc/gen
+      - Mcommerce/v1/wishlistServices.proto=payment-service/model/rpc/gen
+      # Payment Service Proto
+      - Mpayment/v1/paymentMessage.proto=payment-service/model/rpc/gen
+      - Mpayment/v1/paymentServices.proto=payment-service/model/rpc/gen
 
   #====================== Commerce Service =======================================
   - plugin: buf.build/community/stephenh-ts-proto

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/enum"
 	mailHogInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mailhog"
 	eventRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/event/v1"
@@ -19,9 +20,9 @@ func (u *notificationEmailUseCase) SendNotificationEmailOTP(ctx context.Context,
 		err        error
 		eventStore = &eventRpc.EventStore{
 			RequestId:     requestId,
-			Service:       enum.NotificationService.String(),
-			EventType:     enum.NOTIFICATION_EMAIL_OTP.String(),
-			Status:        enum.SUCCESS.String(),
+			Service:       config.Get().ServiceName,
+			EventType:     config.Get().QueueNotificationEmailOtpCreated,
+			Status:        config.Get().CommonSagaStatusSuccess,
 			PreviousState: nil,
 			CreatedAt:     timestamppb.Now(),
 			UpdatedAt:     timestamppb.Now(),
@@ -32,7 +33,7 @@ func (u *notificationEmailUseCase) SendNotificationEmailOTP(ctx context.Context,
 	defer func(err error, eventStore *eventRpc.EventStore) {
 		defer span.End()
 		if err != nil {
-			eventStore.Status = enum.FAILED.String()
+			eventStore.Status = config.Get().CommonSagaStatusFailed
 		}
 
 		payload, err := util.ConvertStructToProtoStruct(req)
@@ -46,12 +47,13 @@ func (u *notificationEmailUseCase) SendNotificationEmailOTP(ctx context.Context,
 			u.logger.Error(fmt.Sprintf("error marshaling message: %s", err.Error()))
 		}
 
-		if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, enum.EventExchange, enum.EVENT_CREATED, eventStoreMessage); err != nil {
+		if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, config.Get().ExchangeEvent, config.Get().QueueEventCreated, eventStoreMessage); err != nil {
 			u.logger.Error(fmt.Sprintf("error creating product event store: %s", err.Error()))
 			return
 		}
 	}(err, eventStore)
 
+	u.logger.Info(fmt.Sprintf("CHECK NOTIFICATION TYPE : %s", req.NotificationType.String()))
 	notificationType, err := enum.NotificationTypeParseIntToNotificationType(int(req.NotificationType))
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("error parsing email type: %s", err.Error()))

@@ -43,8 +43,7 @@ func (p *authPresenter) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	requestId := r.Header.Get(enum.XRequestIDHeader.String())
-	if _, err = p.userUseCase.CreateUser(ctx, requestId, &userRpc.CreateUserRequest{
+	if _, err = p.userUseCase.CreateUser(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &userRpc.CreateUserRequest{
 		Name:     req.Name,
 		Email:    req.Email,
 		Password: req.Password,

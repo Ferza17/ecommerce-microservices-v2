@@ -17,10 +17,56 @@ export interface OrderItem {
   price: number;
   cratedAt: Date | undefined;
   updatedAt: Date | undefined;
+  userId: string;
+}
+
+export interface CreateOrderItemRequest {
+  productId: string;
+  userId: string;
+  qty: number;
+  price: number;
+}
+
+export interface UpdateOrderItemByIdRequest {
+  id: string;
+  productId: string;
+  userId: string;
+  qty: number;
+  price: number;
+}
+
+export interface UpdateOrderItemByIdResponse {
+  id: string;
+}
+
+export interface FindOrderWithPaginationRequest {
+  userId: string;
+  productIds: string[];
+  page: number;
+  limit: number;
+}
+
+export interface FindOrderItemsWithPaginationResponse {
+  items: OrderItem[];
+  page: number;
+  limit: number;
+  total: number;
+}
+
+export interface FindOrderItemByIdRequest {
+  id: string;
+}
+
+export interface DeleteOrderItemByIdRequest {
+  id: string;
+}
+
+export interface DeleteOrderItemByIdResponse {
+  message: string;
 }
 
 function createBaseOrderItem(): OrderItem {
-  return { id: "", productId: "", qty: 0, price: 0, cratedAt: undefined, updatedAt: undefined };
+  return { id: "", productId: "", qty: 0, price: 0, cratedAt: undefined, updatedAt: undefined, userId: "" };
 }
 
 export const OrderItem: MessageFns<OrderItem> = {
@@ -42,6 +88,9 @@ export const OrderItem: MessageFns<OrderItem> = {
     }
     if (message.updatedAt !== undefined) {
       Timestamp.encode(toTimestamp(message.updatedAt), writer.uint32(58).fork()).join();
+    }
+    if (message.userId !== "") {
+      writer.uint32(66).string(message.userId);
     }
     return writer;
   },
@@ -101,6 +150,14 @@ export const OrderItem: MessageFns<OrderItem> = {
           message.updatedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -118,6 +175,7 @@ export const OrderItem: MessageFns<OrderItem> = {
       price: isSet(object.price) ? globalThis.Number(object.price) : 0,
       cratedAt: isSet(object.cratedAt) ? fromJsonTimestamp(object.cratedAt) : undefined,
       updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
+      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
     };
   },
 
@@ -141,6 +199,9 @@ export const OrderItem: MessageFns<OrderItem> = {
     if (message.updatedAt !== undefined) {
       obj.updatedAt = message.updatedAt.toISOString();
     }
+    if (message.userId !== "") {
+      obj.userId = message.userId;
+    }
     return obj;
   },
 
@@ -155,6 +216,689 @@ export const OrderItem: MessageFns<OrderItem> = {
     message.price = object.price ?? 0;
     message.cratedAt = object.cratedAt ?? undefined;
     message.updatedAt = object.updatedAt ?? undefined;
+    message.userId = object.userId ?? "";
+    return message;
+  },
+};
+
+function createBaseCreateOrderItemRequest(): CreateOrderItemRequest {
+  return { productId: "", userId: "", qty: 0, price: 0 };
+}
+
+export const CreateOrderItemRequest: MessageFns<CreateOrderItemRequest> = {
+  encode(message: CreateOrderItemRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.productId !== "") {
+      writer.uint32(10).string(message.productId);
+    }
+    if (message.userId !== "") {
+      writer.uint32(18).string(message.userId);
+    }
+    if (message.qty !== 0) {
+      writer.uint32(24).int32(message.qty);
+    }
+    if (message.price !== 0) {
+      writer.uint32(33).double(message.price);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): CreateOrderItemRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateOrderItemRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.productId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.qty = reader.int32();
+          continue;
+        }
+        case 4: {
+          if (tag !== 33) {
+            break;
+          }
+
+          message.price = reader.double();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateOrderItemRequest {
+    return {
+      productId: isSet(object.productId) ? globalThis.String(object.productId) : "",
+      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
+      qty: isSet(object.qty) ? globalThis.Number(object.qty) : 0,
+      price: isSet(object.price) ? globalThis.Number(object.price) : 0,
+    };
+  },
+
+  toJSON(message: CreateOrderItemRequest): unknown {
+    const obj: any = {};
+    if (message.productId !== "") {
+      obj.productId = message.productId;
+    }
+    if (message.userId !== "") {
+      obj.userId = message.userId;
+    }
+    if (message.qty !== 0) {
+      obj.qty = Math.round(message.qty);
+    }
+    if (message.price !== 0) {
+      obj.price = message.price;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<CreateOrderItemRequest>): CreateOrderItemRequest {
+    return CreateOrderItemRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<CreateOrderItemRequest>): CreateOrderItemRequest {
+    const message = createBaseCreateOrderItemRequest();
+    message.productId = object.productId ?? "";
+    message.userId = object.userId ?? "";
+    message.qty = object.qty ?? 0;
+    message.price = object.price ?? 0;
+    return message;
+  },
+};
+
+function createBaseUpdateOrderItemByIdRequest(): UpdateOrderItemByIdRequest {
+  return { id: "", productId: "", userId: "", qty: 0, price: 0 };
+}
+
+export const UpdateOrderItemByIdRequest: MessageFns<UpdateOrderItemByIdRequest> = {
+  encode(message: UpdateOrderItemByIdRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.productId !== "") {
+      writer.uint32(18).string(message.productId);
+    }
+    if (message.userId !== "") {
+      writer.uint32(26).string(message.userId);
+    }
+    if (message.qty !== 0) {
+      writer.uint32(32).int32(message.qty);
+    }
+    if (message.price !== 0) {
+      writer.uint32(41).double(message.price);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): UpdateOrderItemByIdRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateOrderItemByIdRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.productId = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.qty = reader.int32();
+          continue;
+        }
+        case 5: {
+          if (tag !== 41) {
+            break;
+          }
+
+          message.price = reader.double();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateOrderItemByIdRequest {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      productId: isSet(object.productId) ? globalThis.String(object.productId) : "",
+      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
+      qty: isSet(object.qty) ? globalThis.Number(object.qty) : 0,
+      price: isSet(object.price) ? globalThis.Number(object.price) : 0,
+    };
+  },
+
+  toJSON(message: UpdateOrderItemByIdRequest): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.productId !== "") {
+      obj.productId = message.productId;
+    }
+    if (message.userId !== "") {
+      obj.userId = message.userId;
+    }
+    if (message.qty !== 0) {
+      obj.qty = Math.round(message.qty);
+    }
+    if (message.price !== 0) {
+      obj.price = message.price;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<UpdateOrderItemByIdRequest>): UpdateOrderItemByIdRequest {
+    return UpdateOrderItemByIdRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<UpdateOrderItemByIdRequest>): UpdateOrderItemByIdRequest {
+    const message = createBaseUpdateOrderItemByIdRequest();
+    message.id = object.id ?? "";
+    message.productId = object.productId ?? "";
+    message.userId = object.userId ?? "";
+    message.qty = object.qty ?? 0;
+    message.price = object.price ?? 0;
+    return message;
+  },
+};
+
+function createBaseUpdateOrderItemByIdResponse(): UpdateOrderItemByIdResponse {
+  return { id: "" };
+}
+
+export const UpdateOrderItemByIdResponse: MessageFns<UpdateOrderItemByIdResponse> = {
+  encode(message: UpdateOrderItemByIdResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): UpdateOrderItemByIdResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateOrderItemByIdResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateOrderItemByIdResponse {
+    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+  },
+
+  toJSON(message: UpdateOrderItemByIdResponse): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<UpdateOrderItemByIdResponse>): UpdateOrderItemByIdResponse {
+    return UpdateOrderItemByIdResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<UpdateOrderItemByIdResponse>): UpdateOrderItemByIdResponse {
+    const message = createBaseUpdateOrderItemByIdResponse();
+    message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseFindOrderWithPaginationRequest(): FindOrderWithPaginationRequest {
+  return { userId: "", productIds: [], page: 0, limit: 0 };
+}
+
+export const FindOrderWithPaginationRequest: MessageFns<FindOrderWithPaginationRequest> = {
+  encode(message: FindOrderWithPaginationRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.userId !== "") {
+      writer.uint32(10).string(message.userId);
+    }
+    for (const v of message.productIds) {
+      writer.uint32(18).string(v!);
+    }
+    if (message.page !== 0) {
+      writer.uint32(24).int32(message.page);
+    }
+    if (message.limit !== 0) {
+      writer.uint32(32).int32(message.limit);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): FindOrderWithPaginationRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseFindOrderWithPaginationRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.productIds.push(reader.string());
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.page = reader.int32();
+          continue;
+        }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.limit = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): FindOrderWithPaginationRequest {
+    return {
+      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
+      productIds: globalThis.Array.isArray(object?.productIds)
+        ? object.productIds.map((e: any) => globalThis.String(e))
+        : [],
+      page: isSet(object.page) ? globalThis.Number(object.page) : 0,
+      limit: isSet(object.limit) ? globalThis.Number(object.limit) : 0,
+    };
+  },
+
+  toJSON(message: FindOrderWithPaginationRequest): unknown {
+    const obj: any = {};
+    if (message.userId !== "") {
+      obj.userId = message.userId;
+    }
+    if (message.productIds?.length) {
+      obj.productIds = message.productIds;
+    }
+    if (message.page !== 0) {
+      obj.page = Math.round(message.page);
+    }
+    if (message.limit !== 0) {
+      obj.limit = Math.round(message.limit);
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<FindOrderWithPaginationRequest>): FindOrderWithPaginationRequest {
+    return FindOrderWithPaginationRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<FindOrderWithPaginationRequest>): FindOrderWithPaginationRequest {
+    const message = createBaseFindOrderWithPaginationRequest();
+    message.userId = object.userId ?? "";
+    message.productIds = object.productIds?.map((e) => e) || [];
+    message.page = object.page ?? 0;
+    message.limit = object.limit ?? 0;
+    return message;
+  },
+};
+
+function createBaseFindOrderItemsWithPaginationResponse(): FindOrderItemsWithPaginationResponse {
+  return { items: [], page: 0, limit: 0, total: 0 };
+}
+
+export const FindOrderItemsWithPaginationResponse: MessageFns<FindOrderItemsWithPaginationResponse> = {
+  encode(message: FindOrderItemsWithPaginationResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.items) {
+      OrderItem.encode(v!, writer.uint32(10).fork()).join();
+    }
+    if (message.page !== 0) {
+      writer.uint32(16).int32(message.page);
+    }
+    if (message.limit !== 0) {
+      writer.uint32(24).int32(message.limit);
+    }
+    if (message.total !== 0) {
+      writer.uint32(32).int32(message.total);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): FindOrderItemsWithPaginationResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseFindOrderItemsWithPaginationResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.items.push(OrderItem.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.page = reader.int32();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.limit = reader.int32();
+          continue;
+        }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.total = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): FindOrderItemsWithPaginationResponse {
+    return {
+      items: globalThis.Array.isArray(object?.items) ? object.items.map((e: any) => OrderItem.fromJSON(e)) : [],
+      page: isSet(object.page) ? globalThis.Number(object.page) : 0,
+      limit: isSet(object.limit) ? globalThis.Number(object.limit) : 0,
+      total: isSet(object.total) ? globalThis.Number(object.total) : 0,
+    };
+  },
+
+  toJSON(message: FindOrderItemsWithPaginationResponse): unknown {
+    const obj: any = {};
+    if (message.items?.length) {
+      obj.items = message.items.map((e) => OrderItem.toJSON(e));
+    }
+    if (message.page !== 0) {
+      obj.page = Math.round(message.page);
+    }
+    if (message.limit !== 0) {
+      obj.limit = Math.round(message.limit);
+    }
+    if (message.total !== 0) {
+      obj.total = Math.round(message.total);
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<FindOrderItemsWithPaginationResponse>): FindOrderItemsWithPaginationResponse {
+    return FindOrderItemsWithPaginationResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<FindOrderItemsWithPaginationResponse>): FindOrderItemsWithPaginationResponse {
+    const message = createBaseFindOrderItemsWithPaginationResponse();
+    message.items = object.items?.map((e) => OrderItem.fromPartial(e)) || [];
+    message.page = object.page ?? 0;
+    message.limit = object.limit ?? 0;
+    message.total = object.total ?? 0;
+    return message;
+  },
+};
+
+function createBaseFindOrderItemByIdRequest(): FindOrderItemByIdRequest {
+  return { id: "" };
+}
+
+export const FindOrderItemByIdRequest: MessageFns<FindOrderItemByIdRequest> = {
+  encode(message: FindOrderItemByIdRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): FindOrderItemByIdRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseFindOrderItemByIdRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): FindOrderItemByIdRequest {
+    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+  },
+
+  toJSON(message: FindOrderItemByIdRequest): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<FindOrderItemByIdRequest>): FindOrderItemByIdRequest {
+    return FindOrderItemByIdRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<FindOrderItemByIdRequest>): FindOrderItemByIdRequest {
+    const message = createBaseFindOrderItemByIdRequest();
+    message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseDeleteOrderItemByIdRequest(): DeleteOrderItemByIdRequest {
+  return { id: "" };
+}
+
+export const DeleteOrderItemByIdRequest: MessageFns<DeleteOrderItemByIdRequest> = {
+  encode(message: DeleteOrderItemByIdRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): DeleteOrderItemByIdRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeleteOrderItemByIdRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DeleteOrderItemByIdRequest {
+    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+  },
+
+  toJSON(message: DeleteOrderItemByIdRequest): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<DeleteOrderItemByIdRequest>): DeleteOrderItemByIdRequest {
+    return DeleteOrderItemByIdRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<DeleteOrderItemByIdRequest>): DeleteOrderItemByIdRequest {
+    const message = createBaseDeleteOrderItemByIdRequest();
+    message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseDeleteOrderItemByIdResponse(): DeleteOrderItemByIdResponse {
+  return { message: "" };
+}
+
+export const DeleteOrderItemByIdResponse: MessageFns<DeleteOrderItemByIdResponse> = {
+  encode(message: DeleteOrderItemByIdResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.message !== "") {
+      writer.uint32(10).string(message.message);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): DeleteOrderItemByIdResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeleteOrderItemByIdResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DeleteOrderItemByIdResponse {
+    return { message: isSet(object.message) ? globalThis.String(object.message) : "" };
+  },
+
+  toJSON(message: DeleteOrderItemByIdResponse): unknown {
+    const obj: any = {};
+    if (message.message !== "") {
+      obj.message = message.message;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<DeleteOrderItemByIdResponse>): DeleteOrderItemByIdResponse {
+    return DeleteOrderItemByIdResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<DeleteOrderItemByIdResponse>): DeleteOrderItemByIdResponse {
+    const message = createBaseDeleteOrderItemByIdResponse();
+    message.message = object.message ?? "";
     return message;
   },
 };

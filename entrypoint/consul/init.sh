@@ -19,6 +19,79 @@ curl --request PUT --data 'rabbitmq' http://localhost:8500/v1/kv/production/brok
 curl --request PUT --data '1234' http://localhost:8500/v1/kv/production/broker/rabbitmq/RABBITMQ_PASSWORD
 curl --request PUT --data 'rabbitmq-local' http://localhost:8500/v1/kv/production/broker/rabbitmq/RABBITMQ_HOST
 curl --request PUT --data '5672' http://localhost:8500/v1/kv/production/broker/rabbitmq/RABBITMQ_PORT
+
+# EXCHANGE LOCAL
+curl --request PUT --data 'product.exchange' http://localhost:8500/v1/kv/local/broker/rabbitmq/EXCHANGE/PRODUCT
+curl --request PUT --data 'commerce.exchange' http://localhost:8500/v1/kv/local/broker/rabbitmq/EXCHANGE/COMMERCE
+curl --request PUT --data 'event.exchange' http://localhost:8500/v1/kv/local/broker/rabbitmq/EXCHANGE/EVENT
+curl --request PUT --data 'notification.exchange' http://localhost:8500/v1/kv/local/broker/rabbitmq/EXCHANGE/NOTIFICATION
+curl --request PUT --data 'user.exchange' http://localhost:8500/v1/kv/local/broker/rabbitmq/EXCHANGE/USER
+curl --request PUT --data 'payment.exchange' http://localhost:8500/v1/kv/local/broker/rabbitmq/EXCHANGE/PAYMENT
+
+# EXCHANGE PRODUCTION
+curl --request PUT --data 'product.exchange' http://localhost:8500/v1/kv/production/broker/rabbitmq/EXCHANGE/PRODUCT
+curl --request PUT --data 'commerce.exchange' http://localhost:8500/v1/kv/production/broker/rabbitmq/EXCHANGE/COMMERCE
+curl --request PUT --data 'event.exchange' http://localhost:8500/v1/kv/production/broker/rabbitmq/EXCHANGE/EVENT
+curl --request PUT --data 'notification.exchange' http://localhost:8500/v1/kv/production/broker/rabbitmq/EXCHANGE/NOTIFICATION
+curl --request PUT --data 'user.exchange' http://localhost:8500/v1/kv/production/broker/rabbitmq/EXCHANGE/USER
+curl --request PUT --data 'payment.exchange' http://localhost:8500/v1/kv/production/broker/rabbitmq/EXCHANGE/PAYMENT
+
+# QUEUE LOCAL USER
+curl --request PUT --data 'user.created' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/USER/CREATED
+curl --request PUT --data 'user.updated' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/USER/UPDATED
+curl --request PUT --data 'user.login' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/USER/LOGIN
+curl --request PUT --data 'user.logout' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/USER/LOGOUT
+
+
+#QUEUE PRODUCTION USER
+curl --request PUT --data 'user.created' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/USER/CREATED
+curl --request PUT --data 'user.updated' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/USER/UPDATED
+curl --request PUT --data 'user.login' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/USER/LOGIN
+curl --request PUT --data 'user.logout' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/USER/LOGOUT
+
+
+# QUEUE LOCAL PRODUCT
+curl --request PUT --data 'product.created' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/PRODUCT/CREATED
+curl --request PUT --data 'product.updated' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/PRODUCT/UPDATED
+curl --request PUT --data 'product.deleted' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/PRODUCT/DELETED
+
+# QUEUE PRODUCTION PRODUCT
+curl --request PUT --data 'product.created' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/PRODUCT/CREATED
+curl --request PUT --data 'product.updated' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/PRODUCT/UPDATED
+curl --request PUT --data 'product.deleted' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/PRODUCT/DELETED
+
+# QUEUE LOCAL NOTIFICATION
+curl --request PUT --data 'notification.email.otp.created' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/OTP/CREATED
+
+# QUEUE PRODUCTION NOTIFICATION
+curl --request PUT --data 'notification.email.otp.created' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/OTP/CREATED
+
+# QUEUE LOCAL EVENT
+curl --request PUT --data 'event.created' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/EVENT/CREATED
+
+# QUEUE PRODUCTION EVENT
+curl --request PUT --data 'event.created' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/EVENT/CREATED
+
+# QUEUE LOCAL COMMERCE
+curl --request PUT --data 'cart.created' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/COMMERCE/CART/CREATED
+curl --request PUT --data 'cart.updated' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/COMMERCE/CART/UPDATED
+curl --request PUT --data 'cart.deleted' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/COMMERCE/CART/DELETED
+
+# QUEUE PRODUCTION COMMERCE
+curl --request PUT --data 'cart.created' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/COMMERCE/CART/CREATED
+curl --request PUT --data 'cart.updated' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/COMMERCE/CART/UPDATED
+curl --request PUT --data 'cart.deleted' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/COMMERCE/CART/DELETED
+
+# QUEUE LOCAL PAYMENT
+curl --request PUT --data 'payment.order.created' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED
+curl --request PUT --data 'payment.order.delayed.cancelled' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED
+
+
+# QUEUE PRODUCTION PAYMENT
+curl --request PUT --data 'payment.order.created' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED
+curl --request PUT --data 'payment.order.delayed.cancelled' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED
+
+
 ##########################################################################################################################################################################################################################
 
 echo "INIT CONFIG DATABASE"
@@ -189,5 +262,18 @@ curl --request PUT --data 'v2-service-ecommerce' http://localhost:8500/v1/kv/pro
 curl --request PUT --data '2d' http://localhost:8500/v1/kv/production/services/user/JWT_REFRESH_TOKEN_EXPIRATION_TIME
 curl --request PUT --data '1m' http://localhost:8500/v1/kv/production/services/user/OTP_EXPIRATION_TIME
 curl --request PUT --data 'http://localhost:4000?access_token=%s?refresh_token=?' http://localhost:8500/v1/kv/production/services/user/VERIFICATION_USER_LOGIN_URL
+
+##########################################################################################################################################################################################################################
+
+echo "INIT CONFIG COMMON"
+## Local
+curl --request PUT --data 'PENDING' http://localhost:8500/v1/kv/local/common/SAGA_STATUS/PENDING
+curl --request PUT --data 'SUCCESS' http://localhost:8500/v1/kv/local/common/SAGA_STATUS/SUCCESS
+curl --request PUT --data 'FAILED' http://localhost:8500/v1/kv/local/common/SAGA_STATUS/FAILED
+
+## Production
+curl --request PUT --data 'PENDING' http://localhost:8500/v1/kv/production/common/SAGA_STATUS/PENDING
+curl --request PUT --data 'SUCCESS' http://localhost:8500/v1/kv/production/common/SAGA_STATUS/SUCCESS
+curl --request PUT --data 'FAILED' http://localhost:8500/v1/kv/production/common/SAGA_STATUS/FAILED
 
 echo "✅ Done setting key-values."

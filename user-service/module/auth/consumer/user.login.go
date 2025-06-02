@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
 	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
 
@@ -22,7 +23,7 @@ func (c *authConsumer) UserLogin(ctx context.Context) error {
 	}
 
 	if err = amqpChannel.ExchangeDeclare(
-		enum.UserExchange.String(),
+		config.Get().ExchangeUser,
 		amqp091.ExchangeDirect,
 		true,
 		false,
@@ -35,9 +36,9 @@ func (c *authConsumer) UserLogin(ctx context.Context) error {
 	}
 
 	if err = amqpChannel.QueueBind(
-		enum.USER_LOGIN.String(),
-		enum.USER_LOGIN.String(),
-		enum.UserExchange.String(),
+		config.Get().QueueUserLogin,
+		config.Get().QueueUserLogin,
+		config.Get().ExchangeUser,
 		false,
 		nil,
 	); err != nil {
@@ -46,7 +47,7 @@ func (c *authConsumer) UserLogin(ctx context.Context) error {
 	}
 
 	msgs, err := amqpChannel.Consume(
-		enum.USER_LOGIN.String(),
+		config.Get().QueueUserLogin,
 		"",
 		true,
 		false,
@@ -65,10 +66,9 @@ func (c *authConsumer) UserLogin(ctx context.Context) error {
 				requestId string
 			)
 			carrier := propagation.MapCarrier{}
-		headers:
 			for key, value := range d.Headers {
 				if key == enum.XRequestIDHeader.String() {
-					continue headers
+					requestId = value.(string)
 				}
 
 				if strVal, ok := value.(string); ok {

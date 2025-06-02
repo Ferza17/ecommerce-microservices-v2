@@ -32,6 +32,18 @@ type Config struct {
 	RabbitMQHost     string
 	RabbitMQPort     string
 
+	ExchangeEvent   string
+	ExchangeProduct string
+
+	QueueEventCreated   string
+	QueueProductCreated string
+	QueueProductDeleted string
+	QueueProductUpdated string
+
+	CommonSagaStatusPending string
+	CommonSagaStatusSuccess string
+	CommonSagaStatusFailed  string
+
 	PostgresHost         string
 	PostgresPort         string
 	PostgresUsername     string
@@ -139,6 +151,95 @@ func SetConfig(path string) {
 			log.Fatal("SetConfig | Consul | RABBITMQ_PORT host is required")
 		}
 		c.RabbitMQPort = string(pair.Value)
+
+		// EXCHANGE
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/EXCHANGE/EVENT", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get EXCHANGE/EVENT from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | EXCHANGE/EVENT is required")
+		}
+		c.ExchangeEvent = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/EXCHANGE/PRODUCT", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get EXCHANGE/PRODUCT from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | EXCHANGE/PRODUCT is required")
+		}
+		c.ExchangeProduct = string(pair.Value)
+
+		// QUEUE
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/EVENT/CREATED", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get QUEUE/EVENT/CREATED host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | QUEUE/EVENT/CREATED host is required")
+		}
+		c.QueueEventCreated = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/PRODUCT/CREATED", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get QUEUE/PRODUCT/CREATED host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | QUEUE/PRODUCT/CREATED host is required")
+		}
+		c.QueueProductCreated = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/PRODUCT/DELETED", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get QUEUE/PRODUCT/DELETED host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | QUEUE/PRODUCT/DELETED host is required")
+		}
+		c.QueueProductDeleted = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/PRODUCT/UPDATED", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get QUEUE/PRODUCT/UPDATED host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | QUEUE/PRODUCT/UPDATED host is required")
+		}
+		c.QueueProductUpdated = string(pair.Value)
+
+	}()
+
+	// COMMON Config
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		pair, _, err := kv.Get(fmt.Sprintf("%s/common/SAGA_STATUS/PENDING", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get SAGA_STATUS/PENDING from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | SAGA_STATUS/PENDING host is required")
+		}
+		c.CommonSagaStatusPending = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/common/SAGA_STATUS/SUCCESS", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get SAGA_STATUS/SUCCESS from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | SAGA_STATUS/SUCCESS host is required")
+		}
+		c.CommonSagaStatusSuccess = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/common/SAGA_STATUS/FAILED", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get SAGA_STATUS/FAILED from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | SAGA_STATUS/FAILED host is required")
+		}
+		c.CommonSagaStatusFailed = string(pair.Value)
 	}()
 
 	// Postgres Config

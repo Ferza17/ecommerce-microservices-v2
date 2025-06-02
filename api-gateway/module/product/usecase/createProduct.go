@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/config"
 	eventRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/event/v1"
 	productRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/product/v1"
 
@@ -17,9 +17,9 @@ func (u *ProductUseCase) CreateProduct(ctx context.Context, requestId string, re
 		err        error = nil
 		eventStore       = &eventRpc.EventStore{
 			RequestId:     requestId,
-			Service:       enum.ProductService.String(),
-			EventType:     enum.PRODUCT_CREATED.String(),
-			Status:        enum.PENDING.String(),
+			Service:       config.Get().ProductServiceName,
+			EventType:     config.Get().QueueProductCreated,
+			Status:        config.Get().CommonSagaStatusPending,
 			PreviousState: nil,
 			CreatedAt:     timestamppb.Now(),
 			UpdatedAt:     timestamppb.Now(),
@@ -31,7 +31,7 @@ func (u *ProductUseCase) CreateProduct(ctx context.Context, requestId string, re
 		defer span.End()
 
 		if err != nil {
-			eventStore.Status = enum.FAILED.String()
+			eventStore.Status = config.Get().CommonSagaStatusFailed
 		}
 
 		eventStoreMessage, err := proto.Marshal(eventStore)
@@ -40,7 +40,7 @@ func (u *ProductUseCase) CreateProduct(ctx context.Context, requestId string, re
 			return
 		}
 
-		if err = u.rabbitMQ.Publish(ctx, requestId, enum.EventExchange, enum.EVENT_CREATED, eventStoreMessage); err != nil {
+		if err = u.rabbitMQ.Publish(ctx, requestId, config.Get().ExchangeEvent, config.Get().QueueEventCreated, eventStoreMessage); err != nil {
 			u.logger.Error(fmt.Sprintf("error creating product event store: %s", err.Error()))
 			return
 		}
@@ -59,7 +59,7 @@ func (u *ProductUseCase) CreateProduct(ctx context.Context, requestId string, re
 		return nil, err
 	}
 
-	if err = u.rabbitMQ.Publish(ctx, requestId, enum.ProductExchange, enum.PRODUCT_CREATED, message); err != nil {
+	if err = u.rabbitMQ.Publish(ctx, requestId, config.Get().ExchangeProduct, config.Get().QueueProductCreated, message); err != nil {
 		u.logger.Error(fmt.Sprintf("error publishing message to rabbitmq: %s", err.Error()))
 		return nil, err
 	}

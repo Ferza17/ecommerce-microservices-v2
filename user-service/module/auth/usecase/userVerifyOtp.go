@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
 	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
 
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
@@ -49,7 +48,7 @@ func (u *authUseCase) UserVerifyOtp(ctx context.Context, requestId string, req *
 		UserID:    user.ID,
 		CreatedAt: &now,
 		StandardClaims: jwt.StandardClaims{
-			Audience:  enum.UserService.String(),
+			Audience:  config.Get().ServiceName,
 			ExpiresAt: now.Add(te).Unix(),
 		},
 	}, config.Get().JwtAccessTokenSecret)
@@ -62,7 +61,7 @@ func (u *authUseCase) UserVerifyOtp(ctx context.Context, requestId string, req *
 		UserID:    user.ID,
 		CreatedAt: &now,
 		StandardClaims: jwt.StandardClaims{
-			Audience:  enum.UserService.String(),
+			Audience:  config.Get().ServiceName,
 			ExpiresAt: now.Add(config.Get().JwtRefreshTokenExpirationTime).Unix(),
 		},
 	}, config.Get().JwtRefreshTokenSecret)

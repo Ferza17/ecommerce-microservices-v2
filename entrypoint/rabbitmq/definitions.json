@@ -65,6 +65,15 @@
       "auto_delete": false,
       "internal": false,
       "arguments": {}
+    },
+    {
+      "name": "payment.exchange",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
     }
   ],
   "queues": [
@@ -84,6 +93,11 @@
       "durable": true
     },
     {
+      "name": "user.logout",
+      "vhost": "/",
+      "durable": true
+    },
+    {
       "name": "product.created",
       "vhost": "/",
       "durable": true
@@ -99,7 +113,7 @@
       "durable": true
     },
     {
-      "name": "notification.email.otp",
+      "name": "notification.email.otp.created",
       "vhost": "/",
       "durable": true
     },
@@ -120,6 +134,16 @@
     },
     {
       "name": "cart.deleted",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "payment.order.created",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "payment.order.delayed.cancelled",
       "vhost": "/",
       "durable": true
     }

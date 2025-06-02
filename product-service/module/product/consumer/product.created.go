@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
 	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
 	"github.com/rabbitmq/amqp091-go"
@@ -21,7 +22,7 @@ func (c *productConsumer) ProductCreated(ctx context.Context) error {
 	}
 
 	if err := amqpChannel.ExchangeDeclare(
-		enum.ProductExchange.String(),
+		config.Get().ExchangeProduct,
 		amqp091.ExchangeDirect,
 		true,
 		false,
@@ -34,9 +35,9 @@ func (c *productConsumer) ProductCreated(ctx context.Context) error {
 	}
 
 	if err := amqpChannel.QueueBind(
-		enum.PRODUCT_CREATED.String(),
-		enum.PRODUCT_CREATED.String(),
-		enum.ProductExchange.String(),
+		config.Get().QueueProductCreated,
+		config.Get().QueueProductCreated,
+		config.Get().ExchangeProduct,
 		false,
 		nil,
 	); err != nil {
@@ -45,7 +46,7 @@ func (c *productConsumer) ProductCreated(ctx context.Context) error {
 	}
 
 	msgs, err := amqpChannel.Consume(
-		enum.PRODUCT_CREATED.String(),
+		config.Get().QueueProductCreated,
 		"",
 		true,
 		false,
@@ -64,10 +65,9 @@ func (c *productConsumer) ProductCreated(ctx context.Context) error {
 				requestId string
 			)
 			carrier := propagation.MapCarrier{}
-		headers:
 			for key, value := range d.Headers {
 				if key == enum.XRequestIDHeader.String() {
-					continue headers
+					requestId = value.(string)
 				}
 
 				if strVal, ok := value.(string); ok {

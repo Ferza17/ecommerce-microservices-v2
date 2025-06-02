@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/config"
 	eventRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/event/v1"
 	userRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
 
@@ -17,9 +17,9 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 		err        error = nil
 		eventStore       = &eventRpc.EventStore{
 			RequestId:     requestId,
-			Service:       enum.UserService.String(),
-			EventType:     enum.USER_LOGIN.String(),
-			Status:        enum.PENDING.String(),
+			Service:       config.Get().UserServiceName,
+			EventType:     config.Get().QueueUserLogin,
+			Status:        config.Get().CommonSagaStatusPending,
 			PreviousState: nil,
 			CreatedAt:     timestamppb.Now(),
 			UpdatedAt:     timestamppb.Now(),
@@ -43,7 +43,7 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 
 	defer func(err error, eventStore *eventRpc.EventStore) {
 		if err != nil {
-			eventStore.Status = enum.FAILED.String()
+			eventStore.Status = config.Get().CommonSagaStatusFailed
 		}
 
 		eventStoreMessage, err := proto.Marshal(eventStore)
@@ -52,7 +52,7 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 			return
 		}
 
-		if err = u.rabbitMQ.Publish(ctx, requestId, enum.EventExchange, enum.EVENT_CREATED, eventStoreMessage); err != nil {
+		if err = u.rabbitMQ.Publish(ctx, requestId, config.Get().ExchangeEvent, config.Get().QueueEventCreated, eventStoreMessage); err != nil {
 			u.logger.Error(fmt.Sprintf("error creating product event store: %s", err.Error()))
 			return
 		}
@@ -71,7 +71,7 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 		return err
 	}
 
-	if err = u.rabbitMQ.Publish(ctx, requestId, enum.UserExchange, enum.USER_LOGIN, message); err != nil {
+	if err = u.rabbitMQ.Publish(ctx, requestId, config.Get().ExchangeUser, config.Get().QueueUserLogin, message); err != nil {
 		u.logger.Error(fmt.Sprintf("error publishing message to rabbitmq: %s", err.Error()))
 		return err
 	}

@@ -24,7 +24,8 @@ type Config struct {
 	ConsulPort string `mapstructure:"CONSUL_PORT"`
 
 	// From Consul
-	ServiceName string
+	ServiceName             string
+	NotificationServiceName string
 
 	JaegerTelemetryHost string
 	JaegerTelemetryPort string
@@ -33,6 +34,21 @@ type Config struct {
 	RabbitMQPassword string
 	RabbitMQHost     string
 	RabbitMQPort     string
+
+	ExchangeEvent        string
+	ExchangeUser         string
+	ExchangeNotification string
+
+	QueueEventCreated                string
+	QueueUserCreated                 string
+	QueueUserUpdated                 string
+	QueueUserLogin                   string
+	QueueUserLogout                  string
+	QueueNotificationEmailOtpCreated string
+
+	CommonSagaStatusPending string
+	CommonSagaStatusSuccess string
+	CommonSagaStatusFailed  string
 
 	PostgresHost         string
 	PostgresPort         string
@@ -149,6 +165,121 @@ func SetConfig(path string) {
 			log.Fatal("SetConfig | Consul | RABBITMQ_PORT host is required")
 		}
 		c.RabbitMQPort = string(pair.Value)
+
+		// EXCHANGE
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/EXCHANGE/EVENT", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get EXCHANGE/EVENT from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | EXCHANGE/EVENT is required")
+		}
+		c.ExchangeEvent = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/EXCHANGE/USER", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get EXCHANGE/USER from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | EXCHANGE/USER is required")
+		}
+		c.ExchangeUser = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/EXCHANGE/NOTIFICATION", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get EXCHANGE/NOTIFICATION from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | EXCHANGE/NOTIFICATION is required")
+		}
+		c.ExchangeNotification = string(pair.Value)
+
+		// QUEUE
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/EVENT/CREATED", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get QUEUE/EVENT/CREATED host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | QUEUE/EVENT/CREATED host is required")
+		}
+		c.QueueEventCreated = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/USER/CREATED", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get QUEUE/USER/CREATED host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | QUEUE/USER/CREATED host is required")
+		}
+		c.QueueUserCreated = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/USER/UPDATED", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get QUEUE/USER/UPDATED host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | QUEUE/USER/UPDATED host is required")
+		}
+		c.QueueUserUpdated = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/USER/LOGIN", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get QUEUE/USER/LOGIN host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | QUEUE/USER/LOGIN host is required")
+		}
+		c.QueueUserLogin = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/USER/LOGOUT", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get QUEUE/USER/LOGOUT host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | QUEUE/USER/LOGOUT host is required")
+		}
+		c.QueueUserLogout = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/OTP/CREATED", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get QUEUE/NOTIFICATION/EMAIL/OTP/CREATED host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | QUEUE/NOTIFICATION/EMAIL/OTP/CREATED host is required")
+		}
+		c.QueueNotificationEmailOtpCreated = string(pair.Value)
+	}()
+
+	// COMMON Config
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		pair, _, err := kv.Get(fmt.Sprintf("%s/common/SAGA_STATUS/PENDING", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get SAGA_STATUS/PENDING from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | SAGA_STATUS/PENDING host is required")
+		}
+		c.CommonSagaStatusPending = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/common/SAGA_STATUS/SUCCESS", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get SAGA_STATUS/SUCCESS from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | SAGA_STATUS/SUCCESS host is required")
+		}
+		c.CommonSagaStatusSuccess = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/common/SAGA_STATUS/FAILED", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get SAGA_STATUS/FAILED from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | SAGA_STATUS/FAILED host is required")
+		}
+		c.CommonSagaStatusFailed = string(pair.Value)
 	}()
 
 	// Postgres Config
@@ -264,6 +395,15 @@ func SetConfig(path string) {
 			log.Fatal("SetConfig | Consul | SERVICE_NAME is required")
 		}
 		c.ServiceName = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/services/notification/SERVICE_NAME", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get notification/SERVICE_NAME from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | SERVICE_NAME is required")
+		}
+		c.NotificationServiceName = string(pair.Value)
 
 		pair, _, err = kv.Get(fmt.Sprintf("%s/services/user/RPC_HOST", c.Env), nil)
 		if err != nil {

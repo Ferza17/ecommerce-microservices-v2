@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, exchange enum.Exchange, queue enum.Queue, message []byte) error {
+func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, exchange string, queue string, message []byte) error {
 	ctx, span := c.telemetryInfrastructure.Tracer(ctx, "RabbitMQInfrastructure.Publish")
 
 	amqpChannel, err := c.amqpConn.Channel()
@@ -21,7 +21,7 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 	}
 
 	defer func(amqpChannel *amqp091.Channel) {
-		span.AddEvent(queue.String())
+		span.AddEvent(queue)
 		defer span.End()
 		if err = amqpChannel.Close(); err != nil {
 			c.logger.Error(fmt.Sprintf("Failed to close a channel: %v", err))
@@ -29,7 +29,7 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 	}(amqpChannel)
 
 	if err = amqpChannel.ExchangeDeclare(
-		exchange.String(),
+		exchange,
 		amqp091.ExchangeDirect,
 		true,
 		false,
@@ -42,9 +42,9 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 	}
 
 	if err = amqpChannel.QueueBind(
-		queue.String(),
+		queue,
 		"",
-		exchange.String(),
+		exchange,
 		false,
 		nil,
 	); err != nil {
@@ -63,7 +63,7 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 	// Publish message
 	if err = amqpChannel.PublishWithContext(
 		ctx,
-		exchange.String(),
+		exchange,
 		"",
 		false,
 		false,

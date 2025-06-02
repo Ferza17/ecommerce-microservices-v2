@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/enum"
 	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/notification/v1"
 	"github.com/rabbitmq/amqp091-go"
@@ -21,7 +22,7 @@ func (c *notificationEmailConsumer) NotificationEmailOTP(ctx context.Context) er
 	}
 
 	if err = amqpChannel.ExchangeDeclare(
-		enum.NotificationExchange.String(),
+		config.Get().ExchangeNotification,
 		amqp091.ExchangeDirect,
 		true,
 		false,
@@ -34,9 +35,9 @@ func (c *notificationEmailConsumer) NotificationEmailOTP(ctx context.Context) er
 	}
 
 	if err = amqpChannel.QueueBind(
-		enum.NOTIFICATION_EMAIL_OTP.String(),
-		enum.NOTIFICATION_EMAIL_OTP.String(),
-		enum.UserExchange.String(),
+		config.Get().QueueNotificationEmailOtpCreated,
+		config.Get().QueueNotificationEmailOtpCreated,
+		config.Get().ExchangeNotification,
 		false,
 		nil,
 	); err != nil {
@@ -45,7 +46,7 @@ func (c *notificationEmailConsumer) NotificationEmailOTP(ctx context.Context) er
 	}
 
 	msgs, err := amqpChannel.Consume(
-		enum.NOTIFICATION_EMAIL_OTP.String(),
+		config.Get().QueueNotificationEmailOtpCreated,
 		"",
 		true,
 		false,
@@ -64,10 +65,9 @@ func (c *notificationEmailConsumer) NotificationEmailOTP(ctx context.Context) er
 				requestId string
 			)
 			carrier := propagation.MapCarrier{}
-		headers:
 			for key, value := range d.Headers {
 				if key == enum.XRequestIDHeader.String() {
-					continue headers
+					requestId = value.(string)
 				}
 
 				if strVal, ok := value.(string); ok {
@@ -97,7 +97,6 @@ func (c *notificationEmailConsumer) NotificationEmailOTP(ctx context.Context) er
 				continue messages
 			}
 
-			c.logger.Info(fmt.Sprintf("received a %s message: %s", d.RoutingKey, d.Body))
 			if err = c.notificationUseCase.SendNotificationEmailOTP(ctx, requestId, &request); err != nil {
 				span.End()
 				c.logger.Error(fmt.Sprintf("failed to login user : %v", zap.Error(err)))

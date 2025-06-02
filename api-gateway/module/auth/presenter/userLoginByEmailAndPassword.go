@@ -38,7 +38,7 @@ func (p *authPresenter) UserLoginByEmailAndPassword(w http.ResponseWriter, r *ht
 		return
 	}
 
-	if err = p.authUseCase.UserLoginByEmailAndPassword(ctx, r.Header.Get(enum.XRequestIDHeader.String()), &userRpc.UserLoginByEmailAndPasswordRequest{
+	if err = p.authUseCase.UserLoginByEmailAndPassword(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &userRpc.UserLoginByEmailAndPasswordRequest{
 		Email:    req.Email,
 		Password: req.Password,
 	}); err != nil {

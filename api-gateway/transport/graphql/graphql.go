@@ -42,9 +42,7 @@ func (srv *GraphQLTransport) Serve() {
 			TelemetryInfrastructure: srv.bootstrap.TelemetryInfrastructure,
 			Logger:                  srv.bootstrap.Logger,
 		},
-		Directives: gen.DirectiveRoot{
-			//Jwt: middleware.DirectiveJwtRequired,
-		},
+		Directives: gen.DirectiveRoot{},
 	},
 	))
 	server.AddTransport(&transport.Websocket{
@@ -63,11 +61,11 @@ func (srv *GraphQLTransport) Serve() {
 	server.AddTransport(transport.MultipartForm{})
 	server.Use(extension.Introspection{})
 
+	router.Use(middleware.Logger(srv.bootstrap.Logger))
 	router.Handle("/ping", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]any{"message": "pong"})
 	}))
 	apiV1 := router.PathPrefix("/api/v1").Subrouter()
-	apiV1.Use(middleware.Logger(srv.bootstrap.Logger))
 
 	// Public
 	public := apiV1.PathPrefix("/public").Subrouter()

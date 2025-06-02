@@ -6,4 +6,5 @@ import "payment/v1/paymentMessage.proto";
 
 service PaymentService {
   rpc FindPaymentById(payment_v1.FindPaymentByIdRequest) returns (payment_v1.Payment);
+  rpc FindPaymentByUserIdAndStatus(payment_v1.FindPaymentByUserIdAndStatusRequest) returns (payment_v1.FindPaymentByUserIdAndStatusRequest);
 }

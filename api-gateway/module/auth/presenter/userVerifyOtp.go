@@ -38,7 +38,7 @@ func (p *authPresenter) UserVerifyOtp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := p.authUseCase.UserVerifyOtp(ctx, r.Header.Get(enum.XRequestIDHeader.String()), &userRpc.UserVerifyOtpRequest{
+	resp, err := p.authUseCase.UserVerifyOtp(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &userRpc.UserVerifyOtpRequest{
 		Otp: req.Otp,
 	})
 	if err != nil {

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
 	"github.com/rabbitmq/amqp091-go"
@@ -12,7 +11,7 @@ import (
 
 type (
 	IRabbitMQInfrastructure interface {
-		Publish(ctx context.Context, requestId string, exchange enum.Exchange, queue enum.Queue, message []byte) error
+		Publish(ctx context.Context, requestId string, exchange string, queue string, message []byte) error
 		GetConnection() *amqp091.Connection
 		Close() error
 	}

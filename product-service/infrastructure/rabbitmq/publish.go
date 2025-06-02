@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
 	"github.com/rabbitmq/amqp091-go"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 	"go.uber.org/zap"
 	"time"
 )
 
-func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, exchange enum.Exchange, queue enum.Queue, message []byte) error {
+func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, exchange string, queue string, message []byte) error {
 
 	amqpChannel, err := c.amqpConn.Channel()
 	if err != nil {
@@ -24,7 +26,7 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 	}(amqpChannel)
 
 	if err = amqpChannel.ExchangeDeclare(
-		exchange.String(),
+		exchange,
 		amqp091.ExchangeDirect,
 		true,
 		false,
@@ -37,9 +39,9 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 	}
 
 	if err = amqpChannel.QueueBind(
-		queue.String(),
+		queue,
 		"",
-		exchange.String(),
+		exchange,
 		false,
 		nil,
 	); err != nil {
@@ -47,10 +49,18 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 		return err
 	}
 
+	carrier := propagation.MapCarrier{}
+	otel.GetTextMapPropagator().Inject(ctx, carrier)
+	headers := amqp091.Table{}
+	for k, v := range carrier {
+		headers[k] = v
+	}
+	headers[enum.XRequestIDHeader.String()] = requestId
+
 	// Publish message
 	if _, err = amqpChannel.PublishWithDeferredConfirmWithContext(
 		ctx,
-		exchange.String(),
+		exchange,
 		"",
 		false,
 		false,
@@ -59,9 +69,7 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 			DeliveryMode: amqp091.Transient,
 			Timestamp:    time.Now(),
 			Body:         message,
-			Headers: map[string]interface{}{
-				enum.XRequestIDHeader.String(): requestId,
-			},
+			Headers:      headers,
 		},
 	); err != nil {
 		c.logger.Error(fmt.Sprintf("Failed to publish a message: %v", err))

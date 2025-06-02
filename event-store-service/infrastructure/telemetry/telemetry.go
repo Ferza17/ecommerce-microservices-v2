@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/config"
-	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/pkg"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/jaeger"
@@ -41,7 +40,7 @@ func NewTelemetry(logger pkg.IZapLogger) ITelemetryInfrastructure {
 		sdktrace.WithBatcher(exp),
 		sdktrace.WithResource(resource.NewWithAttributes(
 			semconv.SchemaURL,
-			semconv.ServiceNameKey.String(enum.EventStoreService.String()),
+			semconv.ServiceNameKey.String(config.Get().ServiceName),
 		)),
 	)
 	otel.SetTracerProvider(tp)
@@ -62,5 +61,5 @@ func (t *telemetryInfrastructure) Close(ctx context.Context) error {
 }
 
 func (t *telemetryInfrastructure) Tracer(ctx context.Context, fnName string) (context.Context, trace.Span) {
-	return t.tracerProvider.Tracer(enum.EventStoreService.String()).Start(ctx, fnName)
+	return t.tracerProvider.Tracer(config.Get().ServiceName).Start(ctx, fnName)
 }

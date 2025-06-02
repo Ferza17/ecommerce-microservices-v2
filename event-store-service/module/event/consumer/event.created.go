@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/enum"
 	eventRpc "github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/event/v1"
 	"github.com/rabbitmq/amqp091-go"
@@ -21,7 +22,7 @@ func (c *eventConsumer) EventCreated(ctx context.Context) error {
 	}
 
 	if err = amqpChannel.ExchangeDeclare(
-		enum.EventExchange.String(),
+		config.Get().ExchangeEvent,
 		amqp091.ExchangeDirect,
 		true,
 		false,
@@ -34,9 +35,9 @@ func (c *eventConsumer) EventCreated(ctx context.Context) error {
 	}
 
 	if err = amqpChannel.QueueBind(
-		enum.EVENT_CREATED.String(),
-		enum.EVENT_CREATED.String(),
-		enum.EventExchange.String(),
+		config.Get().QueueEventCreated,
+		config.Get().QueueEventCreated,
+		config.Get().ExchangeEvent,
 		false,
 		nil,
 	); err != nil {
@@ -45,7 +46,7 @@ func (c *eventConsumer) EventCreated(ctx context.Context) error {
 	}
 
 	msgs, err := amqpChannel.Consume(
-		enum.EVENT_CREATED.String(),
+		config.Get().QueueEventCreated,
 		"",
 		true,
 		false,
@@ -64,10 +65,10 @@ func (c *eventConsumer) EventCreated(ctx context.Context) error {
 				requestId string
 			)
 			carrier := propagation.MapCarrier{}
-		headers:
+
 			for key, value := range d.Headers {
 				if key == enum.XRequestID.String() {
-					continue headers
+					requestId = value.(string)
 				}
 
 				if strVal, ok := value.(string); ok {
@@ -95,6 +96,8 @@ func (c *eventConsumer) EventCreated(ctx context.Context) error {
 				span.End()
 				continue messages
 			}
+
+			c.logger.Info(fmt.Sprintf("requestID : %s", requestId))
 
 			if _, err = c.eventUseCase.CreateEventStore(ctx, requestId, &request); err != nil {
 				c.logger.Error(fmt.Sprintf("failed to create user : %v", zap.Error(err)))

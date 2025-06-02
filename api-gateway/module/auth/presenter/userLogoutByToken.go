@@ -36,7 +36,7 @@ func (p *authPresenter) UserLogoutByToken(w http.ResponseWriter, r *http.Request
 		render.Status(r, http.StatusBadRequest)
 	}
 
-	if _, err = p.authUseCase.UserLogoutByToken(ctx, r.Header.Get(enum.XRequestIDHeader.String()), &userRpc.UserLogoutByTokenRequest{Token: req.Token}); err != nil {
+	if _, err = p.authUseCase.UserLogoutByToken(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &userRpc.UserLogoutByTokenRequest{Token: req.Token}); err != nil {
 		p.logger.Error(fmt.Sprintf("error creating user: %v", err))
 		render.Status(r, http.StatusInternalServerError)
 		return

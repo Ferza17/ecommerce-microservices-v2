@@ -6,7 +6,7 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { OrderItem } from "../../commerce/v1/orderMessage";
+import { Timestamp } from "../../google/protobuf/timestamp";
 
 export const protobufPackage = "payment_v1";
 
@@ -100,10 +100,18 @@ export function providerMethodToJSON(object: ProviderMethod): string {
   }
 }
 
+export interface Item {
+  id: string;
+  productId: string;
+  qty: number;
+  cratedAt: Date | undefined;
+  updatedAt: Date | undefined;
+}
+
 export interface Payment {
   id: string;
   code: string;
-  items: OrderItem[];
+  Items: Item[];
   totalPrice: number;
   status: PaymentStatus;
   provider: Provider | undefined;
@@ -117,7 +125,7 @@ export interface Provider {
 }
 
 export interface CreatePayment {
-  items: OrderItem | undefined;
+  items: Item | undefined;
   userId: string;
   amount: number;
 }
@@ -131,8 +139,137 @@ export interface FindPaymentByIdRequest {
   id: string;
 }
 
+export interface FindPaymentByUserIdAndStatusRequest {
+  userId: string;
+  status: PaymentStatus;
+}
+
+function createBaseItem(): Item {
+  return { id: "", productId: "", qty: 0, cratedAt: undefined, updatedAt: undefined };
+}
+
+export const Item: MessageFns<Item> = {
+  encode(message: Item, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.productId !== "") {
+      writer.uint32(18).string(message.productId);
+    }
+    if (message.qty !== 0) {
+      writer.uint32(32).int32(message.qty);
+    }
+    if (message.cratedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.cratedAt), writer.uint32(50).fork()).join();
+    }
+    if (message.updatedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.updatedAt), writer.uint32(58).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): Item {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseItem();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.productId = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.qty = reader.int32();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.cratedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.updatedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Item {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      productId: isSet(object.productId) ? globalThis.String(object.productId) : "",
+      qty: isSet(object.qty) ? globalThis.Number(object.qty) : 0,
+      cratedAt: isSet(object.cratedAt) ? fromJsonTimestamp(object.cratedAt) : undefined,
+      updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
+    };
+  },
+
+  toJSON(message: Item): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.productId !== "") {
+      obj.productId = message.productId;
+    }
+    if (message.qty !== 0) {
+      obj.qty = Math.round(message.qty);
+    }
+    if (message.cratedAt !== undefined) {
+      obj.cratedAt = message.cratedAt.toISOString();
+    }
+    if (message.updatedAt !== undefined) {
+      obj.updatedAt = message.updatedAt.toISOString();
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<Item>): Item {
+    return Item.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<Item>): Item {
+    const message = createBaseItem();
+    message.id = object.id ?? "";
+    message.productId = object.productId ?? "";
+    message.qty = object.qty ?? 0;
+    message.cratedAt = object.cratedAt ?? undefined;
+    message.updatedAt = object.updatedAt ?? undefined;
+    return message;
+  },
+};
+
 function createBasePayment(): Payment {
-  return { id: "", code: "", items: [], totalPrice: 0, status: 0, provider: undefined, userId: "" };
+  return { id: "", code: "", Items: [], totalPrice: 0, status: 0, provider: undefined, userId: "" };
 }
 
 export const Payment: MessageFns<Payment> = {
@@ -143,8 +280,8 @@ export const Payment: MessageFns<Payment> = {
     if (message.code !== "") {
       writer.uint32(18).string(message.code);
     }
-    for (const v of message.items) {
-      OrderItem.encode(v!, writer.uint32(26).fork()).join();
+    for (const v of message.Items) {
+      Item.encode(v!, writer.uint32(26).fork()).join();
     }
     if (message.totalPrice !== 0) {
       writer.uint32(33).double(message.totalPrice);
@@ -189,7 +326,7 @@ export const Payment: MessageFns<Payment> = {
             break;
           }
 
-          message.items.push(OrderItem.decode(reader, reader.uint32()));
+          message.Items.push(Item.decode(reader, reader.uint32()));
           continue;
         }
         case 4: {
@@ -237,7 +374,7 @@ export const Payment: MessageFns<Payment> = {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       code: isSet(object.code) ? globalThis.String(object.code) : "",
-      items: globalThis.Array.isArray(object?.items) ? object.items.map((e: any) => OrderItem.fromJSON(e)) : [],
+      Items: globalThis.Array.isArray(object?.Items) ? object.Items.map((e: any) => Item.fromJSON(e)) : [],
       totalPrice: isSet(object.totalPrice) ? globalThis.Number(object.totalPrice) : 0,
       status: isSet(object.status) ? paymentStatusFromJSON(object.status) : 0,
       provider: isSet(object.provider) ? Provider.fromJSON(object.provider) : undefined,
@@ -253,8 +390,8 @@ export const Payment: MessageFns<Payment> = {
     if (message.code !== "") {
       obj.code = message.code;
     }
-    if (message.items?.length) {
-      obj.items = message.items.map((e) => OrderItem.toJSON(e));
+    if (message.Items?.length) {
+      obj.Items = message.Items.map((e) => Item.toJSON(e));
     }
     if (message.totalPrice !== 0) {
       obj.totalPrice = message.totalPrice;
@@ -278,7 +415,7 @@ export const Payment: MessageFns<Payment> = {
     const message = createBasePayment();
     message.id = object.id ?? "";
     message.code = object.code ?? "";
-    message.items = object.items?.map((e) => OrderItem.fromPartial(e)) || [];
+    message.Items = object.Items?.map((e) => Item.fromPartial(e)) || [];
     message.totalPrice = object.totalPrice ?? 0;
     message.status = object.status ?? 0;
     message.provider = (object.provider !== undefined && object.provider !== null)
@@ -390,7 +527,7 @@ function createBaseCreatePayment(): CreatePayment {
 export const CreatePayment: MessageFns<CreatePayment> = {
   encode(message: CreatePayment, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.items !== undefined) {
-      OrderItem.encode(message.items, writer.uint32(10).fork()).join();
+      Item.encode(message.items, writer.uint32(10).fork()).join();
     }
     if (message.userId !== "") {
       writer.uint32(18).string(message.userId);
@@ -413,7 +550,7 @@ export const CreatePayment: MessageFns<CreatePayment> = {
             break;
           }
 
-          message.items = OrderItem.decode(reader, reader.uint32());
+          message.items = Item.decode(reader, reader.uint32());
           continue;
         }
         case 2: {
@@ -443,7 +580,7 @@ export const CreatePayment: MessageFns<CreatePayment> = {
 
   fromJSON(object: any): CreatePayment {
     return {
-      items: isSet(object.items) ? OrderItem.fromJSON(object.items) : undefined,
+      items: isSet(object.items) ? Item.fromJSON(object.items) : undefined,
       userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
     };
@@ -452,7 +589,7 @@ export const CreatePayment: MessageFns<CreatePayment> = {
   toJSON(message: CreatePayment): unknown {
     const obj: any = {};
     if (message.items !== undefined) {
-      obj.items = OrderItem.toJSON(message.items);
+      obj.items = Item.toJSON(message.items);
     }
     if (message.userId !== "") {
       obj.userId = message.userId;
@@ -468,9 +605,7 @@ export const CreatePayment: MessageFns<CreatePayment> = {
   },
   fromPartial(object: DeepPartial<CreatePayment>): CreatePayment {
     const message = createBaseCreatePayment();
-    message.items = (object.items !== undefined && object.items !== null)
-      ? OrderItem.fromPartial(object.items)
-      : undefined;
+    message.items = (object.items !== undefined && object.items !== null) ? Item.fromPartial(object.items) : undefined;
     message.userId = object.userId ?? "";
     message.amount = object.amount ?? 0;
     return message;
@@ -611,6 +746,82 @@ export const FindPaymentByIdRequest: MessageFns<FindPaymentByIdRequest> = {
   },
 };
 
+function createBaseFindPaymentByUserIdAndStatusRequest(): FindPaymentByUserIdAndStatusRequest {
+  return { userId: "", status: 0 };
+}
+
+export const FindPaymentByUserIdAndStatusRequest: MessageFns<FindPaymentByUserIdAndStatusRequest> = {
+  encode(message: FindPaymentByUserIdAndStatusRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.userId !== "") {
+      writer.uint32(10).string(message.userId);
+    }
+    if (message.status !== 0) {
+      writer.uint32(16).int32(message.status);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): FindPaymentByUserIdAndStatusRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseFindPaymentByUserIdAndStatusRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.status = reader.int32() as any;
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): FindPaymentByUserIdAndStatusRequest {
+    return {
+      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
+      status: isSet(object.status) ? paymentStatusFromJSON(object.status) : 0,
+    };
+  },
+
+  toJSON(message: FindPaymentByUserIdAndStatusRequest): unknown {
+    const obj: any = {};
+    if (message.userId !== "") {
+      obj.userId = message.userId;
+    }
+    if (message.status !== 0) {
+      obj.status = paymentStatusToJSON(message.status);
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<FindPaymentByUserIdAndStatusRequest>): FindPaymentByUserIdAndStatusRequest {
+    return FindPaymentByUserIdAndStatusRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<FindPaymentByUserIdAndStatusRequest>): FindPaymentByUserIdAndStatusRequest {
+    const message = createBaseFindPaymentByUserIdAndStatusRequest();
+    message.userId = object.userId ?? "";
+    message.status = object.status ?? 0;
+    return message;
+  },
+};
+
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T
@@ -618,6 +829,28 @@ export type DeepPartial<T> = T extends Builtin ? T
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
+
+function toTimestamp(date: Date): Timestamp {
+  const seconds = Math.trunc(date.getTime() / 1_000);
+  const nanos = (date.getTime() % 1_000) * 1_000_000;
+  return { seconds, nanos };
+}
+
+function fromTimestamp(t: Timestamp): Date {
+  let millis = (t.seconds || 0) * 1_000;
+  millis += (t.nanos || 0) / 1_000_000;
+  return new globalThis.Date(millis);
+}
+
+function fromJsonTimestamp(o: any): Date {
+  if (o instanceof globalThis.Date) {
+    return o;
+  } else if (typeof o === "string") {
+    return new globalThis.Date(o);
+  } else {
+    return fromTimestamp(Timestamp.fromJSON(o));
+  }
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

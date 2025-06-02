@@ -18,9 +18,6 @@ import { InfrastructureModule } from '../../infrastructure/infrastructure.module
     MongooseModule.forFeature([
       { name: CartItem.name, schema: CartSchema, collection: MongoDBCollection.CartItemCollection },
     ]),
-    ClientsModule.registerAsync([
-      ClientModuleAsyncConfig(Exchange.EventExchange, Queue.EVENT_CREATED),
-    ]),
   ],
   controllers: [CartController, CartConsumer],
   providers: [CartService, CartMongodbRepository],

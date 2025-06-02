@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PaymentServiceClient interface {
 	FindPaymentById(ctx context.Context, in *FindPaymentByIdRequest, opts ...grpc.CallOption) (*Payment, error)
+	FindPaymentByUserIdAndStatus(ctx context.Context, in *FindPaymentByUserIdAndStatusRequest, opts ...grpc.CallOption) (*FindPaymentByUserIdAndStatusRequest, error)
 }
 
 type paymentServiceClient struct {
@@ -42,11 +43,21 @@ func (c *paymentServiceClient) FindPaymentById(ctx context.Context, in *FindPaym
 	return out, nil
 }
 
+func (c *paymentServiceClient) FindPaymentByUserIdAndStatus(ctx context.Context, in *FindPaymentByUserIdAndStatusRequest, opts ...grpc.CallOption) (*FindPaymentByUserIdAndStatusRequest, error) {
+	out := new(FindPaymentByUserIdAndStatusRequest)
+	err := c.cc.Invoke(ctx, "/payment_v1.PaymentService/FindPaymentByUserIdAndStatus", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PaymentServiceServer is the server API for PaymentService service.
 // All implementations should embed UnimplementedPaymentServiceServer
 // for forward compatibility
 type PaymentServiceServer interface {
 	FindPaymentById(context.Context, *FindPaymentByIdRequest) (*Payment, error)
+	FindPaymentByUserIdAndStatus(context.Context, *FindPaymentByUserIdAndStatusRequest) (*FindPaymentByUserIdAndStatusRequest, error)
 }
 
 // UnimplementedPaymentServiceServer should be embedded to have forward compatible implementations.
@@ -55,6 +66,9 @@ type UnimplementedPaymentServiceServer struct {
 
 func (UnimplementedPaymentServiceServer) FindPaymentById(context.Context, *FindPaymentByIdRequest) (*Payment, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindPaymentById not implemented")
+}
+func (UnimplementedPaymentServiceServer) FindPaymentByUserIdAndStatus(context.Context, *FindPaymentByUserIdAndStatusRequest) (*FindPaymentByUserIdAndStatusRequest, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindPaymentByUserIdAndStatus not implemented")
 }
 
 // UnsafePaymentServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -86,6 +100,24 @@ func _PaymentService_FindPaymentById_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PaymentService_FindPaymentByUserIdAndStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindPaymentByUserIdAndStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServiceServer).FindPaymentByUserIdAndStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/payment_v1.PaymentService/FindPaymentByUserIdAndStatus",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServiceServer).FindPaymentByUserIdAndStatus(ctx, req.(*FindPaymentByUserIdAndStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PaymentService_ServiceDesc is the grpc.ServiceDesc for PaymentService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -96,6 +128,10 @@ var PaymentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FindPaymentById",
 			Handler:    _PaymentService_FindPaymentById_Handler,
+		},
+		{
+			MethodName: "FindPaymentByUserIdAndStatus",
+			Handler:    _PaymentService_FindPaymentByUserIdAndStatus_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -1,5 +1,5 @@
-import { Controller, Logger, UseInterceptors } from '@nestjs/common';
-import { Ctx, EventPattern, MessagePattern, Payload, RmqContext, Transport } from '@nestjs/microservices';
+import { Controller, Logger } from '@nestjs/common';
+import { Ctx, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
 import { Header } from '../../enum/header';
 import {
   CreateCartItemRequest,

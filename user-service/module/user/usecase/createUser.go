@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/orm"
 	eventRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/event/v1"
 	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/notification/v1"
@@ -28,9 +28,9 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *use
 		now             = time.Now().UTC()
 		eventStore      = &eventRpc.EventStore{
 			RequestId:     requestId,
-			Service:       enum.UserService.String(),
-			EventType:     enum.USER_CREATED.String(),
-			Status:        enum.SUCCESS.String(),
+			Service:       config.Get().ServiceName,
+			EventType:     config.Get().QueueUserCreated,
+			Status:        config.Get().CommonSagaStatusSuccess,
 			PreviousState: nil,
 			CreatedAt:     timestamppb.Now(),
 			UpdatedAt:     timestamppb.Now(),
@@ -52,10 +52,10 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *use
 		}
 
 		if err != nil {
-			eventStore.Status = enum.FAILED.String()
+			eventStore.Status = config.Get().CommonSagaStatusFailed
 		}
 
-		if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, enum.EventExchange, enum.EVENT_CREATED, eventStoreMessage); err != nil {
+		if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, config.Get().ExchangeEvent, config.Get().QueueEventCreated, eventStoreMessage); err != nil {
 			u.logger.Error(fmt.Sprintf("error creating product event store: %s", err.Error()))
 			return
 		}
@@ -103,7 +103,7 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *use
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, enum.NotificationExchange, enum.NOTIFICATION_EMAIL_OTP, message); err != nil {
+	if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, config.Get().ExchangeNotification, config.Get().QueueNotificationEmailOtpCreated, message); err != nil {
 		u.logger.Error(fmt.Sprintf("error publish message err : %v", err))
 		return nil, status.Error(codes.Internal, err.Error())
 	}

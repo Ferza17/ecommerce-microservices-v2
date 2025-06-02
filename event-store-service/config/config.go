@@ -31,6 +31,10 @@ type Config struct {
 	RabbitMQHost     string
 	RabbitMQPort     string
 
+	ExchangeEvent string
+
+	QueueEventCreated string
+
 	MongoUsername     string
 	MongoPassword     string
 	MongoHost         string
@@ -129,6 +133,26 @@ func SetConfig(path string) {
 			log.Fatal("SetConfig | Consul | RABBITMQ_PORT host is required")
 		}
 		c.RabbitMQPort = string(pair.Value)
+
+		// EXCHANGE
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/EXCHANGE/EVENT", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get EXCHANGE/EVENT from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | EXCHANGE/EVENT is required")
+		}
+		c.ExchangeEvent = string(pair.Value)
+
+		// QUEUE
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/EVENT/CREATED", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get QUEUE/EVENT/CREATED host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | QUEUE/EVENT/CREATED host is required")
+		}
+		c.QueueEventCreated = string(pair.Value)
 	}()
 
 	// MongoDB Config

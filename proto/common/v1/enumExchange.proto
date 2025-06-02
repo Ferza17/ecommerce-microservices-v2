@@ -1,0 +1,9 @@
+syntax = "proto3";
+package common_v1;
+
+enum Exchange {
+  PRODUCT_EXCHANGE = 0;
+  USER_EXCHANGE = 1;
+  EVENT_EXCHANGE = 2;
+  PAYMENT_EXCHANGE = 3;
+}
