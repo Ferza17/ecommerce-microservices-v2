@@ -53,7 +53,6 @@ func (u *notificationEmailUseCase) SendNotificationEmailOTP(ctx context.Context,
 		}
 	}(err, eventStore)
 
-	u.logger.Info(fmt.Sprintf("CHECK NOTIFICATION TYPE : %s", req.NotificationType.String()))
 	notificationType, err := enum.NotificationTypeParseIntToNotificationType(int(req.NotificationType))
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("error parsing email type: %s", err.Error()))

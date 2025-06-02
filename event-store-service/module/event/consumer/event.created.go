@@ -97,8 +97,6 @@ func (c *eventConsumer) EventCreated(ctx context.Context) error {
 				continue messages
 			}
 
-			c.logger.Info(fmt.Sprintf("requestID : %s", requestId))
-
 			if _, err = c.eventUseCase.CreateEventStore(ctx, requestId, &request); err != nil {
 				c.logger.Error(fmt.Sprintf("failed to create user : %v", zap.Error(err)))
 				span.End()
