@@ -120,6 +120,8 @@ curl --request PUT --data 'localhost' http://localhost:8500/v1/kv/local/database
 curl --request PUT --data '5432' http://localhost:8500/v1/kv/local/database/postgres/POSTGRES_PORT
 curl --request PUT --data 'products' http://localhost:8500/v1/kv/local/database/postgres/POSTGRES_DATABASE_NAME/PRODUCTS
 curl --request PUT --data 'users' http://localhost:8500/v1/kv/local/database/postgres/POSTGRES_DATABASE_NAME/USERS
+curl --request PUT --data 'payments' http://localhost:8500/v1/kv/local/database/postgres/POSTGRES_DATABASE_NAME/PAYMENTS
+
 ## Postgres Production
 curl --request PUT --data 'postgres' http://localhost:8500/v1/kv/production/database/postgres/POSTGRES_USERNAME
 curl --request PUT --data '1234' http://localhost:8500/v1/kv/production/database/postgres/POSTGRES_PASSWORD
@@ -128,6 +130,7 @@ curl --request PUT --data 'postgres-local' http://localhost:8500/v1/kv/productio
 curl --request PUT --data '5432' http://localhost:8500/v1/kv/production/database/postgres/POSTGRES_PORT
 curl --request PUT --data 'products' http://localhost:8500/v1/kv/production/database/postgres/POSTGRES_DATABASE_NAME/PRODUCTS
 curl --request PUT --data 'users' http://localhost:8500/v1/kv/production/database/postgres/POSTGRES_DATABASE_NAME/USERS
+curl --request PUT --data 'payments' http://localhost:8500/v1/kv/production/database/postgres/POSTGRES_DATABASE_NAME/PAYMENTS
 
 ## Elasticsearch Local
 curl --request PUT --data '' http://localhost:8500/v1/kv/local/database/elasticsearch/ELASTICSEARCH_USERNAME
@@ -263,6 +266,19 @@ curl --request PUT --data '2d' http://localhost:8500/v1/kv/production/services/u
 curl --request PUT --data '1m' http://localhost:8500/v1/kv/production/services/user/OTP_EXPIRATION_TIME
 curl --request PUT --data 'http://localhost:4000?access_token=%s?refresh_token=?' http://localhost:8500/v1/kv/production/services/user/VERIFICATION_USER_LOGIN_URL
 
+##########################################################################################################################################################################################################################
+echo "INIT PAYMENT SERVICE"
+## Local
+curl --request PUT --data 'local' http://localhost:8500/v1/kv/local/services/payment/ENV
+curl --request PUT --data 'user-service' http://localhost:8500/v1/kv/local/services/payment/SERVICE_NAME
+curl --request PUT --data 'localhost' http://localhost:8500/v1/kv/local/services/payment/RPC_HOST
+curl --request PUT --data '50055' http://localhost:8500/v1/kv/local/services/payment/RPC_PORT
+
+## Local
+curl --request PUT --data 'production' http://localhost:8500/v1/kv/production/services/payment/ENV
+curl --request PUT --data 'payment' http://localhost:8500/v1/kv/production/services/payment/SERVICE_NAME## Local
+curl --request PUT --data 'localhost' http://localhost:8500/v1/kv/local/services/payment/RPC_HOST
+curl --request PUT --data '50055' http://localhost:8500/v1/kv/local/services/payment/RPC_PORT
 ##########################################################################################################################################################################################################################
 
 echo "INIT CONFIG COMMON"

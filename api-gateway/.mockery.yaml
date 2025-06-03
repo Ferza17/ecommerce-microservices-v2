@@ -1,5 +1,0 @@
-- dir: ./module
-  output: ./mocks/module
-  name: module
-  keeptree: true
-  recursive: false

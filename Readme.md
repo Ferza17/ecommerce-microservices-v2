@@ -30,6 +30,9 @@
 * feryreza85@gmail.com
 * github.com/Ferza17
 
+//TODO: 
+1. COMPLETED PAYMENT SERVICE
+2. ADD WIRE DEPENDENCY INJECTION
 
 
 
