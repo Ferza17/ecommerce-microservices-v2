@@ -12,8 +12,9 @@ export const protobufPackage = "payment_v1";
 
 export enum PaymentStatus {
   PENDING = 0,
-  SUCCESS = 1,
-  FAILED = 2,
+  PARTIAL = 1,
+  SUCCESS = 2,
+  FAILED = 3,
   UNRECOGNIZED = -1,
 }
 
@@ -23,9 +24,12 @@ export function paymentStatusFromJSON(object: any): PaymentStatus {
     case "PENDING":
       return PaymentStatus.PENDING;
     case 1:
+    case "PARTIAL":
+      return PaymentStatus.PARTIAL;
+    case 2:
     case "SUCCESS":
       return PaymentStatus.SUCCESS;
-    case 2:
+    case 3:
     case "FAILED":
       return PaymentStatus.FAILED;
     case -1:
@@ -39,6 +43,8 @@ export function paymentStatusToJSON(object: PaymentStatus): string {
   switch (object) {
     case PaymentStatus.PENDING:
       return "PENDING";
+    case PaymentStatus.PARTIAL:
+      return "PARTIAL";
     case PaymentStatus.SUCCESS:
       return "SUCCESS";
     case PaymentStatus.FAILED:
@@ -100,9 +106,10 @@ export function providerMethodToJSON(object: ProviderMethod): string {
   }
 }
 
-export interface Item {
+export interface PaymentItem {
   id: string;
   productId: string;
+  amount: number;
   qty: number;
   cratedAt: Date | undefined;
   updatedAt: Date | undefined;
@@ -111,7 +118,7 @@ export interface Item {
 export interface Payment {
   id: string;
   code: string;
-  Items: Item[];
+  Items: PaymentItem[];
   totalPrice: number;
   status: PaymentStatus;
   provider: Provider | undefined;
@@ -125,7 +132,7 @@ export interface Provider {
 }
 
 export interface CreatePayment {
-  items: Item | undefined;
+  items: PaymentItem | undefined;
   userId: string;
   amount: number;
 }
@@ -144,17 +151,20 @@ export interface FindPaymentByUserIdAndStatusRequest {
   status: PaymentStatus;
 }
 
-function createBaseItem(): Item {
-  return { id: "", productId: "", qty: 0, cratedAt: undefined, updatedAt: undefined };
+function createBasePaymentItem(): PaymentItem {
+  return { id: "", productId: "", amount: 0, qty: 0, cratedAt: undefined, updatedAt: undefined };
 }
 
-export const Item: MessageFns<Item> = {
-  encode(message: Item, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const PaymentItem: MessageFns<PaymentItem> = {
+  encode(message: PaymentItem, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
     if (message.productId !== "") {
       writer.uint32(18).string(message.productId);
+    }
+    if (message.amount !== 0) {
+      writer.uint32(25).double(message.amount);
     }
     if (message.qty !== 0) {
       writer.uint32(32).int32(message.qty);
@@ -168,10 +178,10 @@ export const Item: MessageFns<Item> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): Item {
+  decode(input: BinaryReader | Uint8Array, length?: number): PaymentItem {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseItem();
+    const message = createBasePaymentItem();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -189,6 +199,14 @@ export const Item: MessageFns<Item> = {
           }
 
           message.productId = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 25) {
+            break;
+          }
+
+          message.amount = reader.double();
           continue;
         }
         case 4: {
@@ -224,23 +242,27 @@ export const Item: MessageFns<Item> = {
     return message;
   },
 
-  fromJSON(object: any): Item {
+  fromJSON(object: any): PaymentItem {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       productId: isSet(object.productId) ? globalThis.String(object.productId) : "",
+      amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
       qty: isSet(object.qty) ? globalThis.Number(object.qty) : 0,
       cratedAt: isSet(object.cratedAt) ? fromJsonTimestamp(object.cratedAt) : undefined,
       updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
     };
   },
 
-  toJSON(message: Item): unknown {
+  toJSON(message: PaymentItem): unknown {
     const obj: any = {};
     if (message.id !== "") {
       obj.id = message.id;
     }
     if (message.productId !== "") {
       obj.productId = message.productId;
+    }
+    if (message.amount !== 0) {
+      obj.amount = message.amount;
     }
     if (message.qty !== 0) {
       obj.qty = Math.round(message.qty);
@@ -254,13 +276,14 @@ export const Item: MessageFns<Item> = {
     return obj;
   },
 
-  create(base?: DeepPartial<Item>): Item {
-    return Item.fromPartial(base ?? {});
+  create(base?: DeepPartial<PaymentItem>): PaymentItem {
+    return PaymentItem.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<Item>): Item {
-    const message = createBaseItem();
+  fromPartial(object: DeepPartial<PaymentItem>): PaymentItem {
+    const message = createBasePaymentItem();
     message.id = object.id ?? "";
     message.productId = object.productId ?? "";
+    message.amount = object.amount ?? 0;
     message.qty = object.qty ?? 0;
     message.cratedAt = object.cratedAt ?? undefined;
     message.updatedAt = object.updatedAt ?? undefined;
@@ -281,7 +304,7 @@ export const Payment: MessageFns<Payment> = {
       writer.uint32(18).string(message.code);
     }
     for (const v of message.Items) {
-      Item.encode(v!, writer.uint32(26).fork()).join();
+      PaymentItem.encode(v!, writer.uint32(26).fork()).join();
     }
     if (message.totalPrice !== 0) {
       writer.uint32(33).double(message.totalPrice);
@@ -326,7 +349,7 @@ export const Payment: MessageFns<Payment> = {
             break;
           }
 
-          message.Items.push(Item.decode(reader, reader.uint32()));
+          message.Items.push(PaymentItem.decode(reader, reader.uint32()));
           continue;
         }
         case 4: {
@@ -374,7 +397,7 @@ export const Payment: MessageFns<Payment> = {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       code: isSet(object.code) ? globalThis.String(object.code) : "",
-      Items: globalThis.Array.isArray(object?.Items) ? object.Items.map((e: any) => Item.fromJSON(e)) : [],
+      Items: globalThis.Array.isArray(object?.Items) ? object.Items.map((e: any) => PaymentItem.fromJSON(e)) : [],
       totalPrice: isSet(object.totalPrice) ? globalThis.Number(object.totalPrice) : 0,
       status: isSet(object.status) ? paymentStatusFromJSON(object.status) : 0,
       provider: isSet(object.provider) ? Provider.fromJSON(object.provider) : undefined,
@@ -391,7 +414,7 @@ export const Payment: MessageFns<Payment> = {
       obj.code = message.code;
     }
     if (message.Items?.length) {
-      obj.Items = message.Items.map((e) => Item.toJSON(e));
+      obj.Items = message.Items.map((e) => PaymentItem.toJSON(e));
     }
     if (message.totalPrice !== 0) {
       obj.totalPrice = message.totalPrice;
@@ -415,7 +438,7 @@ export const Payment: MessageFns<Payment> = {
     const message = createBasePayment();
     message.id = object.id ?? "";
     message.code = object.code ?? "";
-    message.Items = object.Items?.map((e) => Item.fromPartial(e)) || [];
+    message.Items = object.Items?.map((e) => PaymentItem.fromPartial(e)) || [];
     message.totalPrice = object.totalPrice ?? 0;
     message.status = object.status ?? 0;
     message.provider = (object.provider !== undefined && object.provider !== null)
@@ -527,7 +550,7 @@ function createBaseCreatePayment(): CreatePayment {
 export const CreatePayment: MessageFns<CreatePayment> = {
   encode(message: CreatePayment, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.items !== undefined) {
-      Item.encode(message.items, writer.uint32(10).fork()).join();
+      PaymentItem.encode(message.items, writer.uint32(10).fork()).join();
     }
     if (message.userId !== "") {
       writer.uint32(18).string(message.userId);
@@ -550,7 +573,7 @@ export const CreatePayment: MessageFns<CreatePayment> = {
             break;
           }
 
-          message.items = Item.decode(reader, reader.uint32());
+          message.items = PaymentItem.decode(reader, reader.uint32());
           continue;
         }
         case 2: {
@@ -580,7 +603,7 @@ export const CreatePayment: MessageFns<CreatePayment> = {
 
   fromJSON(object: any): CreatePayment {
     return {
-      items: isSet(object.items) ? Item.fromJSON(object.items) : undefined,
+      items: isSet(object.items) ? PaymentItem.fromJSON(object.items) : undefined,
       userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
     };
@@ -589,7 +612,7 @@ export const CreatePayment: MessageFns<CreatePayment> = {
   toJSON(message: CreatePayment): unknown {
     const obj: any = {};
     if (message.items !== undefined) {
-      obj.items = Item.toJSON(message.items);
+      obj.items = PaymentItem.toJSON(message.items);
     }
     if (message.userId !== "") {
       obj.userId = message.userId;
@@ -605,7 +628,9 @@ export const CreatePayment: MessageFns<CreatePayment> = {
   },
   fromPartial(object: DeepPartial<CreatePayment>): CreatePayment {
     const message = createBaseCreatePayment();
-    message.items = (object.items !== undefined && object.items !== null) ? Item.fromPartial(object.items) : undefined;
+    message.items = (object.items !== undefined && object.items !== null)
+      ? PaymentItem.fromPartial(object.items)
+      : undefined;
     message.userId = object.userId ?? "";
     message.amount = object.amount ?? 0;
     return message;

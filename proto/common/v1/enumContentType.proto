@@ -1,7 +1,0 @@
-syntax = "proto3";
-package common_v1;
-
-enum ContentType {
-  APPLICATION_JSON = 0;
-  APPLICATION_X_PROTOBUF = 1;
-}

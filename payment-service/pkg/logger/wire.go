@@ -10,7 +10,7 @@ import (
 )
 
 // InitializeLogger provides an instance of IZapLogger using Google Wire.
-func InitializeLogger() IZapLogger {
+func ProvideLogger() IZapLogger {
 	wire.Build(NewZapLogger)
 	return nil // Wire will replace this during code generation.
 }

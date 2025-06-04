@@ -9,7 +9,7 @@ package logger
 // Injectors from wire.go:
 
 // InitializeLogger provides an instance of IZapLogger using Google Wire.
-func InitializeLogger() IZapLogger {
+func ProvideLogger() IZapLogger {
 	iZapLogger := NewZapLogger()
 	return iZapLogger
 }

@@ -18,7 +18,7 @@ func ProvidePaymentRepository() IPaymentRepository {
 		NewPaymentRepository,
 		postgresql.ProvidePostgreSQLInfrastructure,
 		telemetry.ProvideTelemetry,
-		logger.NewZapLogger,
+		logger.ProvideLogger,
 	)
 	return nil // Wire will generate the concrete implementation.
 }

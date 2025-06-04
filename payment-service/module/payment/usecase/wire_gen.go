@@ -18,7 +18,7 @@ import (
 // ProvidePaymentUseCase wires dependencies for IPaymentUseCase.
 func ProvidePaymentUseCase() IPaymentUseCase {
 	iPaymentRepository := repository.ProvidePaymentRepository()
-	iZapLogger := logger.NewZapLogger()
+	iZapLogger := logger.ProvideLogger()
 	iRabbitMQInfrastructure := rabbitmq.ProvideRabbitMQInfrastructure(iZapLogger)
 	iTelemetryInfrastructure := telemetry.ProvideTelemetry(iZapLogger)
 	iPaymentUseCase := NewPaymentUseCase(iPaymentRepository, iRabbitMQInfrastructure, iTelemetryInfrastructure, iZapLogger)

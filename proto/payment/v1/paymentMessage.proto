@@ -9,9 +9,10 @@ enum PaymentStatus {
   FAILED = 3;
 }
 
-message Item {
+message PaymentItem {
   string id = 1;
   string productId = 2;
+  double amount = 3;
   int32 qty = 4;
   google.protobuf.Timestamp crated_at = 6;
   google.protobuf.Timestamp updated_at = 7;
@@ -20,7 +21,7 @@ message Item {
 message Payment {
   string id = 1;
   string code = 2;
-  repeated Item Items = 3;
+  repeated PaymentItem Items = 3;
   double totalPrice = 4;
   PaymentStatus status = 5;
   Provider provider = 6;
@@ -42,7 +43,7 @@ message Provider {
 }
 
 message CreatePayment {
-  Item items = 1;
+  PaymentItem items = 1;
   string userId = 2;
   double amount = 3;
 }

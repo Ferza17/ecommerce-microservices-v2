@@ -16,9 +16,9 @@ import (
 
 // ProvidePaymentRepository wires dependencies for IPaymentRepository.
 func ProvidePaymentRepository() IPaymentRepository {
-	iZapLogger := logger.NewZapLogger()
+	iZapLogger := logger.ProvideLogger()
 	iPostgreSQLInfrastructure := postgresql.ProvidePostgreSQLInfrastructure(iZapLogger)
-	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
+	iTelemetryInfrastructure := telemetry.ProvideTelemetry(iZapLogger)
 	iPaymentRepository := NewPaymentRepository(iPostgreSQLInfrastructure, iTelemetryInfrastructure, iZapLogger)
 	return iPaymentRepository
 }

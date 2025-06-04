@@ -4,9 +4,10 @@
 //go:build !wireinject
 // +build !wireinject
 
-package presenter
+package consumer
 
 import (
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
@@ -14,11 +15,12 @@ import (
 
 // Injectors from wire.go:
 
-// ProvidePaymentPresenter wires dependencies for IPaymentPresenter.
-func ProvidePaymentPresenter() IPaymentPresenter {
-	iPaymentUseCase := usecase.ProvidePaymentUseCase()
+// ProvidePaymentConsumer initializes the paymentConsumer using Wire.
+func ProvidePaymentConsumer() IPaymentConsumer {
 	iZapLogger := logger.ProvideLogger()
+	iRabbitMQInfrastructure := rabbitmq.ProvideRabbitMQInfrastructure(iZapLogger)
 	iTelemetryInfrastructure := telemetry.ProvideTelemetry(iZapLogger)
-	iPaymentPresenter := NewPaymentPresenter(iPaymentUseCase, iTelemetryInfrastructure, iZapLogger)
-	return iPaymentPresenter
+	iPaymentUseCase := usecase.ProvidePaymentUseCase()
+	iPaymentConsumer := NewPaymentConsumer(iRabbitMQInfrastructure, iTelemetryInfrastructure, iPaymentUseCase, iZapLogger)
+	return iPaymentConsumer
 }

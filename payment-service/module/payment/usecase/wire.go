@@ -20,7 +20,7 @@ func ProvidePaymentUseCase() IPaymentUseCase {
 		repository.ProvidePaymentRepository,
 		rabbitmq.ProvideRabbitMQInfrastructure,
 		telemetry.ProvideTelemetry,
-		logger.NewZapLogger,
+		logger.ProvideLogger,
 	)
 	return nil // Wire will generate the concrete implementation.
 }

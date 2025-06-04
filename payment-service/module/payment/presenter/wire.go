@@ -18,7 +18,7 @@ func ProvidePaymentPresenter() IPaymentPresenter {
 		NewPaymentPresenter,           // The constructor function for paymentPresenter
 		usecase.ProvidePaymentUseCase, // Provides IPaymentUseCase
 		telemetry.ProvideTelemetry,    // Provides ITelemetryInfrastructure
-		logger.NewZapLogger,           // Provides IZapLogger
+		logger.ProvideLogger,          // Provides IZapLogger
 	)
 	return nil // Wire will generate the concrete implementation.
 }

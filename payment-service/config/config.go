@@ -244,12 +244,12 @@ func SetConfig(path string) {
 		}
 		c.PostgresPort = string(pair.Value)
 
-		pair, _, err = kv.Get(fmt.Sprintf("%s/database/postgres/POSTGRES_DATABASE_NAME/USERS", c.Env), nil)
+		pair, _, err = kv.Get(fmt.Sprintf("%s/database/postgres/POSTGRES_DATABASE_NAME/PAYMENTS", c.Env), nil)
 		if err != nil {
-			log.Fatalf("SetConfig | could not get POSTGRES_DATABASE_NAME/USERS from consul: %v", err)
+			log.Fatalf("SetConfig | could not get POSTGRES_DATABASE_NAME/PAYMENTS from consul: %v", err)
 		}
 		if pair == nil {
-			log.Fatal("SetConfig | Consul | POSTGRES_DATABASE_NAME/PRODUCTS is required")
+			log.Fatal("SetConfig | Consul | POSTGRES_DATABASE_NAME/PAYMENTS is required")
 		}
 		c.PostgresDatabaseName = string(pair.Value)
 	}()
