@@ -26,6 +26,8 @@ plugins:
       # Payment Service Proto
       - Mpayment/v1/paymentMessage.proto=event-store-service/model/rpc/gen
       - Mpayment/v1/paymentServices.proto=event-store-service/model/rpc/gen
+      - Mpayment/v1/paymentProviderMessage.proto=event-store-service/model/rpc/gen
+      - Mpayment/v1/paymentProviderServices.proto=event-store-service/model/rpc/gen
   - plugin: go-grpc
     out: event-store-service/model/rpc/gen
     opt:
@@ -51,6 +53,8 @@ plugins:
       # Payment Service Proto
       - Mpayment/v1/paymentMessage.proto=event-store-service/model/rpc/gen
       - Mpayment/v1/paymentServices.proto=event-store-service/model/rpc/gen
+      - Mpayment/v1/paymentProviderMessage.proto=event-store-service/model/rpc/gen
+      - Mpayment/v1/paymentProviderServices.proto=event-store-service/model/rpc/gen
 
   #====================== API Gateway Service =======================================
   - plugin: go
@@ -77,6 +81,8 @@ plugins:
       # Payment Service Proto
       - Mpayment/v1/paymentMessage.proto=api-gateway/model/rpc/gen
       - Mpayment/v1/paymentServices.proto=api-gateway/model/rpc/gen
+      - Mpayment/v1/paymentProviderMessage.proto=api-gateway/model/rpc/gen
+      - Mpayment/v1/paymentProviderServices.proto=api-gateway/model/rpc/gen
   - plugin: go-grpc
     out: api-gateway/model/rpc/gen
     opt:
@@ -102,6 +108,8 @@ plugins:
       # Payment Service Proto
       - Mpayment/v1/paymentMessage.proto=api-gateway/model/rpc/gen
       - Mpayment/v1/paymentServices.proto=api-gateway/model/rpc/gen
+      - Mpayment/v1/paymentProviderMessage.proto=api-gateway/model/rpc/gen
+      - Mpayment/v1/paymentProviderServices.proto=api-gateway/model/rpc/gen
 
   #====================== Notification Service =======================================
   - plugin: go
@@ -128,6 +136,8 @@ plugins:
       # Payment Service Proto
       - Mpayment/v1/paymentMessage.proto=notification-service/model/rpc/gen
       - Mpayment/v1/paymentServices.proto=notification-service/model/rpc/gen
+      - Mpayment/v1/paymentProviderMessage.proto=notification-service/model/rpc/gen
+      - Mpayment/v1/paymentProviderServices.proto=notification-service/model/rpc/gen
   - plugin: go-grpc
     out: notification-service/model/rpc/gen
     opt:
@@ -153,6 +163,8 @@ plugins:
       # Payment Service Proto
       - Mpayment/v1/paymentMessage.proto=notification-service/model/rpc/gen
       - Mpayment/v1/paymentServices.proto=notification-service/model/rpc/gen
+      - Mpayment/v1/paymentProviderMessage.proto=notification-service/model/rpc/gen
+      - Mpayment/v1/paymentProviderServices.proto=notification-service/model/rpc/gen
 
   #====================== Product Service =======================================
   - plugin: go
@@ -179,6 +191,8 @@ plugins:
       # Payment Service Proto
       - Mpayment/v1/paymentMessage.proto=product-service/model/rpc/gen
       - Mpayment/v1/paymentServices.proto=product-service/model/rpc/gen
+      - Mpayment/v1/paymentProviderMessage.proto=product-service/model/rpc/gen
+      - Mpayment/v1/paymentProviderServices.proto=product-service/model/rpc/gen
   - plugin: go-grpc
     out: product-service/model/rpc/gen
     opt:
@@ -204,6 +218,8 @@ plugins:
       # Payment Service Proto
       - Mpayment/v1/paymentMessage.proto=product-service/model/rpc/gen
       - Mpayment/v1/paymentServices.proto=product-service/model/rpc/gen
+      - Mpayment/v1/paymentProviderMessage.proto=product-service/model/rpc/gen
+      - Mpayment/v1/paymentProviderServices.proto=product-service/model/rpc/gen
 
   #====================== User Service =======================================
   - plugin: go
@@ -230,6 +246,8 @@ plugins:
       # Payment Service Proto
       - Mpayment/v1/paymentMessage.proto=user-service/model/rpc/gen
       - Mpayment/v1/paymentServices.proto=user-service/model/rpc/gen
+      - Mpayment/v1/paymentProviderMessage.proto=user-service/model/rpc/gen
+      - Mpayment/v1/paymentProviderServices.proto=user-service/model/rpc/gen
   - plugin: go-grpc
     out: user-service/model/rpc/gen
     opt:
@@ -255,6 +273,8 @@ plugins:
       # Payment Service Proto
       - Mpayment/v1/paymentMessage.proto=user-service/model/rpc/gen
       - Mpayment/v1/paymentServices.proto=user-service/model/rpc/gen
+      - Mpayment/v1/paymentProviderMessage.proto=user-service/model/rpc/gen
+      - Mpayment/v1/paymentProviderServices.proto=user-service/model/rpc/gen
 
   #====================== Payment Service =======================================
   - plugin: go
@@ -281,6 +301,8 @@ plugins:
       # Payment Service Proto
       - Mpayment/v1/paymentMessage.proto=payment-service/model/rpc/gen
       - Mpayment/v1/paymentServices.proto=payment-service/model/rpc/gen
+      - Mpayment/v1/paymentProviderMessage.proto=payment-service/model/rpc/gen
+      - Mpayment/v1/paymentProviderServices.proto=payment-service/model/rpc/gen
   - plugin: go-grpc
     out: payment-service/model/rpc/gen
     opt:
@@ -306,6 +328,8 @@ plugins:
       # Payment Service Proto
       - Mpayment/v1/paymentMessage.proto=payment-service/model/rpc/gen
       - Mpayment/v1/paymentServices.proto=payment-service/model/rpc/gen
+      - Mpayment/v1/paymentProviderMessage.proto=payment-service/model/rpc/gen
+      - Mpayment/v1/paymentProviderServices.proto=payment-service/model/rpc/gen
 
   #====================== Commerce Service =======================================
   - plugin: buf.build/community/stephenh-ts-proto

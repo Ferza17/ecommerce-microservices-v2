@@ -1,0 +1,9 @@
+syntax = "proto3";
+package payment_v1;
+
+
+import "payment/v1/paymentProviderMessage.proto";
+
+service PaymentProviderService {
+  rpc FindPaymentProviders(payment_v1.FindPaymentProvidersRequest) returns (payment_v1.FindPaymentProvidersResponse);
+}

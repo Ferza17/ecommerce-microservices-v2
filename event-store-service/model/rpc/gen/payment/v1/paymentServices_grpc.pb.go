@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PaymentServiceClient interface {
 	FindPaymentById(ctx context.Context, in *FindPaymentByIdRequest, opts ...grpc.CallOption) (*Payment, error)
-	FindPaymentByUserIdAndStatus(ctx context.Context, in *FindPaymentByUserIdAndStatusRequest, opts ...grpc.CallOption) (*FindPaymentByUserIdAndStatusRequest, error)
+	FindPaymentByUserIdAndStatus(ctx context.Context, in *FindPaymentByUserIdAndStatusRequest, opts ...grpc.CallOption) (*Payment, error)
 }
 
 type paymentServiceClient struct {
@@ -43,8 +43,8 @@ func (c *paymentServiceClient) FindPaymentById(ctx context.Context, in *FindPaym
 	return out, nil
 }
 
-func (c *paymentServiceClient) FindPaymentByUserIdAndStatus(ctx context.Context, in *FindPaymentByUserIdAndStatusRequest, opts ...grpc.CallOption) (*FindPaymentByUserIdAndStatusRequest, error) {
-	out := new(FindPaymentByUserIdAndStatusRequest)
+func (c *paymentServiceClient) FindPaymentByUserIdAndStatus(ctx context.Context, in *FindPaymentByUserIdAndStatusRequest, opts ...grpc.CallOption) (*Payment, error) {
+	out := new(Payment)
 	err := c.cc.Invoke(ctx, "/payment_v1.PaymentService/FindPaymentByUserIdAndStatus", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (c *paymentServiceClient) FindPaymentByUserIdAndStatus(ctx context.Context,
 // for forward compatibility
 type PaymentServiceServer interface {
 	FindPaymentById(context.Context, *FindPaymentByIdRequest) (*Payment, error)
-	FindPaymentByUserIdAndStatus(context.Context, *FindPaymentByUserIdAndStatusRequest) (*FindPaymentByUserIdAndStatusRequest, error)
+	FindPaymentByUserIdAndStatus(context.Context, *FindPaymentByUserIdAndStatusRequest) (*Payment, error)
 }
 
 // UnimplementedPaymentServiceServer should be embedded to have forward compatible implementations.
@@ -67,7 +67,7 @@ type UnimplementedPaymentServiceServer struct {
 func (UnimplementedPaymentServiceServer) FindPaymentById(context.Context, *FindPaymentByIdRequest) (*Payment, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindPaymentById not implemented")
 }
-func (UnimplementedPaymentServiceServer) FindPaymentByUserIdAndStatus(context.Context, *FindPaymentByUserIdAndStatusRequest) (*FindPaymentByUserIdAndStatusRequest, error) {
+func (UnimplementedPaymentServiceServer) FindPaymentByUserIdAndStatus(context.Context, *FindPaymentByUserIdAndStatusRequest) (*Payment, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindPaymentByUserIdAndStatus not implemented")
 }
 

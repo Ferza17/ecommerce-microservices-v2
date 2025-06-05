@@ -1,0 +1,20 @@
+syntax = "proto3";
+package payment_v1;
+import "google/protobuf/timestamp.proto";
+
+
+message Provider {
+  string id = 1;
+  string name = 2;
+  Provider method = 3;
+  google.protobuf.Timestamp createdAt = 4;
+  google.protobuf.Timestamp updatedAt = 5;
+  google.protobuf.Timestamp discardedAt = 6;
+}
+
+message FindPaymentProvidersRequest {
+}
+
+message FindPaymentProvidersResponse {
+  repeated Provider data = 1;
+}

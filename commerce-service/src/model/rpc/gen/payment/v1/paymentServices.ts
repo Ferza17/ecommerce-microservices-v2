@@ -39,18 +39,14 @@ export const PaymentServiceService = {
     requestSerialize: (value: FindPaymentByUserIdAndStatusRequest) =>
       Buffer.from(FindPaymentByUserIdAndStatusRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer) => FindPaymentByUserIdAndStatusRequest.decode(value),
-    responseSerialize: (value: FindPaymentByUserIdAndStatusRequest) =>
-      Buffer.from(FindPaymentByUserIdAndStatusRequest.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => FindPaymentByUserIdAndStatusRequest.decode(value),
+    responseSerialize: (value: Payment) => Buffer.from(Payment.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Payment.decode(value),
   },
 } as const;
 
 export interface PaymentServiceServer extends UntypedServiceImplementation {
   findPaymentById: handleUnaryCall<FindPaymentByIdRequest, Payment>;
-  findPaymentByUserIdAndStatus: handleUnaryCall<
-    FindPaymentByUserIdAndStatusRequest,
-    FindPaymentByUserIdAndStatusRequest
-  >;
+  findPaymentByUserIdAndStatus: handleUnaryCall<FindPaymentByUserIdAndStatusRequest, Payment>;
 }
 
 export interface PaymentServiceClient extends Client {
@@ -71,18 +67,18 @@ export interface PaymentServiceClient extends Client {
   ): ClientUnaryCall;
   findPaymentByUserIdAndStatus(
     request: FindPaymentByUserIdAndStatusRequest,
-    callback: (error: ServiceError | null, response: FindPaymentByUserIdAndStatusRequest) => void,
+    callback: (error: ServiceError | null, response: Payment) => void,
   ): ClientUnaryCall;
   findPaymentByUserIdAndStatus(
     request: FindPaymentByUserIdAndStatusRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: FindPaymentByUserIdAndStatusRequest) => void,
+    callback: (error: ServiceError | null, response: Payment) => void,
   ): ClientUnaryCall;
   findPaymentByUserIdAndStatus(
     request: FindPaymentByUserIdAndStatusRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: FindPaymentByUserIdAndStatusRequest) => void,
+    callback: (error: ServiceError | null, response: Payment) => void,
   ): ClientUnaryCall;
 }
 

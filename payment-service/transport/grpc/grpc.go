@@ -1,10 +1,13 @@
 package grpc
 
 import (
+	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/payment/v1"
 	paymentPresenter "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/presenter"
+	paymentProviderPresenter "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/provider/presenter"
+
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -47,6 +50,16 @@ func (s *GrpcServer) Serve() {
 	paymentRpc.RegisterPaymentServiceServer(
 		s.grpcServer,
 		paymentPresenter.ProvidePaymentPresenter(),
+	)
+
+	providePaymentProviderPresenter, err := paymentProviderPresenter.ProvidePaymentProviderPresenter(context.Background())
+	if err != nil {
+		s.logger.Error(fmt.Sprintf("failed to provide providePaymentProviderPresenter : %s", zap.Error(err).String))
+		return
+	}
+	paymentRpc.RegisterPaymentProviderServiceServer(
+		s.grpcServer,
+		providePaymentProviderPresenter,
 	)
 
 	// Enable Reflection to Evans grpc client

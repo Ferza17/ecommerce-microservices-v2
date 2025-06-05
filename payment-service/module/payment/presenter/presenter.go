@@ -12,7 +12,7 @@ import (
 type (
 	IPaymentPresenter interface {
 		FindPaymentById(ctx context.Context, request *paymentRpc.FindPaymentByIdRequest) (*paymentRpc.Payment, error)
-		FindPaymentByUserIdAndStatus(ctx context.Context, request *paymentRpc.FindPaymentByUserIdAndStatusRequest) (*paymentRpc.FindPaymentByUserIdAndStatusRequest, error)
+		FindPaymentByUserIdAndStatus(ctx context.Context, request *paymentRpc.FindPaymentByUserIdAndStatusRequest) (*paymentRpc.Payment, error)
 	}
 
 	paymentPresenter struct {

@@ -34,6 +34,11 @@ type Config struct {
 
 	ExchangeEvent        string
 	ExchangeNotification string
+	ExchangePayment      string
+
+	QueueEventCreated                 string
+	QueuePaymentOrderCreated          string
+	QueuePaymentOrderDelayedCancelled string
 
 	CommonSagaStatusPending string
 	CommonSagaStatusSuccess string
@@ -161,6 +166,52 @@ func SetConfig(path string) {
 			log.Fatal("SetConfig | Consul | EXCHANGE/NOTIFICATION is required")
 		}
 		c.ExchangeNotification = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/EXCHANGE/PAYMENT", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get EXCHANGE/PAYMENT from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | EXCHANGE/PAYMENT is required")
+		}
+		c.ExchangePayment = string(pair.Value)
+
+		// QUEUE
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/EVENT/CREATED", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get QUEUE/EVENT/CREATED host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | QUEUE/EVENT/CREATED host is required")
+		}
+		c.QueueEventCreated = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/EVENT/CREATED", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get QUEUE/EVENT/CREATED host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | QUEUE/EVENT/CREATED host is required")
+		}
+		c.QueueEventCreated = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get QUEUE/PAYMENT/ORDER/CREATED host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | QUEUE/PAYMENT/ORDER/CREATED host is required")
+		}
+		c.QueuePaymentOrderCreated = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get QUEUE/PAYMENT/ORDER/CANCELLED host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | QUEUE/PAYMENT/ORDER/CANCELLED host is required")
+		}
+		c.QueuePaymentOrderDelayedCancelled = string(pair.Value)
 	}()
 
 	// COMMON Config

@@ -6,6 +6,5 @@ import (
 )
 
 func (p *paymentPresenter) FindPaymentById(ctx context.Context, request *paymentRpc.FindPaymentByIdRequest) (*paymentRpc.Payment, error) {
-	//TODO implement me
-	panic("implement me")
+	return nil, nil
 }

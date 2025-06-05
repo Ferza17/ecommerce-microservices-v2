@@ -9,7 +9,8 @@ CREATE TABLE Payment
     status      PaymentStatus    NOT NULL,        -- Corresponds to enum PaymentStatus
     provider_id VARCHAR REFERENCES Provider (id), -- FK to Provider table
     user_id     VARCHAR          NOT NULL,        -- Corresponds to string userId
-    created_at  TIMESTAMP        NOT NULL,        -- Corresponds to google.protobuf.Timestamp created_at
-    updated_at  TIMESTAMP        NOT NULL         -- Corresponds to google.protobuf.Timestamp updated_at
+    created_at   TIMESTAMP DEFAULT NOW(), -- Represents `google.protobuf.Timestamp created_at` with DEFAULT NOW()
+    updated_at   TIMESTAMP,               -- Represents `google.protobuf.Timestamp updated_at`, auto-updated on change
+    discarded_at TIMESTAMP
 );
 

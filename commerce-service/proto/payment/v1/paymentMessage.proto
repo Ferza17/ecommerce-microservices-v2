@@ -1,29 +1,14 @@
 syntax = "proto3";
 package payment_v1;
 import "google/protobuf/timestamp.proto";
+import "payment/v1/paymentProviderMessage.proto";
+
 
 enum PaymentStatus {
   PENDING = 0;
-  SUCCESS = 1;
-  FAILED = 2;
-}
-
-message Item {
-  string id = 1;
-  string productId = 2;
-  int32 qty = 4;
-  google.protobuf.Timestamp crated_at = 6;
-  google.protobuf.Timestamp updated_at = 7;
-}
-
-message Payment {
-  string id = 1;
-  string code = 2;
-  repeated Item Items = 3;
-  double totalPrice = 4;
-  PaymentStatus status = 5;
-  Provider provider = 6;
-  string userId = 7;
+  PARTIAL = 1;
+  SUCCESS = 2;
+  FAILED = 3;
 }
 
 enum ProviderMethod  {
@@ -34,14 +19,33 @@ enum ProviderMethod  {
   CASH_ON_DELIVERY = 4;
 }
 
-message Provider {
+message PaymentItem {
   string id = 1;
-  string name = 2;
-  Provider method = 3;
+  string productId = 2;
+  double amount = 3;
+  int32 qty = 4;
+  google.protobuf.Timestamp crated_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+  google.protobuf.Timestamp discardedAt = 7;
 }
 
-message CreatePayment {
-  Item items = 1;
+message Payment {
+  string id = 1;
+  string code = 2;
+  repeated PaymentItem Items = 3;
+  double totalPrice = 4;
+  PaymentStatus status = 5;
+  payment_v1.Provider provider = 6;
+  string userId = 7;
+  google.protobuf.Timestamp createdAt = 8;
+  google.protobuf.Timestamp updatedAt = 9;
+  google.protobuf.Timestamp discardedAt = 10;
+}
+
+// REQUEST / RESPONSE
+
+message CreatePaymentRequest {
+  PaymentItem items = 1;
   string userId = 2;
   double amount = 3;
 }

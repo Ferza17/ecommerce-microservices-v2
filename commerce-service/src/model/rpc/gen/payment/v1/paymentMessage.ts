@@ -7,6 +7,7 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { Timestamp } from "../../google/protobuf/timestamp";
+import { Provider } from "./paymentProviderMessage";
 
 export const protobufPackage = "payment_v1";
 
@@ -113,6 +114,7 @@ export interface PaymentItem {
   qty: number;
   cratedAt: Date | undefined;
   updatedAt: Date | undefined;
+  discardedAt: Date | undefined;
 }
 
 export interface Payment {
@@ -123,15 +125,12 @@ export interface Payment {
   status: PaymentStatus;
   provider: Provider | undefined;
   userId: string;
+  createdAt: Date | undefined;
+  updatedAt: Date | undefined;
+  discardedAt: Date | undefined;
 }
 
-export interface Provider {
-  id: string;
-  name: string;
-  method: Provider | undefined;
-}
-
-export interface CreatePayment {
+export interface CreatePaymentRequest {
   items: PaymentItem | undefined;
   userId: string;
   amount: number;
@@ -152,7 +151,15 @@ export interface FindPaymentByUserIdAndStatusRequest {
 }
 
 function createBasePaymentItem(): PaymentItem {
-  return { id: "", productId: "", amount: 0, qty: 0, cratedAt: undefined, updatedAt: undefined };
+  return {
+    id: "",
+    productId: "",
+    amount: 0,
+    qty: 0,
+    cratedAt: undefined,
+    updatedAt: undefined,
+    discardedAt: undefined,
+  };
 }
 
 export const PaymentItem: MessageFns<PaymentItem> = {
@@ -170,10 +177,13 @@ export const PaymentItem: MessageFns<PaymentItem> = {
       writer.uint32(32).int32(message.qty);
     }
     if (message.cratedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.cratedAt), writer.uint32(50).fork()).join();
+      Timestamp.encode(toTimestamp(message.cratedAt), writer.uint32(42).fork()).join();
     }
     if (message.updatedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.updatedAt), writer.uint32(58).fork()).join();
+      Timestamp.encode(toTimestamp(message.updatedAt), writer.uint32(50).fork()).join();
+    }
+    if (message.discardedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.discardedAt), writer.uint32(58).fork()).join();
     }
     return writer;
   },
@@ -217,12 +227,20 @@ export const PaymentItem: MessageFns<PaymentItem> = {
           message.qty = reader.int32();
           continue;
         }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.cratedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
         case 6: {
           if (tag !== 50) {
             break;
           }
 
-          message.cratedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.updatedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
         case 7: {
@@ -230,7 +248,7 @@ export const PaymentItem: MessageFns<PaymentItem> = {
             break;
           }
 
-          message.updatedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.discardedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -250,6 +268,7 @@ export const PaymentItem: MessageFns<PaymentItem> = {
       qty: isSet(object.qty) ? globalThis.Number(object.qty) : 0,
       cratedAt: isSet(object.cratedAt) ? fromJsonTimestamp(object.cratedAt) : undefined,
       updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
+      discardedAt: isSet(object.discardedAt) ? fromJsonTimestamp(object.discardedAt) : undefined,
     };
   },
 
@@ -273,6 +292,9 @@ export const PaymentItem: MessageFns<PaymentItem> = {
     if (message.updatedAt !== undefined) {
       obj.updatedAt = message.updatedAt.toISOString();
     }
+    if (message.discardedAt !== undefined) {
+      obj.discardedAt = message.discardedAt.toISOString();
+    }
     return obj;
   },
 
@@ -287,12 +309,24 @@ export const PaymentItem: MessageFns<PaymentItem> = {
     message.qty = object.qty ?? 0;
     message.cratedAt = object.cratedAt ?? undefined;
     message.updatedAt = object.updatedAt ?? undefined;
+    message.discardedAt = object.discardedAt ?? undefined;
     return message;
   },
 };
 
 function createBasePayment(): Payment {
-  return { id: "", code: "", Items: [], totalPrice: 0, status: 0, provider: undefined, userId: "" };
+  return {
+    id: "",
+    code: "",
+    Items: [],
+    totalPrice: 0,
+    status: 0,
+    provider: undefined,
+    userId: "",
+    createdAt: undefined,
+    updatedAt: undefined,
+    discardedAt: undefined,
+  };
 }
 
 export const Payment: MessageFns<Payment> = {
@@ -317,6 +351,15 @@ export const Payment: MessageFns<Payment> = {
     }
     if (message.userId !== "") {
       writer.uint32(58).string(message.userId);
+    }
+    if (message.createdAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(66).fork()).join();
+    }
+    if (message.updatedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.updatedAt), writer.uint32(74).fork()).join();
+    }
+    if (message.discardedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.discardedAt), writer.uint32(82).fork()).join();
     }
     return writer;
   },
@@ -384,6 +427,30 @@ export const Payment: MessageFns<Payment> = {
           message.userId = reader.string();
           continue;
         }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 9: {
+          if (tag !== 74) {
+            break;
+          }
+
+          message.updatedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 10: {
+          if (tag !== 82) {
+            break;
+          }
+
+          message.discardedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -402,6 +469,9 @@ export const Payment: MessageFns<Payment> = {
       status: isSet(object.status) ? paymentStatusFromJSON(object.status) : 0,
       provider: isSet(object.provider) ? Provider.fromJSON(object.provider) : undefined,
       userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
+      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
+      updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
+      discardedAt: isSet(object.discardedAt) ? fromJsonTimestamp(object.discardedAt) : undefined,
     };
   },
 
@@ -428,6 +498,15 @@ export const Payment: MessageFns<Payment> = {
     if (message.userId !== "") {
       obj.userId = message.userId;
     }
+    if (message.createdAt !== undefined) {
+      obj.createdAt = message.createdAt.toISOString();
+    }
+    if (message.updatedAt !== undefined) {
+      obj.updatedAt = message.updatedAt.toISOString();
+    }
+    if (message.discardedAt !== undefined) {
+      obj.discardedAt = message.discardedAt.toISOString();
+    }
     return obj;
   },
 
@@ -445,110 +524,19 @@ export const Payment: MessageFns<Payment> = {
       ? Provider.fromPartial(object.provider)
       : undefined;
     message.userId = object.userId ?? "";
+    message.createdAt = object.createdAt ?? undefined;
+    message.updatedAt = object.updatedAt ?? undefined;
+    message.discardedAt = object.discardedAt ?? undefined;
     return message;
   },
 };
 
-function createBaseProvider(): Provider {
-  return { id: "", name: "", method: undefined };
-}
-
-export const Provider: MessageFns<Provider> = {
-  encode(message: Provider, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
-    }
-    if (message.name !== "") {
-      writer.uint32(18).string(message.name);
-    }
-    if (message.method !== undefined) {
-      Provider.encode(message.method, writer.uint32(26).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): Provider {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseProvider();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.id = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.name = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.method = Provider.decode(reader, reader.uint32());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): Provider {
-    return {
-      id: isSet(object.id) ? globalThis.String(object.id) : "",
-      name: isSet(object.name) ? globalThis.String(object.name) : "",
-      method: isSet(object.method) ? Provider.fromJSON(object.method) : undefined,
-    };
-  },
-
-  toJSON(message: Provider): unknown {
-    const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
-    }
-    if (message.name !== "") {
-      obj.name = message.name;
-    }
-    if (message.method !== undefined) {
-      obj.method = Provider.toJSON(message.method);
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<Provider>): Provider {
-    return Provider.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<Provider>): Provider {
-    const message = createBaseProvider();
-    message.id = object.id ?? "";
-    message.name = object.name ?? "";
-    message.method = (object.method !== undefined && object.method !== null)
-      ? Provider.fromPartial(object.method)
-      : undefined;
-    return message;
-  },
-};
-
-function createBaseCreatePayment(): CreatePayment {
+function createBaseCreatePaymentRequest(): CreatePaymentRequest {
   return { items: undefined, userId: "", amount: 0 };
 }
 
-export const CreatePayment: MessageFns<CreatePayment> = {
-  encode(message: CreatePayment, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
+  encode(message: CreatePaymentRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.items !== undefined) {
       PaymentItem.encode(message.items, writer.uint32(10).fork()).join();
     }
@@ -561,10 +549,10 @@ export const CreatePayment: MessageFns<CreatePayment> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): CreatePayment {
+  decode(input: BinaryReader | Uint8Array, length?: number): CreatePaymentRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseCreatePayment();
+    const message = createBaseCreatePaymentRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -601,7 +589,7 @@ export const CreatePayment: MessageFns<CreatePayment> = {
     return message;
   },
 
-  fromJSON(object: any): CreatePayment {
+  fromJSON(object: any): CreatePaymentRequest {
     return {
       items: isSet(object.items) ? PaymentItem.fromJSON(object.items) : undefined,
       userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
@@ -609,7 +597,7 @@ export const CreatePayment: MessageFns<CreatePayment> = {
     };
   },
 
-  toJSON(message: CreatePayment): unknown {
+  toJSON(message: CreatePaymentRequest): unknown {
     const obj: any = {};
     if (message.items !== undefined) {
       obj.items = PaymentItem.toJSON(message.items);
@@ -623,11 +611,11 @@ export const CreatePayment: MessageFns<CreatePayment> = {
     return obj;
   },
 
-  create(base?: DeepPartial<CreatePayment>): CreatePayment {
-    return CreatePayment.fromPartial(base ?? {});
+  create(base?: DeepPartial<CreatePaymentRequest>): CreatePaymentRequest {
+    return CreatePaymentRequest.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<CreatePayment>): CreatePayment {
-    const message = createBaseCreatePayment();
+  fromPartial(object: DeepPartial<CreatePaymentRequest>): CreatePaymentRequest {
+    const message = createBaseCreatePaymentRequest();
     message.items = (object.items !== undefined && object.items !== null)
       ? PaymentItem.fromPartial(object.items)
       : undefined;

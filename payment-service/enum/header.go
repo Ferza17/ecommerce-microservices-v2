@@ -1,15 +1,16 @@
 package enum
 
-type header string
+type HttpHeader string
 
 const (
-	XRequestID header = "X-Request-Id"
+	XRequestIDHeader HttpHeader = "X-Request-Id"
 )
 
-func (e header) String() string {
-	switch e {
-	case XRequestID:
-		return string(e)
+func (t HttpHeader) String() string {
+	switch t {
+	case
+		XRequestIDHeader:
+		return string(t)
 	default:
 		return "unknown"
 	}
