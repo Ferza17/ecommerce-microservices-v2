@@ -4,7 +4,6 @@ go 1.24.2
 
 require (
 	github.com/99designs/gqlgen v0.17.73
-	github.com/go-chi/chi/v5 v5.2.1
 	github.com/go-chi/render v1.0.3
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/mux v1.8.1

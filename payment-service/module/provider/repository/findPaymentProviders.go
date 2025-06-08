@@ -7,7 +7,7 @@ import (
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/payment/v1"
 )
 
-func (r *paymentProviderRepository) FindPaymentProviders(ctx context.Context, requestId string, request *paymentRpc.FindPaymentByIdRequest) ([]*orm.Provider, error) {
+func (r *paymentProviderRepository) FindPaymentProviders(ctx context.Context, requestId string, request *paymentRpc.FindPaymentProvidersRequest) ([]*orm.Provider, error) {
 	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.FindPaymentProviders")
 	defer span.End()
 	var providers []*orm.Provider

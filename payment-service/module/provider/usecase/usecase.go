@@ -1,8 +1,10 @@
 package usecase
 
 import (
+	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
+	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/payment/v1"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/provider/repository"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
 	"github.com/google/wire"
@@ -10,6 +12,7 @@ import (
 
 type (
 	IPaymentProviderUseCase interface {
+		FindPaymentProviders(ctx context.Context, requestId string, request *paymentRpc.FindPaymentProvidersRequest) (*paymentRpc.FindPaymentProvidersResponse, error)
 	}
 
 	paymentProviderUseCase struct {

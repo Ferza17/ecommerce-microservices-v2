@@ -12,7 +12,7 @@ import (
 
 type (
 	IPaymentProviderRepository interface {
-		FindPaymentProviders(ctx context.Context, requestId string, request *paymentRpc.FindPaymentByIdRequest) ([]*orm.Provider, error)
+		FindPaymentProviders(ctx context.Context, requestId string, request *paymentRpc.FindPaymentProvidersRequest) ([]*orm.Provider, error)
 	}
 
 	paymentProviderRepository struct {

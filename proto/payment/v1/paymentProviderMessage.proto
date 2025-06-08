@@ -13,6 +13,7 @@ message Provider {
 }
 
 message FindPaymentProvidersRequest {
+  string name = 1;
 }
 
 message FindPaymentProvidersResponse {

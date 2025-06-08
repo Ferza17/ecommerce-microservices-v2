@@ -1,0 +1,60 @@
+type PaymentItem {
+    id: String!
+    productId: String!
+    amount: Float!
+    qty: Int!
+    cratedAt: String!
+    updatedAt: String!
+    discardedAt: String!
+}
+
+enum PaymentStatus {
+    PENDING
+    PARTIAL
+    SUCCESS
+    FAILED
+}
+
+
+type Payment {
+    id: String!
+    code: String!
+    items: [PaymentItem!]!
+    totalPrice: Float!
+    status: PaymentStatus!
+    provider: ProviderMethod!
+    userId: String!
+    createdAt: String!
+    updatedAt: String!
+    discardedAt: String!
+}
+
+input CreatePaymentRequest {
+    items: PaymentItemInput!
+    userId: String!
+    amount: Float!
+}
+
+input PaymentItemInput {
+    id: String!
+    productId: String!
+    amount: Float!
+    qty: Int!
+    cratedAt: String!
+    updatedAt: String!
+    discardedAt: String!
+}
+
+input CallBackPaymentRequest {
+    paymentId: String!
+    amount: Float!
+}
+
+input FindPaymentByIdRequest {
+    id: String!
+}
+
+input FindPaymentByUserIdAndStatusRequest {
+    userId: String!
+    status: PaymentStatus!
+}

@@ -1,0 +1,24 @@
+type Provider {
+    id: String!
+    name: String!
+    method: ProviderMethod!
+    createdAt: String!
+    updatedAt: String!
+    discardedAt: String!
+}
+
+enum ProviderMethod {
+    BANK
+    CRYPTO_CURRENCY
+    DEBIT
+    CREDIT
+    CASH_ON_DELIVERY
+}
+
+type FindPaymentProvidersResponse {
+    data: [Provider!]!
+}
+
+input FindPaymentProvidersRequest {
+    name: String
+}

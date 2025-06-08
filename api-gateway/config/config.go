@@ -56,6 +56,9 @@ type Config struct {
 	ProductServiceURL  string
 	ProductServiceName string
 
+	PaymentServiceURL  string
+	PaymentServiceName string
+
 	CommerceServiceURL  string
 	CommerceServiceName string
 
@@ -363,6 +366,39 @@ func SetConfig(path string) {
 			log.Fatal("SetConfig | Consul | USER SERVICE_NAME host is required")
 		}
 		c.UserServiceName = string(pair.Value)
+	}()
+
+	// Payment Service
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		pair, _, err := kv.Get(fmt.Sprintf("%s/services/payment/RPC_HOST", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get PAYMENT RPC_HOST host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | PAYMENT RPC_HOST host is required")
+		}
+		paymentServiceRpcHost := string(pair.Value)
+		pair, _, err = kv.Get(fmt.Sprintf("%s/services/payment/RPC_PORT", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get PAYMENT RPC_PORT host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | PAYMENT RPC_PORT host is required")
+		}
+		paymentServiceRpcPort := string(pair.Value)
+		c.PaymentServiceURL = fmt.Sprintf("%s:%s", paymentServiceRpcHost, paymentServiceRpcPort)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/services/payment/SERVICE_NAME", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get PAYMENT SERVICE_NAME host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | PAYMENT SERVICE_NAME host is required")
+		}
+		c.PaymentServiceName = string(pair.Value)
+
 	}()
 
 	// Commerce Service

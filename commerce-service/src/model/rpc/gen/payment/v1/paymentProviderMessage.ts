@@ -20,6 +20,7 @@ export interface Provider {
 }
 
 export interface FindPaymentProvidersRequest {
+  name: string;
 }
 
 export interface FindPaymentProvidersResponse {
@@ -169,11 +170,14 @@ export const Provider: MessageFns<Provider> = {
 };
 
 function createBaseFindPaymentProvidersRequest(): FindPaymentProvidersRequest {
-  return {};
+  return { name: "" };
 }
 
 export const FindPaymentProvidersRequest: MessageFns<FindPaymentProvidersRequest> = {
-  encode(_: FindPaymentProvidersRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(message: FindPaymentProvidersRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
     return writer;
   },
 
@@ -184,6 +188,14 @@ export const FindPaymentProvidersRequest: MessageFns<FindPaymentProvidersRequest
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -193,20 +205,24 @@ export const FindPaymentProvidersRequest: MessageFns<FindPaymentProvidersRequest
     return message;
   },
 
-  fromJSON(_: any): FindPaymentProvidersRequest {
-    return {};
+  fromJSON(object: any): FindPaymentProvidersRequest {
+    return { name: isSet(object.name) ? globalThis.String(object.name) : "" };
   },
 
-  toJSON(_: FindPaymentProvidersRequest): unknown {
+  toJSON(message: FindPaymentProvidersRequest): unknown {
     const obj: any = {};
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
     return obj;
   },
 
   create(base?: DeepPartial<FindPaymentProvidersRequest>): FindPaymentProvidersRequest {
     return FindPaymentProvidersRequest.fromPartial(base ?? {});
   },
-  fromPartial(_: DeepPartial<FindPaymentProvidersRequest>): FindPaymentProvidersRequest {
+  fromPartial(object: DeepPartial<FindPaymentProvidersRequest>): FindPaymentProvidersRequest {
     const message = createBaseFindPaymentProvidersRequest();
+    message.name = object.name ?? "";
     return message;
   },
 };
