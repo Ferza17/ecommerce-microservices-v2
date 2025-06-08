@@ -305,11 +305,11 @@ func SetConfig(path string) {
 		c.PostgresDatabaseName = string(pair.Value)
 	}()
 
-	// User Service Config
+	// Payment Service Config
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		pair, _, err := kv.Get(fmt.Sprintf("%s/services/user/SERVICE_NAME", c.Env), nil)
+		pair, _, err := kv.Get(fmt.Sprintf("%s/services/payment/SERVICE_NAME", c.Env), nil)
 		if err != nil {
 			log.Fatalf("SetConfig | could not get SERVICE_NAME from consul: %v", err)
 		}
@@ -327,7 +327,7 @@ func SetConfig(path string) {
 		}
 		c.NotificationServiceName = string(pair.Value)
 
-		pair, _, err = kv.Get(fmt.Sprintf("%s/services/user/RPC_HOST", c.Env), nil)
+		pair, _, err = kv.Get(fmt.Sprintf("%s/services/payment/RPC_HOST", c.Env), nil)
 		if err != nil {
 			log.Fatalf("SetConfig | could not get RPC_HOST from consul: %v", err)
 		}
@@ -336,7 +336,7 @@ func SetConfig(path string) {
 		}
 		c.RpcHost = string(pair.Value)
 
-		pair, _, err = kv.Get(fmt.Sprintf("%s/services/user/RPC_PORT", c.Env), nil)
+		pair, _, err = kv.Get(fmt.Sprintf("%s/services/payment/RPC_PORT", c.Env), nil)
 		if err != nil {
 			log.Fatalf("SetConfig | could not get RPC_PORT from consul: %v", err)
 		}

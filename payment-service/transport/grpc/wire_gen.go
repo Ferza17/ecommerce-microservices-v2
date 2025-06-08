@@ -7,15 +7,33 @@
 package grpc
 
 import (
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/postgresql"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/presenter"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/repository"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/usecase"
+	presenter2 "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/provider/presenter"
+	repository2 "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/provider/repository"
+	usecase2 "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/provider/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
-	"google.golang.org/grpc"
 )
 
 // Injectors from wire.go:
 
-// ProvideGrpcServer initializes a GrpcServer instance using Wire and returns it as an IGrpcServer.
-func ProvideGrpcServer(options ...grpc.ServerOption) IGrpcServer {
-	iZapLogger := logger.ProvideLogger()
-	iGrpcServer := NewGrpcServer(iZapLogger, options...)
+// ProvideGrpcServer wires all dependencies for IGrpcServer
+func ProvideGrpcServer() IGrpcServer {
+	iZapLogger := logger.NewZapLogger()
+	iPostgreSQLInfrastructure := postgresql.NewPostgresqlInfrastructure(iZapLogger)
+	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
+	iPaymentRepository := repository.NewPaymentRepository(iPostgreSQLInfrastructure, iTelemetryInfrastructure, iZapLogger)
+	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iZapLogger)
+	iPaymentUseCase := usecase.NewPaymentUseCase(iPaymentRepository, iRabbitMQInfrastructure, iTelemetryInfrastructure, iZapLogger)
+	iPaymentPresenter := presenter.NewPaymentPresenter(iPaymentUseCase, iTelemetryInfrastructure, iZapLogger)
+	iPaymentProviderRepository := repository2.NewPaymentProviderRepository(iPostgreSQLInfrastructure, iTelemetryInfrastructure, iZapLogger)
+	iPaymentProviderUseCase := usecase2.NewPaymentProviderUseCase(iPaymentProviderRepository, iRabbitMQInfrastructure, iTelemetryInfrastructure, iZapLogger)
+	iPaymentProviderPresenter := presenter2.NewPaymentProviderPresenter(iPaymentProviderUseCase, iTelemetryInfrastructure, iZapLogger)
+	v := ProvideGrpcServerOptions()
+	iGrpcServer := NewGrpcServer(iZapLogger, iPaymentPresenter, iPaymentProviderPresenter, v...)
 	return iGrpcServer
 }

@@ -13,7 +13,8 @@ import (
 // Injectors from wire.go:
 
 // ProvidePostgreSQLInfrastructure wires dependencies for IPostgreSQLInfrastructure.
-func ProvidePostgreSQLInfrastructure(logger2 logger.IZapLogger) IPostgreSQLInfrastructure {
-	iPostgreSQLInfrastructure := NewPostgresqlInfrastructure(logger2)
+func ProvidePostgreSQLInfrastructure() IPostgreSQLInfrastructure {
+	iZapLogger := logger.NewZapLogger()
+	iPostgreSQLInfrastructure := NewPostgresqlInfrastructure(iZapLogger)
 	return iPostgreSQLInfrastructure
 }

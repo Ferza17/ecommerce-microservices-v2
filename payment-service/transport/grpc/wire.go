@@ -4,16 +4,42 @@
 package grpc
 
 import (
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/postgresql"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
+	paymentPresenter "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/presenter"
+	paymentRepository "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/repository"
+	paymentUseCase "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/usecase"
+	paymentProviderPresenter "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/provider/presenter"
+	paymentProviderRepository "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/provider/repository"
+	paymentProviderUseCase "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/provider/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
 	"github.com/google/wire"
-	"google.golang.org/grpc"
 )
 
-// ProvideGrpcServer initializes a GrpcServer instance using Wire and returns it as an IGrpcServer.
-func ProvideGrpcServer(options ...grpc.ServerOption) IGrpcServer {
+// ProvideGrpcServer wires all dependencies for IGrpcServer
+func ProvideGrpcServer() IGrpcServer {
 	wire.Build(
-		logger.ProvideLogger, // Provides the IZapLogger implementation needed by NewGrpcServer
-		NewGrpcServer,        // Combines dependencies to construct and return the IGrpcServer
+		// Infrastructure layer
+		logger.Set,
+		postgresql.Set,
+		telemetry.Set,
+		rabbitmq.Set,
+
+		// Repository layer
+		paymentRepository.Set,
+		paymentProviderRepository.Set,
+
+		// Use case layer
+		paymentUseCase.Set,
+		paymentProviderUseCase.Set,
+
+		// Presenter layer
+		paymentPresenter.Set,
+		paymentProviderPresenter.Set,
+
+		// gRPC Server
+		Set,
 	)
 	return nil
 }

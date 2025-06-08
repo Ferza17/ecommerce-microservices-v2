@@ -6,6 +6,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
+	"github.com/google/wire"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"
@@ -24,6 +25,11 @@ type (
 		sqlDB  *sql.DB
 		logger logger.IZapLogger
 	}
+)
+
+// Set is a Wire provider set for PostgresSQL dependencies
+var Set = wire.NewSet(
+	NewPostgresqlInfrastructure,
 )
 
 func NewPostgresqlInfrastructure(logger logger.IZapLogger) IPostgreSQLInfrastructure {

@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *PaymentRepository) FindPaymentByUserIdAndStatus(ctx context.Context, requestId string, userId string, status enum.PaymentStatus) (*orm.Payment, error) {
+func (r *paymentRepository) FindPaymentByUserIdAndStatus(ctx context.Context, requestId string, userId string, status enum.PaymentStatus) (*orm.Payment, error) {
 	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.FindPaymentById")
 	defer span.End()
 

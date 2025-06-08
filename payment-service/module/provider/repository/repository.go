@@ -7,6 +7,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/model/orm"
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/payment/v1"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
+	"github.com/google/wire"
 )
 
 type (
@@ -19,6 +20,11 @@ type (
 		telemetryInfrastructure   telemetry.ITelemetryInfrastructure
 		logger                    logger.IZapLogger
 	}
+)
+
+// Set is a Wire provider set for PaymentProvider repository dependencies
+var Set = wire.NewSet(
+	NewPaymentProviderRepository,
 )
 
 // NewPaymentProviderRepository creates and returns a new instance of IPaymentProviderRepository.

@@ -3,6 +3,7 @@ package presenter
 import (
 	"context"
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/payment/v1"
+	"github.com/google/wire"
 
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/usecase"
@@ -21,6 +22,11 @@ type (
 		telemetryInfrastructure telemetry.ITelemetryInfrastructure
 		logger                  logger.IZapLogger
 	}
+)
+
+// Set is a Wire provider set for Payment presenter dependencies
+var Set = wire.NewSet(
+	NewPaymentPresenter,
 )
 
 // NewPaymentPresenter creates a new instance of paymentPresenter.

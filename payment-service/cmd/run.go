@@ -13,7 +13,7 @@ var runCommand = &cobra.Command{
 	Use: "run",
 	Run: func(cmd *cobra.Command, args []string) {
 		grpcServer := grpc.ProvideGrpcServer()
-		rebbitMQServer := rabbitmq.ProvideRabbitMQServer()
+		rebbitMQServer := rabbitmq.ProvideGrpcServer()
 		quit := make(chan os.Signal, 1)
 		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 

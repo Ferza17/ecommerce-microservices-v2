@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"github.com/google/wire"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"log"
@@ -41,6 +42,11 @@ func NewZapLogger() IZapLogger {
 		logger: logger,
 	}
 }
+
+// Set is a Wire provider set for logger dependencies
+var Set = wire.NewSet(
+	NewZapLogger,
+)
 
 func (z *zapLogger) Info(msg string, fields ...zap.Field) {
 	z.logger.Info(msg, fields...)

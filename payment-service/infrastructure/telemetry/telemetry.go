@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
+	"github.com/google/wire"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/jaeger"
 	"go.opentelemetry.io/otel/propagation"
@@ -23,6 +24,11 @@ type (
 		logger         logger.IZapLogger
 		tracerProvider *sdktrace.TracerProvider
 	}
+)
+
+// Set is a Wire provider set for telemetry dependencies
+var Set = wire.NewSet(
+	NewTelemetry,
 )
 
 func NewTelemetry(logger logger.IZapLogger) ITelemetryInfrastructure {

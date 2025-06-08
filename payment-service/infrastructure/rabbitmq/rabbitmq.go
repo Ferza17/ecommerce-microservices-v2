@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
+	"github.com/google/wire"
 	"github.com/rabbitmq/amqp091-go"
 )
 
@@ -16,6 +17,11 @@ type (
 		amqpConn *amqp091.Connection
 		logger   logger.IZapLogger
 	}
+)
+
+// Add interface binding for RabbitMQInfrastructure
+var Set = wire.NewSet(
+	NewRabbitMQInfrastructure,
 )
 
 func NewRabbitMQInfrastructure(

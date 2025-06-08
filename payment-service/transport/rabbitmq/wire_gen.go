@@ -7,16 +7,26 @@
 package rabbitmq
 
 import (
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/postgresql"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/consumer"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/repository"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
 )
 
 // Injectors from wire.go:
 
-// ProvideRabbitMQServer initializes a rabbitMQServer using Wire.
-func ProvideRabbitMQServer() IRabbitMQServer {
-	iZapLogger := logger.ProvideLogger()
-	iRabbitMQInfrastructure := rabbitmq.ProvideRabbitMQInfrastructure(iZapLogger)
-	iRabbitMQServer := NewRabbitMQServer(iRabbitMQInfrastructure, iZapLogger)
+// ProvideGrpcServer wires all dependencies for IGrpcServer
+func ProvideGrpcServer() IRabbitMQServer {
+	iZapLogger := logger.NewZapLogger()
+	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iZapLogger)
+	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
+	iPostgreSQLInfrastructure := postgresql.NewPostgresqlInfrastructure(iZapLogger)
+	iPaymentRepository := repository.NewPaymentRepository(iPostgreSQLInfrastructure, iTelemetryInfrastructure, iZapLogger)
+	iPaymentUseCase := usecase.NewPaymentUseCase(iPaymentRepository, iRabbitMQInfrastructure, iTelemetryInfrastructure, iZapLogger)
+	iPaymentConsumer := consumer.NewPaymentConsumer(iRabbitMQInfrastructure, iTelemetryInfrastructure, iPaymentUseCase, iZapLogger)
+	iRabbitMQServer := NewRabbitMQServer(iRabbitMQInfrastructure, iPaymentConsumer, iZapLogger)
 	return iRabbitMQServer
 }

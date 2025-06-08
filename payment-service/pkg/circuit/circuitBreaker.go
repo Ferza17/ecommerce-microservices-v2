@@ -2,7 +2,9 @@ package circuit
 
 import (
 	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
+	"github.com/google/wire"
 	"github.com/sony/gobreaker"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,6 +21,18 @@ type (
 		logger logger.IZapLogger
 	}
 )
+
+// Set is a Wire provider set for circuit breaker dependencies
+var Set = wire.NewSet(
+	NewCircuitBreaker,
+	wire.Bind(new(ICircuitBreaker), new(*circuitBreaker)),
+	ProvideServiceName,
+)
+
+// ProvideServiceName provides the service name for circuit breaker
+func ProvideServiceName() string {
+	return config.Get().ServiceName
+}
 
 func NewCircuitBreaker(svcName string, logger logger.IZapLogger) ICircuitBreaker {
 	return &circuitBreaker{

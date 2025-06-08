@@ -6,6 +6,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
+	"github.com/google/wire"
 )
 
 type (
@@ -20,6 +21,11 @@ type (
 		paymentUseCase          usecase.IPaymentUseCase
 		logger                  logger.IZapLogger
 	}
+)
+
+// Set is a Wire provider set for Payment consumer dependencies
+var Set = wire.NewSet(
+	NewPaymentConsumer, // Wire will automatically infer the binding for IPaymentConsumer
 )
 
 // NewPaymentConsumer creates a new instance of IPaymentConsumer.
