@@ -4,11 +4,12 @@ generate-proto:
 
 GQLGEN_VERSION = v0.17.73
 generate-gql:
-	go get github.com/99designs/gqlgen@$(GQLGEN_VERSION) && \
-	go get github.com/99designs/gqlgen/codegen/config@$(GQLGEN_VERSION) && \
-	go get github.com/99designs/gqlgen/internal/imports@$(GQLGEN_VERSION) && \
-	go get github.com/99designs/gqlgen/api@$(GQLGEN_VERSION) && \
-	go get github.com/99designs/gqlgen@$(GQLGEN_VERSION) && \
+	rm -rf model/graph/gen/*.go && \
+	go get github.com/99designs/gqlgen@v0.17.73 && \
+	go get github.com/99designs/gqlgen/codegen/config@v0.17.73 && \
+	go get github.com/99designs/gqlgen/internal/imports@v0.17.73 && \
+	go get github.com/99designs/gqlgen/api@v0.17.73 && \
+	go get github.com/99designs/gqlgen@v0.17.73 && \
 	go run github.com/99designs/gqlgen generate && \
 	go mod tidy
 

@@ -56,57 +56,6 @@ export function paymentStatusToJSON(object: PaymentStatus): string {
   }
 }
 
-export enum ProviderMethod {
-  BANK = 0,
-  CRYPTO_CURRENCY = 1,
-  DEBIT = 2,
-  CREDIT = 3,
-  CASH_ON_DELIVERY = 4,
-  UNRECOGNIZED = -1,
-}
-
-export function providerMethodFromJSON(object: any): ProviderMethod {
-  switch (object) {
-    case 0:
-    case "BANK":
-      return ProviderMethod.BANK;
-    case 1:
-    case "CRYPTO_CURRENCY":
-      return ProviderMethod.CRYPTO_CURRENCY;
-    case 2:
-    case "DEBIT":
-      return ProviderMethod.DEBIT;
-    case 3:
-    case "CREDIT":
-      return ProviderMethod.CREDIT;
-    case 4:
-    case "CASH_ON_DELIVERY":
-      return ProviderMethod.CASH_ON_DELIVERY;
-    case -1:
-    case "UNRECOGNIZED":
-    default:
-      return ProviderMethod.UNRECOGNIZED;
-  }
-}
-
-export function providerMethodToJSON(object: ProviderMethod): string {
-  switch (object) {
-    case ProviderMethod.BANK:
-      return "BANK";
-    case ProviderMethod.CRYPTO_CURRENCY:
-      return "CRYPTO_CURRENCY";
-    case ProviderMethod.DEBIT:
-      return "DEBIT";
-    case ProviderMethod.CREDIT:
-      return "CREDIT";
-    case ProviderMethod.CASH_ON_DELIVERY:
-      return "CASH_ON_DELIVERY";
-    case ProviderMethod.UNRECOGNIZED:
-    default:
-      return "UNRECOGNIZED";
-  }
-}
-
 export interface PaymentItem {
   id: string;
   productId: string;

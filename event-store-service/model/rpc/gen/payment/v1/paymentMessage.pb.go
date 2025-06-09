@@ -73,61 +73,6 @@ func (PaymentStatus) EnumDescriptor() ([]byte, []int) {
 	return file_payment_v1_paymentMessage_proto_rawDescGZIP(), []int{0}
 }
 
-type ProviderMethod int32
-
-const (
-	ProviderMethod_BANK             ProviderMethod = 0
-	ProviderMethod_CRYPTO_CURRENCY  ProviderMethod = 1
-	ProviderMethod_DEBIT            ProviderMethod = 2
-	ProviderMethod_CREDIT           ProviderMethod = 3
-	ProviderMethod_CASH_ON_DELIVERY ProviderMethod = 4
-)
-
-// Enum value maps for ProviderMethod.
-var (
-	ProviderMethod_name = map[int32]string{
-		0: "BANK",
-		1: "CRYPTO_CURRENCY",
-		2: "DEBIT",
-		3: "CREDIT",
-		4: "CASH_ON_DELIVERY",
-	}
-	ProviderMethod_value = map[string]int32{
-		"BANK":             0,
-		"CRYPTO_CURRENCY":  1,
-		"DEBIT":            2,
-		"CREDIT":           3,
-		"CASH_ON_DELIVERY": 4,
-	}
-)
-
-func (x ProviderMethod) Enum() *ProviderMethod {
-	p := new(ProviderMethod)
-	*p = x
-	return p
-}
-
-func (x ProviderMethod) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (ProviderMethod) Descriptor() protoreflect.EnumDescriptor {
-	return file_payment_v1_paymentMessage_proto_enumTypes[1].Descriptor()
-}
-
-func (ProviderMethod) Type() protoreflect.EnumType {
-	return &file_payment_v1_paymentMessage_proto_enumTypes[1]
-}
-
-func (x ProviderMethod) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use ProviderMethod.Descriptor instead.
-func (ProviderMethod) EnumDescriptor() ([]byte, []int) {
-	return file_payment_v1_paymentMessage_proto_rawDescGZIP(), []int{1}
-}
-
 type PaymentItem struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -643,13 +588,7 @@ var file_payment_v1_paymentMessage_proto_rawDesc = []byte{
 	0x61, 0x74, 0x75, 0x73, 0x12, 0x0b, 0x0a, 0x07, 0x50, 0x45, 0x4e, 0x44, 0x49, 0x4e, 0x47, 0x10,
 	0x00, 0x12, 0x0b, 0x0a, 0x07, 0x50, 0x41, 0x52, 0x54, 0x49, 0x41, 0x4c, 0x10, 0x01, 0x12, 0x0b,
 	0x0a, 0x07, 0x53, 0x55, 0x43, 0x43, 0x45, 0x53, 0x53, 0x10, 0x02, 0x12, 0x0a, 0x0a, 0x06, 0x46,
-	0x41, 0x49, 0x4c, 0x45, 0x44, 0x10, 0x03, 0x2a, 0x5c, 0x0a, 0x0e, 0x50, 0x72, 0x6f, 0x76, 0x69,
-	0x64, 0x65, 0x72, 0x4d, 0x65, 0x74, 0x68, 0x6f, 0x64, 0x12, 0x08, 0x0a, 0x04, 0x42, 0x41, 0x4e,
-	0x4b, 0x10, 0x00, 0x12, 0x13, 0x0a, 0x0f, 0x43, 0x52, 0x59, 0x50, 0x54, 0x4f, 0x5f, 0x43, 0x55,
-	0x52, 0x52, 0x45, 0x4e, 0x43, 0x59, 0x10, 0x01, 0x12, 0x09, 0x0a, 0x05, 0x44, 0x45, 0x42, 0x49,
-	0x54, 0x10, 0x02, 0x12, 0x0a, 0x0a, 0x06, 0x43, 0x52, 0x45, 0x44, 0x49, 0x54, 0x10, 0x03, 0x12,
-	0x14, 0x0a, 0x10, 0x43, 0x41, 0x53, 0x48, 0x5f, 0x4f, 0x4e, 0x5f, 0x44, 0x45, 0x4c, 0x49, 0x56,
-	0x45, 0x52, 0x59, 0x10, 0x04, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x41, 0x49, 0x4c, 0x45, 0x44, 0x10, 0x03, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -664,31 +603,30 @@ func file_payment_v1_paymentMessage_proto_rawDescGZIP() []byte {
 	return file_payment_v1_paymentMessage_proto_rawDescData
 }
 
-var file_payment_v1_paymentMessage_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_payment_v1_paymentMessage_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_payment_v1_paymentMessage_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_payment_v1_paymentMessage_proto_goTypes = []interface{}{
 	(PaymentStatus)(0),                          // 0: payment_v1.PaymentStatus
-	(ProviderMethod)(0),                         // 1: payment_v1.ProviderMethod
-	(*PaymentItem)(nil),                         // 2: payment_v1.PaymentItem
-	(*Payment)(nil),                             // 3: payment_v1.Payment
-	(*CreatePaymentRequest)(nil),                // 4: payment_v1.CreatePaymentRequest
-	(*CallBackPaymentRequest)(nil),              // 5: payment_v1.CallBackPaymentRequest
-	(*FindPaymentByIdRequest)(nil),              // 6: payment_v1.FindPaymentByIdRequest
-	(*FindPaymentByUserIdAndStatusRequest)(nil), // 7: payment_v1.FindPaymentByUserIdAndStatusRequest
-	(*timestamppb.Timestamp)(nil),               // 8: google.protobuf.Timestamp
-	(*Provider)(nil),                            // 9: payment_v1.Provider
+	(*PaymentItem)(nil),                         // 1: payment_v1.PaymentItem
+	(*Payment)(nil),                             // 2: payment_v1.Payment
+	(*CreatePaymentRequest)(nil),                // 3: payment_v1.CreatePaymentRequest
+	(*CallBackPaymentRequest)(nil),              // 4: payment_v1.CallBackPaymentRequest
+	(*FindPaymentByIdRequest)(nil),              // 5: payment_v1.FindPaymentByIdRequest
+	(*FindPaymentByUserIdAndStatusRequest)(nil), // 6: payment_v1.FindPaymentByUserIdAndStatusRequest
+	(*timestamppb.Timestamp)(nil),               // 7: google.protobuf.Timestamp
+	(*Provider)(nil),                            // 8: payment_v1.Provider
 }
 var file_payment_v1_paymentMessage_proto_depIdxs = []int32{
-	8,  // 0: payment_v1.PaymentItem.crated_at:type_name -> google.protobuf.Timestamp
-	8,  // 1: payment_v1.PaymentItem.updated_at:type_name -> google.protobuf.Timestamp
-	8,  // 2: payment_v1.PaymentItem.discardedAt:type_name -> google.protobuf.Timestamp
-	2,  // 3: payment_v1.Payment.Items:type_name -> payment_v1.PaymentItem
+	7,  // 0: payment_v1.PaymentItem.crated_at:type_name -> google.protobuf.Timestamp
+	7,  // 1: payment_v1.PaymentItem.updated_at:type_name -> google.protobuf.Timestamp
+	7,  // 2: payment_v1.PaymentItem.discardedAt:type_name -> google.protobuf.Timestamp
+	1,  // 3: payment_v1.Payment.Items:type_name -> payment_v1.PaymentItem
 	0,  // 4: payment_v1.Payment.status:type_name -> payment_v1.PaymentStatus
-	9,  // 5: payment_v1.Payment.provider:type_name -> payment_v1.Provider
-	8,  // 6: payment_v1.Payment.createdAt:type_name -> google.protobuf.Timestamp
-	8,  // 7: payment_v1.Payment.updatedAt:type_name -> google.protobuf.Timestamp
-	8,  // 8: payment_v1.Payment.discardedAt:type_name -> google.protobuf.Timestamp
-	2,  // 9: payment_v1.CreatePaymentRequest.items:type_name -> payment_v1.PaymentItem
+	8,  // 5: payment_v1.Payment.provider:type_name -> payment_v1.Provider
+	7,  // 6: payment_v1.Payment.createdAt:type_name -> google.protobuf.Timestamp
+	7,  // 7: payment_v1.Payment.updatedAt:type_name -> google.protobuf.Timestamp
+	7,  // 8: payment_v1.Payment.discardedAt:type_name -> google.protobuf.Timestamp
+	1,  // 9: payment_v1.CreatePaymentRequest.items:type_name -> payment_v1.PaymentItem
 	0,  // 10: payment_v1.FindPaymentByUserIdAndStatusRequest.status:type_name -> payment_v1.PaymentStatus
 	11, // [11:11] is the sub-list for method output_type
 	11, // [11:11] is the sub-list for method input_type
@@ -782,7 +720,7 @@ func file_payment_v1_paymentMessage_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_payment_v1_paymentMessage_proto_rawDesc,
-			NumEnums:      2,
+			NumEnums:      1,
 			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,

@@ -11,14 +11,6 @@ enum PaymentStatus {
   FAILED = 3;
 }
 
-enum ProviderMethod  {
-  BANK = 0;
-  CRYPTO_CURRENCY = 1;
-  DEBIT = 2;
-  CREDIT = 3;
-  CASH_ON_DELIVERY = 4;
-}
-
 message PaymentItem {
   string id = 1;
   string productId = 2;

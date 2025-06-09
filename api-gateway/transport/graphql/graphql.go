@@ -39,6 +39,8 @@ func (srv *GraphQLTransport) Serve() {
 			ProductUseCase:          srv.bootstrap.ProductUseCase,
 			CartUseCase:             srv.bootstrap.CartUseCase,
 			AuthUseCase:             srv.bootstrap.AuthUseCase,
+			PaymentUseCase:          srv.bootstrap.PaymentUseCase,
+			PaymentProviderUseCase:  srv.bootstrap.PaymentProviderUseCase,
 			TelemetryInfrastructure: srv.bootstrap.TelemetryInfrastructure,
 			Logger:                  srv.bootstrap.Logger,
 		},

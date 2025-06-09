@@ -1,12 +1,4 @@
-type PaymentItem {
-    id: String!
-    productId: String!
-    amount: Float!
-    qty: Int!
-    cratedAt: String!
-    updatedAt: String!
-    discardedAt: String!
-}
+# Enums
 
 enum PaymentStatus {
     PENDING
@@ -15,6 +7,17 @@ enum PaymentStatus {
     FAILED
 }
 
+# Types
+
+type PaymentItem {
+    id: String!
+    productId: String!
+    amount: Float!
+    qty: Int!
+    createdAt: Time
+    updatedAt: Time
+    discardedAt: Time
+}
 
 type Payment {
     id: String!
@@ -22,27 +25,19 @@ type Payment {
     items: [PaymentItem!]!
     totalPrice: Float!
     status: PaymentStatus!
-    provider: ProviderMethod!
+    provider: Provider # Assuming Provider is defined elsewhere
     userId: String!
-    createdAt: String!
-    updatedAt: String!
-    discardedAt: String!
+    createdAt: Time
+    updatedAt: Time
+    discardedAt: Time
 }
+
+# Input Types (for Requests)
 
 input CreatePaymentRequest {
     items: PaymentItemInput!
     userId: String!
     amount: Float!
-}
-
-input PaymentItemInput {
-    id: String!
-    productId: String!
-    amount: Float!
-    qty: Int!
-    cratedAt: String!
-    updatedAt: String!
-    discardedAt: String!
 }
 
 input CallBackPaymentRequest {
@@ -57,4 +52,16 @@ input FindPaymentByIdRequest {
 input FindPaymentByUserIdAndStatusRequest {
     userId: String!
     status: PaymentStatus!
+}
+
+# Supporting Input Types
+
+input PaymentItemInput {
+    id: String!
+    productId: String!
+    amount: Float!
+    qty: Int!
+    createdAt: Time
+    updatedAt: Time
+    discardedAt: Time
 }

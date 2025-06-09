@@ -1,5 +1,8 @@
 schema:
-  - model/graph/schema/*.graphqls
+  - model/graph/schema/commerce/cart/v1/*.graphqls
+  - model/graph/schema/payment/v1/*.graphqls
+  - model/graph/schema/product/v1/*.graphqls
+  - model/graph/schema/user/v1/*.graphqls
 
 exec:
   package: gen
@@ -26,18 +29,17 @@ autobind:
   - github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/notification/v1
   - github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/product/v1
   - github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1
-# This section declares type mapping between the GraphQL and go type systems
-#
-# The first line in each type will be used as defaults for resolver arguments and
-# modelgen, the others will be allowed when binding to fields. Configure them to
-# your liking
-models:
+  - github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/payment/v1
 
-#  Float:
-#    model:
-#      - github.com/99designs/gqlgen/graphql.Float
-#      - github.com/99designs/gqlgen/graphql.Float64
-#      - github.com/99designs/gqlgen/graphql.Float32
+# Removed the PaymentStatus and ProviderMethod mappings
+models:
+  PaymentStatus:
+    model:
+      - github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/payment/v1.PaymentStatus
+
+  ProviderMethod:
+    model:
+      - github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/payment/v1.ProviderMethod
 
   Int:
     model:
@@ -45,8 +47,6 @@ models:
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
 
-
   Time:
     model:
       - github.com/99designs/gqlgen/graphql.Time
-

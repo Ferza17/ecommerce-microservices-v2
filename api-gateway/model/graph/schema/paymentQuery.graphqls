@@ -1,4 +1,0 @@
-extend type Query {
-    findPaymentById(request: FindPaymentByIdRequest!): Payment
-    findPaymentByUserIdAndStatus(request: FindPaymentByUserIdAndStatusRequest!): [Payment!]!
-}

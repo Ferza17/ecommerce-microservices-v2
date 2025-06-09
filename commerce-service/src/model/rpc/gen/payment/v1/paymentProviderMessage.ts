@@ -10,10 +10,61 @@ import { Timestamp } from "../../google/protobuf/timestamp";
 
 export const protobufPackage = "payment_v1";
 
+export enum ProviderMethod {
+  BANK = 0,
+  CRYPTO_CURRENCY = 1,
+  DEBIT = 2,
+  CREDIT = 3,
+  CASH_ON_DELIVERY = 4,
+  UNRECOGNIZED = -1,
+}
+
+export function providerMethodFromJSON(object: any): ProviderMethod {
+  switch (object) {
+    case 0:
+    case "BANK":
+      return ProviderMethod.BANK;
+    case 1:
+    case "CRYPTO_CURRENCY":
+      return ProviderMethod.CRYPTO_CURRENCY;
+    case 2:
+    case "DEBIT":
+      return ProviderMethod.DEBIT;
+    case 3:
+    case "CREDIT":
+      return ProviderMethod.CREDIT;
+    case 4:
+    case "CASH_ON_DELIVERY":
+      return ProviderMethod.CASH_ON_DELIVERY;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return ProviderMethod.UNRECOGNIZED;
+  }
+}
+
+export function providerMethodToJSON(object: ProviderMethod): string {
+  switch (object) {
+    case ProviderMethod.BANK:
+      return "BANK";
+    case ProviderMethod.CRYPTO_CURRENCY:
+      return "CRYPTO_CURRENCY";
+    case ProviderMethod.DEBIT:
+      return "DEBIT";
+    case ProviderMethod.CREDIT:
+      return "CREDIT";
+    case ProviderMethod.CASH_ON_DELIVERY:
+      return "CASH_ON_DELIVERY";
+    case ProviderMethod.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
 export interface Provider {
   id: string;
   name: string;
-  method: Provider | undefined;
+  method: ProviderMethod;
   createdAt: Date | undefined;
   updatedAt: Date | undefined;
   discardedAt: Date | undefined;
@@ -28,7 +79,7 @@ export interface FindPaymentProvidersResponse {
 }
 
 function createBaseProvider(): Provider {
-  return { id: "", name: "", method: undefined, createdAt: undefined, updatedAt: undefined, discardedAt: undefined };
+  return { id: "", name: "", method: 0, createdAt: undefined, updatedAt: undefined, discardedAt: undefined };
 }
 
 export const Provider: MessageFns<Provider> = {
@@ -39,8 +90,8 @@ export const Provider: MessageFns<Provider> = {
     if (message.name !== "") {
       writer.uint32(18).string(message.name);
     }
-    if (message.method !== undefined) {
-      Provider.encode(message.method, writer.uint32(26).fork()).join();
+    if (message.method !== 0) {
+      writer.uint32(24).int32(message.method);
     }
     if (message.createdAt !== undefined) {
       Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(34).fork()).join();
@@ -78,11 +129,11 @@ export const Provider: MessageFns<Provider> = {
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.method = Provider.decode(reader, reader.uint32());
+          message.method = reader.int32() as any;
           continue;
         }
         case 4: {
@@ -122,7 +173,7 @@ export const Provider: MessageFns<Provider> = {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
-      method: isSet(object.method) ? Provider.fromJSON(object.method) : undefined,
+      method: isSet(object.method) ? providerMethodFromJSON(object.method) : 0,
       createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
       updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
       discardedAt: isSet(object.discardedAt) ? fromJsonTimestamp(object.discardedAt) : undefined,
@@ -137,8 +188,8 @@ export const Provider: MessageFns<Provider> = {
     if (message.name !== "") {
       obj.name = message.name;
     }
-    if (message.method !== undefined) {
-      obj.method = Provider.toJSON(message.method);
+    if (message.method !== 0) {
+      obj.method = providerMethodToJSON(message.method);
     }
     if (message.createdAt !== undefined) {
       obj.createdAt = message.createdAt.toISOString();
@@ -159,9 +210,7 @@ export const Provider: MessageFns<Provider> = {
     const message = createBaseProvider();
     message.id = object.id ?? "";
     message.name = object.name ?? "";
-    message.method = (object.method !== undefined && object.method !== null)
-      ? Provider.fromPartial(object.method)
-      : undefined;
+    message.method = object.method ?? 0;
     message.createdAt = object.createdAt ?? undefined;
     message.updatedAt = object.updatedAt ?? undefined;
     message.discardedAt = object.discardedAt ?? undefined;

@@ -1,0 +1,4 @@
+extend type Query {
+    findPaymentById(id: String!): Payment
+    findPaymentByUserIdAndStatus(userId: String!, status: PaymentStatus!): Payment
+}
