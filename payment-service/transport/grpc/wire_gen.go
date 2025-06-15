@@ -27,7 +27,7 @@ func ProvideGrpcServer() IGrpcServer {
 	iPostgreSQLInfrastructure := postgresql.NewPostgresqlInfrastructure(iZapLogger)
 	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
 	iPaymentRepository := repository.NewPaymentRepository(iPostgreSQLInfrastructure, iTelemetryInfrastructure, iZapLogger)
-	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iZapLogger)
+	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iTelemetryInfrastructure, iZapLogger)
 	iPaymentUseCase := usecase.NewPaymentUseCase(iPaymentRepository, iRabbitMQInfrastructure, iTelemetryInfrastructure, iZapLogger)
 	iPaymentPresenter := presenter.NewPaymentPresenter(iPaymentUseCase, iTelemetryInfrastructure, iZapLogger)
 	iPaymentProviderRepository := repository2.NewPaymentProviderRepository(iPostgreSQLInfrastructure, iTelemetryInfrastructure, iZapLogger)

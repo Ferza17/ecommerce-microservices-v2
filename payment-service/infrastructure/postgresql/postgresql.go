@@ -48,9 +48,7 @@ func NewPostgresqlInfrastructure(logger logger.IZapLogger) IPostgreSQLInfrastruc
 
 	gormConfig := gorm.Config{}
 	if config.Get().Env == enum.CONFIG_ENV_LOCAL {
-		gormConfig = gorm.Config{
-			Logger: gormLogger.Default.LogMode(gormLogger.Info),
-		}
+		gormConfig.Logger = gormLogger.Default.LogMode(gormLogger.Info)
 	}
 
 	pgDialect := postgres.New(postgres.Config{

@@ -27,7 +27,7 @@ services:
     networks:
       - local
 
-# FOR TEST EMAIL NOTIFICATION
+  # FOR TEST EMAIL NOTIFICATION
   mailhog-local:
     image: mailhog/mailhog:latest
     container_name: mailhog-local
@@ -62,7 +62,7 @@ services:
     networks:
       - local
 
-# FOR TRACING
+  # FOR TRACING
   jaeger-local:
     container_name: jaeger-local
     image: jaegertracing/all-in-one:1.37
@@ -81,7 +81,7 @@ services:
       - '14269:14269'
       - '9411:9411'
 
-#ELASTIC
+  #ELASTIC
   elasticsearch-local:
     container_name: elasticsearch-local
     image: elasticsearch:8.4.1
@@ -90,28 +90,33 @@ services:
       - "discovery.type=single-node"
       - "cluster.name=products"
       - "node.name=node1"
-      - "bootstrap.memory_lock=true"
+      - "bootstrap.memory_lock=false"
       - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
       - "xpack.security.enabled=false"
     ports:
       - '9200:9200'
       - '9300:9300'
-    networks:
-      - local
+    volumes:
+      - ./entrypoint/elasticsearch/init-index.sh:/init-index.sh
+      - ./entrypoint/elasticsearch/products-mapping.json:/products-mapping.json
 
-#Kibana
-  kibana-local:
-    container_name: kibana-local
-    image: kibana:8.4.1
-    depends_on:
-      - elasticsearch-local
-    ports:
-      - '5601:5601'
-    environment:
-      - 'ELASTICSEARCH_HOSTS=http://elasticsearch-local:9200'
-      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
     networks:
       - local
+    command: []
+
+  #Kibana
+#  kibana-local:
+#    container_name: kibana-local
+#    image: kibana:8.4.1
+#    depends_on:
+#      - elasticsearch-local
+#    ports:
+#      - '5601:5601'
+#    environment:
+#      - 'ELASTICSEARCH_HOSTS=http://elasticsearch-local:9200'
+#      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+#    networks:
+#      - local
 
   # Service Discovery
   consul-local:

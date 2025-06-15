@@ -6,7 +6,7 @@ package resolver
 
 import (
 	"context"
-	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/util"
 	"time"
 
 	gen1 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/graph/gen"
@@ -15,17 +15,17 @@ import (
 
 // CreatedAt is the resolver for the createdAt field.
 func (r *providerResolver) CreatedAt(ctx context.Context, obj *gen.Provider) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - createdAt"))
+	return util.ConvertProtoTimestampToTime(obj.CreatedAt), nil
 }
 
 // UpdatedAt is the resolver for the updatedAt field.
 func (r *providerResolver) UpdatedAt(ctx context.Context, obj *gen.Provider) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: UpdatedAt - updatedAt"))
+	return util.ConvertProtoTimestampToTime(obj.UpdatedAt), nil
 }
 
 // DiscardedAt is the resolver for the discardedAt field.
 func (r *providerResolver) DiscardedAt(ctx context.Context, obj *gen.Provider) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: DiscardedAt - discardedAt"))
+	return util.ConvertProtoTimestampToTime(obj.DiscardedAt), nil
 }
 
 // Provider returns gen1.ProviderResolver implementation.

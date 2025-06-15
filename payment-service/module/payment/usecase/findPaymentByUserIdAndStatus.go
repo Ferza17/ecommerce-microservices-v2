@@ -13,6 +13,10 @@ import (
 )
 
 func (u *paymentUseCase) FindPaymentByUserIdAndStatus(ctx context.Context, requestId string, request *paymentRpc.FindPaymentByUserIdAndStatusRequest) (*paymentRpc.Payment, error) {
+	// Start tracing the use case
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.FindPaymentProviders")
+	defer span.End()
+
 	// Parse the payment status from request
 	paymentStatus, err := enum.ProtoToPaymentStatus(request.Status)
 	if err != nil {

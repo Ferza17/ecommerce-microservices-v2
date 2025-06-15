@@ -6,12 +6,14 @@ package resolver
 
 import (
 	"context"
-	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
 
 	gen "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/payment/v1"
 )
 
 // FindPaymentProviders is the resolver for the findPaymentProviders field.
 func (r *queryResolver) FindPaymentProviders(ctx context.Context, input *gen.FindPaymentProvidersRequest) (*gen.FindPaymentProvidersResponse, error) {
-	panic(fmt.Errorf("not implemented: FindPaymentProviders - findPaymentProviders"))
+	ctx, span := r.TelemetryInfrastructure.Tracer(ctx, "Resolver.FindPaymentProviders")
+	defer span.End()
+	return r.PaymentProviderUseCase.FindPaymentProviders(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), input)
 }

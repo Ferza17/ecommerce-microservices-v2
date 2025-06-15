@@ -14,5 +14,4 @@ RUN go build -o product-service
 FROM alpine:3.12.1
 WORKDIR /usr/bin
 COPY --from=build /go/src/github.com/Ferza17/ecommerce-microservices-v2/product-service .
-CMD [ "./product-service","grpc" ]
 

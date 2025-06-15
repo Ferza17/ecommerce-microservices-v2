@@ -11,12 +11,14 @@ import (
 )
 
 func (p *paymentProviderPresenter) FindPaymentProviders(ctx context.Context, request *paymentRpc.FindPaymentProvidersRequest) (*paymentRpc.FindPaymentProvidersResponse, error) {
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return nil, status.Error(codes.InvalidArgument, "metadata not found")
-	}
 	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.FindPaymentProviders")
 	defer span.End()
+
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		p.logger.Error(fmt.Sprintf("metadata not found"))
+		return nil, status.Error(codes.InvalidArgument, "metadata not found")
+	}
 
 	requestID := ""
 	if values := md.Get(enum.XRequestIDHeader.String()); len(values) > 0 {

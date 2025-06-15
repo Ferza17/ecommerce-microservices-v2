@@ -21,7 +21,8 @@ type Config struct {
 	ConsulPort string `mapstructure:"CONSUL_PORT"`
 
 	// From Consul
-	ServiceName             string
+	ServiceName string
+
 	NotificationServiceName string
 
 	JaegerTelemetryHost string

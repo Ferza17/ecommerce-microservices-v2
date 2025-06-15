@@ -7,13 +7,19 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/orm"
 	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
+	"time"
 
 	"log"
 	"strings"
 )
 
 func (r *productElasticsearchRepository) FindProductsWithPagination(ctx context.Context, requestId string, request *productRpc.FindProductsWithPaginationRequest) ([]*orm.Product, int64, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.Elasticsearch.FindProductsWithPagination")
+	var (
+		ctxTimeout, cancel = context.WithTimeout(ctx, 5*time.Second)
+	)
+	defer cancel()
+
+	ctxTimeout, span := r.telemetryInfrastructure.Tracer(ctxTimeout, "Repository.Elasticsearch.FindProductsWithPagination")
 	defer span.End()
 
 	reqBody := map[string]interface{}{}
@@ -55,7 +61,7 @@ func (r *productElasticsearchRepository) FindProductsWithPagination(ctx context.
 	}
 
 	searchResult, err := r.elasticsearchInfrastructure.GetClient().Search(
-		r.elasticsearchInfrastructure.GetClient().Search.WithContext(ctx),
+		r.elasticsearchInfrastructure.GetClient().Search.WithContext(ctxTimeout),
 		r.elasticsearchInfrastructure.GetClient().Search.WithIndex(productIndex),
 		r.elasticsearchInfrastructure.GetClient().Search.WithBody(bytes.NewReader(queryJSON)),
 		r.elasticsearchInfrastructure.GetClient().Search.WithFrom(offset),

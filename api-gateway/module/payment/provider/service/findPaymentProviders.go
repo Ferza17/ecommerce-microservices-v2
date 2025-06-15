@@ -6,8 +6,11 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/payment/v1"
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/util"
+	"github.com/sony/gobreaker"
 	"go.opentelemetry.io/otel"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 func (p *paymentProviderService) FindPaymentProviders(ctx context.Context, requestId string, request *paymentRpc.FindPaymentProvidersRequest) (*paymentRpc.FindPaymentProvidersResponse, error) {
@@ -17,7 +20,17 @@ func (p *paymentProviderService) FindPaymentProviders(ctx context.Context, reque
 		otel.GetTextMapPropagator().Inject(ctx, &util.MetadataHeaderCarrier{md})
 		ctx = metadata.NewOutgoingContext(ctx, md)
 
-		return p.svc.FindPaymentProviders(ctx, request)
+		resp, err := p.svc.FindPaymentProviders(ctx, request)
+		if err != nil {
+			st, ok := status.FromError(err)
+			if ok {
+				if st.Code() == codes.NotFound {
+					return nil, gobreaker.ErrOpenState
+				}
+			}
+			return nil, err
+		}
+		return resp, nil
 	})
 
 	if err != nil {

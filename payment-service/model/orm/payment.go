@@ -17,4 +17,10 @@ type Payment struct {
 	CreatedAt   time.Time          `gorm:"not null;autoCreateTime"`                                              // Default CURRENT_TIMESTAMP
 	UpdatedAt   time.Time          `gorm:"not null;autoUpdateTime"`                                              // Auto-update timestamp
 	DiscardedAt *time.Time         `gorm:"index"`
+
+	PaymentItems []PaymentItem `gorm:"foreignKey:PaymentID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"` // One-to-Many relationship
+}
+
+func (Payment) TableName() string {
+	return "payment"
 }

@@ -7,6 +7,7 @@ package resolver
 import (
 	"context"
 	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/util"
 	"time"
 
 	gen1 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/graph/gen"
@@ -15,32 +16,32 @@ import (
 
 // CreatedAt is the resolver for the createdAt field.
 func (r *paymentResolver) CreatedAt(ctx context.Context, obj *gen.Payment) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - createdAt"))
+	return util.ConvertProtoTimestampToTime(obj.CreatedAt), nil
 }
 
 // UpdatedAt is the resolver for the updatedAt field.
 func (r *paymentResolver) UpdatedAt(ctx context.Context, obj *gen.Payment) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: UpdatedAt - updatedAt"))
+	return util.ConvertProtoTimestampToTime(obj.UpdatedAt), nil
 }
 
 // DiscardedAt is the resolver for the discardedAt field.
 func (r *paymentResolver) DiscardedAt(ctx context.Context, obj *gen.Payment) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: DiscardedAt - discardedAt"))
+	return util.ConvertProtoTimestampToTime(obj.DiscardedAt), nil
 }
 
 // CreatedAt is the resolver for the createdAt field.
 func (r *paymentItemResolver) CreatedAt(ctx context.Context, obj *gen.PaymentItem) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - createdAt"))
+	return util.ConvertProtoTimestampToTime(obj.CratedAt), nil
 }
 
 // UpdatedAt is the resolver for the updatedAt field.
 func (r *paymentItemResolver) UpdatedAt(ctx context.Context, obj *gen.PaymentItem) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: UpdatedAt - updatedAt"))
+	return util.ConvertProtoTimestampToTime(obj.UpdatedAt), nil
 }
 
 // DiscardedAt is the resolver for the discardedAt field.
 func (r *paymentItemResolver) DiscardedAt(ctx context.Context, obj *gen.PaymentItem) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: DiscardedAt - discardedAt"))
+	return util.ConvertProtoTimestampToTime(obj.DiscardedAt), nil
 }
 
 // Items is the resolver for the items field.

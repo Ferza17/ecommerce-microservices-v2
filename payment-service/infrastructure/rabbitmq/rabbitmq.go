@@ -1,8 +1,10 @@
 package rabbitmq
 
 import (
+	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
 	"github.com/google/wire"
 	"github.com/rabbitmq/amqp091-go"
@@ -10,12 +12,16 @@ import (
 
 type (
 	IRabbitMQInfrastructure interface {
+		Publish(ctx context.Context, requestId string, exchange string, queue string, message []byte) error
+		PublishDelayedMessage(ctx context.Context, requestId string, exchange string, queue string, message []byte, delayMs int) error
+
 		Close() error
 		GetConnection() *amqp091.Connection
 	}
 	RabbitMQInfrastructure struct {
-		amqpConn *amqp091.Connection
-		logger   logger.IZapLogger
+		amqpConn                *amqp091.Connection
+		telemetryInfrastructure telemetry.ITelemetryInfrastructure
+		logger                  logger.IZapLogger
 	}
 )
 
@@ -25,6 +31,7 @@ var Set = wire.NewSet(
 )
 
 func NewRabbitMQInfrastructure(
+	telemetryInfrastructure telemetry.ITelemetryInfrastructure,
 	logger logger.IZapLogger,
 ) IRabbitMQInfrastructure {
 	amqpConn, err := amqp091.Dial(
@@ -39,8 +46,9 @@ func NewRabbitMQInfrastructure(
 	}
 
 	return &RabbitMQInfrastructure{
-		amqpConn: amqpConn,
-		logger:   logger,
+		amqpConn:                amqpConn,
+		telemetryInfrastructure: telemetryInfrastructure,
+		logger:                  logger,
 	}
 }
 

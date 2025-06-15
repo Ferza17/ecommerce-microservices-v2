@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
+	"time"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -11,10 +12,15 @@ import (
 )
 
 func (u *productUseCase) FindProductsWithPagination(ctx context.Context, requestId string, req *productRpc.FindProductsWithPaginationRequest) (*productRpc.FindProductsWithPaginationResponse, error) {
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.FindProductsWithPagination")
+	var (
+		ctxTimeout, cancel = context.WithTimeout(ctx, 5*time.Second)
+	)
+	defer cancel()
+
+	ctxTimeout, span := u.telemetryInfrastructure.Tracer(ctxTimeout, "UseCase.FindProductsWithPagination")
 	defer span.End()
 
-	fetchedProducts, total, err := u.productElasticsearchRepository.FindProductsWithPagination(ctx, requestId, req)
+	fetchedProducts, total, err := u.productElasticsearchRepository.FindProductsWithPagination(ctxTimeout, requestId, req)
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("requestId : %s , error finding products: %v", requestId, err))
 		return nil, status.Error(codes.Internal, err.Error())
