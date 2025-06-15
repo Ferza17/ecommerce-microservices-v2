@@ -6,6 +6,10 @@ import (
 	"time"
 )
 
+type CreatePaymentResponse struct {
+	Message *string `json:"message,omitempty"`
+}
+
 type DeleteCartItemRequest struct {
 	ProductID *string `json:"productId,omitempty"`
 	UserID    *string `json:"userId,omitempty"`

@@ -6,10 +6,16 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/orm"
 	"log"
+	"time"
 )
 
 func (r *productElasticsearchRepository) FindProductById(ctx context.Context, requestId string, id string) (*orm.Product, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.Elasticsearch.FindProductById")
+	var (
+		ctxTimeout, cancel = context.WithTimeout(ctx, 5*time.Second)
+	)
+	defer cancel()
+
+	ctxTimeout, span := r.telemetryInfrastructure.Tracer(ctxTimeout, "Repository.Elasticsearch.FindProductById")
 	defer span.End()
 
 	res, err := r.elasticsearchInfrastructure.GetClient().Get(productIndex, id)

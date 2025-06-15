@@ -13,6 +13,7 @@ import (
 type (
 	IPaymentUseCase interface {
 		CreatePayment(ctx context.Context, requestId string, request *paymentRpc.CreatePaymentRequest) error
+		PaymentOrderDelayedCancelled(ctx context.Context, requestId string, request *paymentRpc.PaymentOrderDelayedCancelledRequest) error
 
 		FindPaymentById(ctx context.Context, requestId string, request *paymentRpc.FindPaymentByIdRequest) (*paymentRpc.Payment, error)
 		FindPaymentByUserIdAndStatus(ctx context.Context, requestId string, request *paymentRpc.FindPaymentByUserIdAndStatusRequest) (*paymentRpc.Payment, error)

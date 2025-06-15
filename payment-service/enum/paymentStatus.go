@@ -45,3 +45,12 @@ func PaymentStatusToProto(status PaymentStatus) (paymentRpc.PaymentStatus, error
 		return paymentRpc.PaymentStatus(0), fmt.Errorf("invalid PaymentStatus: %s", status)
 	}
 }
+
+func (e PaymentStatus) String() string {
+	switch e {
+	case PaymentStatusPending, PaymentStatusPartial, PaymentStatusSuccess, PaymentStatusFailed:
+		return string(e)
+	default:
+		return "unknown"
+	}
+}

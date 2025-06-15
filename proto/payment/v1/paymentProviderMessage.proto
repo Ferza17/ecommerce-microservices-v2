@@ -27,3 +27,7 @@ message FindPaymentProvidersRequest {
 message FindPaymentProvidersResponse {
   repeated Provider data = 1;
 }
+
+message FindPaymentProviderByIdRequest {
+  string id = 1;
+}

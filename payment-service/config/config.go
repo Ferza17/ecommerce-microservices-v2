@@ -21,7 +21,9 @@ type Config struct {
 	ConsulPort string `mapstructure:"CONSUL_PORT"`
 
 	// From Consul
-	ServiceName             string
+	ServiceName               string
+	PaymentOrderCancelledInMs int
+
 	NotificationServiceName string
 
 	JaegerTelemetryHost string
@@ -344,6 +346,20 @@ func SetConfig(path string) {
 			log.Fatal("SetConfig | Consul | RPC_PORT is required")
 		}
 		c.RpcPort = string(pair.Value)
+
+		// Pay
+		pair, _, err = kv.Get(fmt.Sprintf("%s/services/payment/PAYMENT_ORDER_CANCELLED_IN_MS", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get  from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul |  is required")
+		}
+		temp, err := strconv.ParseInt(string(pair.Value), 10, 64)
+		if err != nil {
+			log.Fatalf("SetConfig | could not parse PAYMENT_ORDER_CANCELLED_IN_MS to int: %v", err)
+		}
+		c.PaymentOrderCancelledInMs = int(temp) // Explicitly cast int64 to int
 	}()
 
 	wg.Wait()

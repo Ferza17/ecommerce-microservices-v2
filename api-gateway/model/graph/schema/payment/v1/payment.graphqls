@@ -35,9 +35,14 @@ type Payment {
 # Input Types (for Requests)
 
 input CreatePaymentRequest {
-    items: PaymentItemInput!
+    items: [PaymentItemInput!]!
     userId: String!
     amount: Float!
+    providerId: String!
+}
+
+type CreatePaymentResponse {
+    message: String
 }
 
 input CallBackPaymentRequest {

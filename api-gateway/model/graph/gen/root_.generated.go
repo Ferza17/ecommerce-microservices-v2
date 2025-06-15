@@ -11,9 +11,9 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	gen "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/commerce/v1"
-	gen3 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/payment/v1"
-	gen1 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/product/v1"
-	gen2 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
+	gen1 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/payment/v1"
+	gen2 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/product/v1"
+	gen3 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -67,6 +67,10 @@ type ComplexityRoot struct {
 		Id func(childComplexity int) int
 	}
 
+	CreatePaymentResponse struct {
+		Message func(childComplexity int) int
+	}
+
 	CreateProductResponse struct {
 		Id func(childComplexity int) int
 	}
@@ -102,13 +106,14 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		CreateCartItem     func(childComplexity int, input *gen.CreateCartItemRequest) int
-		CreateProduct      func(childComplexity int, input gen1.CreateProductRequest) int
-		CreateUser         func(childComplexity int, input gen2.CreateUserRequest) int
+		CreatePayment      func(childComplexity int, input gen1.CreatePaymentRequest) int
+		CreateProduct      func(childComplexity int, input gen2.CreateProductRequest) int
+		CreateUser         func(childComplexity int, input gen3.CreateUserRequest) int
 		DeleteCartItem     func(childComplexity int, input *DeleteCartItemRequest) int
 		DeleteProductByID  func(childComplexity int, id string) int
 		UpdateCartItemByID func(childComplexity int, input *gen.UpdateCartItemByIdRequest) int
-		UpdateProductByID  func(childComplexity int, input gen1.UpdateProductByIdRequest) int
-		UpdateUserByID     func(childComplexity int, input gen2.UpdateUserByIdRequest) int
+		UpdateProductByID  func(childComplexity int, input gen2.UpdateProductByIdRequest) int
+		UpdateUserByID     func(childComplexity int, input gen3.UpdateUserByIdRequest) int
 	}
 
 	Payment struct {
@@ -159,11 +164,11 @@ type ComplexityRoot struct {
 	Query struct {
 		FindCartItemsWithPagination  func(childComplexity int, input *gen.FindCartItemsWithPaginationRequest) int
 		FindPaymentByID              func(childComplexity int, id string) int
-		FindPaymentByUserIDAndStatus func(childComplexity int, userID string, status gen3.PaymentStatus) int
-		FindPaymentProviders         func(childComplexity int, input *gen3.FindPaymentProvidersRequest) int
+		FindPaymentByUserIDAndStatus func(childComplexity int, userID string, status gen1.PaymentStatus) int
+		FindPaymentProviders         func(childComplexity int, input *gen1.FindPaymentProvidersRequest) int
 		FindProductByID              func(childComplexity int, id string) int
-		FindProductsWithPagination   func(childComplexity int, filter gen1.FindProductsWithPaginationRequest) int
-		FindUserByEmailAndPassword   func(childComplexity int, input gen2.FindUserByEmailAndPasswordRequest) int
+		FindProductsWithPagination   func(childComplexity int, filter gen2.FindProductsWithPaginationRequest) int
+		FindUserByEmailAndPassword   func(childComplexity int, input gen3.FindUserByEmailAndPasswordRequest) int
 		FindUserByID                 func(childComplexity int, id string) int
 	}
 
@@ -275,6 +280,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.CreateCartItemResponse.Id(childComplexity), true
 
+	case "CreatePaymentResponse.message":
+		if e.complexity.CreatePaymentResponse.Message == nil {
+			break
+		}
+
+		return e.complexity.CreatePaymentResponse.Message(childComplexity), true
+
 	case "CreateProductResponse.id":
 		if e.complexity.CreateProductResponse.Id == nil {
 			break
@@ -371,6 +383,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Mutation.CreateCartItem(childComplexity, args["input"].(*gen.CreateCartItemRequest)), true
 
+	case "Mutation.createPayment":
+		if e.complexity.Mutation.CreatePayment == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createPayment_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreatePayment(childComplexity, args["input"].(gen1.CreatePaymentRequest)), true
+
 	case "Mutation.createProduct":
 		if e.complexity.Mutation.CreateProduct == nil {
 			break
@@ -381,7 +405,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateProduct(childComplexity, args["input"].(gen1.CreateProductRequest)), true
+		return e.complexity.Mutation.CreateProduct(childComplexity, args["input"].(gen2.CreateProductRequest)), true
 
 	case "Mutation.createUser":
 		if e.complexity.Mutation.CreateUser == nil {
@@ -393,7 +417,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateUser(childComplexity, args["input"].(gen2.CreateUserRequest)), true
+		return e.complexity.Mutation.CreateUser(childComplexity, args["input"].(gen3.CreateUserRequest)), true
 
 	case "Mutation.deleteCartItem":
 		if e.complexity.Mutation.DeleteCartItem == nil {
@@ -441,7 +465,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateProductByID(childComplexity, args["input"].(gen1.UpdateProductByIdRequest)), true
+		return e.complexity.Mutation.UpdateProductByID(childComplexity, args["input"].(gen2.UpdateProductByIdRequest)), true
 
 	case "Mutation.updateUserById":
 		if e.complexity.Mutation.UpdateUserByID == nil {
@@ -453,7 +477,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateUserByID(childComplexity, args["input"].(gen2.UpdateUserByIdRequest)), true
+		return e.complexity.Mutation.UpdateUserByID(childComplexity, args["input"].(gen3.UpdateUserByIdRequest)), true
 
 	case "Payment.code":
 		if e.complexity.Payment.Code == nil {
@@ -720,7 +744,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.FindPaymentByUserIDAndStatus(childComplexity, args["userId"].(string), args["status"].(gen3.PaymentStatus)), true
+		return e.complexity.Query.FindPaymentByUserIDAndStatus(childComplexity, args["userId"].(string), args["status"].(gen1.PaymentStatus)), true
 
 	case "Query.findPaymentProviders":
 		if e.complexity.Query.FindPaymentProviders == nil {
@@ -732,7 +756,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.FindPaymentProviders(childComplexity, args["input"].(*gen3.FindPaymentProvidersRequest)), true
+		return e.complexity.Query.FindPaymentProviders(childComplexity, args["input"].(*gen1.FindPaymentProvidersRequest)), true
 
 	case "Query.findProductById":
 		if e.complexity.Query.FindProductByID == nil {
@@ -756,7 +780,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.FindProductsWithPagination(childComplexity, args["filter"].(gen1.FindProductsWithPaginationRequest)), true
+		return e.complexity.Query.FindProductsWithPagination(childComplexity, args["filter"].(gen2.FindProductsWithPaginationRequest)), true
 
 	case "Query.findUserByEmailAndPassword":
 		if e.complexity.Query.FindUserByEmailAndPassword == nil {
@@ -768,7 +792,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.FindUserByEmailAndPassword(childComplexity, args["input"].(gen2.FindUserByEmailAndPasswordRequest)), true
+		return e.complexity.Query.FindUserByEmailAndPassword(childComplexity, args["input"].(gen3.FindUserByEmailAndPasswordRequest)), true
 
 	case "Query.findUserById":
 		if e.complexity.Query.FindUserByID == nil {
@@ -1067,9 +1091,14 @@ type Payment {
 # Input Types (for Requests)
 
 input CreatePaymentRequest {
-    items: PaymentItemInput!
+    items: [PaymentItemInput!]!
     userId: String!
     amount: Float!
+    providerId: String!
+}
+
+type CreatePaymentResponse {
+    message: String
 }
 
 input CallBackPaymentRequest {
@@ -1098,6 +1127,9 @@ input PaymentItemInput {
     discardedAt: Time
 }
 `, BuiltIn: false},
+	{Name: "../schema/payment/v1/paymentMutation.graphqls", Input: `extend type Mutation {
+    createPayment(input: CreatePaymentRequest!): CreatePaymentResponse
+}`, BuiltIn: false},
 	{Name: "../schema/payment/v1/paymentProvider.graphqls", Input: `# Enums
 
 enum ProviderMethod {

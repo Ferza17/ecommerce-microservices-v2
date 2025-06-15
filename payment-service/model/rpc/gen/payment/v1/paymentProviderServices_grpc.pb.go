@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	PaymentProviderService_FindPaymentProviders_FullMethodName = "/payment_v1.PaymentProviderService/FindPaymentProviders"
+	PaymentProviderService_FindPaymentProviders_FullMethodName    = "/payment_v1.PaymentProviderService/FindPaymentProviders"
+	PaymentProviderService_FindPaymentProviderById_FullMethodName = "/payment_v1.PaymentProviderService/FindPaymentProviderById"
 )
 
 // PaymentProviderServiceClient is the client API for PaymentProviderService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PaymentProviderServiceClient interface {
 	FindPaymentProviders(ctx context.Context, in *FindPaymentProvidersRequest, opts ...grpc.CallOption) (*FindPaymentProvidersResponse, error)
+	FindPaymentProviderById(ctx context.Context, in *FindPaymentProviderByIdRequest, opts ...grpc.CallOption) (*Provider, error)
 }
 
 type paymentProviderServiceClient struct {
@@ -47,11 +49,22 @@ func (c *paymentProviderServiceClient) FindPaymentProviders(ctx context.Context,
 	return out, nil
 }
 
+func (c *paymentProviderServiceClient) FindPaymentProviderById(ctx context.Context, in *FindPaymentProviderByIdRequest, opts ...grpc.CallOption) (*Provider, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Provider)
+	err := c.cc.Invoke(ctx, PaymentProviderService_FindPaymentProviderById_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PaymentProviderServiceServer is the server API for PaymentProviderService service.
 // All implementations should embed UnimplementedPaymentProviderServiceServer
 // for forward compatibility.
 type PaymentProviderServiceServer interface {
 	FindPaymentProviders(context.Context, *FindPaymentProvidersRequest) (*FindPaymentProvidersResponse, error)
+	FindPaymentProviderById(context.Context, *FindPaymentProviderByIdRequest) (*Provider, error)
 }
 
 // UnimplementedPaymentProviderServiceServer should be embedded to have
@@ -63,6 +76,9 @@ type UnimplementedPaymentProviderServiceServer struct{}
 
 func (UnimplementedPaymentProviderServiceServer) FindPaymentProviders(context.Context, *FindPaymentProvidersRequest) (*FindPaymentProvidersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindPaymentProviders not implemented")
+}
+func (UnimplementedPaymentProviderServiceServer) FindPaymentProviderById(context.Context, *FindPaymentProviderByIdRequest) (*Provider, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindPaymentProviderById not implemented")
 }
 func (UnimplementedPaymentProviderServiceServer) testEmbeddedByValue() {}
 
@@ -102,6 +118,24 @@ func _PaymentProviderService_FindPaymentProviders_Handler(srv interface{}, ctx c
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PaymentProviderService_FindPaymentProviderById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindPaymentProviderByIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentProviderServiceServer).FindPaymentProviderById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PaymentProviderService_FindPaymentProviderById_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentProviderServiceServer).FindPaymentProviderById(ctx, req.(*FindPaymentProviderByIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PaymentProviderService_ServiceDesc is the grpc.ServiceDesc for PaymentProviderService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -112,6 +146,10 @@ var PaymentProviderService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FindPaymentProviders",
 			Handler:    _PaymentProviderService_FindPaymentProviders_Handler,
+		},
+		{
+			MethodName: "FindPaymentProviderById",
+			Handler:    _PaymentProviderService_FindPaymentProviderById_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

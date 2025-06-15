@@ -37,9 +37,14 @@ message Payment {
 // REQUEST / RESPONSE
 
 message CreatePaymentRequest {
-  PaymentItem items = 1;
+  repeated PaymentItem items = 1;
   string userId = 2;
   double amount = 3;
+  string providerId = 4;
+}
+
+message PaymentOrderDelayedCancelledRequest {
+  string id = 1;
 }
 
 message CallBackPaymentRequest {

@@ -9,7 +9,10 @@ import (
 // FindAllProductForElasticIndex
 // This Function is only use for init index product's data. do not use on Real Use Case Scenario
 func (r *ProductPostgresqlRepository) FindAllProductForElasticIndex(ctx context.Context, tx *gorm.DB) ([]*orm.Product, error) {
-	var products []*orm.Product
+	var (
+		products []*orm.Product
+	)
+
 	if err := tx.WithContext(ctx).
 		Table("products").Find(&products).Error; err != nil {
 		return nil, err

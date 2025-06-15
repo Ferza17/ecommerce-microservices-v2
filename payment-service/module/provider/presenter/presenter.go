@@ -11,6 +11,7 @@ import (
 
 type (
 	IPaymentProviderPresenter interface {
+		FindPaymentProviderById(ctx context.Context, request *paymentRpc.FindPaymentProviderByIdRequest) (*paymentRpc.Provider, error)
 		FindPaymentProviders(ctx context.Context, request *paymentRpc.FindPaymentProvidersRequest) (*paymentRpc.FindPaymentProvidersResponse, error)
 	}
 

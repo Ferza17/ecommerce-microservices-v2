@@ -21,8 +21,8 @@ import (
 // ProvideGrpcServer wires all dependencies for IGrpcServer
 func ProvideGrpcServer() IRabbitMQServer {
 	iZapLogger := logger.NewZapLogger()
-	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iZapLogger)
 	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
+	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iTelemetryInfrastructure, iZapLogger)
 	iPostgreSQLInfrastructure := postgresql.NewPostgresqlInfrastructure(iZapLogger)
 	iPaymentRepository := repository.NewPaymentRepository(iPostgreSQLInfrastructure, iTelemetryInfrastructure, iZapLogger)
 	iPaymentUseCase := usecase.NewPaymentUseCase(iPaymentRepository, iRabbitMQInfrastructure, iTelemetryInfrastructure, iZapLogger)

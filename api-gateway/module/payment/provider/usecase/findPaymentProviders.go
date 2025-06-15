@@ -7,8 +7,7 @@ import (
 )
 
 func (u *paymentProviderUseCase) FindPaymentProviders(ctx context.Context, requestId string, request *paymentRpc.FindPaymentProvidersRequest) (*paymentRpc.FindPaymentProvidersResponse, error) {
-	// Tracing for telemetry
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "ProviderUseCase.FindPaymentProviders")
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.FindPaymentProviders")
 	defer span.End()
 
 	// Call the paymentProviderSvc to fetch payment providers

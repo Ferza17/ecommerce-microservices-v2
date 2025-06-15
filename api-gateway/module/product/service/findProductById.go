@@ -20,8 +20,6 @@ func (s *productService) FindProductById(ctx context.Context, requestId string, 
 		otel.GetTextMapPropagator().Inject(ctx, &util.MetadataHeaderCarrier{md})
 		ctx = metadata.NewOutgoingContext(ctx, md)
 
-		s.logger.Info(fmt.Sprintf("RequestID %s ", requestId))
-
 		resp, err := s.svc.FindProductById(ctx, req)
 		if err != nil {
 			st, ok := status.FromError(err)

@@ -10,8 +10,9 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	gen "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/commerce/v1"
-	gen1 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/product/v1"
-	gen2 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
+	gen1 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/payment/v1"
+	gen2 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/product/v1"
+	gen3 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/user/v1"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
@@ -21,11 +22,12 @@ type MutationResolver interface {
 	CreateCartItem(ctx context.Context, input *gen.CreateCartItemRequest) (*gen.CreateCartItemResponse, error)
 	UpdateCartItemByID(ctx context.Context, input *gen.UpdateCartItemByIdRequest) (*gen.UpdateCartItemByIdResponse, error)
 	DeleteCartItem(ctx context.Context, input *DeleteCartItemRequest) (*DeleteCartItemResponse, error)
-	CreateProduct(ctx context.Context, input gen1.CreateProductRequest) (*gen1.CreateProductResponse, error)
-	UpdateProductByID(ctx context.Context, input gen1.UpdateProductByIdRequest) (*gen1.Product, error)
-	DeleteProductByID(ctx context.Context, id string) (*gen1.DeleteProductByIdResponse, error)
-	CreateUser(ctx context.Context, input gen2.CreateUserRequest) (*gen2.CreateUserResponse, error)
-	UpdateUserByID(ctx context.Context, input gen2.UpdateUserByIdRequest) (*gen2.UpdateUserByIdResponse, error)
+	CreatePayment(ctx context.Context, input gen1.CreatePaymentRequest) (*CreatePaymentResponse, error)
+	CreateProduct(ctx context.Context, input gen2.CreateProductRequest) (*gen2.CreateProductResponse, error)
+	UpdateProductByID(ctx context.Context, input gen2.UpdateProductByIdRequest) (*gen2.Product, error)
+	DeleteProductByID(ctx context.Context, id string) (*gen2.DeleteProductByIdResponse, error)
+	CreateUser(ctx context.Context, input gen3.CreateUserRequest) (*gen3.CreateUserResponse, error)
+	UpdateUserByID(ctx context.Context, input gen3.UpdateUserByIdRequest) (*gen3.UpdateUserByIdResponse, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -55,6 +57,29 @@ func (ec *executionContext) field_Mutation_createCartItem_argsInput(
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_Mutation_createPayment_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_createPayment_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_createPayment_argsInput(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (gen1.CreatePaymentRequest, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNCreatePaymentRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋpaymentᚋv1ᚐCreatePaymentRequest(ctx, tmp)
+	}
+
+	var zeroVal gen1.CreatePaymentRequest
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_Mutation_createProduct_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -68,13 +93,13 @@ func (ec *executionContext) field_Mutation_createProduct_args(ctx context.Contex
 func (ec *executionContext) field_Mutation_createProduct_argsInput(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (gen1.CreateProductRequest, error) {
+) (gen2.CreateProductRequest, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
 		return ec.unmarshalNCreateProductRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋproductᚋv1ᚐCreateProductRequest(ctx, tmp)
 	}
 
-	var zeroVal gen1.CreateProductRequest
+	var zeroVal gen2.CreateProductRequest
 	return zeroVal, nil
 }
 
@@ -91,13 +116,13 @@ func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, 
 func (ec *executionContext) field_Mutation_createUser_argsInput(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (gen2.CreateUserRequest, error) {
+) (gen3.CreateUserRequest, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
 		return ec.unmarshalNCreateUserRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋuserᚋv1ᚐCreateUserRequest(ctx, tmp)
 	}
 
-	var zeroVal gen2.CreateUserRequest
+	var zeroVal gen3.CreateUserRequest
 	return zeroVal, nil
 }
 
@@ -183,13 +208,13 @@ func (ec *executionContext) field_Mutation_updateProductById_args(ctx context.Co
 func (ec *executionContext) field_Mutation_updateProductById_argsInput(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (gen1.UpdateProductByIdRequest, error) {
+) (gen2.UpdateProductByIdRequest, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
 		return ec.unmarshalNUpdateProductByIdRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋproductᚋv1ᚐUpdateProductByIdRequest(ctx, tmp)
 	}
 
-	var zeroVal gen1.UpdateProductByIdRequest
+	var zeroVal gen2.UpdateProductByIdRequest
 	return zeroVal, nil
 }
 
@@ -206,13 +231,13 @@ func (ec *executionContext) field_Mutation_updateUserById_args(ctx context.Conte
 func (ec *executionContext) field_Mutation_updateUserById_argsInput(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (gen2.UpdateUserByIdRequest, error) {
+) (gen3.UpdateUserByIdRequest, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
 		return ec.unmarshalNUpdateUserByIdRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋuserᚋv1ᚐUpdateUserByIdRequest(ctx, tmp)
 	}
 
-	var zeroVal gen2.UpdateUserByIdRequest
+	var zeroVal gen3.UpdateUserByIdRequest
 	return zeroVal, nil
 }
 
@@ -392,6 +417,62 @@ func (ec *executionContext) fieldContext_Mutation_deleteCartItem(ctx context.Con
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_createPayment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createPayment(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreatePayment(rctx, fc.Args["input"].(gen1.CreatePaymentRequest))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*CreatePaymentResponse)
+	fc.Result = res
+	return ec.marshalOCreatePaymentResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐCreatePaymentResponse(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createPayment(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_CreatePaymentResponse_message(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CreatePaymentResponse", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createPayment_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_createProduct(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_createProduct(ctx, field)
 	if err != nil {
@@ -406,7 +487,7 @@ func (ec *executionContext) _Mutation_createProduct(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateProduct(rctx, fc.Args["input"].(gen1.CreateProductRequest))
+		return ec.resolvers.Mutation().CreateProduct(rctx, fc.Args["input"].(gen2.CreateProductRequest))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -418,7 +499,7 @@ func (ec *executionContext) _Mutation_createProduct(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*gen1.CreateProductResponse)
+	res := resTmp.(*gen2.CreateProductResponse)
 	fc.Result = res
 	return ec.marshalNCreateProductResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋproductᚋv1ᚐCreateProductResponse(ctx, field.Selections, res)
 }
@@ -465,7 +546,7 @@ func (ec *executionContext) _Mutation_updateProductById(ctx context.Context, fie
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateProductByID(rctx, fc.Args["input"].(gen1.UpdateProductByIdRequest))
+		return ec.resolvers.Mutation().UpdateProductByID(rctx, fc.Args["input"].(gen2.UpdateProductByIdRequest))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -477,7 +558,7 @@ func (ec *executionContext) _Mutation_updateProductById(ctx context.Context, fie
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*gen1.Product)
+	res := resTmp.(*gen2.Product)
 	fc.Result = res
 	return ec.marshalNProduct2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋproductᚋv1ᚐProduct(ctx, field.Selections, res)
 }
@@ -554,7 +635,7 @@ func (ec *executionContext) _Mutation_deleteProductById(ctx context.Context, fie
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*gen1.DeleteProductByIdResponse)
+	res := resTmp.(*gen2.DeleteProductByIdResponse)
 	fc.Result = res
 	return ec.marshalNDeleteProductByIdResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋproductᚋv1ᚐDeleteProductByIdResponse(ctx, field.Selections, res)
 }
@@ -601,7 +682,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateUser(rctx, fc.Args["input"].(gen2.CreateUserRequest))
+		return ec.resolvers.Mutation().CreateUser(rctx, fc.Args["input"].(gen3.CreateUserRequest))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -613,7 +694,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*gen2.CreateUserResponse)
+	res := resTmp.(*gen3.CreateUserResponse)
 	fc.Result = res
 	return ec.marshalNCreateUserResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋuserᚋv1ᚐCreateUserResponse(ctx, field.Selections, res)
 }
@@ -660,7 +741,7 @@ func (ec *executionContext) _Mutation_updateUserById(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateUserByID(rctx, fc.Args["input"].(gen2.UpdateUserByIdRequest))
+		return ec.resolvers.Mutation().UpdateUserByID(rctx, fc.Args["input"].(gen3.UpdateUserByIdRequest))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -669,7 +750,7 @@ func (ec *executionContext) _Mutation_updateUserById(ctx context.Context, field 
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*gen2.UpdateUserByIdResponse)
+	res := resTmp.(*gen3.UpdateUserByIdResponse)
 	fc.Result = res
 	return ec.marshalOUpdateUserByIdResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋuserᚋv1ᚐUpdateUserByIdResponse(ctx, field.Selections, res)
 }
@@ -744,6 +825,10 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "deleteCartItem":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_deleteCartItem(ctx, field)
+			})
+		case "createPayment":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createPayment(ctx, field)
 			})
 		case "createProduct":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {

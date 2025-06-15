@@ -80,9 +80,14 @@ export interface Payment {
 }
 
 export interface CreatePaymentRequest {
-  items: PaymentItem | undefined;
+  items: PaymentItem[];
   userId: string;
   amount: number;
+  providerId: string;
+}
+
+export interface PaymentOrderDelayedCancelledRequest {
+  id: string;
 }
 
 export interface CallBackPaymentRequest {
@@ -481,19 +486,22 @@ export const Payment: MessageFns<Payment> = {
 };
 
 function createBaseCreatePaymentRequest(): CreatePaymentRequest {
-  return { items: undefined, userId: "", amount: 0 };
+  return { items: [], userId: "", amount: 0, providerId: "" };
 }
 
 export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
   encode(message: CreatePaymentRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.items !== undefined) {
-      PaymentItem.encode(message.items, writer.uint32(10).fork()).join();
+    for (const v of message.items) {
+      PaymentItem.encode(v!, writer.uint32(10).fork()).join();
     }
     if (message.userId !== "") {
       writer.uint32(18).string(message.userId);
     }
     if (message.amount !== 0) {
       writer.uint32(25).double(message.amount);
+    }
+    if (message.providerId !== "") {
+      writer.uint32(34).string(message.providerId);
     }
     return writer;
   },
@@ -510,7 +518,7 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
             break;
           }
 
-          message.items = PaymentItem.decode(reader, reader.uint32());
+          message.items.push(PaymentItem.decode(reader, reader.uint32()));
           continue;
         }
         case 2: {
@@ -529,6 +537,14 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
           message.amount = reader.double();
           continue;
         }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.providerId = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -540,22 +556,26 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
 
   fromJSON(object: any): CreatePaymentRequest {
     return {
-      items: isSet(object.items) ? PaymentItem.fromJSON(object.items) : undefined,
+      items: globalThis.Array.isArray(object?.items) ? object.items.map((e: any) => PaymentItem.fromJSON(e)) : [],
       userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
+      providerId: isSet(object.providerId) ? globalThis.String(object.providerId) : "",
     };
   },
 
   toJSON(message: CreatePaymentRequest): unknown {
     const obj: any = {};
-    if (message.items !== undefined) {
-      obj.items = PaymentItem.toJSON(message.items);
+    if (message.items?.length) {
+      obj.items = message.items.map((e) => PaymentItem.toJSON(e));
     }
     if (message.userId !== "") {
       obj.userId = message.userId;
     }
     if (message.amount !== 0) {
       obj.amount = message.amount;
+    }
+    if (message.providerId !== "") {
+      obj.providerId = message.providerId;
     }
     return obj;
   },
@@ -565,11 +585,68 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
   },
   fromPartial(object: DeepPartial<CreatePaymentRequest>): CreatePaymentRequest {
     const message = createBaseCreatePaymentRequest();
-    message.items = (object.items !== undefined && object.items !== null)
-      ? PaymentItem.fromPartial(object.items)
-      : undefined;
+    message.items = object.items?.map((e) => PaymentItem.fromPartial(e)) || [];
     message.userId = object.userId ?? "";
     message.amount = object.amount ?? 0;
+    message.providerId = object.providerId ?? "";
+    return message;
+  },
+};
+
+function createBasePaymentOrderDelayedCancelledRequest(): PaymentOrderDelayedCancelledRequest {
+  return { id: "" };
+}
+
+export const PaymentOrderDelayedCancelledRequest: MessageFns<PaymentOrderDelayedCancelledRequest> = {
+  encode(message: PaymentOrderDelayedCancelledRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): PaymentOrderDelayedCancelledRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePaymentOrderDelayedCancelledRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PaymentOrderDelayedCancelledRequest {
+    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+  },
+
+  toJSON(message: PaymentOrderDelayedCancelledRequest): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<PaymentOrderDelayedCancelledRequest>): PaymentOrderDelayedCancelledRequest {
+    return PaymentOrderDelayedCancelledRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<PaymentOrderDelayedCancelledRequest>): PaymentOrderDelayedCancelledRequest {
+    const message = createBasePaymentOrderDelayedCancelledRequest();
+    message.id = object.id ?? "";
     return message;
   },
 };

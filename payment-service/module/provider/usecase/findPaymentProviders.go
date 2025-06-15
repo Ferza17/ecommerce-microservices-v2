@@ -3,7 +3,9 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/enum"
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/payment/v1"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (p *paymentProviderUseCase) FindPaymentProviders(ctx context.Context, requestId string, request *paymentRpc.FindPaymentProvidersRequest) (*paymentRpc.FindPaymentProvidersResponse, error) {
@@ -22,9 +24,27 @@ func (p *paymentProviderUseCase) FindPaymentProviders(ctx context.Context, reque
 	// Convert the list of ORM providers to gRPC-compatible responses
 	var providerResponses []*paymentRpc.Provider
 	for _, provider := range providers {
+		var (
+			pr          paymentRpc.ProviderMethod
+			discardedAt *timestamppb.Timestamp
+		)
+
+		if pr, err = enum.ProviderMethodToProto(provider.Method); err != nil {
+			p.logger.Error(fmt.Sprintf("Failed to convert provider method: %v", err))
+			return nil, err
+		}
+
+		if provider.DiscardedAt != nil {
+			discardedAt = timestamppb.New(*provider.DiscardedAt)
+		}
+
 		providerResponses = append(providerResponses, &paymentRpc.Provider{
-			Id:   provider.ID,
-			Name: provider.Name,
+			Id:          provider.ID,
+			Name:        provider.Name,
+			Method:      pr,
+			CreatedAt:   timestamppb.New(provider.CreatedAt),
+			UpdatedAt:   timestamppb.New(provider.UpdatedAt),
+			DiscardedAt: discardedAt,
 		})
 	}
 

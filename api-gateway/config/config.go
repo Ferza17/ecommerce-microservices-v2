@@ -36,6 +36,7 @@ type Config struct {
 	ExchangeUser     string
 	ExchangeProduct  string
 	ExchangeCommerce string
+	ExchangePayment  string
 
 	QueueEventCreated string
 
@@ -46,6 +47,8 @@ type Config struct {
 
 	QueueCommerceCartCreated string
 	QueueCommerceCartUpdated string
+
+	QueuePaymentOrderCreated string
 
 	QueueProductCreated string
 
@@ -197,6 +200,15 @@ func SetConfig(path string) {
 		}
 		c.ExchangeCommerce = string(pair.Value)
 
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/EXCHANGE/PAYMENT", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get EXCHANGE/PAYMENT from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | EXCHANGE/PAYMENT is required")
+		}
+		c.ExchangePayment = string(pair.Value)
+
 		// QUEUE
 		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/EVENT/CREATED", c.Env), nil)
 		if err != nil {
@@ -269,6 +281,15 @@ func SetConfig(path string) {
 			log.Fatal("SetConfig | Consul | QUEUE/COMMERCE/CART/UPDATED is required")
 		}
 		c.QueueCommerceCartUpdated = string(pair.Value)
+
+		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get QUEUE/PAYMENT/ORDER/CREATED from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | QUEUE/PAYMENT/ORDER/CREATED is required")
+		}
+		c.QueuePaymentOrderCreated = string(pair.Value)
 
 	}()
 

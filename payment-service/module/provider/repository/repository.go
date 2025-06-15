@@ -12,6 +12,7 @@ import (
 
 type (
 	IPaymentProviderRepository interface {
+		FindPaymentProviderById(ctx context.Context, requestId string, id string) (*orm.Provider, error)
 		FindPaymentProviders(ctx context.Context, requestId string, request *paymentRpc.FindPaymentProvidersRequest) ([]*orm.Provider, error)
 	}
 

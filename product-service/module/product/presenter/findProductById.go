@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
 	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
+	"time"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -11,9 +12,13 @@ import (
 )
 
 func (p *ProductGrpcPresenter) FindProductById(ctx context.Context, req *productRpc.FindProductByIdRequest) (*productRpc.Product, error) {
-	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.FindProductById")
+	var (
+		ctxTimeout, cancel = context.WithTimeout(ctx, 5*time.Second)
+	)
+	defer cancel()
+	ctxTimeout, span := p.telemetryInfrastructure.Tracer(ctxTimeout, "Presenter.FindProductById")
 	defer span.End()
-	md, ok := metadata.FromIncomingContext(ctx)
+	md, ok := metadata.FromIncomingContext(ctxTimeout)
 	if !ok {
 		return nil, status.Error(codes.InvalidArgument, "metadata not found")
 	}
@@ -22,7 +27,7 @@ func (p *ProductGrpcPresenter) FindProductById(ctx context.Context, req *product
 		requestID = values[0]
 	}
 
-	res, err := p.productUseCase.FindProductById(ctx, requestID, req)
+	res, err := p.productUseCase.FindProductById(ctxTimeout, requestID, req)
 	if err != nil {
 		return nil, err
 	}

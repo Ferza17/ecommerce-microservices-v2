@@ -78,6 +78,10 @@ export interface FindPaymentProvidersResponse {
   data: Provider[];
 }
 
+export interface FindPaymentProviderByIdRequest {
+  id: string;
+}
+
 function createBaseProvider(): Provider {
   return { id: "", name: "", method: 0, createdAt: undefined, updatedAt: undefined, discardedAt: undefined };
 }
@@ -330,6 +334,64 @@ export const FindPaymentProvidersResponse: MessageFns<FindPaymentProvidersRespon
   fromPartial(object: DeepPartial<FindPaymentProvidersResponse>): FindPaymentProvidersResponse {
     const message = createBaseFindPaymentProvidersResponse();
     message.data = object.data?.map((e) => Provider.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseFindPaymentProviderByIdRequest(): FindPaymentProviderByIdRequest {
+  return { id: "" };
+}
+
+export const FindPaymentProviderByIdRequest: MessageFns<FindPaymentProviderByIdRequest> = {
+  encode(message: FindPaymentProviderByIdRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): FindPaymentProviderByIdRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseFindPaymentProviderByIdRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): FindPaymentProviderByIdRequest {
+    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+  },
+
+  toJSON(message: FindPaymentProviderByIdRequest): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<FindPaymentProviderByIdRequest>): FindPaymentProviderByIdRequest {
+    return FindPaymentProviderByIdRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<FindPaymentProviderByIdRequest>): FindPaymentProviderByIdRequest {
+    const message = createBaseFindPaymentProviderByIdRequest();
+    message.id = object.id ?? "";
     return message;
   },
 };

@@ -19,10 +19,11 @@ import (
 
 func (u *productUseCase) CreateProduct(ctx context.Context, requestId string, req *productRpc.CreateProductRequest) (*productRpc.CreateProductResponse, error) {
 	var (
-		err        error
-		tx         = u.productPgsqlRepository.OpenTransactionWithContext(ctx)
-		now        = time.Now().UTC()
-		eventStore = &eventRpc.EventStore{
+		ctxTimeout, cancel = context.WithTimeout(ctx, 5*time.Second)
+		err                error
+		tx                 = u.productPgsqlRepository.OpenTransactionWithContext(ctxTimeout)
+		now                = time.Now().UTC()
+		eventStore         = &eventRpc.EventStore{
 			RequestId:     requestId,
 			Service:       config.Get().ServiceName,
 			EventType:     config.Get().QueueProductCreated,
@@ -32,9 +33,10 @@ func (u *productUseCase) CreateProduct(ctx context.Context, requestId string, re
 			UpdatedAt:     timestamppb.Now(),
 		}
 	)
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.CreateProduct")
+	ctxTimeout, span := u.telemetryInfrastructure.Tracer(ctxTimeout, "UseCase.CreateProduct")
 
 	defer func(err error, eventStore *eventRpc.EventStore) {
+		defer cancel()
 		defer span.End()
 		payload, err := util.ConvertStructToProtoStruct(req)
 		if err != nil {
@@ -51,13 +53,13 @@ func (u *productUseCase) CreateProduct(ctx context.Context, requestId string, re
 			eventStore.Status = config.Get().CommonSagaStatusFailed
 		}
 
-		if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, config.Get().ExchangeEvent, config.Get().QueueEventCreated, eventStoreMessage); err != nil {
+		if err = u.rabbitmqInfrastructure.Publish(ctxTimeout, requestId, config.Get().ExchangeEvent, config.Get().QueueEventCreated, eventStoreMessage); err != nil {
 			u.logger.Error(fmt.Sprintf("error creating product event store: %s", err.Error()))
 			return
 		}
 	}(err, eventStore)
 
-	result, err := u.productPgsqlRepository.CreateProduct(ctx, &orm.Product{
+	result, err := u.productPgsqlRepository.CreateProduct(ctxTimeout, &orm.Product{
 		ID:          uuid.NewString(),
 		Name:        req.GetName(),
 		Price:       req.GetPrice(),

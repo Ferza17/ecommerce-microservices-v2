@@ -31,7 +31,7 @@ type PaymentItemResolver interface {
 }
 
 type CreatePaymentRequestResolver interface {
-	Items(ctx context.Context, obj *gen.CreatePaymentRequest, data *PaymentItemInput) error
+	Items(ctx context.Context, obj *gen.CreatePaymentRequest, data []*PaymentItemInput) error
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -45,6 +45,47 @@ type CreatePaymentRequestResolver interface {
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _CreatePaymentResponse_message(ctx context.Context, field graphql.CollectedField, obj *CreatePaymentResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CreatePaymentResponse_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CreatePaymentResponse_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CreatePaymentResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
 
 func (ec *executionContext) _Payment_id(ctx context.Context, field graphql.CollectedField, obj *gen.Payment) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Payment_id(ctx, field)
@@ -848,7 +889,7 @@ func (ec *executionContext) unmarshalInputCreatePaymentRequest(ctx context.Conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"items", "userId", "amount"}
+	fieldsInOrder := [...]string{"items", "userId", "amount", "providerId"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -857,7 +898,7 @@ func (ec *executionContext) unmarshalInputCreatePaymentRequest(ctx context.Conte
 		switch k {
 		case "items":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("items"))
-			data, err := ec.unmarshalNPaymentItemInput2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐPaymentItemInput(ctx, v)
+			data, err := ec.unmarshalNPaymentItemInput2ᚕᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐPaymentItemInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -878,6 +919,13 @@ func (ec *executionContext) unmarshalInputCreatePaymentRequest(ctx context.Conte
 				return it, err
 			}
 			it.Amount = data
+		case "providerId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("providerId"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ProviderId = data
 		}
 	}
 
@@ -1021,6 +1069,42 @@ func (ec *executionContext) unmarshalInputPaymentItemInput(ctx context.Context, 
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
+
+var createPaymentResponseImplementors = []string{"CreatePaymentResponse"}
+
+func (ec *executionContext) _CreatePaymentResponse(ctx context.Context, sel ast.SelectionSet, obj *CreatePaymentResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, createPaymentResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CreatePaymentResponse")
+		case "message":
+			out.Values[i] = ec._CreatePaymentResponse_message(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
 
 var paymentImplementors = []string{"Payment"}
 
@@ -1344,6 +1428,11 @@ func (ec *executionContext) _PaymentItem(ctx context.Context, sel ast.SelectionS
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) unmarshalNCreatePaymentRequest2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋpaymentᚋv1ᚐCreatePaymentRequest(ctx context.Context, v any) (gen.CreatePaymentRequest, error) {
+	res, err := ec.unmarshalInputCreatePaymentRequest(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) marshalNPaymentItem2ᚕᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋpaymentᚋv1ᚐPaymentItemᚄ(ctx context.Context, sel ast.SelectionSet, v []*gen.PaymentItem) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -1406,9 +1495,19 @@ func (ec *executionContext) marshalNPaymentItem2ᚖgithubᚗcomᚋferza17ᚋecom
 	return ec._PaymentItem(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNPaymentItemInput2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐPaymentItemInput(ctx context.Context, v any) (PaymentItemInput, error) {
-	res, err := ec.unmarshalInputPaymentItemInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
+func (ec *executionContext) unmarshalNPaymentItemInput2ᚕᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐPaymentItemInputᚄ(ctx context.Context, v any) ([]*PaymentItemInput, error) {
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]*PaymentItemInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNPaymentItemInput2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐPaymentItemInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
 }
 
 func (ec *executionContext) unmarshalNPaymentItemInput2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐPaymentItemInput(ctx context.Context, v any) (*PaymentItemInput, error) {
@@ -1424,6 +1523,13 @@ func (ec *executionContext) unmarshalNPaymentStatus2githubᚗcomᚋferza17ᚋeco
 
 func (ec *executionContext) marshalNPaymentStatus2githubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋpaymentᚋv1ᚐPaymentStatus(ctx context.Context, sel ast.SelectionSet, v gen.PaymentStatus) graphql.Marshaler {
 	return v
+}
+
+func (ec *executionContext) marshalOCreatePaymentResponse2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋgraphᚋgenᚐCreatePaymentResponse(ctx context.Context, sel ast.SelectionSet, v *CreatePaymentResponse) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._CreatePaymentResponse(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOPayment2ᚖgithubᚗcomᚋferza17ᚋecommerceᚑmicroservicesᚑv2ᚋapiᚑgatewayᚋmodelᚋrpcᚋgenᚋpaymentᚋv1ᚐPayment(ctx context.Context, sel ast.SelectionSet, v *gen.Payment) graphql.Marshaler {

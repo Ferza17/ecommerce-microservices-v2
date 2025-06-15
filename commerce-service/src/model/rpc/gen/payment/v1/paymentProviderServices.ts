@@ -17,7 +17,12 @@ import {
   type ServiceError,
   type UntypedServiceImplementation,
 } from "@grpc/grpc-js";
-import { FindPaymentProvidersRequest, FindPaymentProvidersResponse } from "./paymentProviderMessage";
+import {
+  FindPaymentProviderByIdRequest,
+  FindPaymentProvidersRequest,
+  FindPaymentProvidersResponse,
+  Provider,
+} from "./paymentProviderMessage";
 
 export const protobufPackage = "payment_v1";
 
@@ -34,10 +39,21 @@ export const PaymentProviderServiceService = {
       Buffer.from(FindPaymentProvidersResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => FindPaymentProvidersResponse.decode(value),
   },
+  findPaymentProviderById: {
+    path: "/payment_v1.PaymentProviderService/FindPaymentProviderById",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: FindPaymentProviderByIdRequest) =>
+      Buffer.from(FindPaymentProviderByIdRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => FindPaymentProviderByIdRequest.decode(value),
+    responseSerialize: (value: Provider) => Buffer.from(Provider.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Provider.decode(value),
+  },
 } as const;
 
 export interface PaymentProviderServiceServer extends UntypedServiceImplementation {
   findPaymentProviders: handleUnaryCall<FindPaymentProvidersRequest, FindPaymentProvidersResponse>;
+  findPaymentProviderById: handleUnaryCall<FindPaymentProviderByIdRequest, Provider>;
 }
 
 export interface PaymentProviderServiceClient extends Client {
@@ -55,6 +71,21 @@ export interface PaymentProviderServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: FindPaymentProvidersResponse) => void,
+  ): ClientUnaryCall;
+  findPaymentProviderById(
+    request: FindPaymentProviderByIdRequest,
+    callback: (error: ServiceError | null, response: Provider) => void,
+  ): ClientUnaryCall;
+  findPaymentProviderById(
+    request: FindPaymentProviderByIdRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Provider) => void,
+  ): ClientUnaryCall;
+  findPaymentProviderById(
+    request: FindPaymentProviderByIdRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Provider) => void,
   ): ClientUnaryCall;
 }
 
