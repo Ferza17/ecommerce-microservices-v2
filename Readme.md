@@ -12,7 +12,7 @@
 - [X] Implement message queuing
 - [X] Implement Distributed Tracing
 - [X] Implement Circuit Breaker
-- [ ] Implement Payment Service
+- [X] Implement Payment Service
 - [ ] Implement Unit Test, mocking use mockery
 - [ ] Add Smart Contracts with Solidity
 
