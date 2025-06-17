@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"errors"
 	"fmt"
 	"github.com/sony/gobreaker"
 	"google.golang.org/grpc/codes"
@@ -14,8 +15,9 @@ type (
 	}
 
 	circuitBreaker struct {
-		cb     *gobreaker.CircuitBreaker
-		logger IZapLogger
+		cb          *gobreaker.CircuitBreaker
+		serviceName string
+		logger      IZapLogger
 	}
 )
 
@@ -23,15 +25,17 @@ func (c *circuitBreaker) Execute(req func() (interface{}, error)) (interface{}, 
 	result, err := c.cb.Execute(req)
 
 	if err != nil {
-		if err == gobreaker.ErrOpenState {
-			c.logger.Error(fmt.Sprintf("Circuit Breaker for User Service is open. Request Failed: %v\n", err))
-			return nil, status.Errorf(codes.Unavailable, "User Service is currently unavailable")
+
+		switch {
+		case errors.Is(err, gobreaker.ErrOpenState):
+			c.logger.Error(fmt.Sprintf("Circuit Breaker for %s is open. Request Failed: %v\n", c.serviceName, err))
+			return nil, status.Errorf(codes.Unavailable, fmt.Sprintf("Circuit Breaker for %s is open. Please try again later", c.serviceName))
+		case errors.Is(err, gobreaker.ErrTooManyRequests):
+			c.logger.Error(fmt.Sprintf("Circuit Breaker for %s in half-open mode and too many request: %v\n", c.serviceName, err))
+			return nil, status.Errorf(codes.Unavailable, fmt.Sprintf("Circuit Breaker for %s is open. Please try again later", c.serviceName))
+		default:
+			return nil, fmt.Errorf("failed to call %s: %w", c.serviceName, err)
 		}
-		if err == gobreaker.ErrTooManyRequests {
-			c.logger.Error(fmt.Sprintf("Circuit Breaker for User Service in half-open mode and too many request: %v\n", err))
-			return nil, status.Errorf(codes.Unavailable, "User Service is busy, please try again later")
-		}
-		return nil, fmt.Errorf("failed to call User Service: %w", err)
 	}
 
 	return result, nil
@@ -39,7 +43,8 @@ func (c *circuitBreaker) Execute(req func() (interface{}, error)) (interface{}, 
 
 func NewCircuitBreaker(svcName string, logger IZapLogger) ICircuitBreaker {
 	return &circuitBreaker{
-		logger: logger,
+		logger:      logger,
+		serviceName: svcName,
 		cb: gobreaker.NewCircuitBreaker(gobreaker.Settings{
 			Name:        svcName,
 			MaxRequests: 3,

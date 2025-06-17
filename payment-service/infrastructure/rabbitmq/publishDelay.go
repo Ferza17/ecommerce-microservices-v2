@@ -35,7 +35,9 @@ func (c *RabbitMQInfrastructure) PublishDelayedMessage(ctx context.Context, requ
 		false,
 		false,
 		true,
-		nil,
+		amqp091.Table{
+			enum.XDelayedType.String(): "direct",
+		},
 	); err != nil {
 		c.logger.Error(fmt.Sprintf("failed to declare exchange : %v", zap.Error(err)))
 		return err
@@ -59,6 +61,7 @@ func (c *RabbitMQInfrastructure) PublishDelayedMessage(ctx context.Context, requ
 		headers[k] = v
 	}
 	headers[enum.XRequestIDHeader.String()] = requestId
+	headers[enum.XDelayedType.String()] = "direct"
 	headers[enum.XDelayHeader.String()] = delayMs
 
 	// Publish message

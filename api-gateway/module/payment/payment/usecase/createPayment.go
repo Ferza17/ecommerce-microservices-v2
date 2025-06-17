@@ -26,9 +26,8 @@ func (u *paymentUseCase) CretePayment(ctx context.Context, requestId string, req
 			CreatedAt:     timestamppb.Now(),
 			UpdatedAt:     timestamppb.Now(),
 		}
-		totalPrice   = 0.0
-		mapProductID = make(map[string]bool)
-		productIds   = make([]string, 0)
+		mapProductAmount = make(map[string]float64) // Key ProductId
+		productIds       = make([]string, 0)
 	)
 
 	// Sent Event after finish executing function
@@ -50,7 +49,7 @@ func (u *paymentUseCase) CretePayment(ctx context.Context, requestId string, req
 	}(err, eventStore)
 
 	for _, item := range request.Items {
-		mapProductID[item.ProductId] = true
+		mapProductAmount[item.ProductId] = item.Amount
 		productIds = append(productIds, item.ProductId)
 	}
 
@@ -64,12 +63,19 @@ func (u *paymentUseCase) CretePayment(ctx context.Context, requestId string, req
 		return err
 	}
 
+	// Validate
 	for _, product := range productsResp.Data {
-		if _, ok := mapProductID[product.Id]; !ok {
+		if _, ok := mapProductAmount[product.Id]; !ok {
 			u.logger.Error(fmt.Sprintf("product not found : %s", product.Id))
 			return fmt.Errorf("product not found : %s", product.Id)
 		}
-		totalPrice += product.Price
+		mapProductAmount[product.Id] = product.Price
+	}
+
+	// Assign amount each of payment items
+	for _, item := range request.Items {
+		item.Amount = mapProductAmount[item.ProductId] * float64(item.Qty)
+		request.Amount += item.Amount
 	}
 
 	// Validate Provider Id
@@ -87,7 +93,6 @@ func (u *paymentUseCase) CretePayment(ctx context.Context, requestId string, req
 	}
 
 	// Publish to Queue.Payment.Order.Created
-	request.Amount = totalPrice
 	message, err := proto.Marshal(request)
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("error marshaling message: %s", err.Error()))

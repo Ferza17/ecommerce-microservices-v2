@@ -62,7 +62,7 @@ func NewBootstrap() *Dependency {
 	// UseCase
 	newUserUseCase := userUseCase.NewUserUseCase(newUserServiceInfrastructure, newRabbitMQInfrastructure, newTelemetryInfrastructure, logger)
 	newProductUseCase := productUseCase.NewProductUseCase(newProductServiceInfrastructure, newRabbitMQInfrastructure, newTelemetryInfrastructure, logger)
-	newPaymentUseCase := paymentUseCase.NewPaymentUseCase(newPaymentService, newProductServiceInfrastructure, newRabbitMQInfrastructure, newTelemetryInfrastructure, logger)
+	newPaymentUseCase := paymentUseCase.NewPaymentUseCase(newPaymentService, newProductServiceInfrastructure, newPaymentProviderService, newRabbitMQInfrastructure, newTelemetryInfrastructure, logger)
 	paymentProviderUseCase := paymentProviderUseCase.NewProviderUseCase(newPaymentProviderService, newRabbitMQInfrastructure, newTelemetryInfrastructure, logger)
 
 	newCartUseCase := newCartUseCase.NewCartUseCase(newRabbitMQInfrastructure, newCommerceCartService, newTelemetryInfrastructure, logger)

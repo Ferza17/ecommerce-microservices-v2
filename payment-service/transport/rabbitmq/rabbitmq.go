@@ -1,10 +1,15 @@
 package rabbitmq
 
 import (
+	"context"
+	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
 	paymentConsumer "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/consumer"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
 	"github.com/google/wire"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 type (
@@ -40,28 +45,30 @@ var Set = wire.NewSet(
 )
 
 func (r rabbitMQServer) Serve() {
-	//ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(context.Background())
 
-	//paymentConsumer := consumer.ProvidePaymentConsumer()
-	//go func() {
-	//	defer cancel()
-	//	sigChan := make(chan os.Signal, 1)
-	//	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-	//	<-sigChan
-	//	log.Println("AMQP shutdown...")
-	//}()
-	//
-	//go func() {
-	//	if err := paymentConsumer.PaymentOrderCreated(ctx); err != nil {
-	//		r.logger.Error(fmt.Sprintf("Err PaymentOrderCreated : %v", err))
-	//	}
-	//}()
-	//
-	//go func() {
-	//	if err := paymentConsumer.PaymentOrderDelayedCancelled(ctx); err != nil {
-	//		r.logger.Error(fmt.Sprintf("Err PaymentOrderDelayedCancelled : %v", err))
-	//	}
-	//}()
+	go func() {
+		defer cancel()
+		sigChan := make(chan os.Signal, 2)
+		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+		<-sigChan
+		err := r.paymentConsumer.Close()
+		if err != nil {
+			return
+		}
+	}()
 
-	//<-ctx.Done()
+	go func() {
+		if err := r.paymentConsumer.PaymentOrderCreated(ctx); err != nil {
+			r.logger.Error(fmt.Sprintf("Err PaymentOrderCreated : %v", err))
+		}
+	}()
+
+	go func() {
+		if err := r.paymentConsumer.PaymentOrderDelayedCancelled(ctx); err != nil {
+			r.logger.Error(fmt.Sprintf("Err PaymentOrderDelayedCancelled : %v", err))
+		}
+	}()
+
+	<-ctx.Done()
 }

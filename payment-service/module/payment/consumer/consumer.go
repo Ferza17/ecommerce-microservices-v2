@@ -2,6 +2,7 @@ package consumer
 
 import (
 	"context"
+	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/usecase"
@@ -13,6 +14,8 @@ type (
 	IPaymentConsumer interface {
 		PaymentOrderCreated(ctx context.Context) error
 		PaymentOrderDelayedCancelled(ctx context.Context) error
+
+		Close() error
 	}
 
 	paymentConsumer struct {
@@ -41,4 +44,13 @@ func NewPaymentConsumer(
 		paymentUseCase:          paymentUseCase,
 		logger:                  logger,
 	}
+}
+
+func (c *paymentConsumer) Close() error {
+	if err := c.rabbitmq.Close(); err != nil {
+		c.logger.Error(fmt.Sprintf("Failed to close a connection: %v", err))
+		return err
+	}
+
+	return nil
 }

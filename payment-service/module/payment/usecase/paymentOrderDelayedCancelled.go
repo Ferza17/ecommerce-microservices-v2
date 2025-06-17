@@ -13,7 +13,7 @@ import (
 func (u *paymentUseCase) PaymentOrderDelayedCancelled(ctx context.Context, requestId string, request *paymentRpc.PaymentOrderDelayedCancelledRequest) error {
 	var (
 		err error
-		tx  *gorm.DB
+		tx  = u.paymentRepository.OpenTransactionWithContext(ctx)
 	)
 
 	// Start tracing the use case

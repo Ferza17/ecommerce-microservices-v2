@@ -7,7 +7,6 @@ import (
 	productRpc "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/product/v1"
 
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/util"
-	"github.com/sony/gobreaker"
 	"go.opentelemetry.io/otel"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -25,7 +24,7 @@ func (s *productService) FindProductsWithPagination(ctx context.Context, request
 			st, ok := status.FromError(err)
 			if ok {
 				if st.Code() == codes.NotFound {
-					return nil, gobreaker.ErrOpenState
+					return nil, err
 				}
 			}
 			return nil, err

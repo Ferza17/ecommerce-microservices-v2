@@ -9,6 +9,7 @@ import (
 	eventRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/event/v1"
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/payment/v1"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/util"
+	"github.com/google/uuid"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -31,15 +32,10 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 	defer span.End()
 
 	// Begin transaction
-	tx := u.paymentRepository.OpenTransactionWithContext(ctx).Begin()
+	tx := u.paymentRepository.OpenTransactionWithContext(ctx)
 
 	defer func(err error, eventStore *eventRpc.EventStore) {
 		defer span.End()
-		if r := recover(); r != nil {
-			tx.Rollback() // Roll back on panic
-			panic(r)
-		}
-
 		payload, err := util.ConvertStructToProtoStruct(request)
 		if err != nil {
 			u.logger.Error(fmt.Sprintf("error converting struct to proto struct: %s", err.Error()))
@@ -63,6 +59,7 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 
 	// Map the request into the ORM Payment model
 	payment := &orm.Payment{
+		ID:         uuid.NewString(),
 		Code:       util.GenerateInvoiceCode(),
 		TotalPrice: request.Amount,
 		Status:     enum.PaymentStatusPending,
@@ -81,7 +78,7 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 	// Process PaymentItems
 	for _, item := range request.Items {
 		paymentItem := &orm.PaymentItem{
-			ID:        item.Id,
+			ID:        uuid.NewString(),
 			PaymentID: paymentID, // Associate with the Payment
 			ProductID: item.ProductId,
 			Amount:    item.Amount,
@@ -101,7 +98,7 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 		Id: paymentID,
 	})
 
-	if err = u.rabbitmqInfrastructure.PublishDelayedMessage(ctx, requestId, config.Get().ExchangeEvent, config.Get().QueuePaymentOrderDelayedCancelled, delayedMessage, config.Get().PaymentOrderCancelledInMs); err != nil {
+	if err = u.rabbitmqInfrastructure.PublishDelayedMessage(ctx, requestId, config.Get().ExchangePayment, config.Get().QueuePaymentOrderDelayedCancelled, delayedMessage, config.Get().PaymentOrderCancelledInMs); err != nil {
 		tx.Rollback()
 		u.logger.Error(fmt.Sprintf("Failed to publish event payment.delayed.cancelled, requestId: %s, error: %v", requestId, err))
 		return fmt.Errorf("failed to commit transaction: %w", err)

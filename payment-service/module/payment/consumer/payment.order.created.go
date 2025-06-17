@@ -97,7 +97,7 @@ func (c *paymentConsumer) PaymentOrderCreated(ctx context.Context) error {
 			}
 
 			if err = c.paymentUseCase.CreatePayment(ctx, requestId, &request); err != nil {
-				c.logger.Error(fmt.Sprintf("failed to create user : %v", zap.Error(err)))
+				c.logger.Error(fmt.Sprintf("failed to CreatePayment : %v", zap.Error(err)))
 				span.End()
 				continue messages
 			}

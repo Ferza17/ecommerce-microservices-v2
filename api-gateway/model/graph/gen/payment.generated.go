@@ -889,7 +889,7 @@ func (ec *executionContext) unmarshalInputCreatePaymentRequest(ctx context.Conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"items", "userId", "amount", "providerId"}
+	fieldsInOrder := [...]string{"items", "providerId"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -905,20 +905,6 @@ func (ec *executionContext) unmarshalInputCreatePaymentRequest(ctx context.Conte
 			if err = ec.resolvers.CreatePaymentRequest().Items(ctx, &it, data); err != nil {
 				return it, err
 			}
-		case "userId":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.UserId = data
-		case "amount":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("amount"))
-			data, err := ec.unmarshalNFloat2float64(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Amount = data
 		case "providerId":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("providerId"))
 			data, err := ec.unmarshalNString2string(ctx, v)
@@ -1000,20 +986,13 @@ func (ec *executionContext) unmarshalInputPaymentItemInput(ctx context.Context, 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "productId", "amount", "qty", "createdAt", "updatedAt", "discardedAt"}
+	fieldsInOrder := [...]string{"productId", "qty"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "id":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.ID = data
 		case "productId":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("productId"))
 			data, err := ec.unmarshalNString2string(ctx, v)
@@ -1021,13 +1000,6 @@ func (ec *executionContext) unmarshalInputPaymentItemInput(ctx context.Context, 
 				return it, err
 			}
 			it.ProductID = data
-		case "amount":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("amount"))
-			data, err := ec.unmarshalNFloat2float64(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Amount = data
 		case "qty":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qty"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
@@ -1035,27 +1007,6 @@ func (ec *executionContext) unmarshalInputPaymentItemInput(ctx context.Context, 
 				return it, err
 			}
 			it.Qty = data
-		case "createdAt":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.CreatedAt = data
-		case "updatedAt":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.UpdatedAt = data
-		case "discardedAt":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("discardedAt"))
-			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.DiscardedAt = data
 		}
 	}
 

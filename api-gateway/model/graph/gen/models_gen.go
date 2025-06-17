@@ -2,10 +2,6 @@
 
 package gen
 
-import (
-	"time"
-)
-
 type CreatePaymentResponse struct {
 	Message *string `json:"message,omitempty"`
 }
@@ -23,13 +19,8 @@ type Mutation struct {
 }
 
 type PaymentItemInput struct {
-	ID          string     `json:"id"`
-	ProductID   string     `json:"productId"`
-	Amount      float64    `json:"amount"`
-	Qty         int        `json:"qty"`
-	CreatedAt   *time.Time `json:"createdAt,omitempty"`
-	UpdatedAt   *time.Time `json:"updatedAt,omitempty"`
-	DiscardedAt *time.Time `json:"discardedAt,omitempty"`
+	ProductID string `json:"productId"`
+	Qty       int    `json:"qty"`
 }
 
 type Query struct {

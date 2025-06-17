@@ -6,6 +6,7 @@ package resolver
 
 import (
 	"context"
+
 	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/enum"
 	gen1 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/graph/gen"
 	gen "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/payment/v1"
@@ -21,6 +22,7 @@ func (r *mutationResolver) CreatePayment(ctx context.Context, input gen.CreatePa
 		Message: &msg,
 	}
 
+	input.UserId = ctx.Value(enum.ContextKeyUserID.String()).(string)
 	if err := r.PaymentUseCase.CretePayment(ctx, ctx.Value(enum.XRequestIDHeader.String()).(string), &input); err != nil {
 		msg = "Payment failed to create"
 		return resp, err

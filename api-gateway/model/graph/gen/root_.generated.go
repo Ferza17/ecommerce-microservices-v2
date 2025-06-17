@@ -1092,8 +1092,6 @@ type Payment {
 
 input CreatePaymentRequest {
     items: [PaymentItemInput!]!
-    userId: String!
-    amount: Float!
     providerId: String!
 }
 
@@ -1118,13 +1116,8 @@ input FindPaymentByUserIdAndStatusRequest {
 # Supporting Input Types
 
 input PaymentItemInput {
-    id: String!
     productId: String!
-    amount: Float!
     qty: Int!
-    createdAt: Time
-    updatedAt: Time
-    discardedAt: Time
 }
 `, BuiltIn: false},
 	{Name: "../schema/payment/v1/paymentMutation.graphqls", Input: `extend type Mutation {

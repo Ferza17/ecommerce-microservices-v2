@@ -28,7 +28,9 @@ func (c *paymentConsumer) PaymentOrderDelayedCancelled(ctx context.Context) erro
 		false,
 		false,
 		true,
-		nil,
+		amqp091.Table{
+			enum.XDelayedType.String(): "direct",
+		},
 	); err != nil {
 		c.logger.Error(fmt.Sprintf("failed to declare exchange : %v", zap.Error(err)))
 		return err
@@ -48,17 +50,19 @@ func (c *paymentConsumer) PaymentOrderDelayedCancelled(ctx context.Context) erro
 	msgs, err := amqpChannel.Consume(
 		config.Get().QueuePaymentOrderDelayedCancelled,
 		"",
-		true,
-		false,
-		false,
-		false,
-		nil,
+		true,  // Auto-acknowledge
+		false, // Non-exclusive
+		false, // No-local
+		false, // No-wait
+		nil,   // Arguments
+
 	)
 	ctx, cancel := context.WithCancel(context.Background())
 	go func(deliveries <-chan amqp091.Delivery) {
 		defer cancel()
 	messages:
 		for d := range deliveries {
+			c.logger.Info(fmt.Sprintf("received a QUEUE : %s", config.Get().QueuePaymentOrderDelayedCancelled))
 			var (
 				request   paymentRpc.PaymentOrderDelayedCancelledRequest
 				requestId string
@@ -96,7 +100,7 @@ func (c *paymentConsumer) PaymentOrderDelayedCancelled(ctx context.Context) erro
 			}
 
 			if err = c.paymentUseCase.PaymentOrderDelayedCancelled(ctx, requestId, &request); err != nil {
-				c.logger.Error(fmt.Sprintf("failed to create user : %v", zap.Error(err)))
+				c.logger.Error(fmt.Sprintf("failed to PaymentOrderDelayedCancelled : %v", zap.Error(err)))
 				span.End()
 				continue messages
 			}

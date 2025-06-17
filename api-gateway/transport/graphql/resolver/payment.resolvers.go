@@ -6,8 +6,6 @@ package resolver
 
 import (
 	"context"
-	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/api-gateway/util"
 	"time"
 
 	gen1 "github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/graph/gen"
@@ -47,7 +45,13 @@ func (r *paymentItemResolver) DiscardedAt(ctx context.Context, obj *gen.PaymentI
 
 // Items is the resolver for the items field.
 func (r *createPaymentRequestResolver) Items(ctx context.Context, obj *gen.CreatePaymentRequest, data []*gen1.PaymentItemInput) error {
-	panic(fmt.Errorf("not implemented: Items - items"))
+	for _, datum := range data {
+		obj.Items = append(obj.Items, &gen.PaymentItem{
+			ProductId: datum.ProductID,
+			Qty:       int32(datum.Qty),
+		})
+	}
+	return nil
 }
 
 // Payment returns gen1.PaymentResolver implementation.

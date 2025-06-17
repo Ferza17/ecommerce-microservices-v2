@@ -47,7 +47,7 @@ services:
 
   rabbitmq-local:
     container_name: rabbitmq-local
-    image: rabbitmq:3-management
+    image: rabbitmq:3.11-management
     ports:
       - '15672:15672'
       - '5672:5672'
@@ -57,8 +57,17 @@ services:
       RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbitmq_management load_definitions \"/etc/rabbitmq/definitions.json\""
     volumes:
       - ./entrypoint/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
-      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
-      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+      - ./data/:/var/lib/rabbitmq/
+      - ./log/:/var/log/rabbitmq/
+      - ./entrypoint/rabbitmq/plugins:/usr/lib/rabbitmq/plugins
+
+    command: >
+      sh -c "
+      cp /usr/lib/rabbitmq/plugins/rabbitmq_delayed_message_exchange-3.11.1.ez /plugins/ &&
+      rabbitmq-plugins enable --offline rabbitmq_delayed_message_exchange &&
+      rabbitmq-server
+      "
+
     networks:
       - local
 
@@ -102,21 +111,21 @@ services:
 
     networks:
       - local
-    command: []
+    command: [ ]
 
   #Kibana
-#  kibana-local:
-#    container_name: kibana-local
-#    image: kibana:8.4.1
-#    depends_on:
-#      - elasticsearch-local
-#    ports:
-#      - '5601:5601'
-#    environment:
-#      - 'ELASTICSEARCH_HOSTS=http://elasticsearch-local:9200'
-#      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
-#    networks:
-#      - local
+  #  kibana-local:
+  #    container_name: kibana-local
+  #    image: kibana:8.4.1
+  #    depends_on:
+  #      - elasticsearch-local
+  #    ports:
+  #      - '5601:5601'
+  #    environment:
+  #      - 'ELASTICSEARCH_HOSTS=http://elasticsearch-local:9200'
+  #      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+  #    networks:
+  #      - local
 
   # Service Discovery
   consul-local:

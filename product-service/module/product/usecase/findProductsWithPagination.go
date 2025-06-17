@@ -26,6 +26,10 @@ func (u *productUseCase) FindProductsWithPagination(ctx context.Context, request
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
+	if len(fetchedProducts) == 0 {
+		return nil, status.Error(codes.NotFound, "product not found")
+	}
+
 	var products []*productRpc.Product
 	for _, product := range fetchedProducts {
 		products = append(products, &productRpc.Product{
