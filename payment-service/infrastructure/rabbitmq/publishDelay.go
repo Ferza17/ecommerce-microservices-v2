@@ -30,7 +30,7 @@ func (c *RabbitMQInfrastructure) PublishDelayedMessage(ctx context.Context, requ
 
 	if err = amqpChannel.ExchangeDeclare(
 		exchange,
-		amqp091.ExchangeDirect,
+		"x-delayed-message",
 		true,
 		false,
 		false,

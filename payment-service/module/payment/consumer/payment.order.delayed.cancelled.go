@@ -22,8 +22,8 @@ func (c *paymentConsumer) PaymentOrderDelayedCancelled(ctx context.Context) erro
 	}
 
 	if err = amqpChannel.ExchangeDeclare(
-		config.Get().ExchangePayment,
-		amqp091.ExchangeDirect,
+		config.Get().ExchangePaymentDelayed,
+		"x-delayed-message",
 		true,
 		false,
 		false,
@@ -38,8 +38,8 @@ func (c *paymentConsumer) PaymentOrderDelayedCancelled(ctx context.Context) erro
 
 	if err = amqpChannel.QueueBind(
 		config.Get().QueuePaymentOrderDelayedCancelled,
-		config.Get().QueuePaymentOrderDelayedCancelled,
-		config.Get().ExchangePayment,
+		"",
+		config.Get().ExchangePaymentDelayed,
 		false,
 		nil,
 	); err != nil {

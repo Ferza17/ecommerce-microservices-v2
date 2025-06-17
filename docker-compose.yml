@@ -56,10 +56,8 @@ services:
       RABBITMQ_DEFAULT_PASS: "1234"
       RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbitmq_management load_definitions \"/etc/rabbitmq/definitions.json\""
     volumes:
-      - ./entrypoint/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
-      - ./data/:/var/lib/rabbitmq/
-      - ./log/:/var/log/rabbitmq/
       - ./entrypoint/rabbitmq/plugins:/usr/lib/rabbitmq/plugins
+      - ./entrypoint/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
 
     command: >
       sh -c "
@@ -138,6 +136,27 @@ services:
     command: agent -dev -client=0.0.0.0 -ui
     volumes:
       - ./entrypoint/consul/init.sh:/init.sh
+      ## RABBITMQ CONFIG
+      - ./entrypoint/consul/rabbitmq/init-rabbitmq.sh:/rabbitmq/init-rabbitmq.sh
+      - ./entrypoint/consul/rabbitmq/init-rabbitmq-exchange.sh:/rabbitmq/init-rabbitmq-exchange.sh
+      - ./entrypoint/consul/rabbitmq/init-rabbitmq-queue.sh:/rabbitmq/init-rabbitmq-queue.sh
+      ## DATABASE CONFIG
+      - ./entrypoint/consul/database/init-database-elasticsearch.sh:/database/init-database-elasticsearch.sh
+      - ./entrypoint/consul/database/init-database-mongodb.sh:/database/init-database-mongodb.sh
+      - ./entrypoint/consul/database/init-database-postgresql.sh:/database/init-database-postgresql.sh
+      - ./entrypoint/consul/database/init-database-redis.sh:/database/init-database-redis.sh
+      ## SMTP CONFIG
+      - ./entrypoint/consul/smtp/init-smtp.sh:/smtp/init-smtp.sh
+      ## TELEMETRY CONFIG
+      - ./entrypoint/consul/telemetry/init-telemetry.sh:/telemetry/init-telemetry.sh
+      ## SERVICES
+      - ./entrypoint/consul/services/init-api-gateway-service.sh:/services/init-api-gateway-service.sh
+      - ./entrypoint/consul/services/init-commerce-service.sh:/services/init-commerce-service.sh
+      - ./entrypoint/consul/services/init-event-store-service.sh:/services/init-event-store-service.sh
+      - ./entrypoint/consul/services/init-notification-service.sh:/services/init-notification-service.sh
+      - ./entrypoint/consul/services/init-payment-service.sh:/services/init-payment-service.sh
+      - ./entrypoint/consul/services/init-product-service.sh:/services/init-product-service.sh
+      - ./entrypoint/consul/services/init-user-service.sh:/services/init-user-service.sh
     entrypoint: [ "/bin/sh", "-c", "consul agent -dev -client=0.0.0.0 -ui & sleep 5 && sh /init.sh && tail -f /dev/null" ]
     networks:
       - local

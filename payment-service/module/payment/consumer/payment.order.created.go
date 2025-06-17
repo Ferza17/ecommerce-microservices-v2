@@ -22,7 +22,7 @@ func (c *paymentConsumer) PaymentOrderCreated(ctx context.Context) error {
 	}
 
 	if err = amqpChannel.ExchangeDeclare(
-		config.Get().ExchangePayment,
+		config.Get().ExchangePaymentDirect,
 		amqp091.ExchangeDirect,
 		true,
 		false,
@@ -37,7 +37,7 @@ func (c *paymentConsumer) PaymentOrderCreated(ctx context.Context) error {
 	if err = amqpChannel.QueueBind(
 		config.Get().QueuePaymentOrderCreated,
 		config.Get().QueuePaymentOrderCreated,
-		config.Get().ExchangePayment,
+		config.Get().ExchangePaymentDirect,
 		false,
 		nil,
 	); err != nil {

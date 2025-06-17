@@ -99,7 +99,7 @@ func (u *paymentUseCase) CretePayment(ctx context.Context, requestId string, req
 		return err
 	}
 
-	if err = u.rabbitMQ.Publish(ctx, requestId, config.Get().ExchangePayment, config.Get().QueuePaymentOrderCreated, message); err != nil {
+	if err = u.rabbitMQ.Publish(ctx, requestId, config.Get().ExchangePaymentDirect, config.Get().QueuePaymentOrderCreated, message); err != nil {
 		u.logger.Error(fmt.Sprintf("error publishing message to rabbitmq: %s", err.Error()))
 		return err
 	}
