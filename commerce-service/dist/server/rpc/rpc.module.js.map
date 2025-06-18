@@ -1,0 +1,1 @@
+{"version":3,"file":"rpc.module.js","sourceRoot":"","sources":["../../../src/server/rpc/rpc.module.ts"],"names":[],"mappings":";;;;;;;;;AAAA,2CAAwC;AACxC,8DAA0D;AAC1D,wDAAwE;AASjE,IAAM,eAAe,GAArB,MAAM,eAAe;CAC3B,CAAA;AADY,0CAAe;0BAAf,eAAe;IAP3B,IAAA,eAAM,EAAC;QACN,OAAO,EAAE;YACP,uBAAU;YACV,8BAAiB;YACjB,4BAAY;SACb;KACF,CAAC;GACW,eAAe,CAC3B"}

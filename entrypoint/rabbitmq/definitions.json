@@ -1,0 +1,162 @@
+{
+  "users": [
+    {
+      "name": "rabbitmq",
+      "password": "1234",
+      "tags": "administrator"
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "rabbitmq",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "commerce.direct.exchange",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "event.direct.exchange",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "notification.direct.exchange",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "product.direct.exchange",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "user.direct.exchange",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "payment.direct.exchange",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "payment.delayed.exchange",
+      "vhost": "/",
+      "type": "x-delayed-message",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {
+        "x-delayed-type": "direct"
+      }
+    }
+  ],
+  "queues": [
+    {
+      "name": "user.created",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "user.updated",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "user.login",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "user.logout",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "product.created",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "product.updated",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "product.deleted",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "notification.email.otp.created",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "event.created",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "cart.created",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "cart.updated",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "cart.deleted",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "payment.order.created",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "payment.order.delayed.cancelled",
+      "vhost": "/",
+      "durable": true
+    }
+  ]
+}

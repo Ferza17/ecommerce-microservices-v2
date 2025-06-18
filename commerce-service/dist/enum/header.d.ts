@@ -1,0 +1,3 @@
+export declare enum Header {
+    X_REQUEST_ID = "X-Request-Id"
+}
