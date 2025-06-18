@@ -6,7 +6,7 @@ initialize_user_service(){
   curl --request PUT --data 'local' http://localhost:8500/v1/kv/local/services/user/ENV
   curl --request PUT --data 'user-service' http://localhost:8500/v1/kv/local/services/user/SERVICE_NAME
   curl --request PUT --data 'localhost' http://localhost:8500/v1/kv/local/services/user/RPC_HOST
-  curl --request PUT --data '50052' http://localhost:8500/v1/kv/local/services/user/RPC_PORT
+  curl --request PUT --data '50056' http://localhost:8500/v1/kv/local/services/user/RPC_PORT
   curl --request PUT --data 'ecommerce-service-v2' http://localhost:8500/v1/kv/local/services/user/JWT_ACCESS_TOKEN_SECRET
   curl --request PUT --data '1h' http://localhost:8500/v1/kv/local/services/user/JWT_ACCESS_TOKEN_EXPIRATION_TIME
   curl --request PUT --data 'v2-service-ecommerce' http://localhost:8500/v1/kv/local/services/user/JWT_REFRESH_TOKEN_SECRET
@@ -16,8 +16,8 @@ initialize_user_service(){
   ## Production
   curl --request PUT --data 'production' http://localhost:8500/v1/kv/production/services/user/ENV
   curl --request PUT --data 'user-service' http://localhost:8500/v1/kv/production/services/user/SERVICE_NAME
-  curl --request PUT --data 'user' http://localhost:8500/v1/kv/production/services/user/RPC_HOST
-  curl --request PUT --data '50052' http://localhost:8500/v1/kv/production/services/user/RPC_PORT
+  curl --request PUT --data 'user-service' http://localhost:8500/v1/kv/production/services/user/RPC_HOST
+  curl --request PUT --data '50056' http://localhost:8500/v1/kv/production/services/user/RPC_PORT
   curl --request PUT --data 'ecommerce-service-v2' http://localhost:8500/v1/kv/production/services/user/JWT_ACCESS_TOKEN_SECRET
   curl --request PUT --data '1h' http://localhost:8500/v1/kv/production/services/user/JWT_ACCESS_TOKEN_EXPIRATION_TIME
   curl --request PUT --data 'v2-service-ecommerce' http://localhost:8500/v1/kv/production/services/user/JWT_REFRESH_TOKEN_SECRET

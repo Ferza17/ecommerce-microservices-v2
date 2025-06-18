@@ -1,18 +1,19 @@
-FROM golang:1.19.0-alpine3.15 as build
+FROM golang:1.24.3-alpine AS build
 
-WORKDIR /go/src/github.com/Ferza17/ecommerce-microservices-v2/user-service
+WORKDIR /go/src/github.com/ferza17/ecommerce-v2/user-service
 
 COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
 
 COPY . ./
-EXPOSE 3000 3000
+EXPOSE 50056
 
 RUN go build -o user-service
 
-FROM alpine:3.12.1
+FROM alpine:latest
+RUN apk --no-cache add ca-certificates
 WORKDIR /usr/bin
-COPY --from=build /go/src/github.com/Ferza17/ecommerce-microservices-v2/user-service .
-CMD [ "./user-service","grpc" ]
-
+COPY --from=build /go/src/github.com/ferza17/ecommerce-v2/user-service .
+CMD [ "./user-service","migration up" ]
+CMD [ "./user-service","run" ]

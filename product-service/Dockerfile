@@ -1,17 +1,20 @@
-FROM golang:1.19.0-alpine3.15 as build
+FROM golang:1.24.3-alpine AS build
 
-WORKDIR /go/src/github.com/Ferza17/ecommerce-microservices-v2/product-service
+WORKDIR /go/src/github.com/ferza17/ecommerce-v2/product-service
 
 COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
 
 COPY . ./
-EXPOSE 3000 3000
+EXPOSE 50055
 
 RUN go build -o product-service
 
-FROM alpine:3.12.1
+FROM alpine:latest
+RUN apk --no-cache add ca-certificates
 WORKDIR /usr/bin
-COPY --from=build /go/src/github.com/Ferza17/ecommerce-microservices-v2/product-service .
-
+COPY --from=build /go/src/github.com/ferza17/ecommerce-v2/product-service .
+CMD [ "./product-service","migration up" ]
+CMD [ "./product-service","migration elasticsearch" ]
+CMD [ "./product-service","run" ]

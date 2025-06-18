@@ -7,7 +7,7 @@ COPY go.sum ./
 RUN go mod download
 
 COPY . ./
-EXPOSE 50055
+EXPOSE 50054
 
 RUN go build -o payment-service
 
