@@ -10,7 +10,11 @@ import (
 	"github.com/google/wire"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
+	"log"
+
 	"net"
 )
 
@@ -69,7 +73,7 @@ func ProvideGrpcServerOptions() []grpc.ServerOption {
 }
 
 func (s *GrpcServer) Serve() {
-	listen, err := net.Listen("tcp", fmt.Sprintf("%s:%s", s.address, s.port))
+	listen, err := net.Listen("tcp", fmt.Sprintf(":%s", s.port))
 	if err != nil {
 		s.logger.Error(fmt.Sprintf("Err Listen : %v", err))
 	}
@@ -77,14 +81,18 @@ func (s *GrpcServer) Serve() {
 	paymentRpc.RegisterPaymentServiceServer(s.grpcServer, s.paymentPresenter)
 	paymentRpc.RegisterPaymentProviderServiceServer(s.grpcServer, s.paymentProviderPresenter)
 
+	healthServer := health.NewServer()
+	grpc_health_v1.RegisterHealthServer(s.grpcServer, healthServer)
+
+	// Mark the service as healthy
+	healthServer.SetServingStatus(config.Get().ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
+
+	log.Printf("Starting gRPC server on %s:%s", s.address, s.port)
 	// Enable Reflection to Evans grpc client
 	reflection.Register(s.grpcServer)
 	if err = s.grpcServer.Serve(listen); err != nil {
 		s.logger.Error(fmt.Sprintf("failed to serve : %s", zap.Error(err).String))
 	}
-
-	s.logger.Info(fmt.Sprintf("Server listen at port %s", s.port))
-
 	return
 }
 

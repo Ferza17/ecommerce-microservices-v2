@@ -5,7 +5,6 @@ import (
 	"github.com/hashicorp/consul/api"
 	"github.com/spf13/viper"
 	"log"
-	"strconv"
 	"sync"
 )
 
@@ -81,7 +80,7 @@ func SetConfig(path string) {
 		log.Fatal("SetConfig | consul port is required")
 	}
 
-	consulClient, err := api.NewClient(&api.Config{
+	client, err := api.NewClient(&api.Config{
 		Address: fmt.Sprintf("%s:%s", c.ConsulHost, c.ConsulPort),
 	})
 	if err != nil {
@@ -89,60 +88,45 @@ func SetConfig(path string) {
 	}
 
 	// Get Consul Key / Value
-	kv := consulClient.KV()
 	wg := sync.WaitGroup{}
 
 	// Telemetry Config
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		c.initTelemetry(kv)
+		c.initTelemetry(client.KV())
 	}()
 
 	// RabbitMQ Config
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		c.initRabbitmq(kv)
-		c.initRabbitmqExchange(kv)
-		c.initRabbitmqQueue(kv)
+		c.initRabbitmq(client.KV())
+		c.initRabbitmqExchange(client.KV())
+		c.initRabbitmqQueue(client.KV())
 	}()
 
 	// COMMON Config
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		c.initCommon(kv)
+		c.initCommon(client.KV())
 	}()
 
 	// Postgres Config
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		c.initDatabasePostgres(kv)
+		c.initDatabasePostgres(client.KV())
 	}()
 
 	// Payment Service Config
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		c.initPaymentService(kv)
+		c.initPaymentService(client.KV())
 	}()
 
 	wg.Wait()
-
-	port, err := strconv.ParseInt(c.RpcPort, 10, 64)
-	if err != nil {
-		log.Fatalf("SetConfig | could not parse PORT to int: %v", err)
-	}
-	if err = consulClient.Agent().ServiceRegister(&api.AgentServiceRegistration{
-		Name:    c.ServiceName,
-		Address: c.RpcHost,
-		Port:    int(port),
-		Tags:    []string{"v1"},
-	}); err != nil {
-		log.Fatalf("Error registering service: %v", err)
-	}
-
 	viper.WatchConfig()
 }

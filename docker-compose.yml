@@ -161,6 +161,27 @@ services:
     networks:
       - local
 
+  # PAYMENT-SERVICE
+  payment-service:
+    container_name: payment-service
+    build:
+      context: ./payment-service
+      dockerfile: Dockerfile
+    ports:
+      - "50055:50055"
+    environment:
+      - ENV=production
+      - CONSUL_HOST=consul-local
+      - CONSUL_PORT=8500
+    depends_on:
+      - consul-local
+      - postgres-local
+      - rabbitmq-local
+      - redis-local
+    networks:
+      - local
+    restart: unless-stopped
+
 networks:
   local:
     driver: bridge
