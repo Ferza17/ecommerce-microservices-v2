@@ -1,1 +1,0 @@
-//# sourceMappingURL=wishlist.consumer.js.map
