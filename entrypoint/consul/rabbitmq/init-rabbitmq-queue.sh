@@ -29,9 +29,13 @@ initialize_rabbitmq_queue(){
 
   # QUEUE LOCAL NOTIFICATION
   curl --request PUT --data 'notification.email.otp.created' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/OTP/CREATED
+  curl --request PUT --data 'notification.email.payment.order.created' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/PAYMENT/ORDER/CREATED
+
 
   # QUEUE PRODUCTION NOTIFICATION
   curl --request PUT --data 'notification.email.otp.created' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/OTP/CREATED
+  curl --request PUT --data 'notification.email.payment.order.created' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/PAYMENT/ORDER/CREATED
+
 
   # QUEUE LOCAL EVENT
   curl --request PUT --data 'event.created' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/EVENT/CREATED

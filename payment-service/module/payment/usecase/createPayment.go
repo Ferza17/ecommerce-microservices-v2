@@ -103,7 +103,7 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 		u.logger.Error(fmt.Sprintf("Failed to publish event payment.delayed.cancelled, requestId: %s, error: %v", requestId, err))
 		return fmt.Errorf("failed to commit transaction: %w", err)
 	}
-
+	
 	// Commit the transaction
 	if err = tx.Commit().Error; err != nil {
 		u.logger.Error(fmt.Sprintf("Failed to commit transaction, requestId: %s, error: %v", requestId, err))

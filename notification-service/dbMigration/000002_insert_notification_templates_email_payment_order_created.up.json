@@ -1,0 +1,52 @@
+[
+  {
+    "insert": "notification_templates",
+    "documents": [
+      {
+        "type": "NOTIFICATION.EMAIL.PAYMENT.ORDER.CREATED",
+        "template": "<!doctypehtml><html lang=en><meta charset=UTF-8><meta content=\"width=device-width,initial-scale=1\"name=viewport><title>Payment Order Created</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background-color:#f4f4f4;padding:20px;line-height:1.6}.email-container{max-width:600px;margin:0 auto;background-color:#fff;border-radius:8px;box-shadow:0 4px 6px rgba(0,0,0,.1);overflow:hidden}.header{background:linear-gradient(135deg,#667eea 0,#764ba2 100%);color:#fff;padding:30px 20px;text-align:center}.header h1{font-size:28px;font-weight:300;margin-bottom:10px}.header p{font-size:16px;opacity:.9}.content{padding:30px 20px}.payment-info{background-color:#f8f9fa;border-radius:6px;padding:20px;margin-bottom:30px;border-left:4px solid #667eea}.info-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap}.info-row:last-child{margin-bottom:0}.info-label{font-weight:600;color:#333;min-width:120px}.info-value{color:#666;text-align:right;flex:1}.status{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}.status.pending{background-color:#fff3cd;color:#856404}.status.partial{background-color:#d1ecf1;color:#0c5460}.status.success{background-color:#d4edda;color:#155724}.status.failed{background-color:#f8d7da;color:#721c24}.items-section{margin-top:30px}.section-title{font-size:20px;font-weight:600;color:#333;margin-bottom:20px;text-align:center}.items-table{width:100%;border-collapse:collapse;background-color:#fff;border-radius:6px;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,.1)}.items-table th{background-color:#667eea;color:#fff;padding:15px 10px;text-align:left;font-weight:600;font-size:14px}.items-table td{padding:15px 10px;border-bottom:1px solid #eee;font-size:14px}.items-table tr:last-child td{border-bottom:none}.items-table tr:nth-child(even){background-color:#f8f9fa}.total-row{background-color:#667eea!important;color:#fff;font-weight:600}.total-row td{border-bottom:none!important;font-size:16px}.footer{background-color:#f8f9fa;padding:20px;text-align:center;color:#666;font-size:14px}.footer p{margin-bottom:10px}.footer a{color:#667eea;text-decoration:none}@media (max-width:600px){.email-container{margin:0;border-radius:0}.info-row{flex-direction:column;align-items:flex-start}.info-value{text-align:left;margin-top:5px}.items-table{font-size:12px}.items-table td,.items-table th{padding:10px 8px}}</style><div class=email-container><div class=header><h1>Payment Order Created</h1><p>Your payment order has been successfully created</div><div class=content><div class=payment-info><div class=info-row><span class=info-label>Order ID:</span> <span class=info-value>{{.ID}}</span></div><div class=info-row><span class=info-label>Order Code:</span> <span class=info-value>{{.Code}}</span></div><div class=info-row><span class=info-label>Status:</span> <span class=info-value><span class=\"lower}} status {{.Status |\">{{.Status}}</span></span></div><div class=info-row><span class=info-label>Payment Provider:</span> <span class=info-value>{{.Provider.Name}}</span></div><div class=info-row><span class=info-label>Payment Method:</span> <span class=info-value>{{.Provider.Method}}</span></div><div class=info-row><span class=info-label>Created Date:</span> <span class=info-value>{{.CreatedAt.Format \"January 2, 2006 at 3:04 PM\"}}</span></div></div><div class=items-section><h2 class=section-title>Order Items</h2><table class=items-table><thead><tr><th>Product ID<th style=text-align:center>Quantity<th style=text-align:right>Unit Price<th style=text-align:right>Total<tbody>{{range .PaymentItems}}<tr><td>{{.ProductID}}<td style=text-align:center>{{.Qty}}<td style=text-align:right>${{printf \"%.2f\" (div .Amount (float64 .Qty))}}<td style=text-align:right>${{printf \"%.2f\" .Amount}}</tr>{{end}}<tr class=total-row><td style=text-align:right colspan=3><strong>Total Amount:</strong><td style=text-align:right><strong>${{printf \"%.2f\" .TotalPrice}}</strong></table></div></div><div class=footer><p>Thank you for your order!<p>If you have any questions, please contact our support team.<p><a href=mailto:support@yourcompany.com>support@yourcompany.com</a></div></div>",
+        "templateVars": {
+          "Code": "STRING",
+          "TotalPrice": "FLOAT64",
+          "Status": "STRING",
+          "Provider": {
+            "Name": "STRING",
+            "Method": "STRING",
+            "CreatedAt": "2024-01-15T10:30:00Z",
+            "UpdatedAt": "2024-01-15T10:30:00Z"
+          },
+          "UserID": "STRING",
+          "CreatedAt": "2024-06-18T14:22:33Z",
+          "UpdatedAt": "2024-06-18T14:25:15Z",
+          "PaymentItems": [
+            {
+              "ProductID": "prod_laptop_001",
+              "Amount": 199.99,
+              "Qty": 1,
+              "CreatedAt": "2024-06-18T14:22:33Z",
+              "UpdatedAt": "2024-06-18T14:22:33Z"
+            },
+            {
+              "ID": "item_002",
+              "PaymentID": "pay_1234567890abcdef",
+              "ProductID": "prod_mouse_wireless",
+              "Amount": 49.99,
+              "Qty": 1,
+              "CreatedAt": "2024-06-18T14:22:33Z",
+              "UpdatedAt": "2024-06-18T14:22:33Z"
+            },
+            {
+              "ID": "item_003",
+              "PaymentID": "pay_1234567890abcdef",
+              "ProductID": "prod_usb_cable",
+              "Amount": 49.98,
+              "Qty": 2,
+              "CreatedAt": "2024-06-18T14:22:33Z",
+              "UpdatedAt": "2024-06-18T14:22:33Z"
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

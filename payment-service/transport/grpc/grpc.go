@@ -45,8 +45,6 @@ func NewGrpcServer(
 ) IGrpcServer {
 	grpcServer := grpc.NewServer(options...)
 
-	host := config.Get().RpcHost
-	_ = host
 	return &GrpcServer{
 		address:                  config.Get().RpcHost,
 		port:                     config.Get().RpcPort,

@@ -4,7 +4,7 @@
 // - protoc             (unknown)
 // source: payment/v1/paymentServices.proto
 
-package gen
+package v1
 
 import (
 	context "context"

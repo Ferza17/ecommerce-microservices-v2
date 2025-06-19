@@ -44,7 +44,7 @@ var runCommand = &cobra.Command{
 			// Signal that we're about to start the server
 			close(p)
 
-			// Start the server (this blocks)
+			// Start the server (these blocks)
 			grpcServer.Serve()
 
 		}()
@@ -61,9 +61,6 @@ var runCommand = &cobra.Command{
 		go func(c *config.Config) {
 			<-p
 			log.Println("Waiting for gRPC server to be ready...")
-
-			// Add initial delay to let server start
-			time.Sleep(2 * time.Second)
 
 			var lastErr error
 			for i := 0; i < 10; i++ { // Increase retry attempts

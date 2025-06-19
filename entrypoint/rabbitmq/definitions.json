@@ -129,6 +129,11 @@
       "durable": true
     },
     {
+      "name": "notification.email.payment.order.created",
+      "vhost": "/",
+      "durable": true
+    },
+    {
       "name": "event.created",
       "vhost": "/",
       "durable": true

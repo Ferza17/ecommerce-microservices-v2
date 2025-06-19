@@ -4,7 +4,7 @@
 // 	protoc        (unknown)
 // source: payment/v1/paymentProviderMessage.proto
 
-package gen
+package v1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"

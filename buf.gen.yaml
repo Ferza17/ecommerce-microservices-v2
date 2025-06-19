@@ -7,54 +7,56 @@ plugins:
     opt:
       - paths=source_relative
       # Event Store service Proto
-      - Mevent/v1/eventStoreMessage.proto=event-store-service/model/rpc/gen
+      - Mevent/v1/eventStoreMessage.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
       # Notification Service Proto
-      - Mnotification/v1/notificationMessage.proto=event-store-service/model/rpc/gen
+      - Mnotification/v1/notificationMessage.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
       # Product Service Proto
-      - Mproduct/v1/productMessage.proto=event-store-service/model/rpc/gen
-      - Mproduct/v1/productServices.proto=event-store-service/model/rpc/gen
+      - Mproduct/v1/productMessage.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
+      - Mproduct/v1/productServices.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
       # User Service Proto
-      - Muser/v1/userMessage.proto=event-store-service/model/rpc/gen
-      - Muser/v1/userServices.proto=event-store-service/model/rpc/gen
-      - Muser/v1/authMessage.proto=event-store-service/model/rpc/gen
-      - Muser/v1/authServices.proto=event-store-service/model/rpc/gen
+      - Muser/v1/userMessage.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
+      - Muser/v1/userServices.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
+      - Muser/v1/authMessage.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
+      - Muser/v1/authServices.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
       # Commerce Service Proto
-      - Mcommerce/v1/cartMessage.proto=event-store-service/model/rpc/gen
-      - Mcommerce/v1/cartServices.proto=event-store-service/model/rpc/gen
-      - Mcommerce/v1/wishlistMessage.proto=event-store-service/model/rpc/gen
-      - Mcommerce/v1/wishlistServices.proto=event-store-service/model/rpc/gen
+      - Mcommerce/v1/cartMessage.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
+      - Mcommerce/v1/cartServices.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
+      - Mcommerce/v1/wishlistMessage.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
+      - Mcommerce/v1/wishlistServices.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
       # Payment Service Proto
-      - Mpayment/v1/paymentMessage.proto=event-store-service/model/rpc/gen
-      - Mpayment/v1/paymentServices.proto=event-store-service/model/rpc/gen
-      - Mpayment/v1/paymentProviderMessage.proto=event-store-service/model/rpc/gen
-      - Mpayment/v1/paymentProviderServices.proto=event-store-service/model/rpc/gen
+      - Mpayment/v1/paymentMessage.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentServices.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderMessage.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderServices.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/payment/v1
+
   - plugin: go-grpc
     out: event-store-service/model/rpc/gen
     opt:
       - paths=source_relative
       - require_unimplemented_servers=false
       # Event Store service Proto
-      - Mevent/v1/eventStoreMessage.proto=event-store-service/model/rpc/gen
+      - Mevent/v1/eventStoreMessage.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
       # Notification Service Proto
-      - Mnotification/v1/notificationMessage.proto=event-store-service/model/rpc/gen
+      - Mnotification/v1/notificationMessage.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
       # Product Service Proto
-      - Mproduct/v1/productMessage.proto=event-store-service/model/rpc/gen
-      - Mproduct/v1/productServices.proto=event-store-service/model/rpc/gen
+      - Mproduct/v1/productMessage.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
+      - Mproduct/v1/productServices.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
       # User Service Proto
-      - Muser/v1/userMessage.proto=event-store-service/model/rpc/gen
-      - Muser/v1/userServices.proto=event-store-service/model/rpc/gen
-      - Muser/v1/authMessage.proto=event-store-service/model/rpc/gen
-      - Muser/v1/authServices.proto=event-store-service/model/rpc/gen
+      - Muser/v1/userMessage.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
+      - Muser/v1/userServices.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
+      - Muser/v1/authMessage.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
+      - Muser/v1/authServices.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
       # Commerce Service Proto
-      - Mcommerce/v1/cartMessage.proto=event-store-service/model/rpc/gen
-      - Mcommerce/v1/cartServices.proto=event-store-service/model/rpc/gen
-      - Mcommerce/v1/wishlistMessage.proto=event-store-service/model/rpc/gen
-      - Mcommerce/v1/wishlistServices.proto=event-store-service/model/rpc/gen
+      - Mcommerce/v1/cartMessage.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
+      - Mcommerce/v1/cartServices.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
+      - Mcommerce/v1/wishlistMessage.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
+      - Mcommerce/v1/wishlistServices.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen
       # Payment Service Proto
-      - Mpayment/v1/paymentMessage.proto=event-store-service/model/rpc/gen
-      - Mpayment/v1/paymentServices.proto=event-store-service/model/rpc/gen
-      - Mpayment/v1/paymentProviderMessage.proto=event-store-service/model/rpc/gen
-      - Mpayment/v1/paymentProviderServices.proto=event-store-service/model/rpc/gen
+      - Mpayment/v1/paymentMessage.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentServices.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderMessage.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderServices.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/payment/v1
+
 
   #====================== API Gateway Service =======================================
   - plugin: go
@@ -62,54 +64,55 @@ plugins:
     opt:
       - paths=source_relative
       # Event Store service Proto
-      - Mevent/v1/eventStoreMessage.proto=api-gateway/model/rpc/gen
+      - Mevent/v1/eventStoreMessage.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
       # Notification Service Proto
-      - Mnotification/v1/notificationMessage.proto=api-gateway/model/rpc/gen
+      - Mnotification/v1/notificationMessage.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
       # Product Service Proto
-      - Mproduct/v1/productMessage.proto=api-gateway/model/rpc/gen
-      - Mproduct/v1/productServices.proto=api-gateway/model/rpc/gen
+      - Mproduct/v1/productMessage.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
+      - Mproduct/v1/productServices.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
       # User Service Proto
-      - Muser/v1/userMessage.proto=api-gateway/model/rpc/gen
-      - Muser/v1/userServices.proto=api-gateway/model/rpc/gen
-      - Muser/v1/authMessage.proto=api-gateway/model/rpc/gen
-      - Muser/v1/authServices.proto=api-gateway/model/rpc/gen
+      - Muser/v1/userMessage.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
+      - Muser/v1/userServices.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
+      - Muser/v1/authMessage.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
+      - Muser/v1/authServices.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
       # Commerce Service Proto
-      - Mcommerce/v1/cartMessage.proto=api-gateway/model/rpc/gen
-      - Mcommerce/v1/cartServices.proto=api-gateway/model/rpc/gen
-      - Mcommerce/v1/wishlistMessage.proto=api-gateway/model/rpc/gen
-      - Mcommerce/v1/wishlistServices.proto=api-gateway/model/rpc/gen
+      - Mcommerce/v1/cartMessage.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
+      - Mcommerce/v1/cartServices.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
+      - Mcommerce/v1/wishlistMessage.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
+      - Mcommerce/v1/wishlistServices.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
       # Payment Service Proto
-      - Mpayment/v1/paymentMessage.proto=api-gateway/model/rpc/gen
-      - Mpayment/v1/paymentServices.proto=api-gateway/model/rpc/gen
-      - Mpayment/v1/paymentProviderMessage.proto=api-gateway/model/rpc/gen
-      - Mpayment/v1/paymentProviderServices.proto=api-gateway/model/rpc/gen
+      - Mpayment/v1/paymentMessage.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentServices.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderMessage.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderServices.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/payment/v1
+
   - plugin: go-grpc
     out: api-gateway/model/rpc/gen
     opt:
       - paths=source_relative
       - require_unimplemented_servers=false
       # Event Store service Proto
-      - Mevent/v1/eventStoreMessage.proto=api-gateway/model/rpc/gen
+      - Mevent/v1/eventStoreMessage.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
       # Notification Service Proto
-      - Mnotification/v1/notificationMessage.proto=api-gateway/model/rpc/gen
+      - Mnotification/v1/notificationMessage.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
       # Product Service Proto
-      - Mproduct/v1/productMessage.proto=api-gateway/model/rpc/gen
-      - Mproduct/v1/productServices.proto=api-gateway/model/rpc/gen
+      - Mproduct/v1/productMessage.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
+      - Mproduct/v1/productServices.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
       # User Service Proto
-      - Muser/v1/userMessage.proto=api-gateway/model/rpc/gen
-      - Muser/v1/userServices.proto=api-gateway/model/rpc/gen
-      - Muser/v1/authMessage.proto=api-gateway/model/rpc/gen
-      - Muser/v1/authServices.proto=api-gateway/model/rpc/gen
+      - Muser/v1/userMessage.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
+      - Muser/v1/userServices.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
+      - Muser/v1/authMessage.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
+      - Muser/v1/authServices.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
       # Commerce Service Proto
-      - Mcommerce/v1/cartMessage.proto=api-gateway/model/rpc/gen
-      - Mcommerce/v1/cartServices.proto=api-gateway/model/rpc/gen
-      - Mcommerce/v1/wishlistMessage.proto=api-gateway/model/rpc/gen
-      - Mcommerce/v1/wishlistServices.proto=api-gateway/model/rpc/gen
+      - Mcommerce/v1/cartMessage.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
+      - Mcommerce/v1/cartServices.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
+      - Mcommerce/v1/wishlistMessage.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
+      - Mcommerce/v1/wishlistServices.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen
       # Payment Service Proto
-      - Mpayment/v1/paymentMessage.proto=api-gateway/model/rpc/gen
-      - Mpayment/v1/paymentServices.proto=api-gateway/model/rpc/gen
-      - Mpayment/v1/paymentProviderMessage.proto=api-gateway/model/rpc/gen
-      - Mpayment/v1/paymentProviderServices.proto=api-gateway/model/rpc/gen
+      - Mpayment/v1/paymentMessage.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentServices.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderMessage.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderServices.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/payment/v1
 
   #====================== Notification Service =======================================
   - plugin: go
@@ -117,54 +120,56 @@ plugins:
     opt:
       - paths=source_relative
       # Event Store service Proto
-      - Mevent/v1/eventStoreMessage.proto=notification-service/model/rpc/gen
+      - Mevent/v1/eventStoreMessage.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
       # Notification Service Proto
-      - Mnotification/v1/notificationMessage.proto=notification-service/model/rpc/gen
+      - Mnotification/v1/notificationMessage.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
       # Product Service Proto
-      - Mproduct/v1/productMessage.proto=notification-service/model/rpc/gen
-      - Mproduct/v1/productServices.proto=notification-service/model/rpc/gen
+      - Mproduct/v1/productMessage.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
+      - Mproduct/v1/productServices.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
       # User Service Proto
-      - Muser/v1/userMessage.proto=notification-service/model/rpc/gen
-      - Muser/v1/userServices.proto=notification-service/model/rpc/gen
-      - Muser/v1/authMessage.proto=notification-service/model/rpc/gen
-      - Muser/v1/authServices.proto=notification-service/model/rpc/gen
+      - Muser/v1/userMessage.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
+      - Muser/v1/userServices.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
+      - Muser/v1/authMessage.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
+      - Muser/v1/authServices.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
       # Commerce Service Proto
-      - Mcommerce/v1/cartMessage.proto=notification-service/model/rpc/gen
-      - Mcommerce/v1/cartServices.proto=notification-service/model/rpc/gen
-      - Mcommerce/v1/wishlistMessage.proto=notification-service/model/rpc/gen
-      - Mcommerce/v1/wishlistServices.proto=notification-service/model/rpc/gen
+      - Mcommerce/v1/cartMessage.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
+      - Mcommerce/v1/cartServices.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
+      - Mcommerce/v1/wishlistMessage.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
+      - Mcommerce/v1/wishlistServices.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
       # Payment Service Proto
-      - Mpayment/v1/paymentMessage.proto=notification-service/model/rpc/gen
-      - Mpayment/v1/paymentServices.proto=notification-service/model/rpc/gen
-      - Mpayment/v1/paymentProviderMessage.proto=notification-service/model/rpc/gen
-      - Mpayment/v1/paymentProviderServices.proto=notification-service/model/rpc/gen
+      - Mpayment/v1/paymentMessage.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentServices.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderMessage.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderServices.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/payment/v1
+
   - plugin: go-grpc
     out: notification-service/model/rpc/gen
     opt:
       - paths=source_relative
       - require_unimplemented_servers=false
       # Event Store service Proto
-      - Mevent/v1/eventStoreMessage.proto=notification-service/model/rpc/gen
+      - Mevent/v1/eventStoreMessage.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
       # Notification Service Proto
-      - Mnotification/v1/notificationMessage.proto=notification-service/model/rpc/gen
+      - Mnotification/v1/notificationMessage.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
       # Product Service Proto
-      - Mproduct/v1/productMessage.proto=notification-service/model/rpc/gen
-      - Mproduct/v1/productServices.proto=notification-service/model/rpc/gen
+      - Mproduct/v1/productMessage.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
+      - Mproduct/v1/productServices.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
       # User Service Proto
-      - Muser/v1/userMessage.proto=notification-service/model/rpc/gen
-      - Muser/v1/userServices.proto=notification-service/model/rpc/gen
-      - Muser/v1/authMessage.proto=notification-service/model/rpc/gen
-      - Muser/v1/authServices.proto=notification-service/model/rpc/gen
+      - Muser/v1/userMessage.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
+      - Muser/v1/userServices.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
+      - Muser/v1/authMessage.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
+      - Muser/v1/authServices.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
       # Commerce Service Proto
-      - Mcommerce/v1/cartMessage.proto=notification-service/model/rpc/gen
-      - Mcommerce/v1/cartServices.proto=notification-service/model/rpc/gen
-      - Mcommerce/v1/wishlistMessage.proto=notification-service/model/rpc/gen
-      - Mcommerce/v1/wishlistServices.proto=notification-service/model/rpc/gen
-      # Payment Service Proto
-      - Mpayment/v1/paymentMessage.proto=notification-service/model/rpc/gen
-      - Mpayment/v1/paymentServices.proto=notification-service/model/rpc/gen
-      - Mpayment/v1/paymentProviderMessage.proto=notification-service/model/rpc/gen
-      - Mpayment/v1/paymentProviderServices.proto=notification-service/model/rpc/gen
+      - Mcommerce/v1/cartMessage.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
+      - Mcommerce/v1/cartServices.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
+      - Mcommerce/v1/wishlistMessage.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
+      - Mcommerce/v1/wishlistServices.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen
+      # Payment Service Proto - THIS IS THE KEY FIX
+      - Mpayment/v1/paymentMessage.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentServices.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderMessage.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderServices.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/payment/v1
+
 
   #====================== Product Service =======================================
   - plugin: go
@@ -172,54 +177,54 @@ plugins:
     opt:
       - paths=source_relative
       # Event Store service Proto
-      - Mevent/v1/eventStoreMessage.proto=product-service/model/rpc/gen
+      - Mevent/v1/eventStoreMessage.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
       # Notification Service Proto
-      - Mnotification/v1/notificationMessage.proto=product-service/model/rpc/gen
+      - Mnotification/v1/notificationMessage.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
       # Product Service Proto
-      - Mproduct/v1/productMessage.proto=product-service/model/rpc/gen
-      - Mproduct/v1/productServices.proto=product-service/model/rpc/gen
+      - Mproduct/v1/productMessage.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
+      - Mproduct/v1/productServices.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
       # User Service Proto
-      - Muser/v1/userMessage.proto=product-service/model/rpc/gen
-      - Muser/v1/userServices.proto=product-service/model/rpc/gen
-      - Muser/v1/authMessage.proto=product-service/model/rpc/gen
-      - Muser/v1/authServices.proto=product-service/model/rpc/gen
+      - Muser/v1/userMessage.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
+      - Muser/v1/userServices.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
+      - Muser/v1/authMessage.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
+      - Muser/v1/authServices.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
       # Commerce Service Proto
-      - Mcommerce/v1/cartMessage.proto=product-service/model/rpc/gen
-      - Mcommerce/v1/cartServices.proto=product-service/model/rpc/gen
-      - Mcommerce/v1/wishlistMessage.proto=product-service/model/rpc/gen
-      - Mcommerce/v1/wishlistServices.proto=product-service/model/rpc/gen
+      - Mcommerce/v1/cartMessage.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
+      - Mcommerce/v1/cartServices.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
+      - Mcommerce/v1/wishlistMessage.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
+      - Mcommerce/v1/wishlistServices.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
       # Payment Service Proto
-      - Mpayment/v1/paymentMessage.proto=product-service/model/rpc/gen
-      - Mpayment/v1/paymentServices.proto=product-service/model/rpc/gen
-      - Mpayment/v1/paymentProviderMessage.proto=product-service/model/rpc/gen
-      - Mpayment/v1/paymentProviderServices.proto=product-service/model/rpc/gen
+      - Mpayment/v1/paymentMessage.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentServices.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderMessage.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderServices.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/payment/v1
   - plugin: go-grpc
     out: product-service/model/rpc/gen
     opt:
       - paths=source_relative
       - require_unimplemented_servers=false
       # Event Store service Proto
-      - Mevent/v1/eventStoreMessage.proto=product-service/model/rpc/gen
+      - Mevent/v1/eventStoreMessage.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
       # Notification Service Proto
-      - Mnotification/v1/notificationMessage.proto=product-service/model/rpc/gen
+      - Mnotification/v1/notificationMessage.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
       # Product Service Proto
-      - Mproduct/v1/productMessage.proto=product-service/model/rpc/gen
-      - Mproduct/v1/productServices.proto=product-service/model/rpc/gen
+      - Mproduct/v1/productMessage.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
+      - Mproduct/v1/productServices.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
       # User Service Proto
-      - Muser/v1/userMessage.proto=product-service/model/rpc/gen
-      - Muser/v1/userServices.proto=product-service/model/rpc/gen
-      - Muser/v1/authMessage.proto=product-service/model/rpc/gen
-      - Muser/v1/authServices.proto=product-service/model/rpc/gen
+      - Muser/v1/userMessage.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
+      - Muser/v1/userServices.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
+      - Muser/v1/authMessage.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
+      - Muser/v1/authServices.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
       # Commerce Service Proto
-      - Mcommerce/v1/cartMessage.proto=product-service/model/rpc/gen
-      - Mcommerce/v1/cartServices.proto=product-service/model/rpc/gen
-      - Mcommerce/v1/wishlistMessage.proto=product-service/model/rpc/gen
-      - Mcommerce/v1/wishlistServices.proto=product-service/model/rpc/gen
+      - Mcommerce/v1/cartMessage.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
+      - Mcommerce/v1/cartServices.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
+      - Mcommerce/v1/wishlistMessage.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
+      - Mcommerce/v1/wishlistServices.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen
       # Payment Service Proto
-      - Mpayment/v1/paymentMessage.proto=product-service/model/rpc/gen
-      - Mpayment/v1/paymentServices.proto=product-service/model/rpc/gen
-      - Mpayment/v1/paymentProviderMessage.proto=product-service/model/rpc/gen
-      - Mpayment/v1/paymentProviderServices.proto=product-service/model/rpc/gen
+      - Mpayment/v1/paymentMessage.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentServices.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderMessage.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderServices.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/payment/v1
 
   #====================== User Service =======================================
   - plugin: go
@@ -227,54 +232,54 @@ plugins:
     opt:
       - paths=source_relative
       # Event Store service Proto
-      - Mevent/v1/eventStoreMessage.proto=user-service/model/rpc/gen
+      - Mevent/v1/eventStoreMessage.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
       # Notification Service Proto
-      - Mnotification/v1/notificationMessage.proto=user-service/model/rpc/gen
+      - Mnotification/v1/notificationMessage.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
       # Product Service Proto
-      - Mproduct/v1/productMessage.proto=user-service/model/rpc/gen
-      - Mproduct/v1/productServices.proto=user-service/model/rpc/gen
+      - Mproduct/v1/productMessage.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
+      - Mproduct/v1/productServices.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
       # User Service Proto
-      - Muser/v1/userMessage.proto=user-service/model/rpc/gen
-      - Muser/v1/userServices.proto=user-service/model/rpc/gen
-      - Muser/v1/authMessage.proto=user-service/model/rpc/gen
-      - Muser/v1/authServices.proto=user-service/model/rpc/gen
+      - Muser/v1/userMessage.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
+      - Muser/v1/userServices.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
+      - Muser/v1/authMessage.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
+      - Muser/v1/authServices.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
       # Commerce Service Proto
-      - Mcommerce/v1/cartMessage.proto=user-service/model/rpc/gen
-      - Mcommerce/v1/cartServices.proto=user-service/model/rpc/gen
-      - Mcommerce/v1/wishlistMessage.proto=user-service/model/rpc/gen
-      - Mcommerce/v1/wishlistServices.proto=user-service/model/rpc/gen
+      - Mcommerce/v1/cartMessage.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
+      - Mcommerce/v1/cartServices.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
+      - Mcommerce/v1/wishlistMessage.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
+      - Mcommerce/v1/wishlistServices.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
       # Payment Service Proto
-      - Mpayment/v1/paymentMessage.proto=user-service/model/rpc/gen
-      - Mpayment/v1/paymentServices.proto=user-service/model/rpc/gen
-      - Mpayment/v1/paymentProviderMessage.proto=user-service/model/rpc/gen
-      - Mpayment/v1/paymentProviderServices.proto=user-service/model/rpc/gen
+      - Mpayment/v1/paymentMessage.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentServices.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderMessage.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderServices.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/payment/v1
   - plugin: go-grpc
     out: user-service/model/rpc/gen
     opt:
       - paths=source_relative
       - require_unimplemented_servers=false
       # Event Store service Proto
-      - Mevent/v1/eventStoreMessage.proto=user-service/model/rpc/gen
+      - Mevent/v1/eventStoreMessage.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
       # Notification Service Proto
-      - Mnotification/v1/notificationMessage.proto=user-service/model/rpc/gen
+      - Mnotification/v1/notificationMessage.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
       # Product Service Proto
-      - Mproduct/v1/productMessage.proto=user-service/model/rpc/gen
-      - Mproduct/v1/productServices.proto=user-service/model/rpc/gen
+      - Mproduct/v1/productMessage.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
+      - Mproduct/v1/productServices.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
       # User Service Proto
-      - Muser/v1/userMessage.proto=user-service/model/rpc/gen
-      - Muser/v1/userServices.proto=user-service/model/rpc/gen
-      - Muser/v1/authMessage.proto=user-service/model/rpc/gen
-      - Muser/v1/authServices.proto=user-service/model/rpc/gen
+      - Muser/v1/userMessage.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
+      - Muser/v1/userServices.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
+      - Muser/v1/authMessage.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
+      - Muser/v1/authServices.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
       # Commerce Service Proto
-      - Mcommerce/v1/cartMessage.proto=user-service/model/rpc/gen
-      - Mcommerce/v1/cartServices.proto=user-service/model/rpc/gen
-      - Mcommerce/v1/wishlistMessage.proto=user-service/model/rpc/gen
-      - Mcommerce/v1/wishlistServices.proto=user-service/model/rpc/gen
+      - Mcommerce/v1/cartMessage.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
+      - Mcommerce/v1/cartServices.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
+      - Mcommerce/v1/wishlistMessage.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
+      - Mcommerce/v1/wishlistServices.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen
       # Payment Service Proto
-      - Mpayment/v1/paymentMessage.proto=user-service/model/rpc/gen
-      - Mpayment/v1/paymentServices.proto=user-service/model/rpc/gen
-      - Mpayment/v1/paymentProviderMessage.proto=user-service/model/rpc/gen
-      - Mpayment/v1/paymentProviderServices.proto=user-service/model/rpc/gen
+      - Mpayment/v1/paymentMessage.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentServices.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderMessage.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderServices.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/payment/v1
 
   #====================== Payment Service =======================================
   - plugin: go
@@ -282,54 +287,54 @@ plugins:
     opt:
       - paths=source_relative
       # Event Store service Proto
-      - Mevent/v1/eventStoreMessage.proto=payment-service/model/rpc/gen
+      - Mevent/v1/eventStoreMessage.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
       # Notification Service Proto
-      - Mnotification/v1/notificationMessage.proto=payment-service/model/rpc/gen
+      - Mnotification/v1/notificationMessage.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
       # Product Service Proto
-      - Mproduct/v1/productMessage.proto=payment-service/model/rpc/gen
-      - Mproduct/v1/productServices.proto=payment-service/model/rpc/gen
+      - Mproduct/v1/productMessage.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
+      - Mproduct/v1/productServices.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
       # User Service Proto
-      - Muser/v1/userMessage.proto=payment-service/model/rpc/gen
-      - Muser/v1/userServices.proto=payment-service/model/rpc/gen
-      - Muser/v1/authMessage.proto=payment-service/model/rpc/gen
-      - Muser/v1/authServices.proto=payment-service/model/rpc/gen
+      - Muser/v1/userMessage.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
+      - Muser/v1/userServices.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
+      - Muser/v1/authMessage.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
+      - Muser/v1/authServices.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
       # Commerce Service Proto
-      - Mcommerce/v1/cartMessage.proto=payment-service/model/rpc/gen
-      - Mcommerce/v1/cartServices.proto=payment-service/model/rpc/gen
-      - Mcommerce/v1/wishlistMessage.proto=payment-service/model/rpc/gen
-      - Mcommerce/v1/wishlistServices.proto=payment-service/model/rpc/gen
+      - Mcommerce/v1/cartMessage.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
+      - Mcommerce/v1/cartServices.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
+      - Mcommerce/v1/wishlistMessage.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
+      - Mcommerce/v1/wishlistServices.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
       # Payment Service Proto
-      - Mpayment/v1/paymentMessage.proto=payment-service/model/rpc/gen
-      - Mpayment/v1/paymentServices.proto=payment-service/model/rpc/gen
-      - Mpayment/v1/paymentProviderMessage.proto=payment-service/model/rpc/gen
-      - Mpayment/v1/paymentProviderServices.proto=payment-service/model/rpc/gen
+      - Mpayment/v1/paymentMessage.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentServices.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderMessage.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderServices.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/payment/v1
   - plugin: go-grpc
     out: payment-service/model/rpc/gen
     opt:
       - paths=source_relative
       - require_unimplemented_servers=false
       # Event Store service Proto
-      - Mevent/v1/eventStoreMessage.proto=payment-service/model/rpc/gen
+      - Mevent/v1/eventStoreMessage.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
       # Notification Service Proto
-      - Mnotification/v1/notificationMessage.proto=payment-service/model/rpc/gen
+      - Mnotification/v1/notificationMessage.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
       # Product Service Proto
-      - Mproduct/v1/productMessage.proto=payment-service/model/rpc/gen
-      - Mproduct/v1/productServices.proto=payment-service/model/rpc/gen
+      - Mproduct/v1/productMessage.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
+      - Mproduct/v1/productServices.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
       # User Service Proto
-      - Muser/v1/userMessage.proto=payment-service/model/rpc/gen
-      - Muser/v1/userServices.proto=payment-service/model/rpc/gen
-      - Muser/v1/authMessage.proto=payment-service/model/rpc/gen
-      - Muser/v1/authServices.proto=payment-service/model/rpc/gen
+      - Muser/v1/userMessage.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
+      - Muser/v1/userServices.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
+      - Muser/v1/authMessage.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
+      - Muser/v1/authServices.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
       # Commerce Service Proto
-      - Mcommerce/v1/cartMessage.proto=payment-service/model/rpc/gen
-      - Mcommerce/v1/cartServices.proto=payment-service/model/rpc/gen
-      - Mcommerce/v1/wishlistMessage.proto=payment-service/model/rpc/gen
-      - Mcommerce/v1/wishlistServices.proto=payment-service/model/rpc/gen
+      - Mcommerce/v1/cartMessage.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
+      - Mcommerce/v1/cartServices.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
+      - Mcommerce/v1/wishlistMessage.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
+      - Mcommerce/v1/wishlistServices.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen
       # Payment Service Proto
-      - Mpayment/v1/paymentMessage.proto=payment-service/model/rpc/gen
-      - Mpayment/v1/paymentServices.proto=payment-service/model/rpc/gen
-      - Mpayment/v1/paymentProviderMessage.proto=payment-service/model/rpc/gen
-      - Mpayment/v1/paymentProviderServices.proto=payment-service/model/rpc/gen
+      - Mpayment/v1/paymentMessage.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentServices.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderMessage.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/payment/v1
+      - Mpayment/v1/paymentProviderServices.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/payment/v1
 
   #====================== Commerce Service =======================================
   - plugin: buf.build/community/stephenh-ts-proto

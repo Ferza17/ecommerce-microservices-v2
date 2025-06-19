@@ -13,6 +13,7 @@ import (
 type (
 	INotificationEmailUseCase interface {
 		SendNotificationEmailOTP(ctx context.Context, requestId string, req *notificationRpc.SendOtpEmailNotificationRequest) error
+		SendNotificationEmailPaymentOrderCreated(ctx context.Context, requestId string, req *notificationRpc.SendEmailPaymentOrderCreateRequest) error
 	}
 
 	notificationEmailUseCase struct {

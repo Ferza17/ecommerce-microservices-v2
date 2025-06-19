@@ -5,6 +5,7 @@ import (
 	"github.com/hashicorp/consul/api"
 	"github.com/spf13/viper"
 	"log"
+	"os"
 	"sync"
 )
 
@@ -38,9 +39,16 @@ type Config struct {
 	ExchangePaymentDirect  string
 	ExchangePaymentDelayed string
 
-	QueueEventCreated                 string
+	// EVENT QUEUE
+	QueueEventCreated string
+
+	// PAYMENT QUEUE
 	QueuePaymentOrderCreated          string
 	QueuePaymentOrderDelayedCancelled string
+
+	// NOTIFICATION QUEUE
+	QueueNotificationCreated                  string
+	QueueNotificationEmailPaymentOrderCreated string
 
 	CommonSagaStatusPending string
 	CommonSagaStatusSuccess string
@@ -58,26 +66,35 @@ type Config struct {
 }
 
 func SetConfig(path string) {
-	viper.SetConfigType("env")
-	viper.AddConfigPath(path)
-	viper.SetConfigName(".env")
+	c = &Config{}
+	if c.Env = os.Getenv("ENV"); c.Env != "" {
+		log.Println("Load Config from OS ENV")
 
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(fmt.Sprintf("config not found: %s", err.Error()))
-	}
-	if err := viper.Unmarshal(&c); err != nil {
-		log.Fatalf("SetConfig | could not parse config: %v", err)
+		c.ConsulHost = os.Getenv("CONSUL_HOST")
+		c.ConsulPort = os.Getenv("CONSUL_PORT")
+	} else {
+		log.Println("Load Config from .env")
+		viper.SetConfigType("env")
+		viper.AddConfigPath(path)
+		viper.SetConfigName(".env")
+
+		err := viper.ReadInConfig()
+		if err != nil {
+			panic(fmt.Sprintf("config not found: %s", err.Error()))
+		}
+		if err := viper.Unmarshal(&c); err != nil {
+			log.Fatalf("SetConfig | could not parse config: %v", err)
+		}
 	}
 
 	if c.Env == "" {
-		log.Fatal("SetConfig | env is required")
+		log.Fatal("SetConfig | ENV is required")
 	}
 	if c.ConsulHost == "" {
-		log.Fatal("SetConfig | consul host is required")
+		log.Fatal("SetConfig | CONSUL_HOST host is required")
 	}
 	if c.ConsulPort == "" {
-		log.Fatal("SetConfig | consul port is required")
+		log.Fatal("SetConfig | CONSUL_PORT port is required")
 	}
 
 	client, err := api.NewClient(&api.Config{

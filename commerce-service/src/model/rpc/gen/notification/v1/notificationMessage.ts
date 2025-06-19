@@ -7,11 +7,13 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { Struct } from "../../google/protobuf/struct";
+import { Payment } from "../../payment/v1/paymentMessage";
 
 export const protobufPackage = "notification_v1";
 
 export enum NotificationTypeEnum {
   NOTIFICATION_EMAIL_USER_OTP = 0,
+  NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED = 1,
   UNRECOGNIZED = -1,
 }
 
@@ -20,6 +22,9 @@ export function notificationTypeEnumFromJSON(object: any): NotificationTypeEnum 
     case 0:
     case "NOTIFICATION_EMAIL_USER_OTP":
       return NotificationTypeEnum.NOTIFICATION_EMAIL_USER_OTP;
+    case 1:
+    case "NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED":
+      return NotificationTypeEnum.NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -31,6 +36,8 @@ export function notificationTypeEnumToJSON(object: NotificationTypeEnum): string
   switch (object) {
     case NotificationTypeEnum.NOTIFICATION_EMAIL_USER_OTP:
       return "NOTIFICATION_EMAIL_USER_OTP";
+    case NotificationTypeEnum.NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED:
+      return "NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED";
     case NotificationTypeEnum.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";
@@ -47,6 +54,12 @@ export interface NotificationTemplate {
 export interface SendOtpEmailNotificationRequest {
   otp: string;
   email: string;
+  notificationType: NotificationTypeEnum;
+}
+
+export interface SendEmailPaymentOrderCreateRequest {
+  email: string;
+  payment: Payment | undefined;
   notificationType: NotificationTypeEnum;
 }
 
@@ -245,6 +258,100 @@ export const SendOtpEmailNotificationRequest: MessageFns<SendOtpEmailNotificatio
     const message = createBaseSendOtpEmailNotificationRequest();
     message.otp = object.otp ?? "";
     message.email = object.email ?? "";
+    message.notificationType = object.notificationType ?? 0;
+    return message;
+  },
+};
+
+function createBaseSendEmailPaymentOrderCreateRequest(): SendEmailPaymentOrderCreateRequest {
+  return { email: "", payment: undefined, notificationType: 0 };
+}
+
+export const SendEmailPaymentOrderCreateRequest: MessageFns<SendEmailPaymentOrderCreateRequest> = {
+  encode(message: SendEmailPaymentOrderCreateRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.email !== "") {
+      writer.uint32(10).string(message.email);
+    }
+    if (message.payment !== undefined) {
+      Payment.encode(message.payment, writer.uint32(18).fork()).join();
+    }
+    if (message.notificationType !== 0) {
+      writer.uint32(24).int32(message.notificationType);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): SendEmailPaymentOrderCreateRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSendEmailPaymentOrderCreateRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.email = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.payment = Payment.decode(reader, reader.uint32());
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.notificationType = reader.int32() as any;
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SendEmailPaymentOrderCreateRequest {
+    return {
+      email: isSet(object.email) ? globalThis.String(object.email) : "",
+      payment: isSet(object.payment) ? Payment.fromJSON(object.payment) : undefined,
+      notificationType: isSet(object.notificationType) ? notificationTypeEnumFromJSON(object.notificationType) : 0,
+    };
+  },
+
+  toJSON(message: SendEmailPaymentOrderCreateRequest): unknown {
+    const obj: any = {};
+    if (message.email !== "") {
+      obj.email = message.email;
+    }
+    if (message.payment !== undefined) {
+      obj.payment = Payment.toJSON(message.payment);
+    }
+    if (message.notificationType !== 0) {
+      obj.notificationType = notificationTypeEnumToJSON(message.notificationType);
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<SendEmailPaymentOrderCreateRequest>): SendEmailPaymentOrderCreateRequest {
+    return SendEmailPaymentOrderCreateRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<SendEmailPaymentOrderCreateRequest>): SendEmailPaymentOrderCreateRequest {
+    const message = createBaseSendEmailPaymentOrderCreateRequest();
+    message.email = object.email ?? "";
+    message.payment = (object.payment !== undefined && object.payment !== null)
+      ? Payment.fromPartial(object.payment)
+      : undefined;
     message.notificationType = object.notificationType ?? 0;
     return message;
   },

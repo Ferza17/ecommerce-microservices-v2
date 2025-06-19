@@ -11,6 +11,7 @@ import (
 type (
 	INotificationEmailConsumer interface {
 		NotificationEmailOTP(ctx context.Context) error
+		NotificationEmailPaymentOrderCreated(ctx context.Context) error
 	}
 
 	notificationEmailConsumer struct {

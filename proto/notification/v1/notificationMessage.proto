@@ -2,6 +2,10 @@ syntax = "proto3";
 package notification_v1;
 import "google/protobuf/struct.proto";
 
+import "payment/v1/paymentMessage.proto";
+import "payment/v1/paymentProviderMessage.proto";
+
+
 message NotificationTemplate {
   string id = 1;
   string type = 2;
@@ -11,10 +15,17 @@ message NotificationTemplate {
 
 enum NotificationTypeEnum {
   NOTIFICATION_EMAIL_USER_OTP = 0;
+  NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED = 1;
 }
 
 message SendOtpEmailNotificationRequest {
   string otp = 1;
   string email = 2;
+  NotificationTypeEnum notificationType = 3;
+}
+
+message SendEmailPaymentOrderCreateRequest {
+  string email = 1;
+  payment_v1.Payment payment = 2;
   NotificationTypeEnum notificationType = 3;
 }

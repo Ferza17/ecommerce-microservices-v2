@@ -35,8 +35,9 @@ type Config struct {
 	ExchangeEvent        string
 	ExchangeNotification string
 
-	QueueNotificationEmailOtpCreated string
-	QueueEventCreated                string
+	QueueNotificationEmailOtpCreated          string
+	QueueNotificationEmailPaymentOrderCreated string
+	QueueEventCreated                         string
 
 	CommonSagaStatusPending string
 	CommonSagaStatusSuccess string
@@ -53,6 +54,9 @@ type Config struct {
 	MongoHost         string
 	MongoPort         string
 	MongoDatabaseName string
+
+	RpcHost string
+	RpcPort string
 }
 
 func SetConfig(path string) {
@@ -85,70 +89,23 @@ func SetConfig(path string) {
 	}
 
 	// Get Consul Key / Value
-	kv := consulClient.KV()
-	wg := &sync.WaitGroup{}
+	wg := new(sync.WaitGroup)
 
 	// Telemetry Config
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		pair, _, err := kv.Get(fmt.Sprintf("%s/telemetry/jaeger/JAEGER_TELEMETRY_HOST", c.Env), nil)
-		if err != nil {
-			log.Fatalf("SetConfig | could not get telemetry host from consul: %v", err)
-		}
-		if pair == nil {
-			log.Fatal("SetConfig | Consul | telemetry host is required")
-		}
-		c.JaegerTelemetryHost = string(pair.Value)
-		pair, _, err = kv.Get(fmt.Sprintf("%s/telemetry/jaeger/JAEGER_TELEMETRY_PORT", c.Env), nil)
-		if err != nil {
-			log.Fatalf("SetConfig | could not get telemetry host from consul: %v", err)
-		}
-		if pair == nil {
-			log.Fatal("SetConfig | Consul | telemetry host is required")
-		}
-		c.JaegerTelemetryPort = string(pair.Value)
+		c.initTelemetry(consulClient.KV())
 	}()
 
 	// RabbitMQ Config
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		pair, _, err := kv.Get(fmt.Sprintf("%s/broker/rabbitmq/RABBITMQ_USERNAME", c.Env), nil)
-		if err != nil {
-			log.Fatalf("SetConfig | could not get RABBITMQ_USERNAME host from consul: %v", err)
-		}
-		if pair == nil {
-			log.Fatal("SetConfig | Consul | RABBITMQ_USERNAME host is required")
-		}
-		c.RabbitMQUsername = string(pair.Value)
-		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/RABBITMQ_PASSWORD", c.Env), nil)
-		if err != nil {
-			log.Fatalf("SetConfig | could not get RABBITMQ_PASSWORD host from consul: %v", err)
-		}
-		if pair == nil {
-			log.Fatal("SetConfig | Consul | RABBITMQ_PASSWORD host is required")
-		}
-		c.RabbitMQPassword = string(pair.Value)
-		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/RABBITMQ_HOST", c.Env), nil)
-		if err != nil {
-			log.Fatalf("SetConfig | could not get RABBITMQ_HOST host from consul: %v", err)
-		}
-		if pair == nil {
-			log.Fatal("SetConfig | Consul | RABBITMQ_HOST host is required")
-		}
-		c.RabbitMQHost = string(pair.Value)
-		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/RABBITMQ_PORT", c.Env), nil)
-		if err != nil {
-			log.Fatalf("SetConfig | could not get RABBITMQ_PORT host from consul: %v", err)
-		}
-		if pair == nil {
-			log.Fatal("SetConfig | Consul | RABBITMQ_PORT host is required")
-		}
-		c.RabbitMQPort = string(pair.Value)
+		c.initRabbitmq(consulClient.KV())
 
 		// EXCHANGE
-		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/EXCHANGE/EVENT", c.Env), nil)
+		pair, _, err := consulClient.KV().Get(fmt.Sprintf("%s/broker/rabbitmq/EXCHANGE/EVENT", c.Env), nil)
 		if err != nil {
 			log.Fatalf("SetConfig | could not get EXCHANGE/EVENT from consul: %v", err)
 		}
@@ -157,7 +114,7 @@ func SetConfig(path string) {
 		}
 		c.ExchangeEvent = string(pair.Value)
 
-		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/EXCHANGE/NOTIFICATION", c.Env), nil)
+		pair, _, err = consulClient.KV().Get(fmt.Sprintf("%s/broker/rabbitmq/EXCHANGE/NOTIFICATION", c.Env), nil)
 		if err != nil {
 			log.Fatalf("SetConfig | could not get EXCHANGE/NOTIFICATION from consul: %v", err)
 		}
@@ -167,7 +124,7 @@ func SetConfig(path string) {
 		c.ExchangeNotification = string(pair.Value)
 
 		// QUEUE
-		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/OTP/CREATED", c.Env), nil)
+		pair, _, err = consulClient.KV().Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/OTP/CREATED", c.Env), nil)
 		if err != nil {
 			log.Fatalf("SetConfig | could not get QUEUE/NOTIFICATION/EMAIL/OTP/CREATED host from consul: %v", err)
 		}
@@ -176,7 +133,16 @@ func SetConfig(path string) {
 		}
 		c.QueueNotificationEmailOtpCreated = string(pair.Value)
 
-		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/EVENT/CREATED", c.Env), nil)
+		pair, _, err = consulClient.KV().Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/PAYMENT/ORDER/CREATED", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get QUEUE/NOTIFICATION/EMAIL/PAYMENT/ORDER/CREATED host from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | QUEUE/NOTIFICATION/EMAIL/PAYMENT/ORDER/CREATED host is required")
+		}
+		c.QueueNotificationEmailPaymentOrderCreated = string(pair.Value)
+
+		pair, _, err = consulClient.KV().Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/EVENT/CREATED", c.Env), nil)
 		if err != nil {
 			log.Fatalf("SetConfig | could not get QUEUE/EVENT/CREATED host from consul: %v", err)
 		}
@@ -191,39 +157,14 @@ func SetConfig(path string) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		pair, _, err := kv.Get(fmt.Sprintf("%s/common/SAGA_STATUS/PENDING", c.Env), nil)
-		if err != nil {
-			log.Fatalf("SetConfig | could not get SAGA_STATUS/PENDING from consul: %v", err)
-		}
-		if pair == nil {
-			log.Fatal("SetConfig | Consul | SAGA_STATUS/PENDING host is required")
-		}
-		c.CommonSagaStatusPending = string(pair.Value)
-
-		pair, _, err = kv.Get(fmt.Sprintf("%s/common/SAGA_STATUS/SUCCESS", c.Env), nil)
-		if err != nil {
-			log.Fatalf("SetConfig | could not get SAGA_STATUS/SUCCESS from consul: %v", err)
-		}
-		if pair == nil {
-			log.Fatal("SetConfig | Consul | SAGA_STATUS/SUCCESS host is required")
-		}
-		c.CommonSagaStatusSuccess = string(pair.Value)
-
-		pair, _, err = kv.Get(fmt.Sprintf("%s/common/SAGA_STATUS/FAILED", c.Env), nil)
-		if err != nil {
-			log.Fatalf("SetConfig | could not get SAGA_STATUS/FAILED from consul: %v", err)
-		}
-		if pair == nil {
-			log.Fatal("SetConfig | Consul | SAGA_STATUS/FAILED host is required")
-		}
-		c.CommonSagaStatusFailed = string(pair.Value)
+		c.initCommon(consulClient.KV())
 	}()
 
 	// SMTP Config
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		pair, _, err := kv.Get(fmt.Sprintf("%s/smtp/SMTP_SENDER_EMAIL", c.Env), nil)
+		pair, _, err := consulClient.KV().Get(fmt.Sprintf("%s/smtp/SMTP_SENDER_EMAIL", c.Env), nil)
 		if err != nil {
 			log.Fatalf("SetConfig | could not get SMTP_SENDER_EMAIL host from consul: %v", err)
 		}
@@ -232,7 +173,7 @@ func SetConfig(path string) {
 		}
 		c.SmtpSenderEmail = string(pair.Value)
 
-		pair, _, err = kv.Get(fmt.Sprintf("%s/smtp/SMTP_USERNAME", c.Env), nil)
+		pair, _, err = consulClient.KV().Get(fmt.Sprintf("%s/smtp/SMTP_USERNAME", c.Env), nil)
 		if err != nil {
 			log.Fatalf("SetConfig | could not get SMTP_USERNAME host from consul: %v", err)
 		}
@@ -241,7 +182,7 @@ func SetConfig(path string) {
 		}
 		c.SmtpUsername = string(pair.Value)
 
-		pair, _, err = kv.Get(fmt.Sprintf("%s/smtp/SMTP_PASSWORD", c.Env), nil)
+		pair, _, err = consulClient.KV().Get(fmt.Sprintf("%s/smtp/SMTP_PASSWORD", c.Env), nil)
 		if err != nil {
 			log.Fatalf("SetConfig | could not get SMTP_PASSWORD host from consul: %v", err)
 		}
@@ -250,7 +191,7 @@ func SetConfig(path string) {
 		}
 		c.SmtpPassword = string(pair.Value)
 
-		pair, _, err = kv.Get(fmt.Sprintf("%s/smtp/SMTP_HOST", c.Env), nil)
+		pair, _, err = consulClient.KV().Get(fmt.Sprintf("%s/smtp/SMTP_HOST", c.Env), nil)
 		if err != nil {
 			log.Fatalf("SetConfig | could not get SMTP_HOST host from consul: %v", err)
 		}
@@ -259,7 +200,7 @@ func SetConfig(path string) {
 		}
 		c.SmtpHost = string(pair.Value)
 
-		pair, _, err = kv.Get(fmt.Sprintf("%s/smtp/SMTP_PORT", c.Env), nil)
+		pair, _, err = consulClient.KV().Get(fmt.Sprintf("%s/smtp/SMTP_PORT", c.Env), nil)
 		if err != nil {
 			log.Fatalf("SetConfig | could not get SMTP_PORT host from consul: %v", err)
 		}
@@ -273,7 +214,7 @@ func SetConfig(path string) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		pair, _, err := kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_USERNAME", c.Env), nil)
+		pair, _, err := consulClient.KV().Get(fmt.Sprintf("%s/database/mongodb/MONGO_USERNAME", c.Env), nil)
 		if err != nil {
 			log.Fatalf("SetConfig | could not get MONGO_USERNAME host from consul: %v", err)
 		}
@@ -282,7 +223,7 @@ func SetConfig(path string) {
 		}
 		c.MongoUsername = string(pair.Value)
 
-		pair, _, err = kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_PASSWORD", c.Env), nil)
+		pair, _, err = consulClient.KV().Get(fmt.Sprintf("%s/database/mongodb/MONGO_PASSWORD", c.Env), nil)
 		if err != nil {
 			log.Fatalf("SetConfig | could not get MONGO_PASSWORD host from consul: %v", err)
 		}
@@ -291,7 +232,7 @@ func SetConfig(path string) {
 		}
 		c.MongoPassword = string(pair.Value)
 
-		pair, _, err = kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_HOST", c.Env), nil)
+		pair, _, err = consulClient.KV().Get(fmt.Sprintf("%s/database/mongodb/MONGO_HOST", c.Env), nil)
 		if err != nil {
 			log.Fatalf("SetConfig | could not get MONGO_HOST host from consul: %v", err)
 		}
@@ -300,7 +241,7 @@ func SetConfig(path string) {
 		}
 		c.MongoHost = string(pair.Value)
 
-		pair, _, err = kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_PORT", c.Env), nil)
+		pair, _, err = consulClient.KV().Get(fmt.Sprintf("%s/database/mongodb/MONGO_PORT", c.Env), nil)
 		if err != nil {
 			log.Fatalf("SetConfig | could not get MONGO_PORT host from consul: %v", err)
 		}
@@ -309,7 +250,7 @@ func SetConfig(path string) {
 		}
 		c.MongoPort = string(pair.Value)
 
-		pair, _, err = kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_DATABASE_NAME/NOTIFICATION", c.Env), nil)
+		pair, _, err = consulClient.KV().Get(fmt.Sprintf("%s/database/mongodb/MONGO_DATABASE_NAME/NOTIFICATION", c.Env), nil)
 		if err != nil {
 			log.Fatalf("SetConfig | could not get MONGO_DATABASE_NAME/NOTIFICATION host from consul: %v", err)
 		}
@@ -323,7 +264,7 @@ func SetConfig(path string) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		pair, _, err := kv.Get(fmt.Sprintf("%s/services/notification/SERVICE_NAME", c.Env), nil)
+		pair, _, err := consulClient.KV().Get(fmt.Sprintf("%s/services/notification/SERVICE_NAME", c.Env), nil)
 		if err != nil {
 			log.Fatalf("SetConfig | could not get SERVICE_NAME host from consul: %v", err)
 		}
@@ -331,16 +272,28 @@ func SetConfig(path string) {
 			log.Fatal("SetConfig | Consul | SERVICE_NAME host is required")
 		}
 		c.ServiceName = string(pair.Value)
+
+		pair, _, err = consulClient.KV().Get(fmt.Sprintf("%s/services/notification/RPC_HOST", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get RPC_HOST from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | RPC_HOST is required")
+		}
+		c.RpcHost = string(pair.Value)
+
+		pair, _, err = consulClient.KV().Get(fmt.Sprintf("%s/services/notification/RPC_PORT", c.Env), nil)
+		if err != nil {
+			log.Fatalf("SetConfig | could not get RPC_PORT from consul: %v", err)
+		}
+		if pair == nil {
+			log.Fatal("SetConfig | Consul | RPC_PORT is required")
+		}
+		c.RpcPort = string(pair.Value)
+
 	}()
 
 	wg.Wait()
-
-	if err = consulClient.Agent().ServiceRegister(&api.AgentServiceRegistration{
-		Name: c.ServiceName,
-		Tags: []string{"v1"},
-	}); err != nil {
-		log.Fatalf("Error registering service: %v", err)
-	}
 
 	viper.WatchConfig()
 }
