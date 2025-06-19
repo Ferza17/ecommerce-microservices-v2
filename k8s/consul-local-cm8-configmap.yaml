@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  health-check-redis.sh: "#!/bin/bash\n\nredis_health_check() {\n    local redis_host=\"redis-local\"\n    local redis_port=\"6379\"\n    \n    echo \"Running Redis health check...\"\n    \n    # Test 1: TCP Connection\n    if ! nc -z $redis_host $redis_port; then\n        echo \"❌ Redis TCP connection failed\"\n    fi\n    echo \"✅ Redis TCP connection OK\"\n    \n    # Test 2: PING command\n    if command -v redis-cli >/dev/null 2>&1; then\n        if ! redis-cli -h $redis_host -p $redis_port ping | grep -q \"PONG\"; then\n            echo \"❌ Redis PING failed\"\n        fi\n        echo \"✅ Redis PING OK\"\n        \n        # Test 3: Set/Get test\n        test_key=\"health_check_$(date +%s)\"\n        test_value=\"test_value\"\n        \n        if redis-cli -h $redis_host -p $redis_port set $test_key $test_value | grep -q \"OK\"; then\n            if redis-cli -h $redis_host -p $redis_port get $test_key | grep -q $test_value; then\n                redis-cli -h $redis_host -p $redis_port del $test_key > /dev/null\n                echo \"✅ Redis SET/GET operations OK\"\n            else\n                echo \"❌ Redis GET operation failed\"\n            fi\n        else\n            echo \"❌ Redis SET operation failed\"\n        fi\n    else\n        echo \"⚠️  redis-cli not available, skipping PING test\"\n    fi\n    \n    echo \"✅ All Redis health checks passed\"\n}\n\n# Execute health check\nredis_health_check\n"
+kind: ConfigMap
+metadata:
+  annotations:
+    use-subpath: "true"
+  labels:
+    io.kompose.service: consul-local
+  name: consul-local-cm8

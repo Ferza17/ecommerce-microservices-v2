@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --file docker-compose.yml --out k8s/
+    kompose.version: 1.36.0 (HEAD)
+  labels:
+    io.kompose.service: postgres-local
+  name: postgres-local
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: postgres-local
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert --file docker-compose.yml --out k8s/
+        kompose.version: 1.36.0 (HEAD)
+      labels:
+        io.kompose.service: postgres-local
+    spec:
+      containers:
+        - env:
+            - name: POSTGRES_PASSWORD
+              value: "1234"
+            - name: POSTGRES_USER
+              value: postgres
+          image: postgres:latest
+          name: postgres-local
+          ports:
+            - containerPort: 5432
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /docker-entrypoint-initdb.d
+              name: postgres-local-cm0
+      restartPolicy: Always
+      volumes:
+        - configMap:
+            name: postgres-local-cm0
+          name: postgres-local-cm0

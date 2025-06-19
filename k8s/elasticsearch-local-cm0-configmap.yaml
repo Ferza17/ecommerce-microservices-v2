@@ -1,0 +1,17 @@
+apiVersion: v1
+data:
+  init-index.sh: |
+    #!/bin/bash
+
+
+    # Create the 'products' index with the defined mapping
+    curl -X PUT "http://elasticsearch-local:9200/products" \
+         -H "Content-Type: application/json" \
+         -d @/products-mapping.json
+kind: ConfigMap
+metadata:
+  annotations:
+    use-subpath: "true"
+  labels:
+    io.kompose.service: elasticsearch-local
+  name: elasticsearch-local-cm0

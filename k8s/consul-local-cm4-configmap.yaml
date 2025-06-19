@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  init-database-elasticsearch.sh: "#!/bin/sh\n\ninitialize_database_elasticsearch(){\n  echo \"INIT CONSUL KV DATABASE ELASTICSEARCH\"\n  ## Elasticsearch Local\n  consul kv put local/database/elasticsearch/ELASTICSEARCH_USERNAME \"\"\n  consul kv put local/database/elasticsearch/ELASTICSEARCH_PASSWORD \"\"\n  consul kv put local/database/elasticsearch/ELASTICSEARCH_HOST \"localhost\"\n  consul kv put local/database/elasticsearch/ELASTICSEARCH_PORT \"9200\"\n  \n  ## Elasticsearch Production\n  consul kv put production/database/elasticsearch/ELASTICSEARCH_USERNAME \"\"\n  consul kv put production/database/elasticsearch/ELASTICSEARCH_PASSWORD \"\"\n  consul kv put production/database/elasticsearch/ELASTICSEARCH_HOST \"elasticsearch-local\"\n  consul kv put production/database/elasticsearch/ELASTICSEARCH_PORT \"9200\"\n\n  echo \"✅ DONE INIT CONSUL KV DATABASE ELASTICSEARCH\"\n}\n\ninitialize_database_elasticsearch"
+kind: ConfigMap
+metadata:
+  annotations:
+    use-subpath: "true"
+  labels:
+    io.kompose.service: consul-local
+  name: consul-local-cm4

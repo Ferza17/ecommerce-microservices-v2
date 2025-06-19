@@ -1,0 +1,31 @@
+apiVersion: v1
+data:
+  init-database-redis.sh: |-
+    #!/bin/sh
+
+    initialize_database_redis() {
+      echo "INIT CONSUL KV DATABASE REDIS"
+
+      ## Redis Local
+      consul kv put local/database/redis/REDIS_HOST "localhost"
+      consul kv put local/database/redis/REDIS_PORT "6379"
+      consul kv put local/database/redis/REDIS_PASSWORD ""
+      consul kv put local/database/redis/REDIS_DB "0"
+
+      ## Redis Production
+      consul kv put production/database/redis/REDIS_HOST "redis-local"
+      consul kv put production/database/redis/REDIS_PORT "6379"
+      consul kv put production/database/redis/REDIS_PASSWORD ""
+      consul kv put production/database/redis/REDIS_DB "0"
+
+      echo "✅ DONE INIT CONSUL KV DATABASE REDIS"
+    }
+
+    initialize_database_redis
+kind: ConfigMap
+metadata:
+  annotations:
+    use-subpath: "true"
+  labels:
+    io.kompose.service: consul-local
+  name: consul-local-cm7
