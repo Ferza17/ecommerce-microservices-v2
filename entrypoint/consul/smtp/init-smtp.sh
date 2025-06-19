@@ -19,3 +19,4 @@ initialize_smtp(){
 
   echo "DONE INIT CONFIG SMTP"
 }
+initialize_smtp

@@ -15,5 +15,5 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /usr/bin
 COPY --from=build /go/src/github.com/ferza17/ecommerce-v2/payment-service .
-CMD [ "./payment-service","migration up" ]
-CMD [ "./payment-service","run" ]
+CMD [ "./payment-service migration up"]
+CMD [ "./payment-service run"]

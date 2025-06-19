@@ -24,7 +24,7 @@ func (c *Config) RegisterConsulService() error {
 		Name:    c.ServiceName,
 		Address: c.RpcHost,
 		Port:    int(port),
-		Tags:    []string{"v1"},
+		Tags:    []string{"service", "rabbitmq", "grpc"},
 		Check: &api.AgentServiceCheck{
 			GRPC:                           fmt.Sprintf("%s:%s", c.RpcHost, c.RpcPort),
 			GRPCUseTLS:                     false,

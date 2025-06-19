@@ -250,9 +250,6 @@ services:
   #      - CONSUL_PORT=8500
   #    depends_on:
   #      - consul-local
-  #      - postgres-local
-  #      - rabbitmq-local
-  #      - redis-local
   #    networks:
   #      - local
   #    restart: unless-stopped
@@ -271,9 +268,6 @@ services:
   #      - CONSUL_PORT=8500
   #    depends_on:
   #      - consul-local
-  #      - postgres-local
-  #      - rabbitmq-local
-  #      - redis-local
   #    networks:
   #      - local
   #    restart: unless-stopped
@@ -293,9 +287,6 @@ services:
   #      - CONSUL_PORT=8500
   #    depends_on:
   #      - consul-local
-  #      - postgres-local
-  #      - rabbitmq-local
-  #      - redis-local
   #    networks:
   #      - local
   #    restart: unless-stopped
@@ -314,9 +305,6 @@ services:
   #      - CONSUL_PORT=8500
   #    depends_on:
   #      - consul-local
-  #      - postgres-local
-  #      - rabbitmq-local
-  #      - redis-local
   #    networks:
   #      - local
   #    restart: unless-stopped
