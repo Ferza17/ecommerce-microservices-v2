@@ -4,64 +4,61 @@ initialize_rabbitmq_queue(){
   echo "INIT CONFIG RABBITMQ QUEUE"
 
   # QUEUE LOCAL USER
-  curl --request PUT --data 'user.created' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/USER/CREATED
-  curl --request PUT --data 'user.updated' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/USER/UPDATED
-  curl --request PUT --data 'user.login' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/USER/LOGIN
-  curl --request PUT --data 'user.logout' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/USER/LOGOUT
-
+  consul kv put local/broker/rabbitmq/QUEUE/USER/CREATED "user.created"
+  consul kv put local/broker/rabbitmq/QUEUE/USER/UPDATED "user.updated"
+  consul kv put local/broker/rabbitmq/QUEUE/USER/LOGIN "user.login"
+  consul kv put local/broker/rabbitmq/QUEUE/USER/LOGOUT "user.logout"
 
   #QUEUE PRODUCTION USER
-  curl --request PUT --data 'user.created' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/USER/CREATED
-  curl --request PUT --data 'user.updated' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/USER/UPDATED
-  curl --request PUT --data 'user.login' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/USER/LOGIN
-  curl --request PUT --data 'user.logout' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/USER/LOGOUT
+  consul kv put production/broker/rabbitmq/QUEUE/USER/CREATED "user.created"
+  consul kv put production/broker/rabbitmq/QUEUE/USER/UPDATED "user.updated"
+  consul kv put production/broker/rabbitmq/QUEUE/USER/LOGIN "user.login"
+  consul kv put production/broker/rabbitmq/QUEUE/USER/LOGOUT "user.logout"
 
 
   # QUEUE LOCAL PRODUCT
-  curl --request PUT --data 'product.created' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/PRODUCT/CREATED
-  curl --request PUT --data 'product.updated' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/PRODUCT/UPDATED
-  curl --request PUT --data 'product.deleted' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/PRODUCT/DELETED
+  consul kv put local/broker/rabbitmq/QUEUE/PRODUCT/CREATED "product.created"
+  consul kv put local/broker/rabbitmq/QUEUE/PRODUCT/UPDATED "product.updated"
+  consul kv put local/broker/rabbitmq/QUEUE/PRODUCT/DELETED "product.deleted"
 
   # QUEUE PRODUCTION PRODUCT
-  curl --request PUT --data 'product.created' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/PRODUCT/CREATED
-  curl --request PUT --data 'product.updated' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/PRODUCT/UPDATED
-  curl --request PUT --data 'product.deleted' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/PRODUCT/DELETED
+  consul kv put production/broker/rabbitmq/QUEUE/PRODUCT/CREATED "product.created"
+  consul kv put production/broker/rabbitmq/QUEUE/PRODUCT/UPDATED "product.updated"
+  consul kv put production/broker/rabbitmq/QUEUE/PRODUCT/DELETED "product.deleted"
 
   # QUEUE LOCAL NOTIFICATION
-  curl --request PUT --data 'notification.email.otp.created' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/OTP/CREATED
-  curl --request PUT --data 'notification.email.payment.order.created' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/PAYMENT/ORDER/CREATED
-
+  consul kv put local/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/OTP/CREATED "notification.email.otp.created"
+  consul kv put local/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/PAYMENT/ORDER/CREATED "notification.email.payment.order.created"
 
   # QUEUE PRODUCTION NOTIFICATION
-  curl --request PUT --data 'notification.email.otp.created' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/OTP/CREATED
-  curl --request PUT --data 'notification.email.payment.order.created' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/PAYMENT/ORDER/CREATED
-
+  consul kv put production/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/OTP/CREATED "notification.email.otp.created"
+  consul kv put production/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/PAYMENT/ORDER/CREATED "notification.email.payment.order.created"
 
   # QUEUE LOCAL EVENT
-  curl --request PUT --data 'event.created' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/EVENT/CREATED
+  consul kv put local/broker/rabbitmq/QUEUE/EVENT/CREATED "event.created"
 
   # QUEUE PRODUCTION EVENT
-  curl --request PUT --data 'event.created' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/EVENT/CREATED
+  consul kv put production/broker/rabbitmq/QUEUE/EVENT/CREATED "event.created"
 
   # QUEUE LOCAL COMMERCE
-  curl --request PUT --data 'cart.created' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/COMMERCE/CART/CREATED
-  curl --request PUT --data 'cart.updated' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/COMMERCE/CART/UPDATED
-  curl --request PUT --data 'cart.deleted' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/COMMERCE/CART/DELETED
+  consul kv put local/broker/rabbitmq/QUEUE/COMMERCE/CART/CREATED "cart.created"
+  consul kv put local/broker/rabbitmq/QUEUE/COMMERCE/CART/UPDATED "cart.updated"
+  consul kv put local/broker/rabbitmq/QUEUE/COMMERCE/CART/DELETED "cart.deleted"
 
   # QUEUE PRODUCTION COMMERCE
-  curl --request PUT --data 'cart.created' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/COMMERCE/CART/CREATED
-  curl --request PUT --data 'cart.updated' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/COMMERCE/CART/UPDATED
-  curl --request PUT --data 'cart.deleted' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/COMMERCE/CART/DELETED
+  consul kv put production/broker/rabbitmq/QUEUE/COMMERCE/CART/CREATED "cart.created"
+  consul kv put production/broker/rabbitmq/QUEUE/COMMERCE/CART/UPDATED "cart.updated"
+  consul kv put production/broker/rabbitmq/QUEUE/COMMERCE/CART/DELETED "cart.deleted"
 
   # QUEUE LOCAL PAYMENT
-  curl --request PUT --data 'payment.order.created' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED
-  curl --request PUT --data 'payment.order.delayed.cancelled' http://localhost:8500/v1/kv/local/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED
-
+  consul kv put local/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED "payment.order.created"
+  consul kv put local/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED "payment.order.delayed.cancelled"
 
   # QUEUE PRODUCTION PAYMENT
-  curl --request PUT --data 'payment.order.created' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED
-  curl --request PUT --data 'payment.order.delayed.cancelled' http://localhost:8500/v1/kv/production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED
-
+  consul kv put production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED "payment.order.created"
+  consul kv put production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED "payment.order.delayed.cancelled"
 
   echo "DONE INIT CONFIG RABBITMQ QUEUE"
 }
+
+initialize_rabbitmq_queue

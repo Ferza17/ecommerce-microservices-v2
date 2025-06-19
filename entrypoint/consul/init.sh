@@ -9,13 +9,11 @@ done
 # LOAD CONFIG RABBITMQ
 ##########################################################################################################################################################################################################################
 source /rabbitmq/init-rabbitmq.sh
-initialize_rabbitmq
-
 source /rabbitmq/init-rabbitmq-exchange.sh
-initialize_rabbitmq_exchange
-
 source /rabbitmq/init-rabbitmq-queue.sh
-initialize_rabbitmq_queue
+source /rabbitmq/init-rabbitmq-proxy.sh
+source /rabbitmq/health-check-rabbitmq.sh
+
 
 # LOAD CONFIG DATABASE
 ##########################################################################################################################################################################################################################
@@ -28,7 +26,6 @@ source /database/elasticsearch/health-check-elasticsearch.sh
 source /database/postgres/init-database-postgresql.sh
 source /database/postgres/init-database-postgresql-proxy.sh
 source /database/postgres/health-check-postgresql.sh
-
 
 # REDIS
 source /database/redis/init-database-redis.sh
@@ -44,12 +41,13 @@ source /database/mongodb/health-check-mongodb.sh
 # LOAD CONFIG SMTP
 ##########################################################################################################################################################################################################################
 source /smtp/init-smtp.sh
-initialize_smtp
+source /smtp/init-smtp-proxy.sh
+
 
 # LOAD CONFIG TELEMETRY
 ##########################################################################################################################################################################################################################
 source /telemetry/init-telemetry.sh
-initialize_telemetry
+source /telemetry/init-telemetry-proxy.sh
 
 # LOAD CONFIG SERVICES
 ##########################################################################################################################################################################################################################

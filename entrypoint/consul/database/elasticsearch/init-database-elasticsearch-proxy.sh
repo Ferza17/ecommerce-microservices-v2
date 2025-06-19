@@ -25,7 +25,7 @@ initialize_database_elasticsearch_proxy() {
     echo "Adding health checks..."
 
     # Health check for elasticsearch (TCP)
-    curl -s -X PUT http://localhost:8500/v1/agent/check/register \
+    curl -s -X PUT http://consul-local:8500/v1/agent/check/register \
         -H "Content-Type: application/json" \
         -d '{
             "ID": "elasticsearch-tcp-health",
@@ -37,7 +37,7 @@ initialize_database_elasticsearch_proxy() {
         }'
 
     # Health check for elasticsearch (HTTP)
-    curl -s -X PUT http://localhost:8500/v1/agent/check/register \
+    curl -s -X PUT http://consul-local:8500/v1/agent/check/register \
         -H "Content-Type: application/json" \
         -d '{
             "ID": "elasticsearch-http-health",

@@ -3,15 +3,19 @@
 initialize_rabbitmq () {
   echo "INIT CONFIG RABBITMQ"
   ## Local
-  curl --request PUT --data 'rabbitmq' http://localhost:8500/v1/kv/local/broker/rabbitmq/RABBITMQ_USERNAME
-  curl --request PUT --data '1234' http://localhost:8500/v1/kv/local/broker/rabbitmq/RABBITMQ_PASSWORD
-  curl --request PUT --data 'localhost' http://localhost:8500/v1/kv/local/broker/rabbitmq/RABBITMQ_HOST
-  curl --request PUT --data '5672' http://localhost:8500/v1/kv/local/broker/rabbitmq/RABBITMQ_PORT
+
+  consul kv put local/broker/rabbitmq/RABBITMQ_USERNAME "rabbitmq"
+  consul kv put local/broker/rabbitmq/RABBITMQ_PASSWORD "1234"
+  consul kv put local/broker/rabbitmq/RABBITMQ_HOST "localhost"
+  consul kv put local/broker/rabbitmq/RABBITMQ_PORT "5672"
   ## Production
-  curl --request PUT --data 'rabbitmq' http://localhost:8500/v1/kv/production/broker/rabbitmq/RABBITMQ_USERNAME
-  curl --request PUT --data '1234' http://localhost:8500/v1/kv/production/broker/rabbitmq/RABBITMQ_PASSWORD
-  curl --request PUT --data 'rabbitmq-local' http://localhost:8500/v1/kv/production/broker/rabbitmq/RABBITMQ_HOST
-  curl --request PUT --data '5672' http://localhost:8500/v1/kv/production/broker/rabbitmq/RABBITMQ_PORT
+  consul kv put production/broker/rabbitmq/RABBITMQ_USERNAME "rabbitmq"
+  consul kv put production/broker/rabbitmq/RABBITMQ_PASSWORD "1234"
+  consul kv put production/broker/rabbitmq/RABBITMQ_HOST "rabbitmq-local"
+  consul kv put production/broker/rabbitmq/RABBITMQ_PORT "5672"
+
 
   echo "DONE INIT CONFIG RABBITMQ"
 }
+
+initialize_rabbitmq

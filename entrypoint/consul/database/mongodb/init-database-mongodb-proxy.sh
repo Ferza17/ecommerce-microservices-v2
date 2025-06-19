@@ -27,7 +27,7 @@ initialize_database_mongodb_proxy() {
     echo "Adding health checks..."
 
     # Health check for MongoDB
-    curl -s -X PUT http://localhost:8500/v1/agent/check/register \
+    curl -s -X PUT http://consul-local:8500/v1/agent/check/register \
         -H "Content-Type: application/json" \
         -d '{
             "ID": "mongodb-health",

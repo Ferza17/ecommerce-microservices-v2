@@ -94,6 +94,8 @@ services:
       - '14268:14268'
       - '14269:14269'
       - '9411:9411'
+    networks:
+      - local
 
   #ELASTIC
   elasticsearch-local:
@@ -154,6 +156,8 @@ services:
       - ./entrypoint/consul/rabbitmq/init-rabbitmq.sh:/rabbitmq/init-rabbitmq.sh
       - ./entrypoint/consul/rabbitmq/init-rabbitmq-exchange.sh:/rabbitmq/init-rabbitmq-exchange.sh
       - ./entrypoint/consul/rabbitmq/init-rabbitmq-queue.sh:/rabbitmq/init-rabbitmq-queue.sh
+      - ./entrypoint/consul/rabbitmq/init-rabbitmq-proxy.sh:/rabbitmq/init-rabbitmq-proxy.sh
+      - ./entrypoint/consul/rabbitmq/health-check-rabbitmq.sh:/rabbitmq/health-check-rabbitmq.sh
       ######### DATABASE CONFIG
       # ELASTICSEARCH
       - ./entrypoint/consul/database/elasticsearch/init-database-elasticsearch.sh:/database/elasticsearch/init-database-elasticsearch.sh
@@ -173,8 +177,10 @@ services:
       - ./entrypoint/consul/database/postgres/health-check-postgresql.sh:/database/postgres/health-check-postgresql.sh
       ######### SMTP CONFIG
       - ./entrypoint/consul/smtp/init-smtp.sh:/smtp/init-smtp.sh
+      - ./entrypoint/consul/smtp/init-smtp-proxy.sh:/smtp/init-smtp-proxy.sh
       ######### TELEMETRY CONFIG
       - ./entrypoint/consul/telemetry/init-telemetry.sh:/telemetry/init-telemetry.sh
+      - ./entrypoint/consul/telemetry/init-telemetry-proxy.sh:/telemetry/init-telemetry-proxy.sh
       ######### SERVICES
       - ./entrypoint/consul/services/init-api-gateway-service.sh:/services/init-api-gateway-service.sh
       - ./entrypoint/consul/services/init-commerce-service.sh:/services/init-commerce-service.sh
