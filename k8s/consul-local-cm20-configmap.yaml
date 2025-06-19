@@ -1,24 +1,22 @@
 apiVersion: v1
 data:
-  init-event-store-service.sh: |-
+  init-telemetry.sh: |-
     #!/bin/sh
 
-    initialize_event_store_service(){
-      echo "INIT EVENT-STORE SERVICE"
+    initialize_telemetry(){
+      echo "INIT CONFIG TELEMETRY"
+      # Jaeger Local
+      consul kv put local/telemetry/jaeger/JAEGER_TELEMETRY_HOST "localhost"
+      consul kv put local/telemetry/jaeger/JAEGER_TELEMETRY_PORT ""
 
-      ## Local
-      curl --request PUT --data 'local' http://localhost:8500/v1/kv/local/services/event-store/ENV
-      curl --request PUT --data 'event-store-service' http://localhost:8500/v1/kv/local/services/event-store/SERVICE_NAME
-      curl --request PUT --data '127.0.0.1' http://localhost:8500/v1/kv/local/services/event-store/RPC_HOST
-      curl --request PUT --data '50052' http://localhost:8500/v1/kv/local/services/event-store/RPC_PORT
-      ## Production
-      curl --request PUT --data 'production' http://localhost:8500/v1/kv/production/services/event-store/ENV
-      curl --request PUT --data 'event-store-service' http://localhost:8500/v1/kv/production/services/event-store/SERVICE_NAME
-      curl --request PUT --data 'event-store-service' http://localhost:8500/v1/kv/production/services/event-store/RPC_HOST
-      curl --request PUT --data '50052' http://localhost:8500/v1/kv/production/services/event-store/RPC_PORT
+      # Jaeger Production
+      consul kv put local/telemetry/jaeger/JAEGER_TELEMETRY_HOST "jaeger-local"
+      consul kv put local/telemetry/jaeger/JAEGER_TELEMETRY_PORT "14268"
 
-      echo "DONE INIT EVENT-STORE SERVICE"
+      echo "DONE INIT CONFIG TELEMETRY"
     }
+
+    initialize_telemetry
 kind: ConfigMap
 metadata:
   annotations:

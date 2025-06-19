@@ -1,55 +1,27 @@
 apiVersion: v1
 data:
-  init-database-redis-proxy.sh: |+
-    #!/bin/bash
+  init-database-redis.sh: |-
+    #!/bin/sh
 
-    initialize_database_redis_proxy(){
-        echo "Registering Redis as proxy service in Consul ..."
+    initialize_database_redis() {
+      echo "INIT CONSUL KV DATABASE REDIS"
 
-        # Wait for Redis to be available
-        echo "Waiting for Redis to be available..."
-        until nc -z redis-local 6379; do
-            echo "Redis not ready yet, waiting..."
-            sleep 2
-        done
-        echo "Redis is available"
+      ## Redis Local
+      consul kv put local/database/redis/REDIS_HOST "localhost"
+      consul kv put local/database/redis/REDIS_PORT "6379"
+      consul kv put local/database/redis/REDIS_PASSWORD ""
+      consul kv put local/database/redis/REDIS_DB "0"
 
-        # Register Redis service
-        consul services register \
-            -name=redis \
-            -id=redis-main \
-            -port=6379 \
-            -address=redis-local \
-            -tag=database \
-            -tag=cache \
-            -tag=proxy \
-            -tag=redis
+      ## Redis Production
+      consul kv put production/database/redis/REDIS_HOST "redis-local"
+      consul kv put production/database/redis/REDIS_PORT "6379"
+      consul kv put production/database/redis/REDIS_PASSWORD ""
+      consul kv put production/database/redis/REDIS_DB "0"
 
-        # Manual health check registration via HTTP API
-        echo "Adding health checks..."
-
-        # Health check for redis
-        curl -s -X PUT http://localhost:8500/v1/agent/check/register \
-            -H "Content-Type: application/json" \
-            -d '{
-                "ID": "redis-health",
-                "Name": "Redis Health Check",
-                "TCP": "redis-local:6379",
-                "Interval": "10s",
-                "Timeout": "3s",
-                "ServiceID": "redis-main"
-            }'
-
-        # Verify registration
-        echo "✅ Redis proxy registration completed"
-
-
+      echo "✅ DONE INIT CONSUL KV DATABASE REDIS"
     }
 
-    initialize_database_redis_proxy
-
-
-
+    initialize_database_redis
 kind: ConfigMap
 metadata:
   annotations:

@@ -1,39 +1,50 @@
 apiVersion: v1
 data:
-  init-database-postgresql.sh: |-
+  init-database-mongodb-proxy.sh: |-
     #!/bin/sh
 
-    initialize_database_postgresql(){
-      echo "INIT CONSUL KV DATABASE POSTGRES"
 
-      ## Postgres Local
-      consul kv put local/database/postgres/POSTGRES_USERNAME "postgres"
-      consul kv put local/database/postgres/POSTGRES_PASSWORD "1234"
-      consul kv put local/database/postgres/POSTGRES_SSL_MODE "disable"
-      consul kv put local/database/postgres/POSTGRES_HOST "localhost"
-      consul kv put local/database/postgres/POSTGRES_PORT "5432"
+    initialize_database_mongodb_proxy() {
+        echo "Registering MongoDB as proxy service in Consul ..."
 
-      # Database Name
-      consul kv put local/database/postgres/POSTGRES_DATABASE_NAME/PRODUCTS "products"
-      consul kv put local/database/postgres/POSTGRES_DATABASE_NAME/USERS "users"
-      consul kv put local/database/postgres/POSTGRES_DATABASE_NAME/PAYMENTS "payments"
+        # Wait for MongoDB to be available
+            echo "Waiting for MongoDB to be available..."
+            until nc -z redis-local 6379; do
+                echo "MongoDB not ready yet, waiting..."
+                sleep 2
+            done
+            echo "MongoDB is available"
 
-      ## Postgres Production
-      consul kv put production/database/postgres/POSTGRES_USERNAME "postgres"
-      consul kv put production/database/postgres/POSTGRES_PASSWORD "1234"
-      consul kv put production/database/postgres/POSTGRES_SSL_MODE "disable"
-      consul kv put production/database/postgres/POSTGRES_HOST "postgres-local"
-      consul kv put production/database/postgres/POSTGRES_PORT "5432"
+        # Register MongoDB service
+        consul services register \
+            -name=mongodb \
+            -id=mongodb-main \
+            -port=6379 \
+            -address=mongo-local \
+            -tag=database \
+            -tag=cache \
+            -tag=proxy \
+            -tag=mongodb
 
-      # Database Name
-      consul kv put production/database/postgres/POSTGRES_DATABASE_NAME/PRODUCTS "products"
-      consul kv put production/database/postgres/POSTGRES_DATABASE_NAME/USERS "users"
-      consul kv put production/database/postgres/POSTGRES_DATABASE_NAME/PAYMENTS "payments"
+        # Manual health check registration via HTTP API
+        echo "Adding health checks..."
 
-      echo "✅ DONE INIT CONSUL KV DATABASE POSTGRES"
+        # Health check for MongoDB
+        curl -s -X PUT http://consul-local:8500/v1/agent/check/register \
+            -H "Content-Type: application/json" \
+            -d '{
+                "ID": "mongodb-health",
+                "Name": "MongoDB Health Check",
+                "TCP": "mongo-local:27017",
+                "Interval": "10s",
+                "Timeout": "3s",
+                "ServiceID": "mongodb-main"
+            }'
+
+        # Verify registration
+        echo "✅ MongoDB proxy registration completed"
     }
-
-    initialize_database_postgresql
+    initialize_database_mongodb_proxy
 kind: ConfigMap
 metadata:
   annotations:

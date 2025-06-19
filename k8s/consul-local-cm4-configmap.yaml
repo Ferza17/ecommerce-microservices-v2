@@ -1,6 +1,50 @@
 apiVersion: v1
 data:
-  init-database-elasticsearch.sh: "#!/bin/sh\n\ninitialize_database_elasticsearch(){\n  echo \"INIT CONSUL KV DATABASE ELASTICSEARCH\"\n  ## Elasticsearch Local\n  consul kv put local/database/elasticsearch/ELASTICSEARCH_USERNAME \"\"\n  consul kv put local/database/elasticsearch/ELASTICSEARCH_PASSWORD \"\"\n  consul kv put local/database/elasticsearch/ELASTICSEARCH_HOST \"localhost\"\n  consul kv put local/database/elasticsearch/ELASTICSEARCH_PORT \"9200\"\n  \n  ## Elasticsearch Production\n  consul kv put production/database/elasticsearch/ELASTICSEARCH_USERNAME \"\"\n  consul kv put production/database/elasticsearch/ELASTICSEARCH_PASSWORD \"\"\n  consul kv put production/database/elasticsearch/ELASTICSEARCH_HOST \"elasticsearch-local\"\n  consul kv put production/database/elasticsearch/ELASTICSEARCH_PORT \"9200\"\n\n  echo \"✅ DONE INIT CONSUL KV DATABASE ELASTICSEARCH\"\n}\n\ninitialize_database_elasticsearch"
+  init-rabbitmq-proxy.sh: |-
+    #!/bin/sh
+
+    initialize_rabbitmq_proxy() {
+        echo "Registering RabbitMQ as proxy service in Consul ..."
+
+        # Wait for RabbitMQ to be available
+            echo "Waiting for RabbitMQ to be available..."
+            until nc -z rabbitmq-local 5672; do
+                echo "RabbitMQ not ready yet, waiting..."
+                sleep 2
+            done
+            echo "RabbitMQ is available"
+
+        # Register MongoDB service
+        consul services register \
+            -name=rabbitmq \
+            -id=rabbitmq-main \
+            -port=5672 \
+            -address=rabbitmq-local \
+            -tag=broker \
+            -tag=proxy \
+            -tag=rabbitmq
+
+
+        # Manual health check registration via HTTP API
+        echo "Adding health checks..."
+
+        # Health check for RabbitMQ
+        curl -s -X PUT http://consul-local:8500/v1/agent/check/register \
+            -H "Content-Type: application/json" \
+            -d '{
+                "ID": "rabbitmq-Health",
+                "Name": "RabbitMQ Health Check",
+                "TCP": "rabbitmq-local:5672",
+                "Interval": "10s",
+                "Timeout": "3s",
+                "ServiceID": "rabbitmq-main"
+            }'
+
+        # Verify registration
+        echo "✅ RabbitMQ proxy registration completed"
+    }
+
+    initialize_rabbitmq_proxy
 kind: ConfigMap
 metadata:
   annotations:

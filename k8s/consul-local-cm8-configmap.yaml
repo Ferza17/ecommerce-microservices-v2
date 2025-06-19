@@ -1,6 +1,63 @@
 apiVersion: v1
 data:
-  health-check-redis.sh: "#!/bin/bash\n\nredis_health_check() {\n    local redis_host=\"redis-local\"\n    local redis_port=\"6379\"\n    \n    echo \"Running Redis health check...\"\n    \n    # Test 1: TCP Connection\n    if ! nc -z $redis_host $redis_port; then\n        echo \"❌ Redis TCP connection failed\"\n    fi\n    echo \"✅ Redis TCP connection OK\"\n    \n    # Test 2: PING command\n    if command -v redis-cli >/dev/null 2>&1; then\n        if ! redis-cli -h $redis_host -p $redis_port ping | grep -q \"PONG\"; then\n            echo \"❌ Redis PING failed\"\n        fi\n        echo \"✅ Redis PING OK\"\n        \n        # Test 3: Set/Get test\n        test_key=\"health_check_$(date +%s)\"\n        test_value=\"test_value\"\n        \n        if redis-cli -h $redis_host -p $redis_port set $test_key $test_value | grep -q \"OK\"; then\n            if redis-cli -h $redis_host -p $redis_port get $test_key | grep -q $test_value; then\n                redis-cli -h $redis_host -p $redis_port del $test_key > /dev/null\n                echo \"✅ Redis SET/GET operations OK\"\n            else\n                echo \"❌ Redis GET operation failed\"\n            fi\n        else\n            echo \"❌ Redis SET operation failed\"\n        fi\n    else\n        echo \"⚠️  redis-cli not available, skipping PING test\"\n    fi\n    \n    echo \"✅ All Redis health checks passed\"\n}\n\n# Execute health check\nredis_health_check\n"
+  health-check-elasticsearch.sh: |-
+    #!/bin/bash
+
+    elasticsearch_health_check() {
+        local elasticsearch_host="elasticsearch-local"
+        local elasticsearch_port="9200"
+
+        echo "Running Elasticsearch health check..."
+
+        # Test 1: TCP Connection
+        if ! nc -z $elasticsearch_host $elasticsearch_port; then
+            echo "❌ Elasticsearch TCP connection failed"
+        fi
+        echo "✅ Elasticsearch TCP connection OK"
+
+        # Test 2: HTTP Health Check
+            # Check cluster health
+            health_response=$(curl -s -f "http://$elasticsearch_host:$elasticsearch_port/_cluster/health" 2>/dev/null)
+            if [ $? -eq 0 ]; then
+                echo "✅ Elasticsearch cluster health endpoint OK"
+
+                # Parse health status (basic check without jq)
+                if echo "$health_response" | grep -q '"status":"green"'; then
+                    echo "✅ Elasticsearch cluster status: GREEN"
+                elif echo "$health_response" | grep -q '"status":"yellow"'; then
+                    echo "⚠️  Elasticsearch cluster status: YELLOW"
+                elif echo "$health_response" | grep -q '"status":"red"'; then
+                    echo "❌ Elasticsearch cluster status: RED"
+                else
+                    echo "⚠️  Elasticsearch cluster status: UNKNOWN"
+                fi
+            else
+                echo "❌ Elasticsearch health endpoint failed"
+            fi
+
+            # Test 3: Basic search test
+            search_response=$(curl -s -f "http://$elasticsearch_host:$elasticsearch_port/_search" 2>/dev/null)
+            if [ $? -eq 0 ]; then
+                echo "✅ Elasticsearch search endpoint OK"
+            else
+                echo "❌ Elasticsearch search endpoint failed"
+            fi
+
+            # Test 4: Node info
+            node_response=$(curl -s -f "http://$elasticsearch_host:$elasticsearch_port/_nodes/_local" 2>/dev/null)
+            if [ $? -eq 0 ]; then
+                echo "✅ Elasticsearch node info OK"
+            else
+                echo "⚠️  Elasticsearch node info failed"
+            fi
+
+
+
+        echo "✅ All Elasticsearch health checks passed"
+    }
+
+    # Execute health check
+    elasticsearch_health_check
 kind: ConfigMap
 metadata:
   annotations:

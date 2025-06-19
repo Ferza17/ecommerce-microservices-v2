@@ -1,29 +1,26 @@
 apiVersion: v1
 data:
-  init-api-gateway-service.sh: |-
+  init-smtp.sh: |-
     #!/bin/sh
 
-    initialize_service_api_gateway(){
-      echo "INIT CONFIG API GATEWAY"
+    initialize_smtp(){
+      echo "INIT CONFIG SMTP"
 
       ## Local
-      curl --request PUT --data 'local' http://localhost:8500/v1/kv/local/services/api-gateway/ENV
-      curl --request PUT --data 'api-gateway-service' http://localhost:8500/v1/kv/local/services/api-gateway/SERVICE_NAME
-      curl --request PUT --data '127.0.0.1' http://localhost:8500/v1/kv/local/services/api-gateway/HTTP_HOST
-      curl --request PUT --data '3000' http://localhost:8500/v1/kv/local/services/api-gateway/HTTP_PORT
-      curl --request PUT --data '127.0.0.1' http://localhost:8500/v1/kv/local/services/api-gateway/RPC_HOST
-      curl --request PUT --data '50000' http://localhost:8500/v1/kv/local/services/api-gateway/RPC_PORT
-
+      consul kv put local/smtp/SMTP_SENDER_EMAIL "ecommerce@email.com"
+      consul kv put local/smtp/SMTP_USERNAME
+      consul kv put local/smtp/SMTP_PASSWORD
+      consul kv put local/smtp/SMTP_HOST "localhost"
+      consul kv put local/smtp/SMTP_PORT "1025"
 
       ## Production
-      curl --request PUT --data 'production' http://localhost:8500/v1/kv/production/services/api-gateway/ENV
-      curl --request PUT --data 'api-gateway-service' http://localhost:8500/v1/kv/production/services/api-gateway/SERVICE_NAME
-      curl --request PUT --data 'api-gateway-service' http://localhost:8500/v1/kv/production/services/api-gateway/HTTP_HOST
-      curl --request PUT --data '3000' http://localhost:8500/v1/kv/production/services/api-gateway/HTTP_PORT
-      curl --request PUT --data 'api-gateway-service' http://localhost:8500/v1/kv/production/services/api-gateway/RPC_HOST
-      curl --request PUT --data '50000' http://localhost:8500/v1/kv/production/services/api-gateway/RPC_PORT
+      consul kv put production/smtp/SMTP_SENDER_EMAIL "ecommerce@email.com"
+      consul kv put production/smtp/SMTP_USERNAME
+      consul kv put production/smtp/SMTP_PASSWORD
+      consul kv put production/smtp/SMTP_HOST "localhost"
+      consul kv put production/smtp/SMTP_PORT "1025"
 
-      echo "DONE INIT CONFIG API GATEWAY"
+      echo "DONE INIT CONFIG SMTP"
     }
 kind: ConfigMap
 metadata:

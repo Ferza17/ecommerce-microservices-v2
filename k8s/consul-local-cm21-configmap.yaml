@@ -1,24 +1,41 @@
 apiVersion: v1
 data:
-  init-notification-service.sh: |-
+  init-telemetry-proxy.sh: |
     #!/bin/sh
 
-    initialize_notification_service() {
-      echo "INIT NOTIFICATION SERVICE"
+    register_jaeger_telemetry(){
+        echo "Registering Jaeger Telemetry as proxy service in Consul ..."
 
-      ## Local
-      curl --request PUT --data 'local' http://localhost:8500/v1/kv/local/services/notification/ENV
-      curl --request PUT --data 'notification-service' http://localhost:8500/v1/kv/local/services/notification/SERVICE_NAME
-      curl --request PUT --data '127.0.0.1' http://localhost:8500/v1/kv/local/services/notification/RPC_HOST
-      curl --request PUT --data '50053' http://localhost:8500/v1/kv/local/services/notification/RPC_PORT
-      ## Production
-      curl --request PUT --data 'production' http://localhost:8500/v1/kv/production/services/notification/ENV
-      curl --request PUT --data 'notification-service' http://localhost:8500/v1/kv/production/services/notification/SERVICE_NAME
-      curl --request PUT --data 'notification-service' http://localhost:8500/v1/kv/production/services/notification/RPC_HOST
-      curl --request PUT --data '50053' http://localhost:8500/v1/kv/production/services/notification/RPC_PORT
 
-      echo "DONE INIT NOTIFICATION SERVICE"
+        # Register Jaeger Telemetry service
+        consul services register \
+            -name=jaeger \
+            -id=jaeger-main \
+            -port=14268 \
+            -address=jaeger-local \
+            -tag=telemetry \
+            -tag=proxy \
+            -tag=jaeger \
+            -tag=collector \
+            -tag=http
+
+        # Health check for Jaeger Collector
+        curl -s -X PUT http://consul-local:8500/v1/agent/check/register \
+            -H "Content-Type: application/json" \
+            -d '{
+                "ID": "jaeger-collector-health",
+                "Name": "Jaeger Collector Health Check",
+                "HTTP": "http://jaeger-local:14269/",
+                "Interval": "10s",
+                "Timeout": "3s",
+                "ServiceID": "jaeger-main"
+            }'
+
+        # Verify registration
+        echo "✅ Jaeger Telemetry proxy registration completed"
     }
+
+    register_jaeger_telemetry
 kind: ConfigMap
 metadata:
   annotations:

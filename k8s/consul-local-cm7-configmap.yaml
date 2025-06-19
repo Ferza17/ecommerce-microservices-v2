@@ -1,27 +1,63 @@
 apiVersion: v1
 data:
-  init-database-redis.sh: |-
-    #!/bin/sh
+  init-database-elasticsearch-proxy.sh: |-
+    #!/bin/bash
 
-    initialize_database_redis() {
-      echo "INIT CONSUL KV DATABASE REDIS"
+    initialize_database_elasticsearch_proxy() {
+        echo "Registering Elasticsearch as proxy service in Consul ..."
 
-      ## Redis Local
-      consul kv put local/database/redis/REDIS_HOST "localhost"
-      consul kv put local/database/redis/REDIS_PORT "6379"
-      consul kv put local/database/redis/REDIS_PASSWORD ""
-      consul kv put local/database/redis/REDIS_DB "0"
+         # Wait for Redis to be available
+            echo "Waiting for Redis to be available..."
+            until nc -z elasticsearch-local 9200; do
+                echo "Elasticsearch not ready yet, waiting..."
+                sleep 2
+            done
+            echo "Elasticsearch is available"
 
-      ## Redis Production
-      consul kv put production/database/redis/REDIS_HOST "redis-local"
-      consul kv put production/database/redis/REDIS_PORT "6379"
-      consul kv put production/database/redis/REDIS_PASSWORD ""
-      consul kv put production/database/redis/REDIS_DB "0"
+        # Register Elasticsearch service
+        consul services register \
+            -name=elasticsearch \
+            -id=elasticsearch-main \
+            -port=9200 \
+            -address=elasticsearch \
+            -tag=database \
+            -tag=proxy \
+            -tag=elasticsearch
 
-      echo "✅ DONE INIT CONSUL KV DATABASE REDIS"
+        # Manual health check registration via HTTP API
+        echo "Adding health checks..."
+
+        # Health check for elasticsearch (TCP)
+        curl -s -X PUT http://consul-local:8500/v1/agent/check/register \
+            -H "Content-Type: application/json" \
+            -d '{
+                "ID": "elasticsearch-tcp-health",
+                "Name": "Elasticsearch TCP Health Check",
+                "TCP": "elasticsearch-local:9200",
+                "Interval": "15s",
+                "Timeout": "5s",
+                "ServiceID": "elasticsearch-main"
+            }'
+
+        # Health check for elasticsearch (HTTP)
+        curl -s -X PUT http://consul-local:8500/v1/agent/check/register \
+            -H "Content-Type: application/json" \
+            -d '{
+                "ID": "elasticsearch-http-health",
+                "Name": "Elasticsearch HTTP Health Check",
+                "HTTP": "http://elasticsearch-local:9200/_cluster/health",
+                "Method": "GET",
+                "Interval": "20s",
+                "Timeout": "10s",
+                "ServiceID": "elasticsearch-main"
+            }'
+
+
+        # Verify registration
+        echo "✅ Elasticsearch proxy registration completed"
     }
 
-    initialize_database_redis
+    initialize_database_elasticsearch_proxy
 kind: ConfigMap
 metadata:
   annotations:
