@@ -1,7 +1,7 @@
 package mailhog
 
 import (
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 )
 
 type (

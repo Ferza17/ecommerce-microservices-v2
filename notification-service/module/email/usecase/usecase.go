@@ -7,7 +7,7 @@ import (
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
 	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/notification/v1"
 	notificationRepository "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/repository/mongodb"
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 )
 
 type (

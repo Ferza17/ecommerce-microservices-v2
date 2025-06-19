@@ -20,6 +20,7 @@ func (c *Config) RegisterConsulService() error {
 		log.Fatalf("SetConfig | could not parse PORT to int: %v", err)
 	}
 	if err = client.Agent().ServiceRegister(&api.AgentServiceRegistration{
+		Kind:    api.ServiceKindTypical,
 		Name:    c.ServiceName,
 		Address: c.RpcHost,
 		Port:    int(port),
@@ -30,6 +31,9 @@ func (c *Config) RegisterConsulService() error {
 			Interval:                       "10s", // Less frequent checks
 			Timeout:                        "5s",  // Reasonable timeout
 			DeregisterCriticalServiceAfter: "30s", // Give more time before deregistering
+		},
+		Connect: &api.AgentServiceConnect{
+			Native: true,
 		},
 	}); err != nil {
 		log.Fatalf("Error registering service: %v", err)

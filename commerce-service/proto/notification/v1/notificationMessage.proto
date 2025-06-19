@@ -3,6 +3,8 @@ package notification_v1;
 import "google/protobuf/struct.proto";
 
 import "payment/v1/paymentMessage.proto";
+import "payment/v1/paymentProviderMessage.proto";
+
 
 message NotificationTemplate {
   string id = 1;

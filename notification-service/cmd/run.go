@@ -26,7 +26,7 @@ var runCommand = &cobra.Command{
 		p := make(chan bool)
 
 		// WaitGroup to ensure all services cleanups properly
-		var wg sync.WaitGroup
+		wg := new(sync.WaitGroup)
 
 		log.Println("running run command...")
 
@@ -56,7 +56,7 @@ var runCommand = &cobra.Command{
 
 			var lastErr error
 			for i := 0; i < 10; i++ { // Increase retry attempts
-				conn, err := grpc.Dial(
+				conn, err := grpc.NewClient(
 					fmt.Sprintf("%s:%s", c.RpcHost, c.RpcPort),
 					grpc.WithTransportCredentials(insecure.NewCredentials()),
 				)
@@ -71,7 +71,10 @@ var runCommand = &cobra.Command{
 				ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 				resp, err := healthClient.Check(ctx, &grpc_health_v1.HealthCheckRequest{})
 				cancel()
-				conn.Close()
+				if err := conn.Close(); err != nil {
+					log.Printf("Failed to close a connection: %v", err)
+					continue
+				}
 
 				if err == nil && resp.Status == grpc_health_v1.HealthCheckResponse_SERVING {
 					log.Println("gRPC server is ready and healthy.")

@@ -42,6 +42,13 @@ services:
     ports:
       - '6379:6379'
     image: redis:latest
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
     networks:
       - local
 
@@ -106,10 +113,8 @@ services:
     volumes:
       - ./entrypoint/elasticsearch/init-index.sh:/init-index.sh
       - ./entrypoint/elasticsearch/products-mapping.json:/products-mapping.json
-
     networks:
       - local
-    command: [ ]
 
   #Kibana
   #  kibana-local:
@@ -134,22 +139,43 @@ services:
       - "8600:8600/tcp"
       - "8600:8600/udp"
     command: agent -dev -client=0.0.0.0 -ui
+    depends_on:
+      redis-local:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "consul", "members" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
     volumes:
       - ./entrypoint/consul/init.sh:/init.sh
       ## RABBITMQ CONFIG
       - ./entrypoint/consul/rabbitmq/init-rabbitmq.sh:/rabbitmq/init-rabbitmq.sh
       - ./entrypoint/consul/rabbitmq/init-rabbitmq-exchange.sh:/rabbitmq/init-rabbitmq-exchange.sh
       - ./entrypoint/consul/rabbitmq/init-rabbitmq-queue.sh:/rabbitmq/init-rabbitmq-queue.sh
-      ## DATABASE CONFIG
-      - ./entrypoint/consul/database/init-database-elasticsearch.sh:/database/init-database-elasticsearch.sh
-      - ./entrypoint/consul/database/init-database-mongodb.sh:/database/init-database-mongodb.sh
-      - ./entrypoint/consul/database/init-database-postgresql.sh:/database/init-database-postgresql.sh
-      - ./entrypoint/consul/database/init-database-redis.sh:/database/init-database-redis.sh
-      ## SMTP CONFIG
+      ######### DATABASE CONFIG
+      # ELASTICSEARCH
+      - ./entrypoint/consul/database/elasticsearch/init-database-elasticsearch.sh:/database/elasticsearch/init-database-elasticsearch.sh
+      - ./entrypoint/consul/database/elasticsearch/init-database-elasticsearch-proxy.sh:/database/elasticsearch/init-database-elasticsearch-proxy.sh
+      - ./entrypoint/consul/database/elasticsearch/health-check-elasticsearch.sh:/database/elasticsearch/health-check-elasticsearch.sh
+      # REDIS
+      - ./entrypoint/consul/database/redis/init-database-redis.sh:/database/redis/init-database-redis.sh
+      - ./entrypoint/consul/database/redis/health-check-redis.sh:/database/redis/health-check-redis.sh
+      - ./entrypoint/consul/database/redis/init-database-redis-proxy.sh:/database/redis/init-database-redis-proxy.sh
+      # MONGODB
+      - ./entrypoint/consul/database/mongodb/init-database-mongodb.sh:/database/mongodb/init-database-mongodb.sh
+      - ./entrypoint/consul/database/mongodb/init-database-mongodb-proxy.sh:/database/mongodb/init-database-mongodb-proxy.sh
+      - ./entrypoint/consul/database/mongodb/health-check-mongodb.sh:/database/mongodb/health-check-mongodb.sh
+      # POSTGRES
+      - ./entrypoint/consul/database/postgres/init-database-postgresql.sh:/database/postgres/init-database-postgresql.sh
+      - ./entrypoint/consul/database/postgres/init-database-postgresql-proxy.sh:/database/postgres/init-database-postgresql-proxy.sh
+      - ./entrypoint/consul/database/postgres/health-check-postgresql.sh:/database/postgres/health-check-postgresql.sh
+      ######### SMTP CONFIG
       - ./entrypoint/consul/smtp/init-smtp.sh:/smtp/init-smtp.sh
-      ## TELEMETRY CONFIG
+      ######### TELEMETRY CONFIG
       - ./entrypoint/consul/telemetry/init-telemetry.sh:/telemetry/init-telemetry.sh
-      ## SERVICES
+      ######### SERVICES
       - ./entrypoint/consul/services/init-api-gateway-service.sh:/services/init-api-gateway-service.sh
       - ./entrypoint/consul/services/init-commerce-service.sh:/services/init-commerce-service.sh
       - ./entrypoint/consul/services/init-event-store-service.sh:/services/init-event-store-service.sh
@@ -227,25 +253,25 @@ services:
   #    restart: unless-stopped
 
   # PAYMENT-SERVICE
-#  payment-service:
-#    container_name: payment-service
-#    build:
-#      context: ./payment-service
-#      dockerfile: Dockerfile
-#    ports:
-#      - "50054"
-#    environment:
-#      - ENV=production
-#      - CONSUL_HOST=consul-local
-#      - CONSUL_PORT=8500
-#    depends_on:
-#      - consul-local
-#      - postgres-local
-#      - rabbitmq-local
-#      - redis-local
-#    networks:
-#      - local
-#    restart: unless-stopped
+  #  payment-service:
+  #    container_name: payment-service
+  #    build:
+  #      context: ./payment-service
+  #      dockerfile: Dockerfile
+  #    ports:
+  #      - "50054"
+  #    environment:
+  #      - ENV=production
+  #      - CONSUL_HOST=consul-local
+  #      - CONSUL_PORT=8500
+  #    depends_on:
+  #      - consul-local
+  #      - postgres-local
+  #      - rabbitmq-local
+  #      - redis-local
+  #    networks:
+  #      - local
+  #    restart: unless-stopped
 
 
   # product-SERVICE

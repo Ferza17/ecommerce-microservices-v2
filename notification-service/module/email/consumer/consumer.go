@@ -5,7 +5,7 @@ import (
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
 	notificationUseCase "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/usecase"
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 )
 
 type (

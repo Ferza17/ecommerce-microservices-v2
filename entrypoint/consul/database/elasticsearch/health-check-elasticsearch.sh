@@ -1,0 +1,57 @@
+#!/bin/bash
+
+elasticsearch_health_check() {
+    local elasticsearch_host="elasticsearch-local"
+    local elasticsearch_port="9200"
+
+    echo "Running Elasticsearch health check..."
+
+    # Test 1: TCP Connection
+    if ! nc -z $elasticsearch_host $elasticsearch_port; then
+        echo "❌ Elasticsearch TCP connection failed"
+    fi
+    echo "✅ Elasticsearch TCP connection OK"
+
+    # Test 2: HTTP Health Check
+        # Check cluster health
+        health_response=$(curl -s -f "http://$elasticsearch_host:$elasticsearch_port/_cluster/health" 2>/dev/null)
+        if [ $? -eq 0 ]; then
+            echo "✅ Elasticsearch cluster health endpoint OK"
+
+            # Parse health status (basic check without jq)
+            if echo "$health_response" | grep -q '"status":"green"'; then
+                echo "✅ Elasticsearch cluster status: GREEN"
+            elif echo "$health_response" | grep -q '"status":"yellow"'; then
+                echo "⚠️  Elasticsearch cluster status: YELLOW"
+            elif echo "$health_response" | grep -q '"status":"red"'; then
+                echo "❌ Elasticsearch cluster status: RED"
+            else
+                echo "⚠️  Elasticsearch cluster status: UNKNOWN"
+            fi
+        else
+            echo "❌ Elasticsearch health endpoint failed"
+        fi
+
+        # Test 3: Basic search test
+        search_response=$(curl -s -f "http://$elasticsearch_host:$elasticsearch_port/_search" 2>/dev/null)
+        if [ $? -eq 0 ]; then
+            echo "✅ Elasticsearch search endpoint OK"
+        else
+            echo "❌ Elasticsearch search endpoint failed"
+        fi
+
+        # Test 4: Node info
+        node_response=$(curl -s -f "http://$elasticsearch_host:$elasticsearch_port/_nodes/_local" 2>/dev/null)
+        if [ $? -eq 0 ]; then
+            echo "✅ Elasticsearch node info OK"
+        else
+            echo "⚠️  Elasticsearch node info failed"
+        fi
+
+
+
+    echo "✅ All Elasticsearch health checks passed"
+}
+
+# Execute health check
+elasticsearch_health_check

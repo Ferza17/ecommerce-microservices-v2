@@ -6,7 +6,7 @@ import (
 	mongodbInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mongodb"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/model/bson"
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 )
 
 type (

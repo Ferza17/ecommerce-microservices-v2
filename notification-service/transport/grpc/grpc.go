@@ -3,7 +3,7 @@ package grpc
 import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"

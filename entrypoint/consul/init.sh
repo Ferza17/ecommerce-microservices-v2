@@ -19,17 +19,27 @@ initialize_rabbitmq_queue
 
 # LOAD CONFIG DATABASE
 ##########################################################################################################################################################################################################################
-source /database/init-database-elasticsearch.sh
-initialize_database_elasticsearch
+# ELASTICSEARCH
+source /database/elasticsearch/init-database-elasticsearch.sh
+source /database/elasticsearch/init-database-elasticsearch-proxy.sh
+source /database/elasticsearch/health-check-elasticsearch.sh
 
-source /database/init-database-mongodb.sh
-initialize_database_mongodb
+# POSTGRES
+source /database/postgres/init-database-postgresql.sh
+source /database/postgres/init-database-postgresql-proxy.sh
+source /database/postgres/health-check-postgresql.sh
 
-source /database/init-database-postgresql.sh
-initialize_database_postgresql
 
-source /database/init-database-redis.sh
-initialize_database_redis
+# REDIS
+source /database/redis/init-database-redis.sh
+source /database/redis/init-database-redis-proxy.sh
+source /database/redis/health-check-redis.sh
+
+# MONGODB
+source /database/mongodb/init-database-mongodb.sh
+source /database/mongodb/init-database-mongodb-proxy.sh
+source /database/mongodb/health-check-mongodb.sh
+
 
 # LOAD CONFIG SMTP
 ##########################################################################################################################################################################################################################

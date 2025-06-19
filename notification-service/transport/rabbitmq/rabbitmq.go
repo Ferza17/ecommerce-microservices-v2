@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/bootstrap"
 	notificationConsumer "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/consumer"
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 	"go.uber.org/zap"
 	"log"
 	"os"

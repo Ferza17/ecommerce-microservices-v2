@@ -13,8 +13,6 @@ import (
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
-	"log"
-
 	"net"
 )
 
@@ -85,7 +83,6 @@ func (s *GrpcServer) Serve() {
 	// Mark the service as healthy
 	healthServer.SetServingStatus(config.Get().ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
 
-	log.Printf("Starting gRPC server on %s:%s", s.address, s.port)
 	// Enable Reflection to Evans grpc client
 	reflection.Register(s.grpcServer)
 	if err = s.grpcServer.Serve(listen); err != nil {

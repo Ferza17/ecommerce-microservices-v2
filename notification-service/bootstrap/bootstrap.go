@@ -7,9 +7,9 @@ import (
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
 	notificationConsumer "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/consumer"
 	notificationRepository "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/repository/mongodb"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/usecase"
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg"
 )
 
 type Bootstrap struct {
