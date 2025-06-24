@@ -1,0 +1,115 @@
+syntax = "proto3";
+package product;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/api/http.proto";
+import "google/api/annotations.proto";
+
+// LOCAL IMPORT
+import "v1/product/model.proto";
+import "v1/product/request.proto";
+import "v1/product/response.proto";
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "PRODUCT SERVICE API";
+    version: "1.0.0";
+    description: "API for PRODUCT, authentication, and authorization";
+  };
+  schemes: HTTPS;
+  consumes: "application/json";
+  produces: "application/json";
+  security_definitions: {
+    security: {
+      key: "bearer";
+      value: {
+        type: TYPE_API_KEY;
+        in: IN_HEADER;
+        name: "Authorization";
+        description: "Enter the token with the `Bearer ` prefix, e.g. \"Bearer abcde12345\"";
+      }
+    }
+  };
+  security: {
+    security_requirement: {
+      key: "bearer";
+    }
+  };
+};
+
+
+service ProductService {
+  rpc FindProductsWithPagination(product.FindProductsWithPaginationRequest) returns (product.FindProductsWithPaginationResponse){
+    option (google.api.http) = {
+      get: "/v1/product/products"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "get all products with pagination";
+      tags: ["PRODUCT"];
+      security: {
+        security_requirement: {
+          key: "bearer";
+        }
+      };
+    };
+  };
+  rpc FindProductById(product.FindProductByIdRequest) returns (product.Product){
+    option (google.api.http) = {
+      get: "/v1/product/products/{id}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "get product with provided id";
+      tags: ["PRODUCT"];
+      security: {
+        security_requirement: {
+          key: "bearer";
+        }
+      };
+    };
+  };
+  rpc CreateProduct(product.CreateProductRequest) returns (product.CreateProductResponse){
+    option (google.api.http) = {
+      post: "/v1/product/products"
+      body: "*",
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "create a new product";
+      tags: ["PRODUCT"];
+      security: {
+        security_requirement: {
+          key: "bearer";
+        }
+      };
+    };
+  };
+  rpc UpdateProductById(product.UpdateProductByIdRequest) returns (product.Product){
+    option (google.api.http) = {
+      put: "/v1/product/products/{id}"
+      body: "*",
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "update single product with provided id";
+      tags: ["PRODUCT"];
+      security: {
+        security_requirement: {
+          key: "bearer";
+        }
+      };
+    };
+  };
+  rpc DeleteProductById(product.DeleteProductByIdRequest) returns (product.DeleteProductByIdResponse){
+    option (google.api.http) = {
+      delete: "/v1/product/products/{id}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "delete single product with provided id";
+      tags: ["PRODUCT"];
+      security: {
+        security_requirement: {
+          key: "bearer";
+        }
+      };
+    };
+  };
+}

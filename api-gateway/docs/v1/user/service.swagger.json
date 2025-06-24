@@ -1,0 +1,327 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "USER SERVICE API",
+    "description": "API for PRODUCT, authentication, and authorization",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "UserService"
+    },
+    {
+      "name": "AuthService"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/user/auth/{otp}": {
+      "put": {
+        "summary": "verify user otp with provided otp",
+        "operationId": "AuthService_UserVerifyOtp",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userUserVerifyOtpResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "otp",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AuthServiceUserVerifyOtpBody"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/v1/user/auth/{token}": {
+      "get": {
+        "summary": "get user otp with provided token",
+        "operationId": "AuthService_FindUserByToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userUser"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      },
+      "put": {
+        "summary": "logout user by token",
+        "description": "not commonly used for HTTP, its used only on RPC request. this endpoint will blocked by http middleware",
+        "operationId": "AuthService_UserLogoutByToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userUserLogoutByTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AuthServiceUserLogoutByTokenBody"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/v1/user/users": {
+      "post": {
+        "summary": "find user by provided email and password",
+        "description": "its not commonly used for http, its only used for rpc request. this endpoint will blocked by http middleware",
+        "operationId": "UserService_FindUserByEmailAndPassword",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userUser"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/userFindUserByEmailAndPasswordRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/v1/user/users/{id}": {
+      "get": {
+        "summary": "get user with provided id",
+        "operationId": "UserService_FindUserById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userUser"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "AuthServiceUserLogoutByTokenBody": {
+      "type": "object"
+    },
+    "AuthServiceUserVerifyOtpBody": {
+      "type": "object"
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "userFindUserByEmailAndPasswordRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "userUser": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "isVerified": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "discardedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "userUserLogoutByTokenResponse": {
+      "type": "object",
+      "properties": {
+        "isValid": {
+          "type": "boolean"
+        }
+      },
+      "title": "AUTH RESPONSE DEFINITION"
+    },
+    "userUserVerifyOtpResponse": {
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "type": "string"
+        },
+        "refreshToken": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "bearer": {
+      "type": "apiKey",
+      "description": "Enter the token with the `Bearer ` prefix, e.g. \"Bearer abcde12345\"",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "bearer": []
+    }
+  ]
+}

@@ -1,9 +1,0 @@
-syntax = "proto3";
-package user_v1;
-
-import "user/v1/userMessage.proto";
-
-service UserService {
-  rpc FindUserById(user_v1.FindUserByIdRequest) returns (user_v1.User);
-  rpc FindUserByEmailAndPassword(user_v1.FindUserByEmailAndPasswordRequest) returns (user_v1.User);
-}

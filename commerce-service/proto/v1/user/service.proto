@@ -1,0 +1,116 @@
+syntax = "proto3";
+package user;
+
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/api/http.proto";
+import "google/api/annotations.proto";
+
+// LOCAL IMPORT
+import "v1/user/model.proto";
+import "v1/user/request.proto";
+import "v1/user/response.proto";
+import "external/gorm/gorm.proto";
+
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "USER SERVICE API";
+    version: "1.0.0";
+    description: "API for PRODUCT, authentication, and authorization";
+  };
+  schemes: HTTPS;
+  consumes: "application/json";
+  produces: "application/json";
+  security_definitions: {
+    security: {
+      key: "bearer";
+      value: {
+        type: TYPE_API_KEY;
+        in: IN_HEADER;
+        name: "Authorization";
+        description: "Enter the token with the `Bearer ` prefix, e.g. \"Bearer abcde12345\"";
+      }
+    }
+  };
+  security: {
+    security_requirement: {
+      key: "bearer";
+    }
+  };
+};
+
+
+service UserService {
+  option (gorm.server).autogen = false;
+  rpc FindUserById(user.FindUserByIdRequest) returns (user.User){
+    option (google.api.http) = {
+      get: "/v1/user/users/{id}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "get user with provided id";
+      tags: ["UserService"];
+      security: {
+        security_requirement: {
+          key: "bearer";
+        }
+      };
+    };
+  };
+  rpc FindUserByEmailAndPassword(user.FindUserByEmailAndPasswordRequest) returns (user.User){
+    option (google.api.http) = {
+      post: "/v1/user/users"
+      body: "*",
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "find user by provided email and password";
+      description: "its not commonly used for http, its only used for rpc request. this endpoint will blocked by http middleware";
+      tags: ["UserService"];
+      security: {
+        security_requirement: {
+          key: "bearer";
+        }
+      };
+    };
+  };
+}
+
+service AuthService {
+  option (gorm.server).autogen = false;
+  rpc UserLogoutByToken(user.UserLogoutByTokenRequest) returns (user.UserLogoutByTokenResponse){
+    option (google.api.http) = {
+      put: "/v1/user/auth/{token}"
+      body: "*",
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "logout user by token";
+      description:"not commonly used for HTTP, its used only on RPC request. this endpoint will blocked by http middleware";
+      tags: ["AuthService"];
+      security: {
+        security_requirement: {
+          key: "bearer";
+        }
+      };
+    };
+  };
+  rpc UserVerifyOtp(user.UserVerifyOtpRequest) returns (user.UserVerifyOtpResponse){
+    option (google.api.http) = {
+      put: "/v1/user/auth/{otp}"
+      body: "*",
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "verify user otp with provided otp";
+      tags: ["AuthService"];
+    };
+  };
+  rpc FindUserByToken(user.FindUserByTokenRequest) returns (user.User){
+    option (google.api.http) = {
+      get: "/v1/user/auth/{token}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "get user otp with provided token";
+      tags: ["AuthService"];
+    };
+  };
+}

@@ -1,0 +1,29 @@
+syntax = "proto3";
+package user;
+
+
+
+
+// AUTH RESPONSE DEFINITION
+message UserLogoutByTokenResponse {
+  
+  bool is_valid = 1;
+}
+
+message UserVerifyOtpResponse {
+  
+  string accessToken = 1;
+  string refreshToken = 2;
+}
+
+
+// USER RESPONSE DEFINITION
+message CreateUserResponse {
+  
+  string id = 1;
+}
+
+message UpdateUserByIdResponse {
+  
+  string id = 1;
+}

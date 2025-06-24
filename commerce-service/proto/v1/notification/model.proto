@@ -1,0 +1,21 @@
+syntax = "proto3";
+package notification;
+import "google/protobuf/struct.proto";
+
+
+
+
+message NotificationTemplate {
+  string id = 1;
+  string type = 2;
+  string template = 3;
+  google.protobuf.Struct templateVars = 4;
+}
+
+enum NotificationTypeEnum {
+  NOTIFICATION_EMAIL_USER_OTP = 0;
+  NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED = 1;
+}
+
+
+

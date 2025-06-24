@@ -1,0 +1,11 @@
+syntax = "proto3";
+package payment;
+
+// LOCAL IMPORT
+import "v1/payment/model.proto";
+
+
+message FindPaymentProvidersResponse {
+  
+  repeated payment.Provider providers = 1;
+}

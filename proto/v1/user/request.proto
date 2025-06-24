@@ -1,0 +1,47 @@
+syntax = "proto3";
+package user;
+
+import "external/validate/validate.proto";
+
+
+// AUTH REQUEST DEFINITION
+message UserLoginByEmailAndPasswordRequest {
+  string email = 1 [(validate.rules).string.email = true];
+  string password = 2 [(validate.rules).string.min_len = 8];
+}
+
+message UserLogoutByTokenRequest {
+  string token = 1 [(validate.rules).string.min_len = 8];
+}
+
+message UserVerifyOtpRequest {
+  string otp = 1 [(validate.rules).string.min_len = 4];
+}
+
+message FindUserByTokenRequest {
+  string token = 1 [(validate.rules).string.min_len = 0];
+}
+
+
+// USER REQUEST DEFINITION
+message FindUserByIdRequest {
+  string id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message CreateUserRequest {
+  string name = 2 [(validate.rules).string.min_len = 0];
+  string email = 3 [(validate.rules).string.email = true];
+  string password = 4 [(validate.rules).string.min_len = 8];
+}
+
+message UpdateUserByIdRequest {
+  string id = 1 [(validate.rules).string.min_len = 0];
+  optional string name = 2 ;
+  optional string email = 3 ;
+  optional string password = 4 ;
+}
+
+message FindUserByEmailAndPasswordRequest {
+  string email = 1 [(validate.rules).string.email = true];
+  string password = 2 [(validate.rules).string.min_len = 8];
+}

@@ -22,6 +22,7 @@ data:
 
       echo "DONE INIT CONFIG SMTP"
     }
+    initialize_smtp
 kind: ConfigMap
 metadata:
   annotations:
