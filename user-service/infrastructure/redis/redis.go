@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	redisClient "github.com/go-redis/redis/v8"
+	"github.com/google/wire"
 )
 
 type (
@@ -16,11 +17,13 @@ type (
 
 	redisInfrastructure struct {
 		client *redisClient.Client
-		logger pkg.IZapLogger
+		logger logger.IZapLogger
 	}
 )
 
-func NewRedisInfrastructure(logger pkg.IZapLogger) IRedisInfrastructure {
+var Set = wire.NewSet(NewRedisInfrastructure)
+
+func NewRedisInfrastructure(logger logger.IZapLogger) IRedisInfrastructure {
 	client := redisClient.NewClient(&redisClient.Options{
 		Addr:     fmt.Sprintf("%s:%s", config.Get().RedisHost, config.Get().RedisPort),
 		Password: config.Get().RedisPassword,

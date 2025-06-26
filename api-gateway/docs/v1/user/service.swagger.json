@@ -31,7 +31,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/userUserVerifyOtpResponse"
+              "$ref": "#/definitions/userAuthVerifyOtpResponse"
             }
           },
           "default": {
@@ -100,7 +100,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/userUserLogoutByTokenResponse"
+              "$ref": "#/definitions/userAuthLogoutByTokenResponse"
             }
           },
           "default": {
@@ -138,6 +138,46 @@
     },
     "/v1/user/users": {
       "post": {
+        "summary": "create a new user",
+        "description": "it can be used from rabbitMQ Queue with EXCHANGE user.exchange, QUEUE user.created. this endpoint will be block with middleware and interceptor",
+        "operationId": "UserService_CreateUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/userCreateUserRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/v1/user/users/{email}/{password}": {
+      "get": {
         "summary": "find user by provided email and password",
         "description": "its not commonly used for http, its only used for rpc request. this endpoint will blocked by http middleware",
         "operationId": "UserService_FindUserByEmailAndPassword",
@@ -157,12 +197,16 @@
         },
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
+            "name": "email",
+            "in": "path",
             "required": true,
-            "schema": {
-              "$ref": "#/definitions/userFindUserByEmailAndPasswordRequest"
-            }
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
         "tags": [
@@ -247,14 +291,101 @@
         }
       }
     },
-    "userFindUserByEmailAndPasswordRequest": {
+    "userAccessControl": {
       "type": "object",
       "properties": {
+        "id": {
+          "type": "string"
+        },
+        "serviceName": {
+          "type": "string"
+        },
+        "fullMethodName": {
+          "type": "string"
+        },
+        "roleId": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "userAuthLogoutByTokenResponse": {
+      "type": "object",
+      "properties": {
+        "isValid": {
+          "type": "boolean"
+        }
+      },
+      "title": "AUTH RESPONSE DEFINITION"
+    },
+    "userAuthVerifyOtpResponse": {
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "type": "string"
+        },
+        "refreshToken": {
+          "type": "string"
+        }
+      }
+    },
+    "userCreateUserRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
         "email": {
           "type": "string"
         },
         "password": {
           "type": "string"
+        },
+        "Role": {
+          "$ref": "#/definitions/userEnumRole"
+        }
+      }
+    },
+    "userEnumRole": {
+      "type": "string",
+      "enum": [
+        "CUSTOMER",
+        "CUSTOMER_MEMBERSHIP",
+        "ADMIN",
+        "SUPER_ADMIN"
+      ],
+      "default": "CUSTOMER"
+    },
+    "userRole": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/definitions/userEnumRole"
+        },
+        "accessControls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/userAccessControl"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -276,6 +407,9 @@
         "isVerified": {
           "type": "boolean"
         },
+        "role": {
+          "$ref": "#/definitions/userRole"
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"
@@ -287,26 +421,6 @@
         "discardedAt": {
           "type": "string",
           "format": "date-time"
-        }
-      }
-    },
-    "userUserLogoutByTokenResponse": {
-      "type": "object",
-      "properties": {
-        "isValid": {
-          "type": "boolean"
-        }
-      },
-      "title": "AUTH RESPONSE DEFINITION"
-    },
-    "userUserVerifyOtpResponse": {
-      "type": "object",
-      "properties": {
-        "accessToken": {
-          "type": "string"
-        },
-        "refreshToken": {
-          "type": "string"
         }
       }
     }

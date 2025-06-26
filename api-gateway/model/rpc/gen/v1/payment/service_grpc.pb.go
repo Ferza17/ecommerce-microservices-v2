@@ -27,6 +27,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PaymentServiceClient interface {
+	// QUERY
 	FindPaymentById(ctx context.Context, in *FindPaymentByIdRequest, opts ...grpc.CallOption) (*Payment, error)
 	FindPaymentByUserIdAndStatus(ctx context.Context, in *FindPaymentByUserIdAndStatusRequest, opts ...grpc.CallOption) (*Payment, error)
 }
@@ -63,6 +64,7 @@ func (c *paymentServiceClient) FindPaymentByUserIdAndStatus(ctx context.Context,
 // All implementations should embed UnimplementedPaymentServiceServer
 // for forward compatibility.
 type PaymentServiceServer interface {
+	// QUERY
 	FindPaymentById(context.Context, *FindPaymentByIdRequest) (*Payment, error)
 	FindPaymentByUserIdAndStatus(context.Context, *FindPaymentByUserIdAndStatusRequest) (*Payment, error)
 }
@@ -165,6 +167,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PaymentProviderServiceClient interface {
+	// QUERY
 	FindPaymentProviders(ctx context.Context, in *FindPaymentProvidersRequest, opts ...grpc.CallOption) (*FindPaymentProvidersResponse, error)
 	FindPaymentProviderById(ctx context.Context, in *FindPaymentProviderByIdRequest, opts ...grpc.CallOption) (*Provider, error)
 }
@@ -201,6 +204,7 @@ func (c *paymentProviderServiceClient) FindPaymentProviderById(ctx context.Conte
 // All implementations should embed UnimplementedPaymentProviderServiceServer
 // for forward compatibility.
 type PaymentProviderServiceServer interface {
+	// QUERY
 	FindPaymentProviders(context.Context, *FindPaymentProvidersRequest) (*FindPaymentProvidersResponse, error)
 	FindPaymentProviderById(context.Context, *FindPaymentProviderByIdRequest) (*Provider, error)
 }

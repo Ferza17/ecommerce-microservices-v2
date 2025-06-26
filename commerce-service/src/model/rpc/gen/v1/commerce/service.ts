@@ -192,17 +192,7 @@ export const CartServiceClient = makeGenericClientConstructor(
 
 export type WishlistServiceService = typeof WishlistServiceService;
 export const WishlistServiceService = {
-  createWishlistItem: {
-    path: "/commerce.WishlistService/CreateWishlistItem",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: CreateWishlistItemRequest) =>
-      Buffer.from(CreateWishlistItemRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => CreateWishlistItemRequest.decode(value),
-    responseSerialize: (value: CreateWishlistItemResponse) =>
-      Buffer.from(CreateWishlistItemResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => CreateWishlistItemResponse.decode(value),
-  },
+  /** QUERY */
   findWishlistItemWithPagination: {
     path: "/commerce.WishlistService/FindWishlistItemWithPagination",
     requestStream: false,
@@ -213,6 +203,18 @@ export const WishlistServiceService = {
     responseSerialize: (value: FindWishlistItemWithPaginationResponse) =>
       Buffer.from(FindWishlistItemWithPaginationResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => FindWishlistItemWithPaginationResponse.decode(value),
+  },
+  /** COMMAND */
+  createWishlistItem: {
+    path: "/commerce.WishlistService/CreateWishlistItem",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: CreateWishlistItemRequest) =>
+      Buffer.from(CreateWishlistItemRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => CreateWishlistItemRequest.decode(value),
+    responseSerialize: (value: CreateWishlistItemResponse) =>
+      Buffer.from(CreateWishlistItemResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => CreateWishlistItemResponse.decode(value),
   },
   deleteWishlistItemById: {
     path: "/commerce.WishlistService/DeleteWishlistItemById",
@@ -228,30 +230,18 @@ export const WishlistServiceService = {
 } as const;
 
 export interface WishlistServiceServer extends UntypedServiceImplementation {
-  createWishlistItem: handleUnaryCall<CreateWishlistItemRequest, CreateWishlistItemResponse>;
+  /** QUERY */
   findWishlistItemWithPagination: handleUnaryCall<
     FindWishlistItemWithPaginationRequest,
     FindWishlistItemWithPaginationResponse
   >;
+  /** COMMAND */
+  createWishlistItem: handleUnaryCall<CreateWishlistItemRequest, CreateWishlistItemResponse>;
   deleteWishlistItemById: handleUnaryCall<DeleteWishlistItemByIdRequest, DeleteWishlistItemByIdResponse>;
 }
 
 export interface WishlistServiceClient extends Client {
-  createWishlistItem(
-    request: CreateWishlistItemRequest,
-    callback: (error: ServiceError | null, response: CreateWishlistItemResponse) => void,
-  ): ClientUnaryCall;
-  createWishlistItem(
-    request: CreateWishlistItemRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: CreateWishlistItemResponse) => void,
-  ): ClientUnaryCall;
-  createWishlistItem(
-    request: CreateWishlistItemRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: CreateWishlistItemResponse) => void,
-  ): ClientUnaryCall;
+  /** QUERY */
   findWishlistItemWithPagination(
     request: FindWishlistItemWithPaginationRequest,
     callback: (error: ServiceError | null, response: FindWishlistItemWithPaginationResponse) => void,
@@ -266,6 +256,22 @@ export interface WishlistServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: FindWishlistItemWithPaginationResponse) => void,
+  ): ClientUnaryCall;
+  /** COMMAND */
+  createWishlistItem(
+    request: CreateWishlistItemRequest,
+    callback: (error: ServiceError | null, response: CreateWishlistItemResponse) => void,
+  ): ClientUnaryCall;
+  createWishlistItem(
+    request: CreateWishlistItemRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: CreateWishlistItemResponse) => void,
+  ): ClientUnaryCall;
+  createWishlistItem(
+    request: CreateWishlistItemRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: CreateWishlistItemResponse) => void,
   ): ClientUnaryCall;
   deleteWishlistItemById(
     request: DeleteWishlistItemByIdRequest,

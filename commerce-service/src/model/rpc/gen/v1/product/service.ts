@@ -17,6 +17,7 @@ import {
   type ServiceError,
   type UntypedServiceImplementation,
 } from "@grpc/grpc-js";
+import { Empty } from "../../google/protobuf/empty";
 import { Product } from "./model";
 import {
   CreateProductRequest,
@@ -25,12 +26,41 @@ import {
   FindProductsWithPaginationRequest,
   UpdateProductByIdRequest,
 } from "./request";
-import { CreateProductResponse, DeleteProductByIdResponse, FindProductsWithPaginationResponse } from "./response";
+import { FindProductsWithPaginationResponse } from "./response";
 
 export const protobufPackage = "product";
 
 export type ProductServiceService = typeof ProductServiceService;
 export const ProductServiceService = {
+  /** COMMAND */
+  createProduct: {
+    path: "/product.ProductService/CreateProduct",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: CreateProductRequest) => Buffer.from(CreateProductRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => CreateProductRequest.decode(value),
+    responseSerialize: (value: Empty) => Buffer.from(Empty.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Empty.decode(value),
+  },
+  updateProductById: {
+    path: "/product.ProductService/UpdateProductById",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: UpdateProductByIdRequest) => Buffer.from(UpdateProductByIdRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => UpdateProductByIdRequest.decode(value),
+    responseSerialize: (value: Empty) => Buffer.from(Empty.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Empty.decode(value),
+  },
+  deleteProductById: {
+    path: "/product.ProductService/DeleteProductById",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: DeleteProductByIdRequest) => Buffer.from(DeleteProductByIdRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => DeleteProductByIdRequest.decode(value),
+    responseSerialize: (value: Empty) => Buffer.from(Empty.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Empty.decode(value),
+  },
+  /** QUERY */
   findProductsWithPagination: {
     path: "/product.ProductService/FindProductsWithPagination",
     requestStream: false,
@@ -51,45 +81,66 @@ export const ProductServiceService = {
     responseSerialize: (value: Product) => Buffer.from(Product.encode(value).finish()),
     responseDeserialize: (value: Buffer) => Product.decode(value),
   },
-  createProduct: {
-    path: "/product.ProductService/CreateProduct",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: CreateProductRequest) => Buffer.from(CreateProductRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => CreateProductRequest.decode(value),
-    responseSerialize: (value: CreateProductResponse) => Buffer.from(CreateProductResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => CreateProductResponse.decode(value),
-  },
-  updateProductById: {
-    path: "/product.ProductService/UpdateProductById",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: UpdateProductByIdRequest) => Buffer.from(UpdateProductByIdRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => UpdateProductByIdRequest.decode(value),
-    responseSerialize: (value: Product) => Buffer.from(Product.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => Product.decode(value),
-  },
-  deleteProductById: {
-    path: "/product.ProductService/DeleteProductById",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: DeleteProductByIdRequest) => Buffer.from(DeleteProductByIdRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => DeleteProductByIdRequest.decode(value),
-    responseSerialize: (value: DeleteProductByIdResponse) =>
-      Buffer.from(DeleteProductByIdResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => DeleteProductByIdResponse.decode(value),
-  },
 } as const;
 
 export interface ProductServiceServer extends UntypedServiceImplementation {
+  /** COMMAND */
+  createProduct: handleUnaryCall<CreateProductRequest, Empty>;
+  updateProductById: handleUnaryCall<UpdateProductByIdRequest, Empty>;
+  deleteProductById: handleUnaryCall<DeleteProductByIdRequest, Empty>;
+  /** QUERY */
   findProductsWithPagination: handleUnaryCall<FindProductsWithPaginationRequest, FindProductsWithPaginationResponse>;
   findProductById: handleUnaryCall<FindProductByIdRequest, Product>;
-  createProduct: handleUnaryCall<CreateProductRequest, CreateProductResponse>;
-  updateProductById: handleUnaryCall<UpdateProductByIdRequest, Product>;
-  deleteProductById: handleUnaryCall<DeleteProductByIdRequest, DeleteProductByIdResponse>;
 }
 
 export interface ProductServiceClient extends Client {
+  /** COMMAND */
+  createProduct(
+    request: CreateProductRequest,
+    callback: (error: ServiceError | null, response: Empty) => void,
+  ): ClientUnaryCall;
+  createProduct(
+    request: CreateProductRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Empty) => void,
+  ): ClientUnaryCall;
+  createProduct(
+    request: CreateProductRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Empty) => void,
+  ): ClientUnaryCall;
+  updateProductById(
+    request: UpdateProductByIdRequest,
+    callback: (error: ServiceError | null, response: Empty) => void,
+  ): ClientUnaryCall;
+  updateProductById(
+    request: UpdateProductByIdRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Empty) => void,
+  ): ClientUnaryCall;
+  updateProductById(
+    request: UpdateProductByIdRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Empty) => void,
+  ): ClientUnaryCall;
+  deleteProductById(
+    request: DeleteProductByIdRequest,
+    callback: (error: ServiceError | null, response: Empty) => void,
+  ): ClientUnaryCall;
+  deleteProductById(
+    request: DeleteProductByIdRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Empty) => void,
+  ): ClientUnaryCall;
+  deleteProductById(
+    request: DeleteProductByIdRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Empty) => void,
+  ): ClientUnaryCall;
+  /** QUERY */
   findProductsWithPagination(
     request: FindProductsWithPaginationRequest,
     callback: (error: ServiceError | null, response: FindProductsWithPaginationResponse) => void,
@@ -119,51 +170,6 @@ export interface ProductServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: Product) => void,
-  ): ClientUnaryCall;
-  createProduct(
-    request: CreateProductRequest,
-    callback: (error: ServiceError | null, response: CreateProductResponse) => void,
-  ): ClientUnaryCall;
-  createProduct(
-    request: CreateProductRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: CreateProductResponse) => void,
-  ): ClientUnaryCall;
-  createProduct(
-    request: CreateProductRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: CreateProductResponse) => void,
-  ): ClientUnaryCall;
-  updateProductById(
-    request: UpdateProductByIdRequest,
-    callback: (error: ServiceError | null, response: Product) => void,
-  ): ClientUnaryCall;
-  updateProductById(
-    request: UpdateProductByIdRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: Product) => void,
-  ): ClientUnaryCall;
-  updateProductById(
-    request: UpdateProductByIdRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: Product) => void,
-  ): ClientUnaryCall;
-  deleteProductById(
-    request: DeleteProductByIdRequest,
-    callback: (error: ServiceError | null, response: DeleteProductByIdResponse) => void,
-  ): ClientUnaryCall;
-  deleteProductById(
-    request: DeleteProductByIdRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: DeleteProductByIdResponse) => void,
-  ): ClientUnaryCall;
-  deleteProductById(
-    request: DeleteProductByIdRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: DeleteProductByIdResponse) => void,
   ): ClientUnaryCall;
 }
 

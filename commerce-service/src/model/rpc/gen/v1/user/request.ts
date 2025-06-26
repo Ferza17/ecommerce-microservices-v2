@@ -6,24 +6,29 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+import { EnumRole, enumRoleFromJSON, enumRoleToJSON } from "./enum";
 
 export const protobufPackage = "user";
 
-/** AUTH REQUEST DEFINITION */
-export interface UserLoginByEmailAndPasswordRequest {
+/** COMMAND */
+export interface AuthLoginByEmailAndPasswordRequest {
   email: string;
   password: string;
 }
 
-export interface UserLogoutByTokenRequest {
+export interface AuthLogoutByTokenRequest {
   token: string;
 }
 
-export interface UserVerifyOtpRequest {
+export interface AuthVerifyOtpRequest {
   otp: string;
 }
 
-export interface FindUserByTokenRequest {
+export interface AuthenticationRequest {
+  token: string;
+}
+
+export interface AuthFindUserByTokenRequest {
   token: string;
 }
 
@@ -36,6 +41,7 @@ export interface CreateUserRequest {
   name: string;
   email: string;
   password: string;
+  Role: EnumRole;
 }
 
 export interface UpdateUserByIdRequest {
@@ -43,6 +49,7 @@ export interface UpdateUserByIdRequest {
   name?: string | undefined;
   email?: string | undefined;
   password?: string | undefined;
+  isVerified?: boolean | undefined;
 }
 
 export interface FindUserByEmailAndPasswordRequest {
@@ -50,12 +57,12 @@ export interface FindUserByEmailAndPasswordRequest {
   password: string;
 }
 
-function createBaseUserLoginByEmailAndPasswordRequest(): UserLoginByEmailAndPasswordRequest {
+function createBaseAuthLoginByEmailAndPasswordRequest(): AuthLoginByEmailAndPasswordRequest {
   return { email: "", password: "" };
 }
 
-export const UserLoginByEmailAndPasswordRequest: MessageFns<UserLoginByEmailAndPasswordRequest> = {
-  encode(message: UserLoginByEmailAndPasswordRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const AuthLoginByEmailAndPasswordRequest: MessageFns<AuthLoginByEmailAndPasswordRequest> = {
+  encode(message: AuthLoginByEmailAndPasswordRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.email !== "") {
       writer.uint32(10).string(message.email);
     }
@@ -65,10 +72,10 @@ export const UserLoginByEmailAndPasswordRequest: MessageFns<UserLoginByEmailAndP
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): UserLoginByEmailAndPasswordRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number): AuthLoginByEmailAndPasswordRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUserLoginByEmailAndPasswordRequest();
+    const message = createBaseAuthLoginByEmailAndPasswordRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -97,14 +104,14 @@ export const UserLoginByEmailAndPasswordRequest: MessageFns<UserLoginByEmailAndP
     return message;
   },
 
-  fromJSON(object: any): UserLoginByEmailAndPasswordRequest {
+  fromJSON(object: any): AuthLoginByEmailAndPasswordRequest {
     return {
       email: isSet(object.email) ? globalThis.String(object.email) : "",
       password: isSet(object.password) ? globalThis.String(object.password) : "",
     };
   },
 
-  toJSON(message: UserLoginByEmailAndPasswordRequest): unknown {
+  toJSON(message: AuthLoginByEmailAndPasswordRequest): unknown {
     const obj: any = {};
     if (message.email !== "") {
       obj.email = message.email;
@@ -115,33 +122,33 @@ export const UserLoginByEmailAndPasswordRequest: MessageFns<UserLoginByEmailAndP
     return obj;
   },
 
-  create(base?: DeepPartial<UserLoginByEmailAndPasswordRequest>): UserLoginByEmailAndPasswordRequest {
-    return UserLoginByEmailAndPasswordRequest.fromPartial(base ?? {});
+  create(base?: DeepPartial<AuthLoginByEmailAndPasswordRequest>): AuthLoginByEmailAndPasswordRequest {
+    return AuthLoginByEmailAndPasswordRequest.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<UserLoginByEmailAndPasswordRequest>): UserLoginByEmailAndPasswordRequest {
-    const message = createBaseUserLoginByEmailAndPasswordRequest();
+  fromPartial(object: DeepPartial<AuthLoginByEmailAndPasswordRequest>): AuthLoginByEmailAndPasswordRequest {
+    const message = createBaseAuthLoginByEmailAndPasswordRequest();
     message.email = object.email ?? "";
     message.password = object.password ?? "";
     return message;
   },
 };
 
-function createBaseUserLogoutByTokenRequest(): UserLogoutByTokenRequest {
+function createBaseAuthLogoutByTokenRequest(): AuthLogoutByTokenRequest {
   return { token: "" };
 }
 
-export const UserLogoutByTokenRequest: MessageFns<UserLogoutByTokenRequest> = {
-  encode(message: UserLogoutByTokenRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const AuthLogoutByTokenRequest: MessageFns<AuthLogoutByTokenRequest> = {
+  encode(message: AuthLogoutByTokenRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.token !== "") {
       writer.uint32(10).string(message.token);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): UserLogoutByTokenRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number): AuthLogoutByTokenRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUserLogoutByTokenRequest();
+    const message = createBaseAuthLogoutByTokenRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -162,11 +169,11 @@ export const UserLogoutByTokenRequest: MessageFns<UserLogoutByTokenRequest> = {
     return message;
   },
 
-  fromJSON(object: any): UserLogoutByTokenRequest {
+  fromJSON(object: any): AuthLogoutByTokenRequest {
     return { token: isSet(object.token) ? globalThis.String(object.token) : "" };
   },
 
-  toJSON(message: UserLogoutByTokenRequest): unknown {
+  toJSON(message: AuthLogoutByTokenRequest): unknown {
     const obj: any = {};
     if (message.token !== "") {
       obj.token = message.token;
@@ -174,32 +181,32 @@ export const UserLogoutByTokenRequest: MessageFns<UserLogoutByTokenRequest> = {
     return obj;
   },
 
-  create(base?: DeepPartial<UserLogoutByTokenRequest>): UserLogoutByTokenRequest {
-    return UserLogoutByTokenRequest.fromPartial(base ?? {});
+  create(base?: DeepPartial<AuthLogoutByTokenRequest>): AuthLogoutByTokenRequest {
+    return AuthLogoutByTokenRequest.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<UserLogoutByTokenRequest>): UserLogoutByTokenRequest {
-    const message = createBaseUserLogoutByTokenRequest();
+  fromPartial(object: DeepPartial<AuthLogoutByTokenRequest>): AuthLogoutByTokenRequest {
+    const message = createBaseAuthLogoutByTokenRequest();
     message.token = object.token ?? "";
     return message;
   },
 };
 
-function createBaseUserVerifyOtpRequest(): UserVerifyOtpRequest {
+function createBaseAuthVerifyOtpRequest(): AuthVerifyOtpRequest {
   return { otp: "" };
 }
 
-export const UserVerifyOtpRequest: MessageFns<UserVerifyOtpRequest> = {
-  encode(message: UserVerifyOtpRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const AuthVerifyOtpRequest: MessageFns<AuthVerifyOtpRequest> = {
+  encode(message: AuthVerifyOtpRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.otp !== "") {
       writer.uint32(10).string(message.otp);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): UserVerifyOtpRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number): AuthVerifyOtpRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUserVerifyOtpRequest();
+    const message = createBaseAuthVerifyOtpRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -220,11 +227,11 @@ export const UserVerifyOtpRequest: MessageFns<UserVerifyOtpRequest> = {
     return message;
   },
 
-  fromJSON(object: any): UserVerifyOtpRequest {
+  fromJSON(object: any): AuthVerifyOtpRequest {
     return { otp: isSet(object.otp) ? globalThis.String(object.otp) : "" };
   },
 
-  toJSON(message: UserVerifyOtpRequest): unknown {
+  toJSON(message: AuthVerifyOtpRequest): unknown {
     const obj: any = {};
     if (message.otp !== "") {
       obj.otp = message.otp;
@@ -232,32 +239,32 @@ export const UserVerifyOtpRequest: MessageFns<UserVerifyOtpRequest> = {
     return obj;
   },
 
-  create(base?: DeepPartial<UserVerifyOtpRequest>): UserVerifyOtpRequest {
-    return UserVerifyOtpRequest.fromPartial(base ?? {});
+  create(base?: DeepPartial<AuthVerifyOtpRequest>): AuthVerifyOtpRequest {
+    return AuthVerifyOtpRequest.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<UserVerifyOtpRequest>): UserVerifyOtpRequest {
-    const message = createBaseUserVerifyOtpRequest();
+  fromPartial(object: DeepPartial<AuthVerifyOtpRequest>): AuthVerifyOtpRequest {
+    const message = createBaseAuthVerifyOtpRequest();
     message.otp = object.otp ?? "";
     return message;
   },
 };
 
-function createBaseFindUserByTokenRequest(): FindUserByTokenRequest {
+function createBaseAuthenticationRequest(): AuthenticationRequest {
   return { token: "" };
 }
 
-export const FindUserByTokenRequest: MessageFns<FindUserByTokenRequest> = {
-  encode(message: FindUserByTokenRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const AuthenticationRequest: MessageFns<AuthenticationRequest> = {
+  encode(message: AuthenticationRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.token !== "") {
       writer.uint32(10).string(message.token);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): FindUserByTokenRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number): AuthenticationRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseFindUserByTokenRequest();
+    const message = createBaseAuthenticationRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -278,11 +285,11 @@ export const FindUserByTokenRequest: MessageFns<FindUserByTokenRequest> = {
     return message;
   },
 
-  fromJSON(object: any): FindUserByTokenRequest {
+  fromJSON(object: any): AuthenticationRequest {
     return { token: isSet(object.token) ? globalThis.String(object.token) : "" };
   },
 
-  toJSON(message: FindUserByTokenRequest): unknown {
+  toJSON(message: AuthenticationRequest): unknown {
     const obj: any = {};
     if (message.token !== "") {
       obj.token = message.token;
@@ -290,11 +297,69 @@ export const FindUserByTokenRequest: MessageFns<FindUserByTokenRequest> = {
     return obj;
   },
 
-  create(base?: DeepPartial<FindUserByTokenRequest>): FindUserByTokenRequest {
-    return FindUserByTokenRequest.fromPartial(base ?? {});
+  create(base?: DeepPartial<AuthenticationRequest>): AuthenticationRequest {
+    return AuthenticationRequest.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<FindUserByTokenRequest>): FindUserByTokenRequest {
-    const message = createBaseFindUserByTokenRequest();
+  fromPartial(object: DeepPartial<AuthenticationRequest>): AuthenticationRequest {
+    const message = createBaseAuthenticationRequest();
+    message.token = object.token ?? "";
+    return message;
+  },
+};
+
+function createBaseAuthFindUserByTokenRequest(): AuthFindUserByTokenRequest {
+  return { token: "" };
+}
+
+export const AuthFindUserByTokenRequest: MessageFns<AuthFindUserByTokenRequest> = {
+  encode(message: AuthFindUserByTokenRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.token !== "") {
+      writer.uint32(10).string(message.token);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AuthFindUserByTokenRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAuthFindUserByTokenRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.token = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AuthFindUserByTokenRequest {
+    return { token: isSet(object.token) ? globalThis.String(object.token) : "" };
+  },
+
+  toJSON(message: AuthFindUserByTokenRequest): unknown {
+    const obj: any = {};
+    if (message.token !== "") {
+      obj.token = message.token;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<AuthFindUserByTokenRequest>): AuthFindUserByTokenRequest {
+    return AuthFindUserByTokenRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<AuthFindUserByTokenRequest>): AuthFindUserByTokenRequest {
+    const message = createBaseAuthFindUserByTokenRequest();
     message.token = object.token ?? "";
     return message;
   },
@@ -359,7 +424,7 @@ export const FindUserByIdRequest: MessageFns<FindUserByIdRequest> = {
 };
 
 function createBaseCreateUserRequest(): CreateUserRequest {
-  return { name: "", email: "", password: "" };
+  return { name: "", email: "", password: "", Role: 0 };
 }
 
 export const CreateUserRequest: MessageFns<CreateUserRequest> = {
@@ -372,6 +437,9 @@ export const CreateUserRequest: MessageFns<CreateUserRequest> = {
     }
     if (message.password !== "") {
       writer.uint32(34).string(message.password);
+    }
+    if (message.Role !== 0) {
+      writer.uint32(40).int32(message.Role);
     }
     return writer;
   },
@@ -407,6 +475,14 @@ export const CreateUserRequest: MessageFns<CreateUserRequest> = {
           message.password = reader.string();
           continue;
         }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.Role = reader.int32() as any;
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -421,6 +497,7 @@ export const CreateUserRequest: MessageFns<CreateUserRequest> = {
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       email: isSet(object.email) ? globalThis.String(object.email) : "",
       password: isSet(object.password) ? globalThis.String(object.password) : "",
+      Role: isSet(object.Role) ? enumRoleFromJSON(object.Role) : 0,
     };
   },
 
@@ -435,6 +512,9 @@ export const CreateUserRequest: MessageFns<CreateUserRequest> = {
     if (message.password !== "") {
       obj.password = message.password;
     }
+    if (message.Role !== 0) {
+      obj.Role = enumRoleToJSON(message.Role);
+    }
     return obj;
   },
 
@@ -446,12 +526,13 @@ export const CreateUserRequest: MessageFns<CreateUserRequest> = {
     message.name = object.name ?? "";
     message.email = object.email ?? "";
     message.password = object.password ?? "";
+    message.Role = object.Role ?? 0;
     return message;
   },
 };
 
 function createBaseUpdateUserByIdRequest(): UpdateUserByIdRequest {
-  return { id: "", name: undefined, email: undefined, password: undefined };
+  return { id: "", name: undefined, email: undefined, password: undefined, isVerified: undefined };
 }
 
 export const UpdateUserByIdRequest: MessageFns<UpdateUserByIdRequest> = {
@@ -467,6 +548,9 @@ export const UpdateUserByIdRequest: MessageFns<UpdateUserByIdRequest> = {
     }
     if (message.password !== undefined) {
       writer.uint32(34).string(message.password);
+    }
+    if (message.isVerified !== undefined) {
+      writer.uint32(40).bool(message.isVerified);
     }
     return writer;
   },
@@ -510,6 +594,14 @@ export const UpdateUserByIdRequest: MessageFns<UpdateUserByIdRequest> = {
           message.password = reader.string();
           continue;
         }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.isVerified = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -525,6 +617,7 @@ export const UpdateUserByIdRequest: MessageFns<UpdateUserByIdRequest> = {
       name: isSet(object.name) ? globalThis.String(object.name) : undefined,
       email: isSet(object.email) ? globalThis.String(object.email) : undefined,
       password: isSet(object.password) ? globalThis.String(object.password) : undefined,
+      isVerified: isSet(object.isVerified) ? globalThis.Boolean(object.isVerified) : undefined,
     };
   },
 
@@ -542,6 +635,9 @@ export const UpdateUserByIdRequest: MessageFns<UpdateUserByIdRequest> = {
     if (message.password !== undefined) {
       obj.password = message.password;
     }
+    if (message.isVerified !== undefined) {
+      obj.isVerified = message.isVerified;
+    }
     return obj;
   },
 
@@ -554,6 +650,7 @@ export const UpdateUserByIdRequest: MessageFns<UpdateUserByIdRequest> = {
     message.name = object.name ?? undefined;
     message.email = object.email ?? undefined;
     message.password = object.password ?? undefined;
+    message.isVerified = object.isVerified ?? undefined;
     return message;
   },
 };

@@ -17,20 +17,33 @@ import {
   type ServiceError,
   type UntypedServiceImplementation,
 } from "@grpc/grpc-js";
+import { Empty } from "../../google/protobuf/empty";
 import { User } from "./model";
 import {
+  AuthFindUserByTokenRequest,
+  AuthLogoutByTokenRequest,
+  AuthVerifyOtpRequest,
+  CreateUserRequest,
   FindUserByEmailAndPasswordRequest,
   FindUserByIdRequest,
-  FindUserByTokenRequest,
-  UserLogoutByTokenRequest,
-  UserVerifyOtpRequest,
 } from "./request";
-import { UserLogoutByTokenResponse, UserVerifyOtpResponse } from "./response";
+import { AuthLogoutByTokenResponse, AuthVerifyOtpResponse } from "./response";
 
 export const protobufPackage = "user";
 
 export type UserServiceService = typeof UserServiceService;
 export const UserServiceService = {
+  /** COMMAND */
+  createUser: {
+    path: "/user.UserService/CreateUser",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: CreateUserRequest) => Buffer.from(CreateUserRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => CreateUserRequest.decode(value),
+    responseSerialize: (value: Empty) => Buffer.from(Empty.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Empty.decode(value),
+  },
+  /** QUERY */
   findUserById: {
     path: "/user.UserService/FindUserById",
     requestStream: false,
@@ -53,11 +66,31 @@ export const UserServiceService = {
 } as const;
 
 export interface UserServiceServer extends UntypedServiceImplementation {
+  /** COMMAND */
+  createUser: handleUnaryCall<CreateUserRequest, Empty>;
+  /** QUERY */
   findUserById: handleUnaryCall<FindUserByIdRequest, User>;
   findUserByEmailAndPassword: handleUnaryCall<FindUserByEmailAndPasswordRequest, User>;
 }
 
 export interface UserServiceClient extends Client {
+  /** COMMAND */
+  createUser(
+    request: CreateUserRequest,
+    callback: (error: ServiceError | null, response: Empty) => void,
+  ): ClientUnaryCall;
+  createUser(
+    request: CreateUserRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Empty) => void,
+  ): ClientUnaryCall;
+  createUser(
+    request: CreateUserRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Empty) => void,
+  ): ClientUnaryCall;
+  /** QUERY */
   findUserById(
     request: FindUserByIdRequest,
     callback: (error: ServiceError | null, response: User) => void,
@@ -102,80 +135,81 @@ export const AuthServiceService = {
     path: "/user.AuthService/UserLogoutByToken",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: UserLogoutByTokenRequest) => Buffer.from(UserLogoutByTokenRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => UserLogoutByTokenRequest.decode(value),
-    responseSerialize: (value: UserLogoutByTokenResponse) =>
-      Buffer.from(UserLogoutByTokenResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => UserLogoutByTokenResponse.decode(value),
+    requestSerialize: (value: AuthLogoutByTokenRequest) => Buffer.from(AuthLogoutByTokenRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => AuthLogoutByTokenRequest.decode(value),
+    responseSerialize: (value: AuthLogoutByTokenResponse) =>
+      Buffer.from(AuthLogoutByTokenResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => AuthLogoutByTokenResponse.decode(value),
   },
   userVerifyOtp: {
     path: "/user.AuthService/UserVerifyOtp",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: UserVerifyOtpRequest) => Buffer.from(UserVerifyOtpRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => UserVerifyOtpRequest.decode(value),
-    responseSerialize: (value: UserVerifyOtpResponse) => Buffer.from(UserVerifyOtpResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => UserVerifyOtpResponse.decode(value),
+    requestSerialize: (value: AuthVerifyOtpRequest) => Buffer.from(AuthVerifyOtpRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => AuthVerifyOtpRequest.decode(value),
+    responseSerialize: (value: AuthVerifyOtpResponse) => Buffer.from(AuthVerifyOtpResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => AuthVerifyOtpResponse.decode(value),
   },
   findUserByToken: {
     path: "/user.AuthService/FindUserByToken",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: FindUserByTokenRequest) => Buffer.from(FindUserByTokenRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => FindUserByTokenRequest.decode(value),
+    requestSerialize: (value: AuthFindUserByTokenRequest) =>
+      Buffer.from(AuthFindUserByTokenRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => AuthFindUserByTokenRequest.decode(value),
     responseSerialize: (value: User) => Buffer.from(User.encode(value).finish()),
     responseDeserialize: (value: Buffer) => User.decode(value),
   },
 } as const;
 
 export interface AuthServiceServer extends UntypedServiceImplementation {
-  userLogoutByToken: handleUnaryCall<UserLogoutByTokenRequest, UserLogoutByTokenResponse>;
-  userVerifyOtp: handleUnaryCall<UserVerifyOtpRequest, UserVerifyOtpResponse>;
-  findUserByToken: handleUnaryCall<FindUserByTokenRequest, User>;
+  userLogoutByToken: handleUnaryCall<AuthLogoutByTokenRequest, AuthLogoutByTokenResponse>;
+  userVerifyOtp: handleUnaryCall<AuthVerifyOtpRequest, AuthVerifyOtpResponse>;
+  findUserByToken: handleUnaryCall<AuthFindUserByTokenRequest, User>;
 }
 
 export interface AuthServiceClient extends Client {
   userLogoutByToken(
-    request: UserLogoutByTokenRequest,
-    callback: (error: ServiceError | null, response: UserLogoutByTokenResponse) => void,
+    request: AuthLogoutByTokenRequest,
+    callback: (error: ServiceError | null, response: AuthLogoutByTokenResponse) => void,
   ): ClientUnaryCall;
   userLogoutByToken(
-    request: UserLogoutByTokenRequest,
+    request: AuthLogoutByTokenRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: UserLogoutByTokenResponse) => void,
+    callback: (error: ServiceError | null, response: AuthLogoutByTokenResponse) => void,
   ): ClientUnaryCall;
   userLogoutByToken(
-    request: UserLogoutByTokenRequest,
+    request: AuthLogoutByTokenRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: UserLogoutByTokenResponse) => void,
+    callback: (error: ServiceError | null, response: AuthLogoutByTokenResponse) => void,
   ): ClientUnaryCall;
   userVerifyOtp(
-    request: UserVerifyOtpRequest,
-    callback: (error: ServiceError | null, response: UserVerifyOtpResponse) => void,
+    request: AuthVerifyOtpRequest,
+    callback: (error: ServiceError | null, response: AuthVerifyOtpResponse) => void,
   ): ClientUnaryCall;
   userVerifyOtp(
-    request: UserVerifyOtpRequest,
+    request: AuthVerifyOtpRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: UserVerifyOtpResponse) => void,
+    callback: (error: ServiceError | null, response: AuthVerifyOtpResponse) => void,
   ): ClientUnaryCall;
   userVerifyOtp(
-    request: UserVerifyOtpRequest,
+    request: AuthVerifyOtpRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: UserVerifyOtpResponse) => void,
+    callback: (error: ServiceError | null, response: AuthVerifyOtpResponse) => void,
   ): ClientUnaryCall;
   findUserByToken(
-    request: FindUserByTokenRequest,
+    request: AuthFindUserByTokenRequest,
     callback: (error: ServiceError | null, response: User) => void,
   ): ClientUnaryCall;
   findUserByToken(
-    request: FindUserByTokenRequest,
+    request: AuthFindUserByTokenRequest,
     metadata: Metadata,
     callback: (error: ServiceError | null, response: User) => void,
   ): ClientUnaryCall;
   findUserByToken(
-    request: FindUserByTokenRequest,
+    request: AuthFindUserByTokenRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: User) => void,

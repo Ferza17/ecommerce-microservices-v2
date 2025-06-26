@@ -77,10 +77,9 @@ func (s *GrpcServer) Serve() {
 	paymentRpc.RegisterPaymentServiceServer(s.grpcServer, s.paymentPresenter)
 	paymentRpc.RegisterPaymentProviderServiceServer(s.grpcServer, s.paymentProviderPresenter)
 
+	// Mark the service as healthy
 	healthServer := health.NewServer()
 	grpc_health_v1.RegisterHealthServer(s.grpcServer, healthServer)
-
-	// Mark the service as healthy
 	healthServer.SetServingStatus(config.Get().ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
 
 	// Enable Reflection to Evans grpc client

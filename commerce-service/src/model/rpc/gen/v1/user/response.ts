@@ -10,11 +10,11 @@ import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 export const protobufPackage = "user";
 
 /** AUTH RESPONSE DEFINITION */
-export interface UserLogoutByTokenResponse {
+export interface AuthLogoutByTokenResponse {
   isValid: boolean;
 }
 
-export interface UserVerifyOtpResponse {
+export interface AuthVerifyOtpResponse {
   accessToken: string;
   refreshToken: string;
 }
@@ -28,22 +28,22 @@ export interface UpdateUserByIdResponse {
   id: string;
 }
 
-function createBaseUserLogoutByTokenResponse(): UserLogoutByTokenResponse {
+function createBaseAuthLogoutByTokenResponse(): AuthLogoutByTokenResponse {
   return { isValid: false };
 }
 
-export const UserLogoutByTokenResponse: MessageFns<UserLogoutByTokenResponse> = {
-  encode(message: UserLogoutByTokenResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const AuthLogoutByTokenResponse: MessageFns<AuthLogoutByTokenResponse> = {
+  encode(message: AuthLogoutByTokenResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.isValid !== false) {
       writer.uint32(8).bool(message.isValid);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): UserLogoutByTokenResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number): AuthLogoutByTokenResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUserLogoutByTokenResponse();
+    const message = createBaseAuthLogoutByTokenResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -64,11 +64,11 @@ export const UserLogoutByTokenResponse: MessageFns<UserLogoutByTokenResponse> = 
     return message;
   },
 
-  fromJSON(object: any): UserLogoutByTokenResponse {
+  fromJSON(object: any): AuthLogoutByTokenResponse {
     return { isValid: isSet(object.isValid) ? globalThis.Boolean(object.isValid) : false };
   },
 
-  toJSON(message: UserLogoutByTokenResponse): unknown {
+  toJSON(message: AuthLogoutByTokenResponse): unknown {
     const obj: any = {};
     if (message.isValid !== false) {
       obj.isValid = message.isValid;
@@ -76,22 +76,22 @@ export const UserLogoutByTokenResponse: MessageFns<UserLogoutByTokenResponse> = 
     return obj;
   },
 
-  create(base?: DeepPartial<UserLogoutByTokenResponse>): UserLogoutByTokenResponse {
-    return UserLogoutByTokenResponse.fromPartial(base ?? {});
+  create(base?: DeepPartial<AuthLogoutByTokenResponse>): AuthLogoutByTokenResponse {
+    return AuthLogoutByTokenResponse.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<UserLogoutByTokenResponse>): UserLogoutByTokenResponse {
-    const message = createBaseUserLogoutByTokenResponse();
+  fromPartial(object: DeepPartial<AuthLogoutByTokenResponse>): AuthLogoutByTokenResponse {
+    const message = createBaseAuthLogoutByTokenResponse();
     message.isValid = object.isValid ?? false;
     return message;
   },
 };
 
-function createBaseUserVerifyOtpResponse(): UserVerifyOtpResponse {
+function createBaseAuthVerifyOtpResponse(): AuthVerifyOtpResponse {
   return { accessToken: "", refreshToken: "" };
 }
 
-export const UserVerifyOtpResponse: MessageFns<UserVerifyOtpResponse> = {
-  encode(message: UserVerifyOtpResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const AuthVerifyOtpResponse: MessageFns<AuthVerifyOtpResponse> = {
+  encode(message: AuthVerifyOtpResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.accessToken !== "") {
       writer.uint32(10).string(message.accessToken);
     }
@@ -101,10 +101,10 @@ export const UserVerifyOtpResponse: MessageFns<UserVerifyOtpResponse> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): UserVerifyOtpResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number): AuthVerifyOtpResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUserVerifyOtpResponse();
+    const message = createBaseAuthVerifyOtpResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -133,14 +133,14 @@ export const UserVerifyOtpResponse: MessageFns<UserVerifyOtpResponse> = {
     return message;
   },
 
-  fromJSON(object: any): UserVerifyOtpResponse {
+  fromJSON(object: any): AuthVerifyOtpResponse {
     return {
       accessToken: isSet(object.accessToken) ? globalThis.String(object.accessToken) : "",
       refreshToken: isSet(object.refreshToken) ? globalThis.String(object.refreshToken) : "",
     };
   },
 
-  toJSON(message: UserVerifyOtpResponse): unknown {
+  toJSON(message: AuthVerifyOtpResponse): unknown {
     const obj: any = {};
     if (message.accessToken !== "") {
       obj.accessToken = message.accessToken;
@@ -151,11 +151,11 @@ export const UserVerifyOtpResponse: MessageFns<UserVerifyOtpResponse> = {
     return obj;
   },
 
-  create(base?: DeepPartial<UserVerifyOtpResponse>): UserVerifyOtpResponse {
-    return UserVerifyOtpResponse.fromPartial(base ?? {});
+  create(base?: DeepPartial<AuthVerifyOtpResponse>): AuthVerifyOtpResponse {
+    return AuthVerifyOtpResponse.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<UserVerifyOtpResponse>): UserVerifyOtpResponse {
-    const message = createBaseUserVerifyOtpResponse();
+  fromPartial(object: DeepPartial<AuthVerifyOtpResponse>): AuthVerifyOtpResponse {
+    const message = createBaseAuthVerifyOtpResponse();
     message.accessToken = object.accessToken ?? "";
     message.refreshToken = object.refreshToken ?? "";
     return message;

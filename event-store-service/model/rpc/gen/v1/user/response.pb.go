@@ -21,7 +21,7 @@ const (
 )
 
 // AUTH RESPONSE DEFINITION
-type UserLogoutByTokenResponse struct {
+type AuthLogoutByTokenResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -29,8 +29,8 @@ type UserLogoutByTokenResponse struct {
 	IsValid bool `protobuf:"varint,1,opt,name=is_valid,json=isValid,proto3" json:"is_valid,omitempty"`
 }
 
-func (x *UserLogoutByTokenResponse) Reset() {
-	*x = UserLogoutByTokenResponse{}
+func (x *AuthLogoutByTokenResponse) Reset() {
+	*x = AuthLogoutByTokenResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_v1_user_response_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -38,13 +38,13 @@ func (x *UserLogoutByTokenResponse) Reset() {
 	}
 }
 
-func (x *UserLogoutByTokenResponse) String() string {
+func (x *AuthLogoutByTokenResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UserLogoutByTokenResponse) ProtoMessage() {}
+func (*AuthLogoutByTokenResponse) ProtoMessage() {}
 
-func (x *UserLogoutByTokenResponse) ProtoReflect() protoreflect.Message {
+func (x *AuthLogoutByTokenResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_v1_user_response_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -56,19 +56,19 @@ func (x *UserLogoutByTokenResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UserLogoutByTokenResponse.ProtoReflect.Descriptor instead.
-func (*UserLogoutByTokenResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use AuthLogoutByTokenResponse.ProtoReflect.Descriptor instead.
+func (*AuthLogoutByTokenResponse) Descriptor() ([]byte, []int) {
 	return file_v1_user_response_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *UserLogoutByTokenResponse) GetIsValid() bool {
+func (x *AuthLogoutByTokenResponse) GetIsValid() bool {
 	if x != nil {
 		return x.IsValid
 	}
 	return false
 }
 
-type UserVerifyOtpResponse struct {
+type AuthVerifyOtpResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -77,8 +77,8 @@ type UserVerifyOtpResponse struct {
 	RefreshToken string `protobuf:"bytes,2,opt,name=refreshToken,proto3" json:"refreshToken,omitempty"`
 }
 
-func (x *UserVerifyOtpResponse) Reset() {
-	*x = UserVerifyOtpResponse{}
+func (x *AuthVerifyOtpResponse) Reset() {
+	*x = AuthVerifyOtpResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_v1_user_response_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -86,13 +86,13 @@ func (x *UserVerifyOtpResponse) Reset() {
 	}
 }
 
-func (x *UserVerifyOtpResponse) String() string {
+func (x *AuthVerifyOtpResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UserVerifyOtpResponse) ProtoMessage() {}
+func (*AuthVerifyOtpResponse) ProtoMessage() {}
 
-func (x *UserVerifyOtpResponse) ProtoReflect() protoreflect.Message {
+func (x *AuthVerifyOtpResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_v1_user_response_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -104,19 +104,19 @@ func (x *UserVerifyOtpResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UserVerifyOtpResponse.ProtoReflect.Descriptor instead.
-func (*UserVerifyOtpResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use AuthVerifyOtpResponse.ProtoReflect.Descriptor instead.
+func (*AuthVerifyOtpResponse) Descriptor() ([]byte, []int) {
 	return file_v1_user_response_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *UserVerifyOtpResponse) GetAccessToken() string {
+func (x *AuthVerifyOtpResponse) GetAccessToken() string {
 	if x != nil {
 		return x.AccessToken
 	}
 	return ""
 }
 
-func (x *UserVerifyOtpResponse) GetRefreshToken() string {
+func (x *AuthVerifyOtpResponse) GetRefreshToken() string {
 	if x != nil {
 		return x.RefreshToken
 	}
@@ -223,10 +223,10 @@ var File_v1_user_response_proto protoreflect.FileDescriptor
 var file_v1_user_response_proto_rawDesc = []byte{
 	0x0a, 0x16, 0x76, 0x31, 0x2f, 0x75, 0x73, 0x65, 0x72, 0x2f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e,
 	0x73, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x04, 0x75, 0x73, 0x65, 0x72, 0x22, 0x36,
-	0x0a, 0x19, 0x55, 0x73, 0x65, 0x72, 0x4c, 0x6f, 0x67, 0x6f, 0x75, 0x74, 0x42, 0x79, 0x54, 0x6f,
+	0x0a, 0x19, 0x41, 0x75, 0x74, 0x68, 0x4c, 0x6f, 0x67, 0x6f, 0x75, 0x74, 0x42, 0x79, 0x54, 0x6f,
 	0x6b, 0x65, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x19, 0x0a, 0x08, 0x69,
 	0x73, 0x5f, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x69,
-	0x73, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x22, 0x5d, 0x0a, 0x15, 0x55, 0x73, 0x65, 0x72, 0x56, 0x65,
+	0x73, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x22, 0x5d, 0x0a, 0x15, 0x41, 0x75, 0x74, 0x68, 0x56, 0x65,
 	0x72, 0x69, 0x66, 0x79, 0x4f, 0x74, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
 	0x20, 0x0a, 0x0b, 0x61, 0x63, 0x63, 0x65, 0x73, 0x73, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x01,
 	0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x61, 0x63, 0x63, 0x65, 0x73, 0x73, 0x54, 0x6f, 0x6b, 0x65,
@@ -259,8 +259,8 @@ func file_v1_user_response_proto_rawDescGZIP() []byte {
 
 var file_v1_user_response_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_v1_user_response_proto_goTypes = []interface{}{
-	(*UserLogoutByTokenResponse)(nil), // 0: user.UserLogoutByTokenResponse
-	(*UserVerifyOtpResponse)(nil),     // 1: user.UserVerifyOtpResponse
+	(*AuthLogoutByTokenResponse)(nil), // 0: user.AuthLogoutByTokenResponse
+	(*AuthVerifyOtpResponse)(nil),     // 1: user.AuthVerifyOtpResponse
 	(*CreateUserResponse)(nil),        // 2: user.CreateUserResponse
 	(*UpdateUserByIdResponse)(nil),    // 3: user.UpdateUserByIdResponse
 }
@@ -279,7 +279,7 @@ func file_v1_user_response_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_v1_user_response_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UserLogoutByTokenResponse); i {
+			switch v := v.(*AuthLogoutByTokenResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -291,7 +291,7 @@ func file_v1_user_response_proto_init() {
 			}
 		}
 		file_v1_user_response_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UserVerifyOtpResponse); i {
+			switch v := v.(*AuthVerifyOtpResponse); i {
 			case 0:
 				return &v.state
 			case 1:

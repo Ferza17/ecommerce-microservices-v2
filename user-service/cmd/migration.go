@@ -2,31 +2,34 @@ package cmd
 
 import (
 	"database/sql"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/postgres"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/pressly/goose/v3"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 var migrationCommand = &cobra.Command{
 	Use:   "migration",
 	Short: "Migration database",
 	Run: func(cmd *cobra.Command, args []string) {
+		logger := logger.ProvideLogger()
+		postgres := postgres.ProvidePostgresInfrastructure()
 
 		if len(args) == 0 {
-			log.Fatalf("please insert argument up or down")
+			logger.Error("please insert argument up or down")
 			return
 		} else if args[0] == "up" {
-			if err := Up(dependency.PostgresqlInfrastructure.SqlDB()); err != nil {
-				log.Fatalf(err.Error())
+			if err := Up(postgres.SqlDB); err != nil {
+				logger.Error(err.Error())
 				return
 			}
 		} else if args[0] == "down" {
-			if err := Down(dependency.PostgresqlInfrastructure.SqlDB()); err != nil {
-				log.Fatalf(err.Error())
+			if err := Down(postgres.SqlDB); err != nil {
+				logger.Error(err.Error())
 				return
 			}
 		} else {
-			log.Fatalf("migration argument not found")
+			logger.Error("migration argument not found")
 			return
 		}
 	},

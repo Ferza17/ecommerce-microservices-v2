@@ -1,0 +1,10 @@
+syntax = "proto3";
+package user;
+
+enum UserRole {
+  CUSTOMER = 0;
+  CUSTOMER_MEMBERSHIP = 1;
+
+  ADMIN = 5505;
+  SUPER_ADMIN = 5506;
+}

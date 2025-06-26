@@ -5,13 +5,11 @@ package user;
 
 
 // AUTH RESPONSE DEFINITION
-message UserLogoutByTokenResponse {
-  
+message AuthLogoutByTokenResponse {
   bool is_valid = 1;
 }
 
-message UserVerifyOtpResponse {
-  
+message AuthVerifyOtpResponse {
   string accessToken = 1;
   string refreshToken = 2;
 }
@@ -19,7 +17,6 @@ message UserVerifyOtpResponse {
 
 // USER RESPONSE DEFINITION
 message CreateUserResponse {
-  
   string id = 1;
 }
 

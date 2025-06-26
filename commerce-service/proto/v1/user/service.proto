@@ -10,7 +10,6 @@ import "google/api/annotations.proto";
 import "v1/user/model.proto";
 import "v1/user/request.proto";
 import "v1/user/response.proto";
-import "external/gorm/gorm.proto";
 
 
 
@@ -43,7 +42,6 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 
 
 service UserService {
-  option (gorm.server).autogen = false;
   rpc FindUserById(user.FindUserByIdRequest) returns (user.User){
     option (google.api.http) = {
       get: "/v1/user/users/{id}"
@@ -77,8 +75,7 @@ service UserService {
 }
 
 service AuthService {
-  option (gorm.server).autogen = false;
-  rpc UserLogoutByToken(user.UserLogoutByTokenRequest) returns (user.UserLogoutByTokenResponse){
+  rpc UserLogoutByToken(user.AuthLogoutByTokenRequest) returns (user.AuthLogoutByTokenResponse){
     option (google.api.http) = {
       put: "/v1/user/auth/{token}"
       body: "*",
@@ -94,7 +91,7 @@ service AuthService {
       };
     };
   };
-  rpc UserVerifyOtp(user.UserVerifyOtpRequest) returns (user.UserVerifyOtpResponse){
+  rpc UserVerifyOtp(user.AuthVerifyOtpRequest) returns (user.AuthVerifyOtpResponse){
     option (google.api.http) = {
       put: "/v1/user/auth/{otp}"
       body: "*",
@@ -104,7 +101,7 @@ service AuthService {
       tags: ["AuthService"];
     };
   };
-  rpc FindUserByToken(user.FindUserByTokenRequest) returns (user.User){
+  rpc FindUserByToken(user.AuthFindUserByTokenRequest) returns (user.User){
     option (google.api.http) = {
       get: "/v1/user/auth/{token}"
     };

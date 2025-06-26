@@ -3,7 +3,8 @@ package enum
 type HttpHeader string
 
 const (
-	XRequestIDHeader HttpHeader = "X-Request-Id"
+	XRequestIDHeader    HttpHeader = "X-Request-Id"
+	AuthorizationHeader HttpHeader = "Authorization"
 )
 
 func (t HttpHeader) String() string {

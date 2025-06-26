@@ -38,6 +38,7 @@
     - Mv1/product/service.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/product
 
     # v1/user/*.proto
+    - Mv1/user/enum.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/user
     - Mv1/user/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/user
     - Mv1/user/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/user
     - Mv1/user/response.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/user

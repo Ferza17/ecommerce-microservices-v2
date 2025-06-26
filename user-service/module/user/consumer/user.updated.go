@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
-	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/token"
 
 	"github.com/rabbitmq/amqp091-go"
 	"go.opentelemetry.io/otel"
@@ -75,6 +76,10 @@ func (c *userConsumer) UserUpdated(ctx context.Context) error {
 			for key, value := range d.Headers {
 				if key == enum.XRequestIDHeader.String() {
 					requestId = value.(string)
+				}
+
+				if key == enum.AuthorizationHeader.String() {
+					ctx = token.SetTokenToContext(ctx, value.(string))
 				}
 
 				if strVal, ok := value.(string); ok {

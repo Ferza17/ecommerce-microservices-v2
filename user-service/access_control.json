@@ -1,0 +1,23 @@
+{
+  "CUSTOMER": {
+    "access_controls" : [
+      {
+        "ServiceName" : "user-service",
+        "FullMethodName" : ""
+      },
+      {
+        "ServiceName" : "user-service",
+        "FullMethodName" : ""
+      },
+      {
+        "ServiceName" : "user-service",
+        "FullMethodName" : ""
+      }
+    ]
+  },
+  "CUSTOMER_MEMBERSHIP": {
+  },
+  "ADMIN": {
+  },
+  "SUPER_ADMIN": {}
+}

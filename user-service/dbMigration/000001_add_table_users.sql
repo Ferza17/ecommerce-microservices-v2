@@ -1,11 +1,51 @@
 -- +goose Up
-CREATE TABLE users
+
+
+CREATE TABLE IF NOT EXISTS roles
 (
-    id           VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
-    name         VARCHAR NOT NULL,
-    email        VARCHAR NOT NULL UNIQUE,
-    password     VARCHAR NOT NULL,
-    created_at   TIMESTAMP           DEFAULT NOW(),
-    updated_at   TIMESTAMP           DEFAULT NOW(),
-    discarded_at TIMESTAMP           DEFAULT NULL
+    id         VARCHAR(255) PRIMARY KEY,
+    role       INTEGER NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+-- Create users table
+CREATE TABLE IF NOT EXISTS users
+(
+    id           VARCHAR(255) PRIMARY KEY,
+    name         VARCHAR(255) NOT NULL,
+    email        VARCHAR(255) NOT NULL,
+    password     VARCHAR(255) NOT NULL,
+    is_verified  BOOLEAN                  DEFAULT FALSE,
+    role_id      VARCHAR(255),
+    created_at   TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at   TIMESTAMP NOT NULL DEFAULT NOW(),
+    discarded_at TIMESTAMP WITH TIME ZONE,
+
+    -- Foreign Key Constraints
+    CONSTRAINT fk_users_role FOREIGN KEY (role_id) REFERENCES roles (id) ON DELETE SET NULL,
+
+    -- Unique Constraints
+    CONSTRAINT uk_users_email UNIQUE (email)
+);
+
+-- Create access_controls table
+CREATE TABLE IF NOT EXISTS access_controls
+(
+    id               VARCHAR(255) PRIMARY KEY,
+    service_name     VARCHAR(255) NOT NULL,
+    full_method_name VARCHAR(255) NOT NULL,
+    role_id          VARCHAR(255) NOT NULL,
+    created_at       TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at       TIMESTAMP NOT NULL DEFAULT NOW(),
+
+    -- Foreign Key Constraints
+    CONSTRAINT fk_access_controls_role FOREIGN KEY (role_id) REFERENCES roles (id) ON DELETE CASCADE
+);
+
+-- Create Indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
+CREATE INDEX IF NOT EXISTS idx_users_role_id ON users (role_id);
+CREATE INDEX IF NOT EXISTS idx_users_discarded_at ON users (discarded_at);
+CREATE INDEX IF NOT EXISTS idx_access_controls_role_id ON access_controls (role_id);
+CREATE INDEX IF NOT EXISTS idx_access_controls_service_method ON access_controls (service_name, full_method_name);

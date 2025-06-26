@@ -30,6 +30,7 @@ export const protobufPackage = "payment";
 
 export type PaymentServiceService = typeof PaymentServiceService;
 export const PaymentServiceService = {
+  /** QUERY */
   findPaymentById: {
     path: "/payment.PaymentService/FindPaymentById",
     requestStream: false,
@@ -52,11 +53,13 @@ export const PaymentServiceService = {
 } as const;
 
 export interface PaymentServiceServer extends UntypedServiceImplementation {
+  /** QUERY */
   findPaymentById: handleUnaryCall<FindPaymentByIdRequest, Payment>;
   findPaymentByUserIdAndStatus: handleUnaryCall<FindPaymentByUserIdAndStatusRequest, Payment>;
 }
 
 export interface PaymentServiceClient extends Client {
+  /** QUERY */
   findPaymentById(
     request: FindPaymentByIdRequest,
     callback: (error: ServiceError | null, response: Payment) => void,
@@ -100,6 +103,7 @@ export const PaymentServiceClient = makeGenericClientConstructor(
 
 export type PaymentProviderServiceService = typeof PaymentProviderServiceService;
 export const PaymentProviderServiceService = {
+  /** QUERY */
   findPaymentProviders: {
     path: "/payment.PaymentProviderService/FindPaymentProviders",
     requestStream: false,
@@ -124,11 +128,13 @@ export const PaymentProviderServiceService = {
 } as const;
 
 export interface PaymentProviderServiceServer extends UntypedServiceImplementation {
+  /** QUERY */
   findPaymentProviders: handleUnaryCall<FindPaymentProvidersRequest, FindPaymentProvidersResponse>;
   findPaymentProviderById: handleUnaryCall<FindPaymentProviderByIdRequest, Provider>;
 }
 
 export interface PaymentProviderServiceClient extends Client {
+  /** QUERY */
   findPaymentProviders(
     request: FindPaymentProvidersRequest,
     callback: (error: ServiceError | null, response: FindPaymentProvidersResponse) => void,

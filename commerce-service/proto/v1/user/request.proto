@@ -4,21 +4,29 @@ package user;
 import "external/validate/validate.proto";
 
 
-// AUTH REQUEST DEFINITION
-message UserLoginByEmailAndPasswordRequest {
+// ============= AUTH REQUEST DEFINITION
+
+// COMMAND
+message AuthLoginByEmailAndPasswordRequest {
   string email = 1 [(validate.rules).string.email = true];
   string password = 2 [(validate.rules).string.min_len = 8];
 }
 
-message UserLogoutByTokenRequest {
+message AuthLogoutByTokenRequest {
   string token = 1 [(validate.rules).string.min_len = 8];
 }
 
-message UserVerifyOtpRequest {
+message AuthVerifyOtpRequest {
   string otp = 1 [(validate.rules).string.min_len = 4];
 }
 
-message FindUserByTokenRequest {
+message AuthenticationRequest {
+  string token = 1 [(validate.rules).string.min_len = 0];
+}
+
+// QUERY
+
+message AuthFindUserByTokenRequest {
   string token = 1 [(validate.rules).string.min_len = 0];
 }
 

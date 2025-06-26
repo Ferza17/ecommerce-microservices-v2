@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
-	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
-func (p *AuthPresenter) FindUserByToken(ctx context.Context, req *userRpc.FindUserByTokenRequest) (*userRpc.User, error) {
+func (p *AuthPresenter) FindUserByToken(ctx context.Context, req *userRpc.AuthFindUserByTokenRequest) (*userRpc.User, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.InvalidArgument, "metadata not found")

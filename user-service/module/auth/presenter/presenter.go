@@ -2,10 +2,11 @@ package presenter
 
 import (
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
-	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
+	"github.com/google/wire"
 
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 )
 
 type AuthPresenter struct {
@@ -13,13 +14,15 @@ type AuthPresenter struct {
 
 	authUseCase             usecase.IAuthUseCase
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
-	logger                  pkg.IZapLogger
+	logger                  logger.IZapLogger
 }
+
+var Set = wire.NewSet(NewAuthPresenter)
 
 func NewAuthPresenter(
 	authUseCase usecase.IAuthUseCase,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
-	logger pkg.IZapLogger) *AuthPresenter {
+	logger logger.IZapLogger) *AuthPresenter {
 	return &AuthPresenter{
 		authUseCase:             authUseCase,
 		telemetryInfrastructure: telemetryInfrastructure,

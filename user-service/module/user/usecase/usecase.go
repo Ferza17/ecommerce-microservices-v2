@@ -2,13 +2,16 @@ package usecase
 
 import (
 	"context"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/postgres"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
-	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
+	"github.com/google/wire"
 
 	authRedisRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
-	userPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/postgresql"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
+	rolePostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/repository/postgres"
+	userPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/postgres"
 )
 
 type (
@@ -21,24 +24,33 @@ type (
 
 	userUseCase struct {
 		userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository
-		rabbitmqInfrastructure   rabbitmqInfrastructure.IRabbitMQInfrastructure
-		telemetryInfrastructure  telemetryInfrastructure.ITelemetryInfrastructure
-		authRedisRepository      authRedisRepository.IAuthRedisRepository
-		logger                   pkg.IZapLogger
+		rolePostgresqlRepository rolePostgresqlRepository.IRolePostgresqlRepository
+
+		rabbitmqInfrastructure    rabbitmqInfrastructure.IRabbitMQInfrastructure
+		postgresSQLInfrastructure *postgres.PostgresSQL
+		telemetryInfrastructure   telemetryInfrastructure.ITelemetryInfrastructure
+		authRedisRepository       authRedisRepository.IAuthRedisRepository
+		logger                    logger.IZapLogger
 	}
 )
 
+var Set = wire.NewSet(NewUserUseCase)
+
 func NewUserUseCase(
 	userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository,
+	rolePostgresqlRepository rolePostgresqlRepository.IRolePostgresqlRepository,
 	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
 	authRedisRepository authRedisRepository.IAuthRedisRepository,
+	postgresSQLInfrastructure *postgres.PostgresSQL,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
-	logger pkg.IZapLogger) IUserUseCase {
+	logger logger.IZapLogger) IUserUseCase {
 	return &userUseCase{
-		userPostgresqlRepository: userPostgresqlRepository,
-		rabbitmqInfrastructure:   rabbitmqInfrastructure,
-		telemetryInfrastructure:  telemetryInfrastructure,
-		authRedisRepository:      authRedisRepository,
-		logger:                   logger,
+		userPostgresqlRepository:  userPostgresqlRepository,
+		rolePostgresqlRepository:  rolePostgresqlRepository,
+		rabbitmqInfrastructure:    rabbitmqInfrastructure,
+		telemetryInfrastructure:   telemetryInfrastructure,
+		postgresSQLInfrastructure: postgresSQLInfrastructure,
+		authRedisRepository:       authRedisRepository,
+		logger:                    logger,
 	}
 }

@@ -7,6 +7,7 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { Timestamp } from "../../google/protobuf/timestamp";
+import { EnumRole, enumRoleFromJSON, enumRoleToJSON } from "./enum";
 
 export const protobufPackage = "user";
 
@@ -16,9 +17,27 @@ export interface User {
   email: string;
   password: string;
   isVerified: boolean;
+  role: Role | undefined;
   createdAt: Date | undefined;
   updatedAt: Date | undefined;
   discardedAt?: Date | undefined;
+}
+
+export interface Role {
+  id: string;
+  role: EnumRole;
+  accessControls: AccessControl[];
+  createdAt: Date | undefined;
+  updatedAt: Date | undefined;
+}
+
+export interface AccessControl {
+  id: string;
+  serviceName: string;
+  fullMethodName: string;
+  roleId: string;
+  createdAt: Date | undefined;
+  updatedAt: Date | undefined;
 }
 
 function createBaseUser(): User {
@@ -28,6 +47,7 @@ function createBaseUser(): User {
     email: "",
     password: "",
     isVerified: false,
+    role: undefined,
     createdAt: undefined,
     updatedAt: undefined,
     discardedAt: undefined,
@@ -50,6 +70,9 @@ export const User: MessageFns<User> = {
     }
     if (message.isVerified !== false) {
       writer.uint32(40).bool(message.isVerified);
+    }
+    if (message.role !== undefined) {
+      Role.encode(message.role, writer.uint32(50).fork()).join();
     }
     if (message.createdAt !== undefined) {
       Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(66).fork()).join();
@@ -110,6 +133,14 @@ export const User: MessageFns<User> = {
           message.isVerified = reader.bool();
           continue;
         }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.role = Role.decode(reader, reader.uint32());
+          continue;
+        }
         case 8: {
           if (tag !== 66) {
             break;
@@ -150,6 +181,7 @@ export const User: MessageFns<User> = {
       email: isSet(object.email) ? globalThis.String(object.email) : "",
       password: isSet(object.password) ? globalThis.String(object.password) : "",
       isVerified: isSet(object.isVerified) ? globalThis.Boolean(object.isVerified) : false,
+      role: isSet(object.role) ? Role.fromJSON(object.role) : undefined,
       createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
       updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
       discardedAt: isSet(object.discardedAt) ? fromJsonTimestamp(object.discardedAt) : undefined,
@@ -173,6 +205,9 @@ export const User: MessageFns<User> = {
     if (message.isVerified !== false) {
       obj.isVerified = message.isVerified;
     }
+    if (message.role !== undefined) {
+      obj.role = Role.toJSON(message.role);
+    }
     if (message.createdAt !== undefined) {
       obj.createdAt = message.createdAt.toISOString();
     }
@@ -195,9 +230,276 @@ export const User: MessageFns<User> = {
     message.email = object.email ?? "";
     message.password = object.password ?? "";
     message.isVerified = object.isVerified ?? false;
+    message.role = (object.role !== undefined && object.role !== null) ? Role.fromPartial(object.role) : undefined;
     message.createdAt = object.createdAt ?? undefined;
     message.updatedAt = object.updatedAt ?? undefined;
     message.discardedAt = object.discardedAt ?? undefined;
+    return message;
+  },
+};
+
+function createBaseRole(): Role {
+  return { id: "", role: 0, accessControls: [], createdAt: undefined, updatedAt: undefined };
+}
+
+export const Role: MessageFns<Role> = {
+  encode(message: Role, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.role !== 0) {
+      writer.uint32(16).int32(message.role);
+    }
+    for (const v of message.accessControls) {
+      AccessControl.encode(v!, writer.uint32(34).fork()).join();
+    }
+    if (message.createdAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(66).fork()).join();
+    }
+    if (message.updatedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.updatedAt), writer.uint32(74).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): Role {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRole();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.role = reader.int32() as any;
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.accessControls.push(AccessControl.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 9: {
+          if (tag !== 74) {
+            break;
+          }
+
+          message.updatedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Role {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      role: isSet(object.role) ? enumRoleFromJSON(object.role) : 0,
+      accessControls: globalThis.Array.isArray(object?.accessControls)
+        ? object.accessControls.map((e: any) => AccessControl.fromJSON(e))
+        : [],
+      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
+      updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
+    };
+  },
+
+  toJSON(message: Role): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.role !== 0) {
+      obj.role = enumRoleToJSON(message.role);
+    }
+    if (message.accessControls?.length) {
+      obj.accessControls = message.accessControls.map((e) => AccessControl.toJSON(e));
+    }
+    if (message.createdAt !== undefined) {
+      obj.createdAt = message.createdAt.toISOString();
+    }
+    if (message.updatedAt !== undefined) {
+      obj.updatedAt = message.updatedAt.toISOString();
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<Role>): Role {
+    return Role.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<Role>): Role {
+    const message = createBaseRole();
+    message.id = object.id ?? "";
+    message.role = object.role ?? 0;
+    message.accessControls = object.accessControls?.map((e) => AccessControl.fromPartial(e)) || [];
+    message.createdAt = object.createdAt ?? undefined;
+    message.updatedAt = object.updatedAt ?? undefined;
+    return message;
+  },
+};
+
+function createBaseAccessControl(): AccessControl {
+  return { id: "", serviceName: "", fullMethodName: "", roleId: "", createdAt: undefined, updatedAt: undefined };
+}
+
+export const AccessControl: MessageFns<AccessControl> = {
+  encode(message: AccessControl, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.serviceName !== "") {
+      writer.uint32(18).string(message.serviceName);
+    }
+    if (message.fullMethodName !== "") {
+      writer.uint32(26).string(message.fullMethodName);
+    }
+    if (message.roleId !== "") {
+      writer.uint32(34).string(message.roleId);
+    }
+    if (message.createdAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(66).fork()).join();
+    }
+    if (message.updatedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.updatedAt), writer.uint32(74).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AccessControl {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAccessControl();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.serviceName = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.fullMethodName = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.roleId = reader.string();
+          continue;
+        }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 9: {
+          if (tag !== 74) {
+            break;
+          }
+
+          message.updatedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AccessControl {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      serviceName: isSet(object.serviceName) ? globalThis.String(object.serviceName) : "",
+      fullMethodName: isSet(object.fullMethodName) ? globalThis.String(object.fullMethodName) : "",
+      roleId: isSet(object.roleId) ? globalThis.String(object.roleId) : "",
+      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
+      updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
+    };
+  },
+
+  toJSON(message: AccessControl): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.serviceName !== "") {
+      obj.serviceName = message.serviceName;
+    }
+    if (message.fullMethodName !== "") {
+      obj.fullMethodName = message.fullMethodName;
+    }
+    if (message.roleId !== "") {
+      obj.roleId = message.roleId;
+    }
+    if (message.createdAt !== undefined) {
+      obj.createdAt = message.createdAt.toISOString();
+    }
+    if (message.updatedAt !== undefined) {
+      obj.updatedAt = message.updatedAt.toISOString();
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<AccessControl>): AccessControl {
+    return AccessControl.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<AccessControl>): AccessControl {
+    const message = createBaseAccessControl();
+    message.id = object.id ?? "";
+    message.serviceName = object.serviceName ?? "";
+    message.fullMethodName = object.fullMethodName ?? "";
+    message.roleId = object.roleId ?? "";
+    message.createdAt = object.createdAt ?? undefined;
+    message.updatedAt = object.updatedAt ?? undefined;
     return message;
   },
 };

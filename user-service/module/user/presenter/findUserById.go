@@ -3,7 +3,7 @@ package presenter
 import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
-	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"

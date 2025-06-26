@@ -3,74 +3,79 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
-	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/token"
 
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"time"
 )
 
-func (u *authUseCase) UserVerifyOtp(ctx context.Context, requestId string, req *userRpc.UserVerifyOtpRequest) (*userRpc.UserVerifyOtpResponse, error) {
+func (u *authUseCase) UserVerifyOtp(ctx context.Context, requestId string, req *userRpc.AuthVerifyOtpRequest) (*userRpc.AuthVerifyOtpResponse, error) {
+	tx := u.postgresSQL.GormDB.Begin()
 	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.UserVerifyOtp")
 	defer span.End()
 
 	userId, err := u.authRedisRepository.GetOtp(ctx, requestId, req.Otp)
 	if err != nil {
+		tx.Rollback()
 		u.logger.Error(fmt.Sprintf("requestId : %s , error getting otp: %v", requestId, err))
 		return nil, err
 	}
 
 	if userId == nil {
+		tx.Rollback()
 		u.logger.Error(fmt.Sprintf("requestId : %s , error getting otp: %v", requestId, err))
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	user, err := u.userPostgresqlRepository.FindUserById(ctx, requestId, *userId)
+	user, err := u.userPostgresqlRepository.FindUserById(ctx, requestId, *userId, tx)
 	if err != nil {
+		tx.Rollback()
 		u.logger.Error(fmt.Sprintf("requestId : %s , error finding user by id: %v", requestId, err))
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
 	if user == nil {
+		tx.Rollback()
 		u.logger.Error(fmt.Sprintf("requestId : %s , error finding user by id: %v", requestId, err))
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
 	var (
-		te  = config.Get().JwtAccessTokenExpirationTime
-		now = time.Now().UTC()
+		defaultAccessTokenCfg  = token.DefaultAccessTokenConfig()
+		defaultRefreshTokenCfg = token.DefaultRefreshTokenConfig()
+
+		accessControls = []*userRpc.AccessControl{}
 	)
 
-	accessToken, err := pkg.GenerateToken(pkg.Claim{
-		UserID:    user.ID,
-		CreatedAt: &now,
-		StandardClaims: jwt.StandardClaims{
-			Audience:  config.Get().ServiceName,
-			ExpiresAt: now.Add(te).Unix(),
-		},
-	}, config.Get().JwtAccessTokenSecret)
+	if user.Role != nil && len(user.Role.AccessControls) > 0 {
+		for _, control := range user.Role.AccessControls {
+			accessControls = append(accessControls, control.ToProto())
+		}
+	}
+
+	accessToken, err := token.GenerateToken(
+		token.GenerateClaim(user.ToProto(), user.Role.ToProto(), accessControls, defaultAccessTokenCfg),
+		defaultAccessTokenCfg,
+	)
 	if err != nil {
-		u.logger.Error(fmt.Sprintf("requestId : %s , error generating token: %v", requestId, err))
+		tx.Rollback()
+		u.logger.Error(fmt.Sprintf("requestId : %s , error generating accessToken: %v", requestId, err))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	refreshToken, err := pkg.GenerateToken(pkg.Claim{
-		UserID:    user.ID,
-		CreatedAt: &now,
-		StandardClaims: jwt.StandardClaims{
-			Audience:  config.Get().ServiceName,
-			ExpiresAt: now.Add(config.Get().JwtRefreshTokenExpirationTime).Unix(),
-		},
-	}, config.Get().JwtRefreshTokenSecret)
+	refreshToken, err := token.GenerateToken(
+		token.GenerateClaim(user.ToProto(), user.Role.ToProto(), accessControls, defaultRefreshTokenCfg),
+		defaultRefreshTokenCfg,
+	)
 	if err != nil {
-		u.logger.Error(fmt.Sprintf("requestId : %s , error generating refresh token: %v", requestId, err))
+		tx.Rollback()
+		u.logger.Error(fmt.Sprintf("requestId : %s , error refreshToken token: %v", requestId, err))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &userRpc.UserVerifyOtpResponse{
+	tx.Commit()
+	return &userRpc.AuthVerifyOtpResponse{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}, nil

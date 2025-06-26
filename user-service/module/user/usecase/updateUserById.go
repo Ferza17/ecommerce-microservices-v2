@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
-	eventRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/event/v1"
-	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+	eventRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/util"
 	"golang.org/x/crypto/bcrypt"
@@ -16,7 +16,7 @@ import (
 func (u *userUseCase) UpdateUserById(ctx context.Context, requestId string, req *userRpc.UpdateUserByIdRequest) (*userRpc.UpdateUserByIdResponse, error) {
 	var (
 		err        error
-		tx         = u.userPostgresqlRepository.OpenTransactionWithContext(ctx)
+		tx         = u.postgresSQLInfrastructure.GormDB.Begin()
 		eventStore = &eventRpc.EventStore{
 			RequestId:     requestId,
 			Service:       config.Get().ServiceName,
@@ -52,6 +52,12 @@ func (u *userUseCase) UpdateUserById(ctx context.Context, requestId string, req 
 		}
 	}(err, eventStore)
 
+	user, err := u.userPostgresqlRepository.FindUserById(ctx, requestId, req.Id, tx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Partial Update
 	if req.Password != nil {
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*req.Password), bcrypt.DefaultCost)
 		if err != nil {
@@ -63,7 +69,19 @@ func (u *userUseCase) UpdateUserById(ctx context.Context, requestId string, req 
 		req.Password = &newPassword
 	}
 
-	result, err := u.userPostgresqlRepository.UpdateUserByIdWithTransaction(ctx, requestId, req, tx)
+	if req.Email != nil && *req.Email != user.Email {
+		user.Email = *req.Email
+	}
+
+	if req.Name != nil && *req.Name != user.Name {
+		user.Name = *req.Name
+	}
+
+	if req.IsVerified != nil && *req.IsVerified != user.IsVerified {
+		user.IsVerified = *req.IsVerified
+	}
+
+	result, err := u.userPostgresqlRepository.UpdateUserById(ctx, requestId, user, tx)
 	if err != nil {
 		tx.Rollback()
 		u.logger.Error(fmt.Sprintf("requestId : %s , error updating user: %v", requestId, err))
@@ -72,6 +90,6 @@ func (u *userUseCase) UpdateUserById(ctx context.Context, requestId string, req 
 
 	tx.Commit()
 	return &userRpc.UpdateUserByIdResponse{
-		Id: result,
+		Id: result.ID,
 	}, nil
 }

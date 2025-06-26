@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
-	eventRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/event/v1"
-	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/notification/v1"
-	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+	eventRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event"
+	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/notification"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/util"
 	"golang.org/x/crypto/bcrypt"
@@ -16,11 +16,11 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId string, req *userRpc.UserLoginByEmailAndPasswordRequest) error {
+func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId string, req *userRpc.AuthLoginByEmailAndPasswordRequest) error {
 	var (
 		err                      error
 		reqUserLoginNotification *notificationRpc.SendOtpEmailNotificationRequest
-		tx                       = u.userPostgresqlRepository.OpenTransactionWithContext(ctx)
+		tx                       = u.postgresSQL.GormDB.Begin()
 		eventStore               = &eventRpc.EventStore{
 			RequestId:     requestId,
 			Service:       config.Get().ServiceName,
@@ -81,7 +81,7 @@ func (u *authUseCase) UserLoginByEmailAndPassword(ctx context.Context, requestId
 		tx.Commit()
 	}(err, eventStore)
 
-	user, err := u.userPostgresqlRepository.FindUserByEmailWithTransaction(ctx, requestId, req.Email, tx)
+	user, err := u.userPostgresqlRepository.FindUserByEmail(ctx, requestId, req.Email, tx)
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("requestId : %s , error finding user by email and password: %v", requestId, err))
 		return status.Error(codes.Internal, err.Error())

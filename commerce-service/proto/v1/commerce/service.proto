@@ -96,6 +96,18 @@ service CartService {
 }
 
 service WishlistService {
+  // QUERY
+  rpc FindWishlistItemWithPagination(commerce.FindWishlistItemWithPaginationRequest) returns (commerce.FindWishlistItemWithPaginationResponse){
+    option (google.api.http) = {
+      get: "/v1/commerce/wishlists"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "get all wishlist item with pagination";
+      tags: ["WISHLIST"];
+    };
+  };
+
+  // COMMAND
   rpc CreateWishlistItem(commerce.CreateWishlistItemRequest) returns (commerce.CreateWishlistItemResponse){
     option (google.api.http) = {
       post: "/v1/commerce/wishlists"
@@ -103,15 +115,6 @@ service WishlistService {
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       summary: "create a new wishlist";
-      tags: ["WISHLIST"];
-    };
-  };
-  rpc FindWishlistItemWithPagination(commerce.FindWishlistItemWithPaginationRequest) returns (commerce.FindWishlistItemWithPaginationResponse){
-    option (google.api.http) = {
-      get: "/v1/commerce/wishlists"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      summary: "get all wishlist item with pagination";
       tags: ["WISHLIST"];
     };
   };

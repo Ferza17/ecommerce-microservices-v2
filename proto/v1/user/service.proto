@@ -5,12 +5,13 @@ package user;
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "google/api/http.proto";
 import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
 
 // LOCAL IMPORT
 import "v1/user/model.proto";
 import "v1/user/request.proto";
 import "v1/user/response.proto";
-import "external/gorm/gorm.proto";
 
 
 
@@ -43,7 +44,25 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 
 
 service UserService {
-  option (gorm.server).autogen = false;
+  // COMMAND
+  rpc CreateUser(user.CreateUserRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/user/users",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "create a new user";
+      description: "it can be used from rabbitMQ Queue with EXCHANGE user.exchange, QUEUE user.created. this endpoint will be block with middleware and interceptor",
+      tags: ["UserService"];
+      security: {
+        security_requirement: {
+          key: "bearer";
+        }
+      };
+    };
+  };
+
+  // QUERY
   rpc FindUserById(user.FindUserByIdRequest) returns (user.User){
     option (google.api.http) = {
       get: "/v1/user/users/{id}"
@@ -60,8 +79,7 @@ service UserService {
   };
   rpc FindUserByEmailAndPassword(user.FindUserByEmailAndPasswordRequest) returns (user.User){
     option (google.api.http) = {
-      post: "/v1/user/users"
-      body: "*",
+      get: "/v1/user/users/{email}/{password}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       summary: "find user by provided email and password";
@@ -77,8 +95,7 @@ service UserService {
 }
 
 service AuthService {
-  option (gorm.server).autogen = false;
-  rpc UserLogoutByToken(user.UserLogoutByTokenRequest) returns (user.UserLogoutByTokenResponse){
+  rpc UserLogoutByToken(user.AuthLogoutByTokenRequest) returns (user.AuthLogoutByTokenResponse){
     option (google.api.http) = {
       put: "/v1/user/auth/{token}"
       body: "*",
@@ -94,7 +111,7 @@ service AuthService {
       };
     };
   };
-  rpc UserVerifyOtp(user.UserVerifyOtpRequest) returns (user.UserVerifyOtpResponse){
+  rpc UserVerifyOtp(user.AuthVerifyOtpRequest) returns (user.AuthVerifyOtpResponse){
     option (google.api.http) = {
       put: "/v1/user/auth/{otp}"
       body: "*",
@@ -104,7 +121,7 @@ service AuthService {
       tags: ["AuthService"];
     };
   };
-  rpc FindUserByToken(user.FindUserByTokenRequest) returns (user.User){
+  rpc FindUserByToken(user.AuthFindUserByTokenRequest) returns (user.User){
     option (google.api.http) = {
       get: "/v1/user/auth/{token}"
     };

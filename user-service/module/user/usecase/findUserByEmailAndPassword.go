@@ -3,19 +3,19 @@ package usecase
 import (
 	"context"
 	"fmt"
-	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 func (u *userUseCase) FindUserByEmailAndPassword(ctx context.Context, requestId string, request *userRpc.FindUserByEmailAndPasswordRequest) (*userRpc.User, error) {
 	var (
-		tx = u.userPostgresqlRepository.OpenTransactionWithContext(ctx)
+		tx = u.postgresSQLInfrastructure.GormDB.Begin()
 	)
 	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.FindUserByEmailAndPassword")
 	defer span.End()
 
-	user, err := u.userPostgresqlRepository.FindUserByEmailWithTransaction(ctx, requestId, request.Email, tx)
+	user, err := u.userPostgresqlRepository.FindUserByEmail(ctx, requestId, request.Email, tx)
 	if err != nil {
 		tx.Rollback()
 		u.logger.Error(fmt.Sprintf("requestId : %s , error finding user by email and password: %v", requestId, err))

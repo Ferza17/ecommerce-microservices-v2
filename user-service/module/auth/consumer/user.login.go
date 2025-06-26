@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
-	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 
 	"github.com/rabbitmq/amqp091-go"
 	"go.opentelemetry.io/otel"
@@ -62,7 +62,7 @@ func (c *authConsumer) UserLogin(ctx context.Context) error {
 	messages:
 		for d := range deliveries {
 			var (
-				request   userRpc.UserLoginByEmailAndPasswordRequest
+				request   userRpc.AuthLoginByEmailAndPasswordRequest
 				requestId string
 			)
 			carrier := propagation.MapCarrier{}

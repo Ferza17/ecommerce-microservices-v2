@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
+	"github.com/google/wire"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/jaeger"
 	"go.opentelemetry.io/otel/propagation"
@@ -20,12 +21,14 @@ type (
 		Tracer(ctx context.Context, fnName string) (context.Context, trace.Span)
 	}
 	telemetryInfrastructure struct {
-		logger         pkg.IZapLogger
+		logger         logger.IZapLogger
 		tracerProvider *sdktrace.TracerProvider
 	}
 )
 
-func NewTelemetry(logger pkg.IZapLogger) ITelemetryInfrastructure {
+var Set = wire.NewSet(NewTelemetry)
+
+func NewTelemetry(logger logger.IZapLogger) ITelemetryInfrastructure {
 	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(
 		jaeger.WithEndpoint(fmt.Sprintf("http://%s:%s/api/traces",
 			config.Get().JaegerTelemetryHost,

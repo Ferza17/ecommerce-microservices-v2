@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/orm"
-	eventRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/event/v1"
-	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/notification/v1"
-	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/user/v1"
+	eventRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event"
+	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/notification"
+	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
+	"github.com/google/uuid"
 
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/util"
-	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -20,11 +20,10 @@ import (
 )
 
 func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *userRpc.CreateUserRequest) (*userRpc.CreateUserResponse, error) {
-
 	var (
 		err             error
 		reqUserEmailOtp *notificationRpc.SendOtpEmailNotificationRequest
-		tx              = u.userPostgresqlRepository.OpenTransactionWithContext(ctx)
+		tx              = u.postgresSQLInfrastructure.GormDB.Begin()
 		now             = time.Now().UTC()
 		eventStore      = &eventRpc.EventStore{
 			RequestId:     requestId,
@@ -69,16 +68,25 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *use
 	}
 	req.Password = string(hashedPassword)
 
-	result, err := u.userPostgresqlRepository.CreateUserWithTransaction(ctx, requestId, &orm.User{
-		ID:          uuid.NewString(),
-		Name:        req.Name,
-		Email:       req.Email,
-		Password:    string(hashedPassword),
-		CreatedAt:   &now,
-		UpdatedAt:   &now,
-		DiscardedAt: nil,
-	}, tx)
+	role, err := u.rolePostgresqlRepository.FindRoleByName(ctx, requestId, req.Role.String(), tx)
+	if err != nil {
+		tx.Rollback()
+		u.logger.Error(fmt.Sprintf("requestId : %s , error finding role: %v", requestId, err))
+		return nil, err
+	}
 
+	user := orm.UserFromProto(&userRpc.User{
+		Id:         uuid.NewString(),
+		Name:       req.Name,
+		Email:      req.Email,
+		Password:   req.Password,
+		IsVerified: false,
+		Role:       role.ToProto(),
+		CreatedAt:  timestamppb.New(now),
+		UpdatedAt:  timestamppb.New(now),
+	})
+
+	result, err := u.userPostgresqlRepository.CreateUser(ctx, requestId, user, tx)
 	if err != nil {
 		tx.Rollback()
 		u.logger.Error(fmt.Sprintf("requestId : %s , error creating user: %v", requestId, err))
@@ -86,7 +94,7 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *use
 	}
 
 	otp := util.GenerateOTP()
-	if err = u.authRedisRepository.SetOtp(ctx, requestId, otp, result); err != nil {
+	if err = u.authRedisRepository.SetOtp(ctx, requestId, otp, result.ID); err != nil {
 		u.logger.Error(fmt.Sprintf("requestId : %s , error setting otp: %v", requestId, err))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -109,6 +117,6 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *use
 	}
 	tx.Commit()
 	return &userRpc.CreateUserResponse{
-		Id: result,
+		Id: result.ID,
 	}, nil
 }

@@ -90,7 +90,8 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/productCreateProductResponse"
+              "type": "object",
+              "properties": {}
             }
           },
           "default": {
@@ -162,7 +163,8 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/productDeleteProductByIdResponse"
+              "type": "object",
+              "properties": {}
             }
           },
           "default": {
@@ -196,7 +198,8 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/productProduct"
+              "type": "object",
+              "properties": {}
             }
           },
           "default": {
@@ -281,22 +284,6 @@
         "stock": {
           "type": "integer",
           "format": "int32"
-        }
-      }
-    },
-    "productCreateProductResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        }
-      }
-    },
-    "productDeleteProductByIdResponse": {
-      "type": "object",
-      "properties": {
-        "message": {
-          "type": "string"
         }
       }
     },
