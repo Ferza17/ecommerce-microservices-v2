@@ -16,7 +16,8 @@
     - Mv1/commerce/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/commerce
 
     # v1/common/*.proto
-    - Mv1/common/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/common
+    - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/common/response
+    
 
     # v1/event/*.proto
     - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
@@ -44,3 +45,4 @@
     - Mv1/user/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
     - Mv1/user/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
     - Mv1/user/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
+    - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/user

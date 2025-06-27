@@ -10,6 +10,7 @@ import "google/protobuf/empty.proto";
 import "v1/product/model.proto";
 import "v1/product/request.proto";
 import "v1/product/response.proto";
+import "v1/user/option.proto";
 
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
@@ -43,6 +44,10 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 service ProductService {
   // COMMAND
   rpc CreateProduct(product.CreateProductRequest) returns (google.protobuf.Empty){
+    option (user.acl) = {
+      roles: [SUPER_ADMIN, ADMIN],
+      is_public: false,
+    };
     option (google.api.http) = {
       post: "/v1/product/products"
       body: "*",
@@ -58,6 +63,10 @@ service ProductService {
     };
   };
   rpc UpdateProductById(product.UpdateProductByIdRequest) returns (google.protobuf.Empty){
+    option (user.acl) = {
+      roles: [SUPER_ADMIN, ADMIN],
+      is_public: false,
+    };
     option (google.api.http) = {
       put: "/v1/product/products/{id}"
       body: "*",
@@ -73,6 +82,10 @@ service ProductService {
     };
   };
   rpc DeleteProductById(product.DeleteProductByIdRequest) returns (google.protobuf.Empty){
+    option (user.acl) = {
+      roles: [SUPER_ADMIN, ADMIN],
+      is_public: false,
+    };
     option (google.api.http) = {
       delete: "/v1/product/products/{id}"
     };
@@ -89,6 +102,10 @@ service ProductService {
 
   // QUERY
   rpc FindProductsWithPagination(product.FindProductsWithPaginationRequest) returns (product.FindProductsWithPaginationResponse){
+    option (user.acl) = {
+      roles: [SUPER_ADMIN, ADMIN, CUSTOMER, CUSTOMER_MEMBERSHIP],
+      is_public: false,
+    };
     option (google.api.http) = {
       get: "/v1/product/products"
     };
@@ -103,6 +120,10 @@ service ProductService {
     };
   };
   rpc FindProductById(product.FindProductByIdRequest) returns (product.Product){
+    option (user.acl) = {
+      roles: [SUPER_ADMIN, ADMIN, CUSTOMER, CUSTOMER_MEMBERSHIP],
+      is_public: false,
+    };
     option (google.api.http) = {
       get: "/v1/product/products/{id}"
     };

@@ -25,7 +25,6 @@ message Role {
 
 message AccessControl {
   string id = 1;
-  string serviceName = 2;
   string fullMethodName = 3;
   string role_id = 4;
 

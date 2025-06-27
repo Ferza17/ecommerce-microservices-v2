@@ -1,0 +1,38 @@
+apiVersion: v1
+data:
+  prometheus.yml: |2-
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+
+    rule_files:
+    # - "first_rules.yml"
+    # - "second_rules.yml"
+
+    scrape_configs:
+      # Prometheus self-monitoring
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['prometheus-local:9090'] # PRODUCTION
+
+
+      # Jaeger metrics scraping
+      - job_name: 'jaeger'
+        static_configs:
+          - targets: ['jaeger-local:14269'] ## PROD
+        scrape_interval: 15s
+        metrics_path: /metrics
+
+      # Jaeger span metrics (jika menggunakan span metrics processor)
+      - job_name: 'jaeger-span-metrics'
+        static_configs:
+          - targets: ['jaeger-local:8888'] # PRODUCTION
+        scrape_interval: 15s
+        metrics_path: /metrics
+kind: ConfigMap
+metadata:
+  annotations:
+    use-subpath: "true"
+  labels:
+    io.kompose.service: prometheus-local
+  name: prometheus-local-cm0

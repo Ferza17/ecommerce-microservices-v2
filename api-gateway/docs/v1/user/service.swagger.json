@@ -297,9 +297,6 @@
         "id": {
           "type": "string"
         },
-        "serviceName": {
-          "type": "string"
-        },
         "fullMethodName": {
           "type": "string"
         },

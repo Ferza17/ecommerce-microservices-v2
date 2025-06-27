@@ -33,7 +33,6 @@ export interface Role {
 
 export interface AccessControl {
   id: string;
-  serviceName: string;
   fullMethodName: string;
   roleId: string;
   createdAt: Date | undefined;
@@ -365,16 +364,13 @@ export const Role: MessageFns<Role> = {
 };
 
 function createBaseAccessControl(): AccessControl {
-  return { id: "", serviceName: "", fullMethodName: "", roleId: "", createdAt: undefined, updatedAt: undefined };
+  return { id: "", fullMethodName: "", roleId: "", createdAt: undefined, updatedAt: undefined };
 }
 
 export const AccessControl: MessageFns<AccessControl> = {
   encode(message: AccessControl, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
-    }
-    if (message.serviceName !== "") {
-      writer.uint32(18).string(message.serviceName);
     }
     if (message.fullMethodName !== "") {
       writer.uint32(26).string(message.fullMethodName);
@@ -404,14 +400,6 @@ export const AccessControl: MessageFns<AccessControl> = {
           }
 
           message.id = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.serviceName = reader.string();
           continue;
         }
         case 3: {
@@ -458,7 +446,6 @@ export const AccessControl: MessageFns<AccessControl> = {
   fromJSON(object: any): AccessControl {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
-      serviceName: isSet(object.serviceName) ? globalThis.String(object.serviceName) : "",
       fullMethodName: isSet(object.fullMethodName) ? globalThis.String(object.fullMethodName) : "",
       roleId: isSet(object.roleId) ? globalThis.String(object.roleId) : "",
       createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
@@ -470,9 +457,6 @@ export const AccessControl: MessageFns<AccessControl> = {
     const obj: any = {};
     if (message.id !== "") {
       obj.id = message.id;
-    }
-    if (message.serviceName !== "") {
-      obj.serviceName = message.serviceName;
     }
     if (message.fullMethodName !== "") {
       obj.fullMethodName = message.fullMethodName;
@@ -495,7 +479,6 @@ export const AccessControl: MessageFns<AccessControl> = {
   fromPartial(object: DeepPartial<AccessControl>): AccessControl {
     const message = createBaseAccessControl();
     message.id = object.id ?? "";
-    message.serviceName = object.serviceName ?? "";
     message.fullMethodName = object.fullMethodName ?? "";
     message.roleId = object.roleId ?? "";
     message.createdAt = object.createdAt ?? undefined;

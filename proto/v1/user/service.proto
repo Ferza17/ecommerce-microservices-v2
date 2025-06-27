@@ -12,6 +12,8 @@ import "google/protobuf/empty.proto";
 import "v1/user/model.proto";
 import "v1/user/request.proto";
 import "v1/user/response.proto";
+import "v1/user/option.proto";
+import "v1/user/enum.proto";
 
 
 
@@ -46,6 +48,10 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 service UserService {
   // COMMAND
   rpc CreateUser(user.CreateUserRequest) returns (google.protobuf.Empty){
+    option (user.acl) = {
+      roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
+      is_public: false,
+    };
     option (google.api.http) = {
       post: "/v1/user/users",
       body: "*"
@@ -64,6 +70,10 @@ service UserService {
 
   // QUERY
   rpc FindUserById(user.FindUserByIdRequest) returns (user.User){
+    option (user.acl) = {
+      roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
+      is_public: false,
+    };
     option (google.api.http) = {
       get: "/v1/user/users/{id}"
     };
@@ -78,6 +88,10 @@ service UserService {
     };
   };
   rpc FindUserByEmailAndPassword(user.FindUserByEmailAndPasswordRequest) returns (user.User){
+    option (user.acl) = {
+      roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
+      is_public: false,
+    };
     option (google.api.http) = {
       get: "/v1/user/users/{email}/{password}"
     };
@@ -96,6 +110,10 @@ service UserService {
 
 service AuthService {
   rpc UserLogoutByToken(user.AuthLogoutByTokenRequest) returns (user.AuthLogoutByTokenResponse){
+    option (user.acl) = {
+      roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
+      is_public: false,
+    };
     option (google.api.http) = {
       put: "/v1/user/auth/{token}"
       body: "*",
@@ -112,6 +130,9 @@ service AuthService {
     };
   };
   rpc UserVerifyOtp(user.AuthVerifyOtpRequest) returns (user.AuthVerifyOtpResponse){
+    option (user.acl) = {
+      is_public: true,
+    };
     option (google.api.http) = {
       put: "/v1/user/auth/{otp}"
       body: "*",
@@ -122,6 +143,9 @@ service AuthService {
     };
   };
   rpc FindUserByToken(user.AuthFindUserByTokenRequest) returns (user.User){
+    option (user.acl) = {
+      is_public: true,
+    };
     option (google.api.http) = {
       get: "/v1/user/auth/{token}"
     };

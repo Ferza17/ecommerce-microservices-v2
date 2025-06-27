@@ -10,6 +10,7 @@ import "google/api/annotations.proto";
 import "v1/commerce/model.proto";
 import "v1/commerce/request.proto";
 import "v1/commerce/response.proto";
+import "v1/user/option.proto";
 
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
@@ -42,6 +43,10 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 
 service CartService {
   rpc CreateCartItem(commerce.CreateCartItemRequest) returns (commerce.CreateCartItemResponse) {
+    option (user.acl) = {
+      roles: [CUSTOMER_MEMBERSHIP],
+      is_public: false,
+    };
     option (google.api.http) = {
       post: "/v1/commerce/carts"
       body: "*",
@@ -57,6 +62,10 @@ service CartService {
     };
   };
   rpc FindCartItemById(commerce.FindCartItemByIdRequest) returns (commerce.CartItem) {
+    option (user.acl) = {
+      roles: [CUSTOMER_MEMBERSHIP],
+      is_public: false,
+    };
     option (google.api.http) = {
       get: "/v1/commerce/carts/{id}"
     };
@@ -66,6 +75,10 @@ service CartService {
     };
   };
   rpc FindCartItemsWithPagination(commerce.FindCartItemsWithPaginationRequest) returns (commerce.FindCartItemsWithPaginationResponse){
+    option (user.acl) = {
+      roles: [CUSTOMER_MEMBERSHIP],
+      is_public: false,
+    };
     option (google.api.http) = {
       get: "/v1/commerce/carts"
     };
@@ -75,6 +88,10 @@ service CartService {
     };
   };
   rpc UpdateCartItemById(commerce.UpdateCartItemByIdRequest) returns (commerce.UpdateCartItemByIdResponse){
+    option (user.acl) = {
+      roles: [CUSTOMER_MEMBERSHIP],
+      is_public: false,
+    };
     option (google.api.http) = {
       put: "/v1/commerce/carts/{id}"
       body: "*"
@@ -85,6 +102,10 @@ service CartService {
     };
   };
   rpc DeleteCartItemById(commerce.DeleteCartItemByIdRequest) returns (commerce.DeleteCartItemByIdResponse){
+    option (user.acl) = {
+      roles: [CUSTOMER_MEMBERSHIP],
+      is_public: false,
+    };
     option (google.api.http) = {
       delete: "/v1/commerce/carts/{id}"
     };
@@ -98,6 +119,10 @@ service CartService {
 service WishlistService {
   // QUERY
   rpc FindWishlistItemWithPagination(commerce.FindWishlistItemWithPaginationRequest) returns (commerce.FindWishlistItemWithPaginationResponse){
+    option (user.acl) = {
+      roles: [CUSTOMER_MEMBERSHIP],
+      is_public: false,
+    };
     option (google.api.http) = {
       get: "/v1/commerce/wishlists"
     };
@@ -109,6 +134,10 @@ service WishlistService {
 
   // COMMAND
   rpc CreateWishlistItem(commerce.CreateWishlistItemRequest) returns (commerce.CreateWishlistItemResponse){
+    option (user.acl) = {
+      roles: [CUSTOMER_MEMBERSHIP],
+      is_public: false,
+    };
     option (google.api.http) = {
       post: "/v1/commerce/wishlists"
       body: "*"
@@ -119,6 +148,10 @@ service WishlistService {
     };
   };
   rpc DeleteWishlistItemById(commerce.DeleteWishlistItemByIdRequest) returns (commerce.DeleteWishlistItemByIdResponse){
+    option (user.acl) = {
+      roles: [CUSTOMER_MEMBERSHIP],
+      is_public: false,
+    };
     option (google.api.http) = {
       delete: "/v1/commerce/wishlists/{id}"
     };

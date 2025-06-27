@@ -26,6 +26,14 @@ spec:
               value: "true"
             - name: COLLECTOR_ZIPKIN_HOST_PORT
               value: :9411
+            - name: METRICS_STORAGE_TYPE
+              value: prometheus
+            - name: PROMETHEUS_QUERY_SUPPORT_SPANMETRICS_CONNECTOR
+              value: "true"
+            - name: PROMETHEUS_SERVER_URL
+              value: http://prometheus-local:9090
+            - name: SPAN_STORAGE_TYPE
+              value: memory
           image: jaegertracing/all-in-one:1.37
           name: jaeger-local
           ports:

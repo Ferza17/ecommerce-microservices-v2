@@ -6,7 +6,7 @@
 # Main Target
 # ==============================================================================
 
-all: yq-eval clean-gen generate-protos copy-protos convert-to-k8s
+all: yq-eval clean-gen generate-protos generate-descriptor copy-protos convert-to-k8s
 
 # STEP 1, ADD CONFIGURATION GENERATED FILE
 yq-eval:
@@ -86,3 +86,18 @@ convert-to-k8s:
 	@echo "=================================================="
 	@echo ">>> Done. Kubernetes manifests generated in k8s/ <<<"
 	@echo "=================================================="
+
+
+generate-descriptor:
+	@echo "Generating descriptor.pb"
+
+	buf build --as-file-descriptor-set --output api-gateway/descriptor.pb;\
+	buf build --as-file-descriptor-set --output commerce-service/descriptor.pb;\
+	buf build --as-file-descriptor-set --output event-store-service/descriptor.pb;\
+	buf build --as-file-descriptor-set --output notification-service/descriptor.pb;\
+	buf build --as-file-descriptor-set --output payment-service/descriptor.pb;\
+	buf build --as-file-descriptor-set --output product-service/descriptor.pb;\
+	buf build --as-file-descriptor-set --output user-service/descriptor.pb;\
+
+	@echo "Done Generating descriptor.pb"
+

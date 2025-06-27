@@ -2,13 +2,13 @@
 // versions:
 //   protoc-gen-ts_proto  v2.6.1
 //   protoc               unknown
-// source: v1/common/response.proto
+// source: v1/common/response/response.proto
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Struct } from "../../google/protobuf/struct";
+import { Struct } from "../../../google/protobuf/struct";
 
-export const protobufPackage = "common";
+export const protobufPackage = "response";
 
 export interface Response {
   message: string;

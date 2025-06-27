@@ -481,8 +481,6 @@ func (m *AccessControl) validate(all bool) error {
 
 	// no validation rules for Id
 
-	// no validation rules for ServiceName
-
 	// no validation rules for FullMethodName
 
 	// no validation rules for RoleId

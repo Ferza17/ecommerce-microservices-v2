@@ -75,6 +75,7 @@ services:
     networks:
       - local
 
+
   # FOR TRACING
   jaeger-local:
     container_name: jaeger-local
@@ -82,6 +83,12 @@ services:
     environment:
       - COLLECTOR_ZIPKIN_HOST_PORT=:9411
       - COLLECTOR_OTLP_ENABLED=true
+      # Enable metrics storage dan monitoring
+      - METRICS_STORAGE_TYPE=prometheus
+      - PROMETHEUS_SERVER_URL=http://prometheus-local:9090
+      - PROMETHEUS_QUERY_SUPPORT_SPANMETRICS_CONNECTOR=true
+      # Enable span metrics connector
+      - SPAN_STORAGE_TYPE=memory
     ports:
       - '6831:6831/udp'
       - '6832:6832/udp'
@@ -95,6 +102,27 @@ services:
       - '9411:9411'
     networks:
       - local
+    depends_on:
+      - prometheus-local
+
+  # FOR METRICS
+  prometheus-local:
+    container_name: prometheus-local
+    image: prom/prometheus:latest
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./entrypoint/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - local
+
 
   #ELASTIC
   elasticsearch-local:
@@ -191,7 +219,6 @@ services:
     entrypoint: [ "/bin/sh", "-c", "consul agent -dev -client=0.0.0.0 -ui & sleep 5 && sh /init.sh && tail -f /dev/null" ]
     networks:
       - local
-
 
   # COMMERCE-SERVICE
   #  commerce-service:

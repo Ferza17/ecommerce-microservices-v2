@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package user;
+import "google/protobuf/descriptor.proto";
+import "v1/user/enum.proto";
+
+extend google.protobuf.MethodOptions {
+  optional user.MethodAccessControl acl = 50002;
+}
+
+message MethodAccessControl {
+  bool is_public = 1;
+  repeated user.EnumRole roles = 2;
+}

@@ -2,6 +2,7 @@ syntax = "proto3";
 package user;
 
 import "external/validate/validate.proto";
+import "v1/user/enum.proto";
 
 
 // ============= AUTH REQUEST DEFINITION
@@ -40,6 +41,9 @@ message CreateUserRequest {
   string name = 2 [(validate.rules).string.min_len = 0];
   string email = 3 [(validate.rules).string.email = true];
   string password = 4 [(validate.rules).string.min_len = 8];
+  user.EnumRole Role = 5 [(validate.rules).enum = {
+    defined_only: true,
+  }];
 }
 
 message UpdateUserByIdRequest {
@@ -47,6 +51,7 @@ message UpdateUserByIdRequest {
   optional string name = 2 ;
   optional string email = 3 ;
   optional string password = 4 ;
+  optional bool is_verified = 5;
 }
 
 message FindUserByEmailAndPasswordRequest {
