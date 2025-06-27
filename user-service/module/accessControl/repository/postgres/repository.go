@@ -12,11 +12,13 @@ import (
 
 type (
 	IAccessControlPostgresqlRepository interface {
+		FindRoleByRoleIdAndFullMethodName(ctx context.Context, requestId string, roleId, fullMethodName string, tx *gorm.DB) (*orm.AccessControl, error)
+
 		CreateAccessControl(ctx context.Context, requestId string, accessControl *orm.AccessControl, tx *gorm.DB) (*orm.AccessControl, error)
 		UpdateAccessControlById(ctx context.Context, requestId string, accessControl *orm.AccessControl, tx *gorm.DB) (*orm.AccessControl, error)
 	}
 	accessControlPostgresSQLRepository struct {
-		postgresSQLInfrastructure postgres.PostgresSQL
+		postgresSQLInfrastructure *postgres.PostgresSQL
 		telemetryInfrastructure   telemetryInfrastructure.ITelemetryInfrastructure
 		logger                    logger.IZapLogger
 	}
@@ -25,7 +27,7 @@ type (
 var Set = wire.NewSet(NewAccessControlPostgresqlRepository)
 
 func NewAccessControlPostgresqlRepository(
-	postgresSQLInfrastructure postgres.PostgresSQL,
+	postgresSQLInfrastructure *postgres.PostgresSQL,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	logger logger.IZapLogger,
 ) IAccessControlPostgresqlRepository {

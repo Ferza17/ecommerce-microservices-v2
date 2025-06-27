@@ -23,6 +23,10 @@ func (p *UserPresenter) CreateUser(ctx context.Context, req *userRpc.CreateUserR
 		requestID = values[0]
 	}
 
+	if err := req.ValidateAll(); err != nil {
+		return nil, err
+	}
+
 	if _, err := p.userUseCase.CreateUser(ctx, requestID, req); err != nil {
 		return nil, err
 	}

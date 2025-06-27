@@ -9,10 +9,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/google/wire"
 	"go.uber.org/zap"
-	"log"
-	"os"
-	"os/signal"
-	"syscall"
+	"sync"
 )
 
 type (
@@ -40,33 +37,34 @@ func NewServer(
 	}
 }
 
-func (srv *Server) Serve() {
-	ctx, cancel := context.WithCancel(context.Background())
-	go func() {
-		defer cancel()
-		sigChan := make(chan os.Signal, 1)
-		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-		<-sigChan
-		log.Println("AMQP shutdown...")
-	}()
+func (srv *Server) Serve(ctx context.Context) {
+	ctx, cancel := context.WithCancel(ctx)
+	wg := new(sync.WaitGroup)
 
+	wg.Add(1)
 	go func() {
+		defer wg.Done()
 		if err := srv.userConsumer.UserCreated(ctx); err != nil {
 			srv.logger.Error(fmt.Sprintf("failed to UserCreated", zap.Error(err)))
 		}
 	}()
 
+	wg.Add(1)
 	go func() {
+		defer wg.Done()
 		if err := srv.userConsumer.UserUpdated(ctx); err != nil {
 			srv.logger.Error(fmt.Sprintf("failed to UserUpdated", zap.Error(err)))
 		}
 	}()
 
+	wg.Add(1)
 	go func() {
+		defer wg.Done()
 		if err := srv.authConsumer.UserLogin(ctx); err != nil {
 			srv.logger.Error(fmt.Sprintf("failed to UserLogin", zap.Error(err)))
 		}
 	}()
 
-	<-ctx.Done()
+	wg.Wait()
+	cancel()
 }

@@ -36,9 +36,9 @@ func (c *Claim) HasRoleType(roleType pb.EnumRole) bool {
 	return false
 }
 
-func (c *Claim) HasAccess(serviceName, methodName string) bool {
+func (c *Claim) HasAccess(methodName string) bool {
 	for _, ac := range c.AccessControl {
-		if ac.ServiceName == serviceName && ac.FullMethodName == methodName {
+		if ac.FullMethodName == methodName {
 			return true
 		}
 	}

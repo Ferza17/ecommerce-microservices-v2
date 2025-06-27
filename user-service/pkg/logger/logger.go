@@ -1,6 +1,8 @@
 package logger
 
 import (
+	"errors"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/google/wire"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -46,13 +48,26 @@ func NewZapLogger() IZapLogger {
 }
 
 func (z *zapLogger) Info(msg string) {
-	z.logger.Info(msg)
+	fields := []zap.Field{
+		zap.String("service", config.Get().ServiceName),
+		zap.String("msg", msg),
+	}
+	z.logger.Info(msg, fields...)
 }
 
 func (z *zapLogger) Error(msg string) {
-	z.logger.Error("error")
+	fields := []zap.Field{
+		zap.String("service", config.Get().ServiceName),
+		zap.String("msg", msg),
+		zap.Error(errors.New(msg)),
+	}
+	z.logger.Error("error", fields...)
 }
 
 func (z *zapLogger) Debug(msg string) {
-	z.logger.Debug(msg)
+	fields := []zap.Field{
+		zap.String("service", config.Get().ServiceName),
+		zap.String("msg", msg),
+	}
+	z.logger.Debug(msg, fields...)
 }

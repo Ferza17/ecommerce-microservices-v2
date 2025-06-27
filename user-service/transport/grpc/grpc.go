@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
+	loggerInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/logger"
 	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	authPresenter "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/presenter"
 	userPresenter "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/presenter"
 	"github.com/google/wire"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
+
+	authInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/auth"
 
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"go.uber.org/zap"
@@ -55,12 +58,12 @@ func (srv *Server) Serve() {
 		log.Fatalln(err)
 	}
 	opts := []grpc.ServerOption{
-		//grpc.ChainUnaryInterceptor(
-		//grpcMiddleware.ChainUnaryServer(
-		//	otgrpc.OpenTracingServerInterceptor(srv.tracer),
-		//),
-		//),
+		grpc.ChainUnaryInterceptor(
+			loggerInterceptor.LoggerRPCInterceptor(srv.logger),
+			authInterceptor.AuthRPCUnaryInterceptor(srv.logger),
+		),
 	}
+
 	srv.grpcServer = grpc.NewServer(opts...)
 	userRpc.RegisterUserServiceServer(
 		srv.grpcServer,
