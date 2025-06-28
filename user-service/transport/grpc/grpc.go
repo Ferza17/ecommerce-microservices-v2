@@ -6,6 +6,7 @@ import (
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	loggerInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/logger"
 	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
+	accessControlUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/usecase"
 	authPresenter "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/presenter"
 	userPresenter "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/presenter"
 	"github.com/google/wire"
@@ -31,6 +32,9 @@ type (
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 		authPresenter           *authPresenter.AuthPresenter
 		userPresenter           *userPresenter.UserPresenter
+
+		// For Middleware
+		accessControlUseCase accessControlUseCase.IAccessControlUseCase
 	}
 )
 
@@ -41,6 +45,7 @@ func NewServer(
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	authPresenter *authPresenter.AuthPresenter,
 	userPresenter *userPresenter.UserPresenter,
+	accessControlUseCase accessControlUseCase.IAccessControlUseCase,
 ) *Server {
 	return &Server{
 		address:                 config.Get().RpcHost,
@@ -49,6 +54,7 @@ func NewServer(
 		telemetryInfrastructure: telemetryInfrastructure,
 		authPresenter:           authPresenter,
 		userPresenter:           userPresenter,
+		accessControlUseCase:    accessControlUseCase,
 	}
 }
 
@@ -60,7 +66,7 @@ func (srv *Server) Serve() {
 	opts := []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(
 			loggerInterceptor.LoggerRPCInterceptor(srv.logger),
-			authInterceptor.AuthRPCUnaryInterceptor(srv.logger),
+			authInterceptor.AuthRPCUnaryInterceptor(srv.logger, srv.accessControlUseCase),
 		),
 	}
 

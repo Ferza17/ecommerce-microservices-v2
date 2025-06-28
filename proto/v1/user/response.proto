@@ -1,6 +1,7 @@
 syntax = "proto3";
 package user;
 
+import "v1/user/model.proto";
 
 
 
@@ -14,6 +15,13 @@ message AuthVerifyOtpResponse {
   string refreshToken = 2;
 }
 
+message VerifiedAccessControlUserByTokenResponse {
+  bool isValid = 1;
+  user.User user = 2;
+  user.Role role = 3;
+  repeated user.AccessControl access_controls = 4;
+}
+
 
 // USER RESPONSE DEFINITION
 message CreateUserResponse {
@@ -21,6 +29,6 @@ message CreateUserResponse {
 }
 
 message UpdateUserByIdResponse {
-  
+
   string id = 1;
 }

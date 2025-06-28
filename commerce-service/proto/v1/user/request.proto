@@ -21,7 +21,7 @@ message AuthVerifyOtpRequest {
   string otp = 1 [(validate.rules).string.min_len = 4];
 }
 
-message AuthenticationRequest {
+message VerifiedAccessControlUserByTokenRequest {
   string token = 1 [(validate.rules).string.min_len = 0];
 }
 

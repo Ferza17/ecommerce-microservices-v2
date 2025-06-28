@@ -24,7 +24,7 @@ export interface AuthVerifyOtpRequest {
   otp: string;
 }
 
-export interface AuthenticationRequest {
+export interface VerifiedAccessControlUserByTokenRequest {
   token: string;
 }
 
@@ -249,22 +249,22 @@ export const AuthVerifyOtpRequest: MessageFns<AuthVerifyOtpRequest> = {
   },
 };
 
-function createBaseAuthenticationRequest(): AuthenticationRequest {
+function createBaseVerifiedAccessControlUserByTokenRequest(): VerifiedAccessControlUserByTokenRequest {
   return { token: "" };
 }
 
-export const AuthenticationRequest: MessageFns<AuthenticationRequest> = {
-  encode(message: AuthenticationRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const VerifiedAccessControlUserByTokenRequest: MessageFns<VerifiedAccessControlUserByTokenRequest> = {
+  encode(message: VerifiedAccessControlUserByTokenRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.token !== "") {
       writer.uint32(10).string(message.token);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): AuthenticationRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number): VerifiedAccessControlUserByTokenRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseAuthenticationRequest();
+    const message = createBaseVerifiedAccessControlUserByTokenRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -285,11 +285,11 @@ export const AuthenticationRequest: MessageFns<AuthenticationRequest> = {
     return message;
   },
 
-  fromJSON(object: any): AuthenticationRequest {
+  fromJSON(object: any): VerifiedAccessControlUserByTokenRequest {
     return { token: isSet(object.token) ? globalThis.String(object.token) : "" };
   },
 
-  toJSON(message: AuthenticationRequest): unknown {
+  toJSON(message: VerifiedAccessControlUserByTokenRequest): unknown {
     const obj: any = {};
     if (message.token !== "") {
       obj.token = message.token;
@@ -297,11 +297,11 @@ export const AuthenticationRequest: MessageFns<AuthenticationRequest> = {
     return obj;
   },
 
-  create(base?: DeepPartial<AuthenticationRequest>): AuthenticationRequest {
-    return AuthenticationRequest.fromPartial(base ?? {});
+  create(base?: DeepPartial<VerifiedAccessControlUserByTokenRequest>): VerifiedAccessControlUserByTokenRequest {
+    return VerifiedAccessControlUserByTokenRequest.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<AuthenticationRequest>): AuthenticationRequest {
-    const message = createBaseAuthenticationRequest();
+  fromPartial(object: DeepPartial<VerifiedAccessControlUserByTokenRequest>): VerifiedAccessControlUserByTokenRequest {
+    const message = createBaseVerifiedAccessControlUserByTokenRequest();
     message.token = object.token ?? "";
     return message;
   },

@@ -59,6 +59,68 @@ func (m *MethodAccessControl) validate(all bool) error {
 
 	// no validation rules for IsPublic
 
+	if all {
+		switch v := interface{}(m.GetHttp()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, MethodAccessControlValidationError{
+					field:  "Http",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, MethodAccessControlValidationError{
+					field:  "Http",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetHttp()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return MethodAccessControlValidationError{
+				field:  "Http",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if m.Broker != nil {
+
+		if all {
+			switch v := interface{}(m.GetBroker()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, MethodAccessControlValidationError{
+						field:  "Broker",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, MethodAccessControlValidationError{
+						field:  "Broker",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetBroker()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return MethodAccessControlValidationError{
+					field:  "Broker",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
 	if len(errors) > 0 {
 		return MethodAccessControlMultiError(errors)
 	}
@@ -138,3 +200,205 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = MethodAccessControlValidationError{}
+
+// Validate checks the field values on HTTP with the rules defined in the proto
+// definition for this message. If any rules are violated, the first error
+// encountered is returned, or nil if there are no violations.
+func (m *HTTP) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on HTTP with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in HTTPMultiError, or nil if none found.
+func (m *HTTP) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *HTTP) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Url
+
+	// no validation rules for Method
+
+	if len(errors) > 0 {
+		return HTTPMultiError(errors)
+	}
+
+	return nil
+}
+
+// HTTPMultiError is an error wrapping multiple validation errors returned by
+// HTTP.ValidateAll() if the designated constraints aren't met.
+type HTTPMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m HTTPMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m HTTPMultiError) AllErrors() []error { return m }
+
+// HTTPValidationError is the validation error returned by HTTP.Validate if the
+// designated constraints aren't met.
+type HTTPValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e HTTPValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e HTTPValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e HTTPValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e HTTPValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e HTTPValidationError) ErrorName() string { return "HTTPValidationError" }
+
+// Error satisfies the builtin error interface
+func (e HTTPValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sHTTP.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = HTTPValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = HTTPValidationError{}
+
+// Validate checks the field values on Broker with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *Broker) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on Broker with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in BrokerMultiError, or nil if none found.
+func (m *Broker) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *Broker) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for EventType
+
+	if len(errors) > 0 {
+		return BrokerMultiError(errors)
+	}
+
+	return nil
+}
+
+// BrokerMultiError is an error wrapping multiple validation errors returned by
+// Broker.ValidateAll() if the designated constraints aren't met.
+type BrokerMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m BrokerMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m BrokerMultiError) AllErrors() []error { return m }
+
+// BrokerValidationError is the validation error returned by Broker.Validate if
+// the designated constraints aren't met.
+type BrokerValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e BrokerValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e BrokerValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e BrokerValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e BrokerValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e BrokerValidationError) ErrorName() string { return "BrokerValidationError" }
+
+// Error satisfies the builtin error interface
+func (e BrokerValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sBroker.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = BrokerValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = BrokerValidationError{}

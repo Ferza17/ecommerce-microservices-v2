@@ -12,10 +12,17 @@ import (
 
 type (
 	IAccessControlPostgresqlRepository interface {
-		FindRoleByRoleIdAndFullMethodName(ctx context.Context, requestId string, roleId, fullMethodName string, tx *gorm.DB) (*orm.AccessControl, error)
+
+		// ACCESS CONTROL
+		FindAccessControlByRoleIdAndFullMethodName(ctx context.Context, requestId string, roleId, fullMethodName string, tx *gorm.DB) (*orm.AccessControl, error)
 
 		CreateAccessControl(ctx context.Context, requestId string, accessControl *orm.AccessControl, tx *gorm.DB) (*orm.AccessControl, error)
 		UpdateAccessControlById(ctx context.Context, requestId string, accessControl *orm.AccessControl, tx *gorm.DB) (*orm.AccessControl, error)
+
+		// ACCESS CONTROL EXCLUDED
+		FindAccessControlExcludedByFullMethodName(ctx context.Context, requestId string, fullMethodName string, tx *gorm.DB) (*orm.AccessControlExcluded, error)
+
+		CreateAccessControlExcluded(ctx context.Context, requestId string, accessControlExcluded *orm.AccessControlExcluded, tx *gorm.DB) (*orm.AccessControlExcluded, error)
 	}
 	accessControlPostgresSQLRepository struct {
 		postgresSQLInfrastructure *postgres.PostgresSQL

@@ -17,12 +17,8 @@ func LoggerRPCInterceptor(logger logger.IZapLogger) grpc.UnaryServerInterceptor 
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
 		startTime := time.Now()
 		logger.Info(fmt.Sprintf("%s %s", info.FullMethod, time.Now().Sub(startTime)))
-
 		resp, err = handler(ctx, req)
-
-		duration := time.Since(startTime)
-		logger.Info(fmt.Sprintf("%s - %s", info.FullMethod, duration))
-
+		logger.Info(fmt.Sprintf("%s - %s", info.FullMethod, time.Since(startTime)))
 		return resp, err
 	}
 }

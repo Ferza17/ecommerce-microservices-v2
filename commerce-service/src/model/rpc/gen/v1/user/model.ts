@@ -34,7 +34,20 @@ export interface Role {
 export interface AccessControl {
   id: string;
   fullMethodName: string;
+  httpUrl: string;
+  httpMethod: string;
+  eventType: string;
   roleId: string;
+  createdAt: Date | undefined;
+  updatedAt: Date | undefined;
+}
+
+export interface AccessControlExcluded {
+  id: string;
+  fullMethodName: string;
+  httpUrl: string;
+  httpMethod: string;
+  eventType: string;
   createdAt: Date | undefined;
   updatedAt: Date | undefined;
 }
@@ -364,7 +377,16 @@ export const Role: MessageFns<Role> = {
 };
 
 function createBaseAccessControl(): AccessControl {
-  return { id: "", fullMethodName: "", roleId: "", createdAt: undefined, updatedAt: undefined };
+  return {
+    id: "",
+    fullMethodName: "",
+    httpUrl: "",
+    httpMethod: "",
+    eventType: "",
+    roleId: "",
+    createdAt: undefined,
+    updatedAt: undefined,
+  };
 }
 
 export const AccessControl: MessageFns<AccessControl> = {
@@ -375,8 +397,17 @@ export const AccessControl: MessageFns<AccessControl> = {
     if (message.fullMethodName !== "") {
       writer.uint32(26).string(message.fullMethodName);
     }
+    if (message.httpUrl !== "") {
+      writer.uint32(34).string(message.httpUrl);
+    }
+    if (message.httpMethod !== "") {
+      writer.uint32(42).string(message.httpMethod);
+    }
+    if (message.eventType !== "") {
+      writer.uint32(50).string(message.eventType);
+    }
     if (message.roleId !== "") {
-      writer.uint32(34).string(message.roleId);
+      writer.uint32(58).string(message.roleId);
     }
     if (message.createdAt !== undefined) {
       Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(66).fork()).join();
@@ -415,6 +446,30 @@ export const AccessControl: MessageFns<AccessControl> = {
             break;
           }
 
+          message.httpUrl = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.httpMethod = reader.string();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.eventType = reader.string();
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
           message.roleId = reader.string();
           continue;
         }
@@ -447,6 +502,9 @@ export const AccessControl: MessageFns<AccessControl> = {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       fullMethodName: isSet(object.fullMethodName) ? globalThis.String(object.fullMethodName) : "",
+      httpUrl: isSet(object.httpUrl) ? globalThis.String(object.httpUrl) : "",
+      httpMethod: isSet(object.httpMethod) ? globalThis.String(object.httpMethod) : "",
+      eventType: isSet(object.eventType) ? globalThis.String(object.eventType) : "",
       roleId: isSet(object.roleId) ? globalThis.String(object.roleId) : "",
       createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
       updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
@@ -460,6 +518,15 @@ export const AccessControl: MessageFns<AccessControl> = {
     }
     if (message.fullMethodName !== "") {
       obj.fullMethodName = message.fullMethodName;
+    }
+    if (message.httpUrl !== "") {
+      obj.httpUrl = message.httpUrl;
+    }
+    if (message.httpMethod !== "") {
+      obj.httpMethod = message.httpMethod;
+    }
+    if (message.eventType !== "") {
+      obj.eventType = message.eventType;
     }
     if (message.roleId !== "") {
       obj.roleId = message.roleId;
@@ -480,7 +547,174 @@ export const AccessControl: MessageFns<AccessControl> = {
     const message = createBaseAccessControl();
     message.id = object.id ?? "";
     message.fullMethodName = object.fullMethodName ?? "";
+    message.httpUrl = object.httpUrl ?? "";
+    message.httpMethod = object.httpMethod ?? "";
+    message.eventType = object.eventType ?? "";
     message.roleId = object.roleId ?? "";
+    message.createdAt = object.createdAt ?? undefined;
+    message.updatedAt = object.updatedAt ?? undefined;
+    return message;
+  },
+};
+
+function createBaseAccessControlExcluded(): AccessControlExcluded {
+  return {
+    id: "",
+    fullMethodName: "",
+    httpUrl: "",
+    httpMethod: "",
+    eventType: "",
+    createdAt: undefined,
+    updatedAt: undefined,
+  };
+}
+
+export const AccessControlExcluded: MessageFns<AccessControlExcluded> = {
+  encode(message: AccessControlExcluded, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.fullMethodName !== "") {
+      writer.uint32(18).string(message.fullMethodName);
+    }
+    if (message.httpUrl !== "") {
+      writer.uint32(34).string(message.httpUrl);
+    }
+    if (message.httpMethod !== "") {
+      writer.uint32(42).string(message.httpMethod);
+    }
+    if (message.eventType !== "") {
+      writer.uint32(50).string(message.eventType);
+    }
+    if (message.createdAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(66).fork()).join();
+    }
+    if (message.updatedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.updatedAt), writer.uint32(74).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AccessControlExcluded {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAccessControlExcluded();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.fullMethodName = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.httpUrl = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.httpMethod = reader.string();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.eventType = reader.string();
+          continue;
+        }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 9: {
+          if (tag !== 74) {
+            break;
+          }
+
+          message.updatedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AccessControlExcluded {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      fullMethodName: isSet(object.fullMethodName) ? globalThis.String(object.fullMethodName) : "",
+      httpUrl: isSet(object.httpUrl) ? globalThis.String(object.httpUrl) : "",
+      httpMethod: isSet(object.httpMethod) ? globalThis.String(object.httpMethod) : "",
+      eventType: isSet(object.eventType) ? globalThis.String(object.eventType) : "",
+      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
+      updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
+    };
+  },
+
+  toJSON(message: AccessControlExcluded): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.fullMethodName !== "") {
+      obj.fullMethodName = message.fullMethodName;
+    }
+    if (message.httpUrl !== "") {
+      obj.httpUrl = message.httpUrl;
+    }
+    if (message.httpMethod !== "") {
+      obj.httpMethod = message.httpMethod;
+    }
+    if (message.eventType !== "") {
+      obj.eventType = message.eventType;
+    }
+    if (message.createdAt !== undefined) {
+      obj.createdAt = message.createdAt.toISOString();
+    }
+    if (message.updatedAt !== undefined) {
+      obj.updatedAt = message.updatedAt.toISOString();
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<AccessControlExcluded>): AccessControlExcluded {
+    return AccessControlExcluded.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<AccessControlExcluded>): AccessControlExcluded {
+    const message = createBaseAccessControlExcluded();
+    message.id = object.id ?? "";
+    message.fullMethodName = object.fullMethodName ?? "";
+    message.httpUrl = object.httpUrl ?? "";
+    message.httpMethod = object.httpMethod ?? "";
+    message.eventType = object.eventType ?? "";
     message.createdAt = object.createdAt ?? undefined;
     message.updatedAt = object.updatedAt ?? undefined;
     return message;

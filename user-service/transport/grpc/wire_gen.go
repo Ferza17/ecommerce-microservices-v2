@@ -11,6 +11,9 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/redis"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
+	postgres4 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/postgres"
+	redis3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/redis"
+	usecase3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/presenter"
 	redis2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
@@ -36,6 +39,9 @@ func ProvideGrpcServer() *Server {
 	iRolePostgresqlRepository := postgres3.NewRolePostgresqlRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
 	iUserUseCase := usecase2.NewUserUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iRabbitMQInfrastructure, iAuthRedisRepository, postgresSQL, iTelemetryInfrastructure, iZapLogger)
 	userPresenter := presenter2.NewUserPresenter(iUserUseCase, iTelemetryInfrastructure, iZapLogger)
-	server := NewServer(iZapLogger, iTelemetryInfrastructure, authPresenter, userPresenter)
+	iAccessControlPostgresqlRepository := postgres4.NewAccessControlPostgresqlRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
+	iAccessControlRedisRepository := redis3.NewAccessControlRedisRepository(iRedisInfrastructure, iTelemetryInfrastructure, iZapLogger)
+	iAccessControlUseCase := usecase3.NewAccessControlUseCase(iAccessControlPostgresqlRepository, iAccessControlRedisRepository, iTelemetryInfrastructure, postgresSQL, iZapLogger)
+	server := NewServer(iZapLogger, iTelemetryInfrastructure, authPresenter, userPresenter, iAccessControlUseCase)
 	return server
 }

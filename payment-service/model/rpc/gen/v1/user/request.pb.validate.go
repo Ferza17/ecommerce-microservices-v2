@@ -439,22 +439,24 @@ var _ interface {
 	ErrorName() string
 } = AuthVerifyOtpRequestValidationError{}
 
-// Validate checks the field values on AuthenticationRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *AuthenticationRequest) Validate() error {
+// Validate checks the field values on VerifiedAccessControlUserByTokenRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *VerifiedAccessControlUserByTokenRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on AuthenticationRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// AuthenticationRequestMultiError, or nil if none found.
-func (m *AuthenticationRequest) ValidateAll() error {
+// ValidateAll checks the field values on
+// VerifiedAccessControlUserByTokenRequest with the rules defined in the proto
+// definition for this message. If any rules are violated, the result is a
+// list of violation errors wrapped in
+// VerifiedAccessControlUserByTokenRequestMultiError, or nil if none found.
+func (m *VerifiedAccessControlUserByTokenRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *AuthenticationRequest) validate(all bool) error {
+func (m *VerifiedAccessControlUserByTokenRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -462,7 +464,7 @@ func (m *AuthenticationRequest) validate(all bool) error {
 	var errors []error
 
 	if utf8.RuneCountInString(m.GetToken()) < 0 {
-		err := AuthenticationRequestValidationError{
+		err := VerifiedAccessControlUserByTokenRequestValidationError{
 			field:  "Token",
 			reason: "value length must be at least 0 runes",
 		}
@@ -473,19 +475,20 @@ func (m *AuthenticationRequest) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return AuthenticationRequestMultiError(errors)
+		return VerifiedAccessControlUserByTokenRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// AuthenticationRequestMultiError is an error wrapping multiple validation
-// errors returned by AuthenticationRequest.ValidateAll() if the designated
+// VerifiedAccessControlUserByTokenRequestMultiError is an error wrapping
+// multiple validation errors returned by
+// VerifiedAccessControlUserByTokenRequest.ValidateAll() if the designated
 // constraints aren't met.
-type AuthenticationRequestMultiError []error
+type VerifiedAccessControlUserByTokenRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m AuthenticationRequestMultiError) Error() string {
+func (m VerifiedAccessControlUserByTokenRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -494,11 +497,12 @@ func (m AuthenticationRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m AuthenticationRequestMultiError) AllErrors() []error { return m }
+func (m VerifiedAccessControlUserByTokenRequestMultiError) AllErrors() []error { return m }
 
-// AuthenticationRequestValidationError is the validation error returned by
-// AuthenticationRequest.Validate if the designated constraints aren't met.
-type AuthenticationRequestValidationError struct {
+// VerifiedAccessControlUserByTokenRequestValidationError is the validation
+// error returned by VerifiedAccessControlUserByTokenRequest.Validate if the
+// designated constraints aren't met.
+type VerifiedAccessControlUserByTokenRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -506,24 +510,24 @@ type AuthenticationRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e AuthenticationRequestValidationError) Field() string { return e.field }
+func (e VerifiedAccessControlUserByTokenRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e AuthenticationRequestValidationError) Reason() string { return e.reason }
+func (e VerifiedAccessControlUserByTokenRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e AuthenticationRequestValidationError) Cause() error { return e.cause }
+func (e VerifiedAccessControlUserByTokenRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e AuthenticationRequestValidationError) Key() bool { return e.key }
+func (e VerifiedAccessControlUserByTokenRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e AuthenticationRequestValidationError) ErrorName() string {
-	return "AuthenticationRequestValidationError"
+func (e VerifiedAccessControlUserByTokenRequestValidationError) ErrorName() string {
+	return "VerifiedAccessControlUserByTokenRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e AuthenticationRequestValidationError) Error() string {
+func (e VerifiedAccessControlUserByTokenRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -535,14 +539,14 @@ func (e AuthenticationRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sAuthenticationRequest.%s: %s%s",
+		"invalid %sVerifiedAccessControlUserByTokenRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = AuthenticationRequestValidationError{}
+var _ error = VerifiedAccessControlUserByTokenRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -550,7 +554,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = AuthenticationRequestValidationError{}
+} = VerifiedAccessControlUserByTokenRequestValidationError{}
 
 // Validate checks the field values on AuthFindUserByTokenRequest with the
 // rules defined in the proto definition for this message. If any rules are

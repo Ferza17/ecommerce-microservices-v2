@@ -11,6 +11,7 @@ import (
 	rolePostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/repository/postgres"
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
+	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/types/descriptorpb"
@@ -23,6 +24,7 @@ import (
 var aclCommand = &cobra.Command{
 	Use: "acl",
 	Run: func(cmd *cobra.Command, args []string) {
+		now := time.Now()
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		tx := postgres2.ProvidePostgresInfrastructure().GormDB.Begin()
@@ -76,18 +78,48 @@ var aclCommand = &cobra.Command{
 						methodOptions := method.Options().(*descriptorpb.MethodOptions)
 
 						// User Options
+						// 1. IF IS PUBLIC is FALSE	-> FIND IF ACCESS CONTROL FULL METHOD IS EXISTS THEN CONTINUE ELSE CREATE NEW ACCESS CONTROL FULL METHOD
+						// 2. IF IS PUBLIC is TRUE	-> FIND IF EXCLUDE METHOD IS EXIST THEN CONTINUE ELSE CREATE NEW EXCLUDED PATH
 						if proto.HasExtension(methodOptions, pb.E_Acl) {
 							t := getUserAclOptions(methodOptions)
 							if !t.IsPublic {
 								for _, role := range t.Roles {
 									v, ok := mapRoles[role.String()]
 									if ok {
-										searchAndRegisterAccessControl(ctx, v, fullMethodName, tx)
+										ac := &orm.AccessControl{
+											ID:             fmt.Sprintf("%s:%s", role.String(), uuid.New().String()),
+											FullMethodName: fullMethodName,
+											HttpUrl:        t.Http.GetUrl(),
+											HttpMethod:     t.Http.GetMethod(),
+											RoleID:         v,
+											CreatedAt:      now,
+											UpdatedAt:      now,
+										}
+
+										if t.Broker != nil {
+											ac.EventType = t.Broker.EventType
+										}
+
+										searchAndRegisterAccessControl(ctx, ac, tx)
 									}
 								}
 
 								privateMethod++
 							} else {
+								ex := &orm.AccessControlExcluded{
+									ID:             fmt.Sprintf("EXCLUDED:%s", uuid.New().String()),
+									FullMethodName: fullMethodName,
+									HttpUrl:        t.Http.GetUrl(),
+									HttpMethod:     t.Http.GetMethod(),
+									CreatedAt:      now,
+									UpdatedAt:      now,
+								}
+
+								if t.Broker != nil {
+									ex.EventType = t.Broker.EventType
+								}
+
+								searchAndRegisterAccessControlExcluded(ctx, ex, tx)
 								publicMethod++
 							}
 						}
@@ -98,6 +130,33 @@ var aclCommand = &cobra.Command{
 					}
 				}
 			}
+		}
+
+		// Register Health Check for consul as excluded method to avoid response error by interceptor
+		healthFullMethods := map[string]*pb.HTTP{
+			grpc_health_v1.Health_Check_FullMethodName: &pb.HTTP{
+				Url:    "/check",
+				Method: "get",
+			},
+			grpc_health_v1.Health_Watch_FullMethodName: &pb.HTTP{
+				Url:    "/watch",
+				Method: "get",
+			},
+			grpc_health_v1.Health_List_FullMethodName: &pb.HTTP{
+				Url:    "/list",
+				Method: "get",
+			},
+		}
+
+		for s, http := range healthFullMethods {
+			searchAndRegisterAccessControlExcluded(ctx, &orm.AccessControlExcluded{
+				ID:             fmt.Sprintf("EXCLUDED:%s", uuid.New().String()),
+				FullMethodName: s,
+				HttpUrl:        http.GetUrl(),
+				HttpMethod:     http.GetMethod(),
+				CreatedAt:      now,
+				UpdatedAt:      now,
+			}, tx)
 		}
 
 		fmt.Println("\n-----------------------------------------------------")
@@ -161,13 +220,12 @@ func searchAndRegisterRole(ctx context.Context, roles []pb.EnumRole, tx *gorm.DB
 	return r
 }
 
-func searchAndRegisterAccessControl(ctx context.Context, roleId string, fullMethodName string, tx *gorm.DB) *orm.AccessControl {
+func searchAndRegisterAccessControl(ctx context.Context, ac *orm.AccessControl, tx *gorm.DB) *orm.AccessControl {
 	var (
-		now                               = time.Now()
 		accessControlPostgresqlRepository = accessControlPostgresqlRepository.ProvideAccessControlRepository()
 	)
 
-	existingAccessControl, err := accessControlPostgresqlRepository.FindRoleByRoleIdAndFullMethodName(ctx, "", roleId, fullMethodName, tx)
+	existingAccessControl, err := accessControlPostgresqlRepository.FindAccessControlByRoleIdAndFullMethodName(ctx, "", ac.RoleID, ac.FullMethodName, tx)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil
 	}
@@ -176,15 +234,27 @@ func searchAndRegisterAccessControl(ctx context.Context, roleId string, fullMeth
 		return existingAccessControl
 	}
 
-	existingAccessControl, err = accessControlPostgresqlRepository.CreateAccessControl(ctx, "", &orm.AccessControl{
-		ID:             uuid.New().String(),
-		FullMethodName: fullMethodName,
-		RoleID:         roleId,
-		CreatedAt:      now,
-		UpdatedAt:      now,
-	}, tx)
+	existingAccessControl, err = accessControlPostgresqlRepository.CreateAccessControl(ctx, "", ac, tx)
 	if err != nil {
 		return nil
 	}
 	return existingAccessControl
+}
+
+func searchAndRegisterAccessControlExcluded(ctx context.Context, excluded *orm.AccessControlExcluded, tx *gorm.DB) *orm.AccessControlExcluded {
+	var (
+		accessControlPostgresqlRepository = accessControlPostgresqlRepository.ProvideAccessControlRepository()
+	)
+
+	existingAccessControlExcluded, err := accessControlPostgresqlRepository.FindAccessControlExcludedByFullMethodName(ctx, "", excluded.FullMethodName, tx)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil
+	}
+
+	if existingAccessControlExcluded != nil {
+		return existingAccessControlExcluded
+	}
+
+	existingAccessControlExcluded, err = accessControlPostgresqlRepository.CreateAccessControlExcluded(ctx, "", excluded, tx)
+	return existingAccessControlExcluded
 }

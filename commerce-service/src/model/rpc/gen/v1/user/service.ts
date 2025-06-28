@@ -26,8 +26,9 @@ import {
   CreateUserRequest,
   FindUserByEmailAndPasswordRequest,
   FindUserByIdRequest,
+  VerifiedAccessControlUserByTokenRequest,
 } from "./request";
-import { AuthLogoutByTokenResponse, AuthVerifyOtpResponse } from "./response";
+import { AuthLogoutByTokenResponse, AuthVerifyOtpResponse, VerifiedAccessControlUserByTokenResponse } from "./response";
 
 export const protobufPackage = "user";
 
@@ -160,12 +161,27 @@ export const AuthServiceService = {
     responseSerialize: (value: User) => Buffer.from(User.encode(value).finish()),
     responseDeserialize: (value: Buffer) => User.decode(value),
   },
+  verifiedAccessControlUserByToken: {
+    path: "/user.AuthService/VerifiedAccessControlUserByToken",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: VerifiedAccessControlUserByTokenRequest) =>
+      Buffer.from(VerifiedAccessControlUserByTokenRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => VerifiedAccessControlUserByTokenRequest.decode(value),
+    responseSerialize: (value: VerifiedAccessControlUserByTokenResponse) =>
+      Buffer.from(VerifiedAccessControlUserByTokenResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => VerifiedAccessControlUserByTokenResponse.decode(value),
+  },
 } as const;
 
 export interface AuthServiceServer extends UntypedServiceImplementation {
   userLogoutByToken: handleUnaryCall<AuthLogoutByTokenRequest, AuthLogoutByTokenResponse>;
   userVerifyOtp: handleUnaryCall<AuthVerifyOtpRequest, AuthVerifyOtpResponse>;
   findUserByToken: handleUnaryCall<AuthFindUserByTokenRequest, User>;
+  verifiedAccessControlUserByToken: handleUnaryCall<
+    VerifiedAccessControlUserByTokenRequest,
+    VerifiedAccessControlUserByTokenResponse
+  >;
 }
 
 export interface AuthServiceClient extends Client {
@@ -213,6 +229,21 @@ export interface AuthServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: User) => void,
+  ): ClientUnaryCall;
+  verifiedAccessControlUserByToken(
+    request: VerifiedAccessControlUserByTokenRequest,
+    callback: (error: ServiceError | null, response: VerifiedAccessControlUserByTokenResponse) => void,
+  ): ClientUnaryCall;
+  verifiedAccessControlUserByToken(
+    request: VerifiedAccessControlUserByTokenRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: VerifiedAccessControlUserByTokenResponse) => void,
+  ): ClientUnaryCall;
+  verifiedAccessControlUserByToken(
+    request: VerifiedAccessControlUserByTokenRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: VerifiedAccessControlUserByTokenResponse) => void,
   ): ClientUnaryCall;
 }
 

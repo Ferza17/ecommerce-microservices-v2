@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *accessControlPostgresSQLRepository) FindRoleByRoleIdAndFullMethodName(ctx context.Context, requestId string, roleId, fullMethodName string, tx *gorm.DB) (*orm.AccessControl, error) {
+func (r *accessControlPostgresSQLRepository) FindAccessControlByRoleIdAndFullMethodName(ctx context.Context, requestId string, roleId, fullMethodName string, tx *gorm.DB) (*orm.AccessControl, error) {
 	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.FindRoleByName")
 	defer span.End()
 	role := new(orm.AccessControl)

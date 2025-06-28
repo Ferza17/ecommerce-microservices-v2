@@ -26,7 +26,22 @@ message Role {
 message AccessControl {
   string id = 1;
   string fullMethodName = 3;
-  string role_id = 4;
+  string http_url = 4;
+  string http_method = 5;
+  string event_type = 6;
+  string role_id = 7;
+
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+
+message AccessControlExcluded {
+  string id = 1;
+  string fullMethodName = 2;
+  string http_url = 4;
+  string http_method = 5;
+  string event_type = 6;
 
   google.protobuf.Timestamp created_at = 8;
   google.protobuf.Timestamp updated_at = 9;

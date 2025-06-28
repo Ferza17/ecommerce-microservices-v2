@@ -23,6 +23,37 @@
     "application/json"
   ],
   "paths": {
+    "/v1/user/auth/acl": {
+      "post": {
+        "summary": "verified access control user by provided token",
+        "operationId": "AuthService_VerifiedAccessControlUserByToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userVerifiedAccessControlUserByTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
     "/v1/user/auth/{otp}": {
       "put": {
         "summary": "verify user otp with provided otp",
@@ -300,6 +331,15 @@
         "fullMethodName": {
           "type": "string"
         },
+        "httpUrl": {
+          "type": "string"
+        },
+        "httpMethod": {
+          "type": "string"
+        },
+        "eventType": {
+          "type": "string"
+        },
         "roleId": {
           "type": "string"
         },
@@ -418,6 +458,27 @@
         "discardedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "userVerifiedAccessControlUserByTokenResponse": {
+      "type": "object",
+      "properties": {
+        "isValid": {
+          "type": "boolean"
+        },
+        "user": {
+          "$ref": "#/definitions/userUser"
+        },
+        "role": {
+          "$ref": "#/definitions/userRole"
+        },
+        "accessControls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/userAccessControl"
+          }
         }
       }
     }

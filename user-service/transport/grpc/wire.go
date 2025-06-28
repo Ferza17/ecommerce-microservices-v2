@@ -8,6 +8,9 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/redis"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
+	accessControlPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/postgres"
+	accessControlRedisRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/redis"
+	accessControlUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/usecase"
 	authPresenter "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/presenter"
 	userRedisRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
 	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
@@ -15,6 +18,7 @@ import (
 	userPresenter "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/presenter"
 	userPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/postgres"
 	userUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/usecase"
+
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/google/wire"
 )
@@ -33,10 +37,13 @@ func ProvideGrpcServer() *Server {
 		userPostgresqlRepository.Set,
 		userRedisRepository.Set,
 		rolePostgresqlRepository.Set,
+		accessControlPostgresqlRepository.Set,
+		accessControlRedisRepository.Set,
 
 		// UseCase Layer
 		userUseCase.Set,
 		authUseCase.Set,
+		accessControlUseCase.Set,
 
 		// Presenter Layer
 		authPresenter.Set,

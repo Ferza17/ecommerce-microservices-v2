@@ -13,10 +13,21 @@ export const protobufPackage = "user";
 export interface MethodAccessControl {
   isPublic: boolean;
   roles: EnumRole[];
+  http: HTTP | undefined;
+  broker?: Broker | undefined;
+}
+
+export interface HTTP {
+  url: string;
+  method: string;
+}
+
+export interface Broker {
+  eventType: string;
 }
 
 function createBaseMethodAccessControl(): MethodAccessControl {
-  return { isPublic: false, roles: [] };
+  return { isPublic: false, roles: [], http: undefined, broker: undefined };
 }
 
 export const MethodAccessControl: MessageFns<MethodAccessControl> = {
@@ -29,6 +40,12 @@ export const MethodAccessControl: MessageFns<MethodAccessControl> = {
       writer.int32(v);
     }
     writer.join();
+    if (message.http !== undefined) {
+      HTTP.encode(message.http, writer.uint32(26).fork()).join();
+    }
+    if (message.broker !== undefined) {
+      Broker.encode(message.broker, writer.uint32(42).fork()).join();
+    }
     return writer;
   },
 
@@ -65,6 +82,22 @@ export const MethodAccessControl: MessageFns<MethodAccessControl> = {
 
           break;
         }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.http = HTTP.decode(reader, reader.uint32());
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.broker = Broker.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -78,6 +111,8 @@ export const MethodAccessControl: MessageFns<MethodAccessControl> = {
     return {
       isPublic: isSet(object.isPublic) ? globalThis.Boolean(object.isPublic) : false,
       roles: globalThis.Array.isArray(object?.roles) ? object.roles.map((e: any) => enumRoleFromJSON(e)) : [],
+      http: isSet(object.http) ? HTTP.fromJSON(object.http) : undefined,
+      broker: isSet(object.broker) ? Broker.fromJSON(object.broker) : undefined,
     };
   },
 
@@ -89,6 +124,12 @@ export const MethodAccessControl: MessageFns<MethodAccessControl> = {
     if (message.roles?.length) {
       obj.roles = message.roles.map((e) => enumRoleToJSON(e));
     }
+    if (message.http !== undefined) {
+      obj.http = HTTP.toJSON(message.http);
+    }
+    if (message.broker !== undefined) {
+      obj.broker = Broker.toJSON(message.broker);
+    }
     return obj;
   },
 
@@ -99,6 +140,144 @@ export const MethodAccessControl: MessageFns<MethodAccessControl> = {
     const message = createBaseMethodAccessControl();
     message.isPublic = object.isPublic ?? false;
     message.roles = object.roles?.map((e) => e) || [];
+    message.http = (object.http !== undefined && object.http !== null) ? HTTP.fromPartial(object.http) : undefined;
+    message.broker = (object.broker !== undefined && object.broker !== null)
+      ? Broker.fromPartial(object.broker)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseHTTP(): HTTP {
+  return { url: "", method: "" };
+}
+
+export const HTTP: MessageFns<HTTP> = {
+  encode(message: HTTP, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.url !== "") {
+      writer.uint32(10).string(message.url);
+    }
+    if (message.method !== "") {
+      writer.uint32(18).string(message.method);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): HTTP {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseHTTP();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.url = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.method = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): HTTP {
+    return {
+      url: isSet(object.url) ? globalThis.String(object.url) : "",
+      method: isSet(object.method) ? globalThis.String(object.method) : "",
+    };
+  },
+
+  toJSON(message: HTTP): unknown {
+    const obj: any = {};
+    if (message.url !== "") {
+      obj.url = message.url;
+    }
+    if (message.method !== "") {
+      obj.method = message.method;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<HTTP>): HTTP {
+    return HTTP.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<HTTP>): HTTP {
+    const message = createBaseHTTP();
+    message.url = object.url ?? "";
+    message.method = object.method ?? "";
+    return message;
+  },
+};
+
+function createBaseBroker(): Broker {
+  return { eventType: "" };
+}
+
+export const Broker: MessageFns<Broker> = {
+  encode(message: Broker, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.eventType !== "") {
+      writer.uint32(10).string(message.eventType);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): Broker {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseBroker();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.eventType = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Broker {
+    return { eventType: isSet(object.eventType) ? globalThis.String(object.eventType) : "" };
+  },
+
+  toJSON(message: Broker): unknown {
+    const obj: any = {};
+    if (message.eventType !== "") {
+      obj.eventType = message.eventType;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<Broker>): Broker {
+    return Broker.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<Broker>): Broker {
+    const message = createBaseBroker();
+    message.eventType = object.eventType ?? "";
     return message;
   },
 };

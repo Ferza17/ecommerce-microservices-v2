@@ -200,9 +200,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	AuthService_UserLogoutByToken_FullMethodName = "/user.AuthService/UserLogoutByToken"
-	AuthService_UserVerifyOtp_FullMethodName     = "/user.AuthService/UserVerifyOtp"
-	AuthService_FindUserByToken_FullMethodName   = "/user.AuthService/FindUserByToken"
+	AuthService_UserLogoutByToken_FullMethodName                = "/user.AuthService/UserLogoutByToken"
+	AuthService_UserVerifyOtp_FullMethodName                    = "/user.AuthService/UserVerifyOtp"
+	AuthService_FindUserByToken_FullMethodName                  = "/user.AuthService/FindUserByToken"
+	AuthService_VerifiedAccessControlUserByToken_FullMethodName = "/user.AuthService/VerifiedAccessControlUserByToken"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -212,6 +213,7 @@ type AuthServiceClient interface {
 	UserLogoutByToken(ctx context.Context, in *AuthLogoutByTokenRequest, opts ...grpc.CallOption) (*AuthLogoutByTokenResponse, error)
 	UserVerifyOtp(ctx context.Context, in *AuthVerifyOtpRequest, opts ...grpc.CallOption) (*AuthVerifyOtpResponse, error)
 	FindUserByToken(ctx context.Context, in *AuthFindUserByTokenRequest, opts ...grpc.CallOption) (*User, error)
+	VerifiedAccessControlUserByToken(ctx context.Context, in *VerifiedAccessControlUserByTokenRequest, opts ...grpc.CallOption) (*VerifiedAccessControlUserByTokenResponse, error)
 }
 
 type authServiceClient struct {
@@ -252,6 +254,16 @@ func (c *authServiceClient) FindUserByToken(ctx context.Context, in *AuthFindUse
 	return out, nil
 }
 
+func (c *authServiceClient) VerifiedAccessControlUserByToken(ctx context.Context, in *VerifiedAccessControlUserByTokenRequest, opts ...grpc.CallOption) (*VerifiedAccessControlUserByTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VerifiedAccessControlUserByTokenResponse)
+	err := c.cc.Invoke(ctx, AuthService_VerifiedAccessControlUserByToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations should embed UnimplementedAuthServiceServer
 // for forward compatibility.
@@ -259,6 +271,7 @@ type AuthServiceServer interface {
 	UserLogoutByToken(context.Context, *AuthLogoutByTokenRequest) (*AuthLogoutByTokenResponse, error)
 	UserVerifyOtp(context.Context, *AuthVerifyOtpRequest) (*AuthVerifyOtpResponse, error)
 	FindUserByToken(context.Context, *AuthFindUserByTokenRequest) (*User, error)
+	VerifiedAccessControlUserByToken(context.Context, *VerifiedAccessControlUserByTokenRequest) (*VerifiedAccessControlUserByTokenResponse, error)
 }
 
 // UnimplementedAuthServiceServer should be embedded to have
@@ -276,6 +289,9 @@ func (UnimplementedAuthServiceServer) UserVerifyOtp(context.Context, *AuthVerify
 }
 func (UnimplementedAuthServiceServer) FindUserByToken(context.Context, *AuthFindUserByTokenRequest) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindUserByToken not implemented")
+}
+func (UnimplementedAuthServiceServer) VerifiedAccessControlUserByToken(context.Context, *VerifiedAccessControlUserByTokenRequest) (*VerifiedAccessControlUserByTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifiedAccessControlUserByToken not implemented")
 }
 func (UnimplementedAuthServiceServer) testEmbeddedByValue() {}
 
@@ -351,6 +367,24 @@ func _AuthService_FindUserByToken_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_VerifiedAccessControlUserByToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifiedAccessControlUserByTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).VerifiedAccessControlUserByToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_VerifiedAccessControlUserByToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).VerifiedAccessControlUserByToken(ctx, req.(*VerifiedAccessControlUserByTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -369,6 +403,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FindUserByToken",
 			Handler:    _AuthService_FindUserByToken_Handler,
+		},
+		{
+			MethodName: "VerifiedAccessControlUserByToken",
+			Handler:    _AuthService_VerifiedAccessControlUserByToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

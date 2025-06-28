@@ -6,6 +6,7 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+import { AccessControl, Role, User } from "./model";
 
 export const protobufPackage = "user";
 
@@ -17,6 +18,13 @@ export interface AuthLogoutByTokenResponse {
 export interface AuthVerifyOtpResponse {
   accessToken: string;
   refreshToken: string;
+}
+
+export interface VerifiedAccessControlUserByTokenResponse {
+  isValid: boolean;
+  user: User | undefined;
+  role: Role | undefined;
+  accessControls: AccessControl[];
 }
 
 /** USER RESPONSE DEFINITION */
@@ -158,6 +166,116 @@ export const AuthVerifyOtpResponse: MessageFns<AuthVerifyOtpResponse> = {
     const message = createBaseAuthVerifyOtpResponse();
     message.accessToken = object.accessToken ?? "";
     message.refreshToken = object.refreshToken ?? "";
+    return message;
+  },
+};
+
+function createBaseVerifiedAccessControlUserByTokenResponse(): VerifiedAccessControlUserByTokenResponse {
+  return { isValid: false, user: undefined, role: undefined, accessControls: [] };
+}
+
+export const VerifiedAccessControlUserByTokenResponse: MessageFns<VerifiedAccessControlUserByTokenResponse> = {
+  encode(message: VerifiedAccessControlUserByTokenResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.isValid !== false) {
+      writer.uint32(8).bool(message.isValid);
+    }
+    if (message.user !== undefined) {
+      User.encode(message.user, writer.uint32(18).fork()).join();
+    }
+    if (message.role !== undefined) {
+      Role.encode(message.role, writer.uint32(26).fork()).join();
+    }
+    for (const v of message.accessControls) {
+      AccessControl.encode(v!, writer.uint32(34).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): VerifiedAccessControlUserByTokenResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseVerifiedAccessControlUserByTokenResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.isValid = reader.bool();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.user = User.decode(reader, reader.uint32());
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.role = Role.decode(reader, reader.uint32());
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.accessControls.push(AccessControl.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): VerifiedAccessControlUserByTokenResponse {
+    return {
+      isValid: isSet(object.isValid) ? globalThis.Boolean(object.isValid) : false,
+      user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
+      role: isSet(object.role) ? Role.fromJSON(object.role) : undefined,
+      accessControls: globalThis.Array.isArray(object?.accessControls)
+        ? object.accessControls.map((e: any) => AccessControl.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: VerifiedAccessControlUserByTokenResponse): unknown {
+    const obj: any = {};
+    if (message.isValid !== false) {
+      obj.isValid = message.isValid;
+    }
+    if (message.user !== undefined) {
+      obj.user = User.toJSON(message.user);
+    }
+    if (message.role !== undefined) {
+      obj.role = Role.toJSON(message.role);
+    }
+    if (message.accessControls?.length) {
+      obj.accessControls = message.accessControls.map((e) => AccessControl.toJSON(e));
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<VerifiedAccessControlUserByTokenResponse>): VerifiedAccessControlUserByTokenResponse {
+    return VerifiedAccessControlUserByTokenResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<VerifiedAccessControlUserByTokenResponse>): VerifiedAccessControlUserByTokenResponse {
+    const message = createBaseVerifiedAccessControlUserByTokenResponse();
+    message.isValid = object.isValid ?? false;
+    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    message.role = (object.role !== undefined && object.role !== null) ? Role.fromPartial(object.role) : undefined;
+    message.accessControls = object.accessControls?.map((e) => AccessControl.fromPartial(e)) || [];
     return message;
   },
 };

@@ -51,6 +51,13 @@ service UserService {
     option (user.acl) = {
       roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
       is_public: false,
+      http: {
+        method: "post",
+        url: "/v1/user/users"
+      },
+      broker: {
+        event_type: "user.created"
+      }
     };
     option (google.api.http) = {
       post: "/v1/user/users",
@@ -73,6 +80,10 @@ service UserService {
     option (user.acl) = {
       roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
       is_public: false,
+      http: {
+        method: "get",
+        url: "/v1/user/users/{id}"
+      },
     };
     option (google.api.http) = {
       get: "/v1/user/users/{id}"
@@ -91,6 +102,10 @@ service UserService {
     option (user.acl) = {
       roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
       is_public: false,
+      http: {
+        method: "get",
+        url: "/v1/user/users/{email}/{password}"
+      },
     };
     option (google.api.http) = {
       get: "/v1/user/users/{email}/{password}"
@@ -113,6 +128,10 @@ service AuthService {
     option (user.acl) = {
       roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
       is_public: false,
+      http: {
+        method: "put",
+        url: "/v1/user/auth/{token}"
+      },
     };
     option (google.api.http) = {
       put: "/v1/user/auth/{token}"
@@ -131,7 +150,12 @@ service AuthService {
   };
   rpc UserVerifyOtp(user.AuthVerifyOtpRequest) returns (user.AuthVerifyOtpResponse){
     option (user.acl) = {
+      roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
       is_public: true,
+      http: {
+        method: "put",
+        url: "/v1/user/auth/{otp}"
+      },
     };
     option (google.api.http) = {
       put: "/v1/user/auth/{otp}"
@@ -144,13 +168,35 @@ service AuthService {
   };
   rpc FindUserByToken(user.AuthFindUserByTokenRequest) returns (user.User){
     option (user.acl) = {
-      is_public: true,
+      roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
+      is_public: false,
+      http: {
+        method: "get",
+        url: "/v1/user/auth/{token}"
+      },
     };
     option (google.api.http) = {
       get: "/v1/user/auth/{token}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       summary: "get user otp with provided token";
+      tags: ["AuthService"];
+    };
+  };
+  rpc VerifiedAccessControlUserByToken(user.VerifiedAccessControlUserByTokenRequest) returns (user.VerifiedAccessControlUserByTokenResponse){
+    option (user.acl) = {
+      roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
+      is_public: true,
+      http: {
+        method: "post",
+        url: "/v1/user/auth/acl"
+      },
+    };
+    option (google.api.http) = {
+      post: "/v1/user/auth/acl"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "verified access control user by provided token";
       tags: ["AuthService"];
     };
   };
