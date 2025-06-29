@@ -1,0 +1,54 @@
+package usecase
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/orm"
+	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/token"
+	"go.uber.org/zap"
+	"gorm.io/gorm"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+)
+
+func (u *authUseCase) AuthUserFindUserByToken(ctx context.Context, requestId string, req *pb.AuthUserFindUserByTokenRequest) (*pb.AuthUserFindUserByTokenResponse, error) {
+	tx := u.postgresSQL.GormDB.Begin()
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "AuthUseCase.FindUserByToken")
+	defer span.End()
+
+	claimedToken, err := token.ValidateJWTToken(req.Token, token.DefaultRefreshTokenConfig())
+	if err != nil {
+		tx.Rollback()
+		u.logger.Error("AuthUseCase.FindUserByToken", zap.String("requestId", requestId), zap.Error(errors.New("error parsing token")))
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	user, err := u.userPostgresqlRepository.FindUserById(ctx, requestId, claimedToken.GetUserID(), tx)
+	if err != nil {
+		tx.Rollback()
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			u.logger.Error("AuthUseCase.FindUserByToken", zap.String("requestId", requestId), zap.Error(errors.New("user not found")))
+			return nil, status.Error(codes.NotFound, fmt.Sprintf("requestId : %s , user does not exist", requestId))
+		}
+
+		u.logger.Error("AuthUseCase.FindUserByToken", zap.String("requestId", requestId), zap.Error(err))
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	// Build Response
+	resp := &pb.AuthUserFindUserByTokenResponse{
+		User: user.ToProto(),
+	}
+	if user.Role != nil {
+		resp.Role = user.Role.ToProto()
+
+		if user.Role.AccessControls != nil {
+			resp.AccessControls = orm.AccessControlsToProto(user.Role.AccessControls)
+		}
+	}
+	tx.Commit()
+	return resp, nil
+}

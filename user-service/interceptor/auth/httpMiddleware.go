@@ -3,9 +3,9 @@ package auth
 import (
 	"errors"
 	"fmt"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/response"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/token"
 	"net/http"
 	"strings"
 )
@@ -37,7 +37,7 @@ func AuthHTTPMiddleware(
 			}
 
 			// Add token to request context
-			ctx := token.SetTokenToContext(r.Context(), tokenHeader)
+			ctx := pkgContext.SetAuthorizationToContext(r.Context(), tokenHeader)
 			r = r.WithContext(ctx)
 			next.ServeHTTP(w, r)
 		})

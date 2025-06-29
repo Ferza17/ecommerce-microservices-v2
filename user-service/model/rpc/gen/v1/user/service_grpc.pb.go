@@ -200,20 +200,26 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	AuthService_UserLogoutByToken_FullMethodName                = "/user.AuthService/UserLogoutByToken"
-	AuthService_UserVerifyOtp_FullMethodName                    = "/user.AuthService/UserVerifyOtp"
-	AuthService_FindUserByToken_FullMethodName                  = "/user.AuthService/FindUserByToken"
-	AuthService_VerifiedAccessControlUserByToken_FullMethodName = "/user.AuthService/VerifiedAccessControlUserByToken"
+	AuthService_AuthUserRegister_FullMethodName                = "/user.AuthService/AuthUserRegister"
+	AuthService_AuthUserLoginByEmailAndPassword_FullMethodName = "/user.AuthService/AuthUserLoginByEmailAndPassword"
+	AuthService_AuthUserVerifyOtp_FullMethodName               = "/user.AuthService/AuthUserVerifyOtp"
+	AuthService_AuthUserLogoutByToken_FullMethodName           = "/user.AuthService/AuthUserLogoutByToken"
+	AuthService_AuthUserVerifyAccessControl_FullMethodName     = "/user.AuthService/AuthUserVerifyAccessControl"
+	AuthService_AuthUserFindUserByToken_FullMethodName         = "/user.AuthService/AuthUserFindUserByToken"
 )
 
 // AuthServiceClient is the client API for AuthService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
-	UserLogoutByToken(ctx context.Context, in *AuthLogoutByTokenRequest, opts ...grpc.CallOption) (*AuthLogoutByTokenResponse, error)
-	UserVerifyOtp(ctx context.Context, in *AuthVerifyOtpRequest, opts ...grpc.CallOption) (*AuthVerifyOtpResponse, error)
-	FindUserByToken(ctx context.Context, in *AuthFindUserByTokenRequest, opts ...grpc.CallOption) (*User, error)
-	VerifiedAccessControlUserByToken(ctx context.Context, in *VerifiedAccessControlUserByTokenRequest, opts ...grpc.CallOption) (*VerifiedAccessControlUserByTokenResponse, error)
+	// COMMAND
+	AuthUserRegister(ctx context.Context, in *AuthUserRegisterRequest, opts ...grpc.CallOption) (*AuthUserRegisterResponse, error)
+	AuthUserLoginByEmailAndPassword(ctx context.Context, in *AuthUserLoginByEmailAndPasswordRequest, opts ...grpc.CallOption) (*AuthUserLoginByEmailAndPasswordResponse, error)
+	AuthUserVerifyOtp(ctx context.Context, in *AuthUserVerifyOtpRequest, opts ...grpc.CallOption) (*AuthUserVerifyOtpResponse, error)
+	AuthUserLogoutByToken(ctx context.Context, in *AuthUserLogoutByTokenRequest, opts ...grpc.CallOption) (*AuthUserLogoutByTokenResponse, error)
+	AuthUserVerifyAccessControl(ctx context.Context, in *AuthUserVerifyAccessControlRequest, opts ...grpc.CallOption) (*AuthUserVerifyAccessControlResponse, error)
+	// QUERY
+	AuthUserFindUserByToken(ctx context.Context, in *AuthUserFindUserByTokenRequest, opts ...grpc.CallOption) (*AuthUserFindUserByTokenResponse, error)
 }
 
 type authServiceClient struct {
@@ -224,40 +230,60 @@ func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
 	return &authServiceClient{cc}
 }
 
-func (c *authServiceClient) UserLogoutByToken(ctx context.Context, in *AuthLogoutByTokenRequest, opts ...grpc.CallOption) (*AuthLogoutByTokenResponse, error) {
+func (c *authServiceClient) AuthUserRegister(ctx context.Context, in *AuthUserRegisterRequest, opts ...grpc.CallOption) (*AuthUserRegisterResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AuthLogoutByTokenResponse)
-	err := c.cc.Invoke(ctx, AuthService_UserLogoutByToken_FullMethodName, in, out, cOpts...)
+	out := new(AuthUserRegisterResponse)
+	err := c.cc.Invoke(ctx, AuthService_AuthUserRegister_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *authServiceClient) UserVerifyOtp(ctx context.Context, in *AuthVerifyOtpRequest, opts ...grpc.CallOption) (*AuthVerifyOtpResponse, error) {
+func (c *authServiceClient) AuthUserLoginByEmailAndPassword(ctx context.Context, in *AuthUserLoginByEmailAndPasswordRequest, opts ...grpc.CallOption) (*AuthUserLoginByEmailAndPasswordResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AuthVerifyOtpResponse)
-	err := c.cc.Invoke(ctx, AuthService_UserVerifyOtp_FullMethodName, in, out, cOpts...)
+	out := new(AuthUserLoginByEmailAndPasswordResponse)
+	err := c.cc.Invoke(ctx, AuthService_AuthUserLoginByEmailAndPassword_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *authServiceClient) FindUserByToken(ctx context.Context, in *AuthFindUserByTokenRequest, opts ...grpc.CallOption) (*User, error) {
+func (c *authServiceClient) AuthUserVerifyOtp(ctx context.Context, in *AuthUserVerifyOtpRequest, opts ...grpc.CallOption) (*AuthUserVerifyOtpResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(User)
-	err := c.cc.Invoke(ctx, AuthService_FindUserByToken_FullMethodName, in, out, cOpts...)
+	out := new(AuthUserVerifyOtpResponse)
+	err := c.cc.Invoke(ctx, AuthService_AuthUserVerifyOtp_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *authServiceClient) VerifiedAccessControlUserByToken(ctx context.Context, in *VerifiedAccessControlUserByTokenRequest, opts ...grpc.CallOption) (*VerifiedAccessControlUserByTokenResponse, error) {
+func (c *authServiceClient) AuthUserLogoutByToken(ctx context.Context, in *AuthUserLogoutByTokenRequest, opts ...grpc.CallOption) (*AuthUserLogoutByTokenResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(VerifiedAccessControlUserByTokenResponse)
-	err := c.cc.Invoke(ctx, AuthService_VerifiedAccessControlUserByToken_FullMethodName, in, out, cOpts...)
+	out := new(AuthUserLogoutByTokenResponse)
+	err := c.cc.Invoke(ctx, AuthService_AuthUserLogoutByToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) AuthUserVerifyAccessControl(ctx context.Context, in *AuthUserVerifyAccessControlRequest, opts ...grpc.CallOption) (*AuthUserVerifyAccessControlResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AuthUserVerifyAccessControlResponse)
+	err := c.cc.Invoke(ctx, AuthService_AuthUserVerifyAccessControl_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) AuthUserFindUserByToken(ctx context.Context, in *AuthUserFindUserByTokenRequest, opts ...grpc.CallOption) (*AuthUserFindUserByTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AuthUserFindUserByTokenResponse)
+	err := c.cc.Invoke(ctx, AuthService_AuthUserFindUserByToken_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -268,10 +294,14 @@ func (c *authServiceClient) VerifiedAccessControlUserByToken(ctx context.Context
 // All implementations should embed UnimplementedAuthServiceServer
 // for forward compatibility.
 type AuthServiceServer interface {
-	UserLogoutByToken(context.Context, *AuthLogoutByTokenRequest) (*AuthLogoutByTokenResponse, error)
-	UserVerifyOtp(context.Context, *AuthVerifyOtpRequest) (*AuthVerifyOtpResponse, error)
-	FindUserByToken(context.Context, *AuthFindUserByTokenRequest) (*User, error)
-	VerifiedAccessControlUserByToken(context.Context, *VerifiedAccessControlUserByTokenRequest) (*VerifiedAccessControlUserByTokenResponse, error)
+	// COMMAND
+	AuthUserRegister(context.Context, *AuthUserRegisterRequest) (*AuthUserRegisterResponse, error)
+	AuthUserLoginByEmailAndPassword(context.Context, *AuthUserLoginByEmailAndPasswordRequest) (*AuthUserLoginByEmailAndPasswordResponse, error)
+	AuthUserVerifyOtp(context.Context, *AuthUserVerifyOtpRequest) (*AuthUserVerifyOtpResponse, error)
+	AuthUserLogoutByToken(context.Context, *AuthUserLogoutByTokenRequest) (*AuthUserLogoutByTokenResponse, error)
+	AuthUserVerifyAccessControl(context.Context, *AuthUserVerifyAccessControlRequest) (*AuthUserVerifyAccessControlResponse, error)
+	// QUERY
+	AuthUserFindUserByToken(context.Context, *AuthUserFindUserByTokenRequest) (*AuthUserFindUserByTokenResponse, error)
 }
 
 // UnimplementedAuthServiceServer should be embedded to have
@@ -281,17 +311,23 @@ type AuthServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAuthServiceServer struct{}
 
-func (UnimplementedAuthServiceServer) UserLogoutByToken(context.Context, *AuthLogoutByTokenRequest) (*AuthLogoutByTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UserLogoutByToken not implemented")
+func (UnimplementedAuthServiceServer) AuthUserRegister(context.Context, *AuthUserRegisterRequest) (*AuthUserRegisterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AuthUserRegister not implemented")
 }
-func (UnimplementedAuthServiceServer) UserVerifyOtp(context.Context, *AuthVerifyOtpRequest) (*AuthVerifyOtpResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UserVerifyOtp not implemented")
+func (UnimplementedAuthServiceServer) AuthUserLoginByEmailAndPassword(context.Context, *AuthUserLoginByEmailAndPasswordRequest) (*AuthUserLoginByEmailAndPasswordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AuthUserLoginByEmailAndPassword not implemented")
 }
-func (UnimplementedAuthServiceServer) FindUserByToken(context.Context, *AuthFindUserByTokenRequest) (*User, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FindUserByToken not implemented")
+func (UnimplementedAuthServiceServer) AuthUserVerifyOtp(context.Context, *AuthUserVerifyOtpRequest) (*AuthUserVerifyOtpResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AuthUserVerifyOtp not implemented")
 }
-func (UnimplementedAuthServiceServer) VerifiedAccessControlUserByToken(context.Context, *VerifiedAccessControlUserByTokenRequest) (*VerifiedAccessControlUserByTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method VerifiedAccessControlUserByToken not implemented")
+func (UnimplementedAuthServiceServer) AuthUserLogoutByToken(context.Context, *AuthUserLogoutByTokenRequest) (*AuthUserLogoutByTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AuthUserLogoutByToken not implemented")
+}
+func (UnimplementedAuthServiceServer) AuthUserVerifyAccessControl(context.Context, *AuthUserVerifyAccessControlRequest) (*AuthUserVerifyAccessControlResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AuthUserVerifyAccessControl not implemented")
+}
+func (UnimplementedAuthServiceServer) AuthUserFindUserByToken(context.Context, *AuthUserFindUserByTokenRequest) (*AuthUserFindUserByTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AuthUserFindUserByToken not implemented")
 }
 func (UnimplementedAuthServiceServer) testEmbeddedByValue() {}
 
@@ -313,74 +349,110 @@ func RegisterAuthServiceServer(s grpc.ServiceRegistrar, srv AuthServiceServer) {
 	s.RegisterService(&AuthService_ServiceDesc, srv)
 }
 
-func _AuthService_UserLogoutByToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AuthLogoutByTokenRequest)
+func _AuthService_AuthUserRegister_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthUserRegisterRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).UserLogoutByToken(ctx, in)
+		return srv.(AuthServiceServer).AuthUserRegister(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuthService_UserLogoutByToken_FullMethodName,
+		FullMethod: AuthService_AuthUserRegister_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).UserLogoutByToken(ctx, req.(*AuthLogoutByTokenRequest))
+		return srv.(AuthServiceServer).AuthUserRegister(ctx, req.(*AuthUserRegisterRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthService_UserVerifyOtp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AuthVerifyOtpRequest)
+func _AuthService_AuthUserLoginByEmailAndPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthUserLoginByEmailAndPasswordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).UserVerifyOtp(ctx, in)
+		return srv.(AuthServiceServer).AuthUserLoginByEmailAndPassword(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuthService_UserVerifyOtp_FullMethodName,
+		FullMethod: AuthService_AuthUserLoginByEmailAndPassword_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).UserVerifyOtp(ctx, req.(*AuthVerifyOtpRequest))
+		return srv.(AuthServiceServer).AuthUserLoginByEmailAndPassword(ctx, req.(*AuthUserLoginByEmailAndPasswordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthService_FindUserByToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AuthFindUserByTokenRequest)
+func _AuthService_AuthUserVerifyOtp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthUserVerifyOtpRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).FindUserByToken(ctx, in)
+		return srv.(AuthServiceServer).AuthUserVerifyOtp(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuthService_FindUserByToken_FullMethodName,
+		FullMethod: AuthService_AuthUserVerifyOtp_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).FindUserByToken(ctx, req.(*AuthFindUserByTokenRequest))
+		return srv.(AuthServiceServer).AuthUserVerifyOtp(ctx, req.(*AuthUserVerifyOtpRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthService_VerifiedAccessControlUserByToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(VerifiedAccessControlUserByTokenRequest)
+func _AuthService_AuthUserLogoutByToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthUserLogoutByTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).VerifiedAccessControlUserByToken(ctx, in)
+		return srv.(AuthServiceServer).AuthUserLogoutByToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuthService_VerifiedAccessControlUserByToken_FullMethodName,
+		FullMethod: AuthService_AuthUserLogoutByToken_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).VerifiedAccessControlUserByToken(ctx, req.(*VerifiedAccessControlUserByTokenRequest))
+		return srv.(AuthServiceServer).AuthUserLogoutByToken(ctx, req.(*AuthUserLogoutByTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_AuthUserVerifyAccessControl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthUserVerifyAccessControlRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).AuthUserVerifyAccessControl(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_AuthUserVerifyAccessControl_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).AuthUserVerifyAccessControl(ctx, req.(*AuthUserVerifyAccessControlRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_AuthUserFindUserByToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthUserFindUserByTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).AuthUserFindUserByToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_AuthUserFindUserByToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).AuthUserFindUserByToken(ctx, req.(*AuthUserFindUserByTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -393,20 +465,28 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*AuthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "UserLogoutByToken",
-			Handler:    _AuthService_UserLogoutByToken_Handler,
+			MethodName: "AuthUserRegister",
+			Handler:    _AuthService_AuthUserRegister_Handler,
 		},
 		{
-			MethodName: "UserVerifyOtp",
-			Handler:    _AuthService_UserVerifyOtp_Handler,
+			MethodName: "AuthUserLoginByEmailAndPassword",
+			Handler:    _AuthService_AuthUserLoginByEmailAndPassword_Handler,
 		},
 		{
-			MethodName: "FindUserByToken",
-			Handler:    _AuthService_FindUserByToken_Handler,
+			MethodName: "AuthUserVerifyOtp",
+			Handler:    _AuthService_AuthUserVerifyOtp_Handler,
 		},
 		{
-			MethodName: "VerifiedAccessControlUserByToken",
-			Handler:    _AuthService_VerifiedAccessControlUserByToken_Handler,
+			MethodName: "AuthUserLogoutByToken",
+			Handler:    _AuthService_AuthUserLogoutByToken_Handler,
+		},
+		{
+			MethodName: "AuthUserVerifyAccessControl",
+			Handler:    _AuthService_AuthUserVerifyAccessControl_Handler,
+		},
+		{
+			MethodName: "AuthUserFindUserByToken",
+			Handler:    _AuthService_AuthUserFindUserByToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

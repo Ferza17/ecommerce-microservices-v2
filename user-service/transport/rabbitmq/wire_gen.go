@@ -11,6 +11,8 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/redis"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
+	postgres4 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/postgres"
+	redis3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/redis"
 	consumer2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/consumer"
 	redis2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
 	usecase2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
@@ -34,7 +36,9 @@ func ProvideRabbitMQServer() *Server {
 	iAuthRedisRepository := redis2.NewAuthRedisRepository(iRedisInfrastructure, iTelemetryInfrastructure, iZapLogger)
 	iUserUseCase := usecase.NewUserUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iRabbitMQInfrastructure, iAuthRedisRepository, postgresSQL, iTelemetryInfrastructure, iZapLogger)
 	iUserConsumer := consumer.NewUserConsumer(iRabbitMQInfrastructure, iTelemetryInfrastructure, iUserUseCase, iZapLogger)
-	iAuthUseCase := usecase2.NewAuthUseCase(iUserPostgresqlRepository, iAuthRedisRepository, iRabbitMQInfrastructure, iTelemetryInfrastructure, postgresSQL, iZapLogger)
+	iAccessControlPostgresqlRepository := postgres4.NewAccessControlPostgresqlRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
+	iAccessControlRedisRepository := redis3.NewAccessControlRedisRepository(iRedisInfrastructure, iTelemetryInfrastructure, iZapLogger)
+	iAuthUseCase := usecase2.NewAuthUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iAccessControlPostgresqlRepository, iAuthRedisRepository, iAccessControlRedisRepository, iRabbitMQInfrastructure, iTelemetryInfrastructure, postgresSQL, iZapLogger)
 	iAuthConsumer := consumer2.NewAuthConsumer(iRabbitMQInfrastructure, iTelemetryInfrastructure, iAuthUseCase, iZapLogger)
 	server := NewServer(iRabbitMQInfrastructure, iZapLogger, iUserConsumer, iAuthConsumer)
 	return server

@@ -20,15 +20,24 @@ import {
 import { Empty } from "../../google/protobuf/empty";
 import { User } from "./model";
 import {
-  AuthFindUserByTokenRequest,
-  AuthLogoutByTokenRequest,
-  AuthVerifyOtpRequest,
+  AuthUserFindUserByTokenRequest,
+  AuthUserLoginByEmailAndPasswordRequest,
+  AuthUserLogoutByTokenRequest,
+  AuthUserRegisterRequest,
+  AuthUserVerifyAccessControlRequest,
+  AuthUserVerifyOtpRequest,
   CreateUserRequest,
   FindUserByEmailAndPasswordRequest,
   FindUserByIdRequest,
-  VerifiedAccessControlUserByTokenRequest,
 } from "./request";
-import { AuthLogoutByTokenResponse, AuthVerifyOtpResponse, VerifiedAccessControlUserByTokenResponse } from "./response";
+import {
+  AuthUserFindUserByTokenResponse,
+  AuthUserLoginByEmailAndPasswordResponse,
+  AuthUserLogoutByTokenResponse,
+  AuthUserRegisterResponse,
+  AuthUserVerifyAccessControlResponse,
+  AuthUserVerifyOtpResponse,
+} from "./response";
 
 export const protobufPackage = "user";
 
@@ -132,118 +141,180 @@ export const UserServiceClient = makeGenericClientConstructor(UserServiceService
 
 export type AuthServiceService = typeof AuthServiceService;
 export const AuthServiceService = {
-  userLogoutByToken: {
-    path: "/user.AuthService/UserLogoutByToken",
+  /** COMMAND */
+  authUserRegister: {
+    path: "/user.AuthService/AuthUserRegister",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: AuthLogoutByTokenRequest) => Buffer.from(AuthLogoutByTokenRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => AuthLogoutByTokenRequest.decode(value),
-    responseSerialize: (value: AuthLogoutByTokenResponse) =>
-      Buffer.from(AuthLogoutByTokenResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => AuthLogoutByTokenResponse.decode(value),
+    requestSerialize: (value: AuthUserRegisterRequest) => Buffer.from(AuthUserRegisterRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => AuthUserRegisterRequest.decode(value),
+    responseSerialize: (value: AuthUserRegisterResponse) =>
+      Buffer.from(AuthUserRegisterResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => AuthUserRegisterResponse.decode(value),
   },
-  userVerifyOtp: {
-    path: "/user.AuthService/UserVerifyOtp",
+  authUserLoginByEmailAndPassword: {
+    path: "/user.AuthService/AuthUserLoginByEmailAndPassword",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: AuthVerifyOtpRequest) => Buffer.from(AuthVerifyOtpRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => AuthVerifyOtpRequest.decode(value),
-    responseSerialize: (value: AuthVerifyOtpResponse) => Buffer.from(AuthVerifyOtpResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => AuthVerifyOtpResponse.decode(value),
+    requestSerialize: (value: AuthUserLoginByEmailAndPasswordRequest) =>
+      Buffer.from(AuthUserLoginByEmailAndPasswordRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => AuthUserLoginByEmailAndPasswordRequest.decode(value),
+    responseSerialize: (value: AuthUserLoginByEmailAndPasswordResponse) =>
+      Buffer.from(AuthUserLoginByEmailAndPasswordResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => AuthUserLoginByEmailAndPasswordResponse.decode(value),
   },
-  findUserByToken: {
-    path: "/user.AuthService/FindUserByToken",
+  authUserVerifyOtp: {
+    path: "/user.AuthService/AuthUserVerifyOtp",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: AuthFindUserByTokenRequest) =>
-      Buffer.from(AuthFindUserByTokenRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => AuthFindUserByTokenRequest.decode(value),
-    responseSerialize: (value: User) => Buffer.from(User.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => User.decode(value),
+    requestSerialize: (value: AuthUserVerifyOtpRequest) => Buffer.from(AuthUserVerifyOtpRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => AuthUserVerifyOtpRequest.decode(value),
+    responseSerialize: (value: AuthUserVerifyOtpResponse) =>
+      Buffer.from(AuthUserVerifyOtpResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => AuthUserVerifyOtpResponse.decode(value),
   },
-  verifiedAccessControlUserByToken: {
-    path: "/user.AuthService/VerifiedAccessControlUserByToken",
+  authUserLogoutByToken: {
+    path: "/user.AuthService/AuthUserLogoutByToken",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: VerifiedAccessControlUserByTokenRequest) =>
-      Buffer.from(VerifiedAccessControlUserByTokenRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => VerifiedAccessControlUserByTokenRequest.decode(value),
-    responseSerialize: (value: VerifiedAccessControlUserByTokenResponse) =>
-      Buffer.from(VerifiedAccessControlUserByTokenResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => VerifiedAccessControlUserByTokenResponse.decode(value),
+    requestSerialize: (value: AuthUserLogoutByTokenRequest) =>
+      Buffer.from(AuthUserLogoutByTokenRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => AuthUserLogoutByTokenRequest.decode(value),
+    responseSerialize: (value: AuthUserLogoutByTokenResponse) =>
+      Buffer.from(AuthUserLogoutByTokenResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => AuthUserLogoutByTokenResponse.decode(value),
+  },
+  authUserVerifyAccessControl: {
+    path: "/user.AuthService/AuthUserVerifyAccessControl",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: AuthUserVerifyAccessControlRequest) =>
+      Buffer.from(AuthUserVerifyAccessControlRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => AuthUserVerifyAccessControlRequest.decode(value),
+    responseSerialize: (value: AuthUserVerifyAccessControlResponse) =>
+      Buffer.from(AuthUserVerifyAccessControlResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => AuthUserVerifyAccessControlResponse.decode(value),
+  },
+  /** QUERY */
+  authUserFindUserByToken: {
+    path: "/user.AuthService/AuthUserFindUserByToken",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: AuthUserFindUserByTokenRequest) =>
+      Buffer.from(AuthUserFindUserByTokenRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => AuthUserFindUserByTokenRequest.decode(value),
+    responseSerialize: (value: AuthUserFindUserByTokenResponse) =>
+      Buffer.from(AuthUserFindUserByTokenResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => AuthUserFindUserByTokenResponse.decode(value),
   },
 } as const;
 
 export interface AuthServiceServer extends UntypedServiceImplementation {
-  userLogoutByToken: handleUnaryCall<AuthLogoutByTokenRequest, AuthLogoutByTokenResponse>;
-  userVerifyOtp: handleUnaryCall<AuthVerifyOtpRequest, AuthVerifyOtpResponse>;
-  findUserByToken: handleUnaryCall<AuthFindUserByTokenRequest, User>;
-  verifiedAccessControlUserByToken: handleUnaryCall<
-    VerifiedAccessControlUserByTokenRequest,
-    VerifiedAccessControlUserByTokenResponse
+  /** COMMAND */
+  authUserRegister: handleUnaryCall<AuthUserRegisterRequest, AuthUserRegisterResponse>;
+  authUserLoginByEmailAndPassword: handleUnaryCall<
+    AuthUserLoginByEmailAndPasswordRequest,
+    AuthUserLoginByEmailAndPasswordResponse
   >;
+  authUserVerifyOtp: handleUnaryCall<AuthUserVerifyOtpRequest, AuthUserVerifyOtpResponse>;
+  authUserLogoutByToken: handleUnaryCall<AuthUserLogoutByTokenRequest, AuthUserLogoutByTokenResponse>;
+  authUserVerifyAccessControl: handleUnaryCall<AuthUserVerifyAccessControlRequest, AuthUserVerifyAccessControlResponse>;
+  /** QUERY */
+  authUserFindUserByToken: handleUnaryCall<AuthUserFindUserByTokenRequest, AuthUserFindUserByTokenResponse>;
 }
 
 export interface AuthServiceClient extends Client {
-  userLogoutByToken(
-    request: AuthLogoutByTokenRequest,
-    callback: (error: ServiceError | null, response: AuthLogoutByTokenResponse) => void,
+  /** COMMAND */
+  authUserRegister(
+    request: AuthUserRegisterRequest,
+    callback: (error: ServiceError | null, response: AuthUserRegisterResponse) => void,
   ): ClientUnaryCall;
-  userLogoutByToken(
-    request: AuthLogoutByTokenRequest,
+  authUserRegister(
+    request: AuthUserRegisterRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: AuthLogoutByTokenResponse) => void,
+    callback: (error: ServiceError | null, response: AuthUserRegisterResponse) => void,
   ): ClientUnaryCall;
-  userLogoutByToken(
-    request: AuthLogoutByTokenRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: AuthLogoutByTokenResponse) => void,
-  ): ClientUnaryCall;
-  userVerifyOtp(
-    request: AuthVerifyOtpRequest,
-    callback: (error: ServiceError | null, response: AuthVerifyOtpResponse) => void,
-  ): ClientUnaryCall;
-  userVerifyOtp(
-    request: AuthVerifyOtpRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: AuthVerifyOtpResponse) => void,
-  ): ClientUnaryCall;
-  userVerifyOtp(
-    request: AuthVerifyOtpRequest,
+  authUserRegister(
+    request: AuthUserRegisterRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: AuthVerifyOtpResponse) => void,
+    callback: (error: ServiceError | null, response: AuthUserRegisterResponse) => void,
   ): ClientUnaryCall;
-  findUserByToken(
-    request: AuthFindUserByTokenRequest,
-    callback: (error: ServiceError | null, response: User) => void,
+  authUserLoginByEmailAndPassword(
+    request: AuthUserLoginByEmailAndPasswordRequest,
+    callback: (error: ServiceError | null, response: AuthUserLoginByEmailAndPasswordResponse) => void,
   ): ClientUnaryCall;
-  findUserByToken(
-    request: AuthFindUserByTokenRequest,
+  authUserLoginByEmailAndPassword(
+    request: AuthUserLoginByEmailAndPasswordRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: User) => void,
+    callback: (error: ServiceError | null, response: AuthUserLoginByEmailAndPasswordResponse) => void,
   ): ClientUnaryCall;
-  findUserByToken(
-    request: AuthFindUserByTokenRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: User) => void,
-  ): ClientUnaryCall;
-  verifiedAccessControlUserByToken(
-    request: VerifiedAccessControlUserByTokenRequest,
-    callback: (error: ServiceError | null, response: VerifiedAccessControlUserByTokenResponse) => void,
-  ): ClientUnaryCall;
-  verifiedAccessControlUserByToken(
-    request: VerifiedAccessControlUserByTokenRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: VerifiedAccessControlUserByTokenResponse) => void,
-  ): ClientUnaryCall;
-  verifiedAccessControlUserByToken(
-    request: VerifiedAccessControlUserByTokenRequest,
+  authUserLoginByEmailAndPassword(
+    request: AuthUserLoginByEmailAndPasswordRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: VerifiedAccessControlUserByTokenResponse) => void,
+    callback: (error: ServiceError | null, response: AuthUserLoginByEmailAndPasswordResponse) => void,
+  ): ClientUnaryCall;
+  authUserVerifyOtp(
+    request: AuthUserVerifyOtpRequest,
+    callback: (error: ServiceError | null, response: AuthUserVerifyOtpResponse) => void,
+  ): ClientUnaryCall;
+  authUserVerifyOtp(
+    request: AuthUserVerifyOtpRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: AuthUserVerifyOtpResponse) => void,
+  ): ClientUnaryCall;
+  authUserVerifyOtp(
+    request: AuthUserVerifyOtpRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: AuthUserVerifyOtpResponse) => void,
+  ): ClientUnaryCall;
+  authUserLogoutByToken(
+    request: AuthUserLogoutByTokenRequest,
+    callback: (error: ServiceError | null, response: AuthUserLogoutByTokenResponse) => void,
+  ): ClientUnaryCall;
+  authUserLogoutByToken(
+    request: AuthUserLogoutByTokenRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: AuthUserLogoutByTokenResponse) => void,
+  ): ClientUnaryCall;
+  authUserLogoutByToken(
+    request: AuthUserLogoutByTokenRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: AuthUserLogoutByTokenResponse) => void,
+  ): ClientUnaryCall;
+  authUserVerifyAccessControl(
+    request: AuthUserVerifyAccessControlRequest,
+    callback: (error: ServiceError | null, response: AuthUserVerifyAccessControlResponse) => void,
+  ): ClientUnaryCall;
+  authUserVerifyAccessControl(
+    request: AuthUserVerifyAccessControlRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: AuthUserVerifyAccessControlResponse) => void,
+  ): ClientUnaryCall;
+  authUserVerifyAccessControl(
+    request: AuthUserVerifyAccessControlRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: AuthUserVerifyAccessControlResponse) => void,
+  ): ClientUnaryCall;
+  /** QUERY */
+  authUserFindUserByToken(
+    request: AuthUserFindUserByTokenRequest,
+    callback: (error: ServiceError | null, response: AuthUserFindUserByTokenResponse) => void,
+  ): ClientUnaryCall;
+  authUserFindUserByToken(
+    request: AuthUserFindUserByTokenRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: AuthUserFindUserByTokenResponse) => void,
+  ): ClientUnaryCall;
+  authUserFindUserByToken(
+    request: AuthUserFindUserByTokenRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: AuthUserFindUserByTokenResponse) => void,
   ): ClientUnaryCall;
 }
 

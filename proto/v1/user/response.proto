@@ -6,21 +6,42 @@ import "v1/user/model.proto";
 
 
 // AUTH RESPONSE DEFINITION
-message AuthLogoutByTokenResponse {
-  bool is_valid = 1;
+// NEW
+message AuthUserRegisterResponse {
+  user.User user = 1;
+  user.Role role = 2;
+  repeated user.AccessControl access_control = 3;
 }
 
-message AuthVerifyOtpResponse {
+message AuthUserLoginByEmailAndPasswordResponse {
   string accessToken = 1;
   string refreshToken = 2;
 }
 
-message VerifiedAccessControlUserByTokenResponse {
+message AuthUserVerifyOtpResponse {
+  string accessToken = 1;
+  string refreshToken = 2;
+}
+
+message AuthUserLogoutByTokenResponse {
+  bool is_valid = 1;
+}
+
+message AuthUserVerifyAccessControlResponse {
   bool isValid = 1;
   user.User user = 2;
   user.Role role = 3;
   repeated user.AccessControl access_controls = 4;
 }
+
+message AuthUserFindUserByTokenResponse {
+  user.User user = 2;
+  user.Role role = 3;
+  repeated user.AccessControl access_controls = 4;
+}
+
+// END NEW
+
 
 
 // USER RESPONSE DEFINITION

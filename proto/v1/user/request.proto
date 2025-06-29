@@ -8,29 +8,50 @@ import "v1/user/enum.proto";
 // ============= AUTH REQUEST DEFINITION
 
 // COMMAND
-message AuthLoginByEmailAndPasswordRequest {
+
+// NEW
+message AuthUserRegisterRequest {
+  string name = 2 [(validate.rules).string.min_len = 0];
+  string email = 3 [(validate.rules).string.email = true];
+  string password = 4 [(validate.rules).string.min_len = 8];
+  user.EnumRole Role = 5 [(validate.rules).enum = {
+    defined_only: true,
+  }];
+}
+
+message AuthUserLoginByEmailAndPasswordRequest {
   string email = 1 [(validate.rules).string.email = true];
   string password = 2 [(validate.rules).string.min_len = 8];
 }
 
-message AuthLogoutByTokenRequest {
-  string token = 1 [(validate.rules).string.min_len = 8];
-}
-
-message AuthVerifyOtpRequest {
+message AuthUserVerifyOtpRequest {
   string otp = 1 [(validate.rules).string.min_len = 4];
 }
 
-message VerifiedAccessControlUserByTokenRequest {
+message AuthUserLogoutByTokenRequest {
+  string token = 1 [(validate.rules).string.min_len = 8];
+}
+
+message AuthUserVerifyAccessControlRequest {
+  string token = 1 [(validate.rules).string.min_len = 0];
+  optional string fullMethodName = 2;
+  optional string http_url = 3;
+  optional string http_method = 4;
+}
+
+message AuthUserFindUserByTokenRequest {
   string token = 1 [(validate.rules).string.min_len = 0];
 }
+
+// END NEW
+
+
+
+
+
+
 
 // QUERY
-
-message AuthFindUserByTokenRequest {
-  string token = 1 [(validate.rules).string.min_len = 0];
-}
-
 
 // USER REQUEST DEFINITION
 message FindUserByIdRequest {

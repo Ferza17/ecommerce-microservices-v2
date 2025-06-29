@@ -45,3 +45,19 @@ func AccessControlFromProto(proto *pb.AccessControl) *AccessControl {
 		RoleID:         proto.RoleId,
 	}
 }
+
+func AccessControlsToProto(acls []*AccessControl) []*pb.AccessControl {
+	var protos []*pb.AccessControl
+	for _, acl := range acls {
+		protos = append(protos, acl.ToProto())
+	}
+	return protos
+}
+
+func AccessControlsFromProto(protos []*pb.AccessControl) []*AccessControl {
+	var acls []*AccessControl
+	for _, proto := range protos {
+		acls = append(acls, AccessControlFromProto(proto))
+	}
+	return acls
+}

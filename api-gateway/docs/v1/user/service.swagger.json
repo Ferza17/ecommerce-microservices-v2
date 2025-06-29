@@ -23,15 +23,15 @@
     "application/json"
   ],
   "paths": {
-    "/v1/user/auth/acl": {
+    "/v1/user/auth/acl/verify": {
       "post": {
-        "summary": "verified access control user by provided token",
-        "operationId": "AuthService_VerifiedAccessControlUserByToken",
+        "summary": "verified access control user by provided request",
+        "operationId": "AuthService_AuthUserVerifyAccessControl",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/userVerifiedAccessControlUserByTokenResponse"
+              "$ref": "#/definitions/userAuthUserVerifyAccessControlResponse"
             }
           },
           "default": {
@@ -47,6 +47,24 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "fullMethodName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "httpUrl",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "httpMethod",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -54,15 +72,15 @@
         ]
       }
     },
-    "/v1/user/auth/{otp}": {
-      "put": {
-        "summary": "verify user otp with provided otp",
-        "operationId": "AuthService_UserVerifyOtp",
+    "/v1/user/auth/login": {
+      "post": {
+        "summary": "user login by email and password for get access token and refresh token",
+        "operationId": "AuthService_AuthUserLoginByEmailAndPassword",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/userAuthVerifyOtpResponse"
+              "$ref": "#/definitions/userAuthUserLoginByEmailAndPasswordResponse"
             }
           },
           "default": {
@@ -74,18 +92,16 @@
         },
         "parameters": [
           {
-            "name": "otp",
-            "in": "path",
-            "required": true,
+            "name": "email",
+            "in": "query",
+            "required": false,
             "type": "string"
           },
           {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/AuthServiceUserVerifyOtpBody"
-            }
+            "name": "password",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -93,45 +109,16 @@
         ]
       }
     },
-    "/v1/user/auth/{token}": {
-      "get": {
-        "summary": "get user otp with provided token",
-        "operationId": "AuthService_FindUserByToken",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/userUser"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "token",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "AuthService"
-        ]
-      },
-      "put": {
+    "/v1/user/auth/logout": {
+      "post": {
         "summary": "logout user by token",
-        "description": "not commonly used for HTTP, its used only on RPC request. this endpoint will blocked by http middleware",
-        "operationId": "AuthService_UserLogoutByToken",
+        "description": "logout customer by provided token request",
+        "operationId": "AuthService_AuthUserLogoutByToken",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/userAuthLogoutByTokenResponse"
+              "$ref": "#/definitions/userAuthUserLogoutByTokenResponse"
             }
           },
           "default": {
@@ -143,17 +130,11 @@
         },
         "parameters": [
           {
-            "name": "token",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AuthServiceUserLogoutByTokenBody"
+              "$ref": "#/definitions/userAuthUserLogoutByTokenRequest"
             }
           }
         ],
@@ -164,6 +145,126 @@
           {
             "bearer": []
           }
+        ]
+      }
+    },
+    "/v1/user/auth/otp/verify": {
+      "post": {
+        "summary": "verify user otp with provided otp",
+        "operationId": "AuthService_AuthUserVerifyOtp",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userAuthUserVerifyOtpResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/userAuthUserVerifyOtpRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/v1/user/auth/register": {
+      "post": {
+        "summary": "register customer by provided request",
+        "operationId": "AuthService_AuthUserRegister",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userAuthUserRegisterResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "Role",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "CUSTOMER",
+              "CUSTOMER_MEMBERSHIP",
+              "ADMIN",
+              "SUPER_ADMIN"
+            ],
+            "default": "CUSTOMER"
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/v1/user/auth/{token}": {
+      "get": {
+        "summary": "get user otp with provided token",
+        "operationId": "AuthService_AuthUserFindUserByToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userAuthUserFindUserByTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AuthService"
         ]
       }
     },
@@ -288,12 +389,6 @@
     }
   },
   "definitions": {
-    "AuthServiceUserLogoutByTokenBody": {
-      "type": "object"
-    },
-    "AuthServiceUserVerifyOtpBody": {
-      "type": "object"
-    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -353,16 +448,100 @@
         }
       }
     },
-    "userAuthLogoutByTokenResponse": {
+    "userAuthUserFindUserByTokenResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/userUser"
+        },
+        "role": {
+          "$ref": "#/definitions/userRole"
+        },
+        "accessControls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/userAccessControl"
+          }
+        }
+      }
+    },
+    "userAuthUserLoginByEmailAndPasswordResponse": {
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "type": "string"
+        },
+        "refreshToken": {
+          "type": "string"
+        }
+      }
+    },
+    "userAuthUserLogoutByTokenRequest": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "userAuthUserLogoutByTokenResponse": {
       "type": "object",
       "properties": {
         "isValid": {
           "type": "boolean"
         }
-      },
-      "title": "AUTH RESPONSE DEFINITION"
+      }
     },
-    "userAuthVerifyOtpResponse": {
+    "userAuthUserRegisterResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/userUser"
+        },
+        "role": {
+          "$ref": "#/definitions/userRole"
+        },
+        "accessControl": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/userAccessControl"
+          }
+        }
+      },
+      "title": "AUTH RESPONSE DEFINITION\nNEW"
+    },
+    "userAuthUserVerifyAccessControlResponse": {
+      "type": "object",
+      "properties": {
+        "isValid": {
+          "type": "boolean"
+        },
+        "user": {
+          "$ref": "#/definitions/userUser"
+        },
+        "role": {
+          "$ref": "#/definitions/userRole"
+        },
+        "accessControls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/userAccessControl"
+          }
+        }
+      }
+    },
+    "userAuthUserVerifyOtpRequest": {
+      "type": "object",
+      "properties": {
+        "otp": {
+          "type": "string"
+        }
+      }
+    },
+    "userAuthUserVerifyOtpResponse": {
       "type": "object",
       "properties": {
         "accessToken": {
@@ -458,27 +637,6 @@
         "discardedAt": {
           "type": "string",
           "format": "date-time"
-        }
-      }
-    },
-    "userVerifiedAccessControlUserByTokenResponse": {
-      "type": "object",
-      "properties": {
-        "isValid": {
-          "type": "boolean"
-        },
-        "user": {
-          "$ref": "#/definitions/userUser"
-        },
-        "role": {
-          "$ref": "#/definitions/userRole"
-        },
-        "accessControls": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/userAccessControl"
-          }
         }
       }
     }

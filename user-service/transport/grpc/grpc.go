@@ -14,6 +14,8 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 
 	authInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/auth"
+	requestIdInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/requestid"
+	telemetryInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/telemetry"
 
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"go.uber.org/zap"
@@ -65,6 +67,8 @@ func (srv *Server) Serve() {
 	}
 	opts := []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(
+			requestIdInterceptor.RequestIDRPCInterceptor(),
+			telemetryInterceptor.TelemetryRPCInterceptor(),
 			loggerInterceptor.LoggerRPCInterceptor(srv.logger),
 			authInterceptor.AuthRPCUnaryInterceptor(srv.logger, srv.accessControlUseCase),
 		),

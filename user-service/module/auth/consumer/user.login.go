@@ -2,17 +2,13 @@ package consumer
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
-	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
-
 	"github.com/rabbitmq/amqp091-go"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
 	"go.uber.org/zap"
-	"google.golang.org/protobuf/proto"
 )
 
 func (c *authConsumer) UserLogin(ctx context.Context) error {
@@ -62,13 +58,13 @@ func (c *authConsumer) UserLogin(ctx context.Context) error {
 	messages:
 		for d := range deliveries {
 			var (
-				request   userRpc.AuthLoginByEmailAndPasswordRequest
-				requestId string
+			//request   userRpc.AuthLoginByEmailAndPasswordRequest
+			//requestId string
 			)
 			carrier := propagation.MapCarrier{}
 			for key, value := range d.Headers {
 				if key == enum.XRequestIDHeader.String() {
-					requestId = value.(string)
+					//requestId = value.(string)
 				}
 
 				if strVal, ok := value.(string); ok {
@@ -80,29 +76,29 @@ func (c *authConsumer) UserLogin(ctx context.Context) error {
 
 			switch d.ContentType {
 			case enum.XProtobuf.String():
-				if err = proto.Unmarshal(d.Body, &request); err != nil {
-					c.logger.Error(fmt.Sprintf("requsetID : %s , failed to unmarshal request : %v", requestId, zap.Error(err)))
-					span.End()
-					continue messages
-				}
+				//if err = proto.Unmarshal(d.Body, &request); err != nil {
+				//	c.logger.Error(fmt.Sprintf("requsetID : %s , failed to unmarshal request : %v", requestId, zap.Error(err)))
+				//	span.End()
+				//	continue messages
+				//}
 
 			case enum.JSON.String():
-				if err = json.Unmarshal(d.Body, &request); err != nil {
-					c.logger.Error(fmt.Sprintf("failed to unmarshal request : %v", zap.Error(err)))
-					span.End()
-					continue messages
-				}
+				//if err = json.Unmarshal(d.Body, &request); err != nil {
+				//	c.logger.Error(fmt.Sprintf("failed to unmarshal request : %v", zap.Error(err)))
+				//	span.End()
+				//	continue messages
+				//}
 			default:
 				c.logger.Error(fmt.Sprintf("failed to get request id"))
 				span.End()
 				continue messages
 			}
 
-			if err = c.authUseCase.UserLoginByEmailAndPassword(ctx, requestId, &request); err != nil {
-				c.logger.Error(fmt.Sprintf("failed to login user : %v", zap.Error(err)))
-				span.End()
-				continue messages
-			}
+			//if err = c.authUseCase.UserLoginByEmailAndPassword(ctx, requestId, &request); err != nil {
+			//	c.logger.Error(fmt.Sprintf("failed to login user : %v", zap.Error(err)))
+			//	span.End()
+			//	continue messages
+			//}
 			span.End()
 		}
 

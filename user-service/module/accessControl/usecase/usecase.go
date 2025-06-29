@@ -12,7 +12,8 @@ import (
 
 type (
 	IAccessControlUseCase interface {
-		IsExcludedUrl(ctx context.Context, requestId string, url string) (bool, error)
+		IsExcludedRPC(ctx context.Context, requestId string, url string) (bool, error)
+		IsExcludedHTTP(ctx context.Context, requestId string, method, url string) (bool, error)
 	}
 
 	accessControlUseCase struct {

@@ -16,9 +16,5 @@ func (u *userUseCase) FindUserById(ctx context.Context, requestId string, req *u
 		return nil, err
 	}
 	tx.Commit()
-	return &userRpc.User{
-		Id:    fetchedUser.ID,
-		Name:  fetchedUser.Name,
-		Email: fetchedUser.Email,
-	}, nil
+	return fetchedUser.ToProto(), nil
 }

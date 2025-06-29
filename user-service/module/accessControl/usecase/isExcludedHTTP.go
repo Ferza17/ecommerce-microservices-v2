@@ -1,0 +1,36 @@
+package usecase
+
+import (
+	"context"
+	"go.uber.org/zap"
+)
+
+func (u *accessControlUseCase) IsExcludedHTTP(ctx context.Context, requestId string, method, url string) (bool, error) {
+	// Get On Redis
+	isExcluded, err := u.accessControlRedisRepository.GetAccessControlHTTPExcluded(ctx, requestId, method, url)
+	if err != nil {
+		u.logger.Error("AccessControlUseCase.IsExcludedHTTP", zap.Error(err))
+	}
+
+	if isExcluded {
+		return true, nil
+	}
+
+	// Check On Postgres
+	tx := u.postgresSQL.GormDB.Begin()
+	if _, err = u.accessControlPostgresqlRepository.FindAccessControlExcludedByHttpUrlAndHttpMethod(ctx, requestId, method, url, tx); err != nil {
+		tx.Rollback()
+		u.logger.Error("AccessControlUseCase.IsExcludedHTTP", zap.Error(err))
+		return false, err
+	}
+
+	// Set On Redis
+	if err = u.accessControlRedisRepository.SetAccessControlHTTPExcluded(ctx, requestId, method, url); err != nil {
+		tx.Rollback()
+		u.logger.Error("AccessControlUseCase.IsExcludedHTTP", zap.Error(err))
+		return false, err
+	}
+
+	tx.Commit()
+	return true, nil
+}

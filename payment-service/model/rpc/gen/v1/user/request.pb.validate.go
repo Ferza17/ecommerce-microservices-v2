@@ -35,31 +35,41 @@ var (
 	_ = sort.Sort
 )
 
-// Validate checks the field values on AuthLoginByEmailAndPasswordRequest with
-// the rules defined in the proto definition for this message. If any rules
-// are violated, the first error encountered is returned, or nil if there are
-// no violations.
-func (m *AuthLoginByEmailAndPasswordRequest) Validate() error {
+// Validate checks the field values on AuthUserRegisterRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AuthUserRegisterRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on AuthLoginByEmailAndPasswordRequest
-// with the rules defined in the proto definition for this message. If any
-// rules are violated, the result is a list of violation errors wrapped in
-// AuthLoginByEmailAndPasswordRequestMultiError, or nil if none found.
-func (m *AuthLoginByEmailAndPasswordRequest) ValidateAll() error {
+// ValidateAll checks the field values on AuthUserRegisterRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AuthUserRegisterRequestMultiError, or nil if none found.
+func (m *AuthUserRegisterRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *AuthLoginByEmailAndPasswordRequest) validate(all bool) error {
+func (m *AuthUserRegisterRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
+	if utf8.RuneCountInString(m.GetName()) < 0 {
+		err := AuthUserRegisterRequestValidationError{
+			field:  "Name",
+			reason: "value length must be at least 0 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
 	if err := m._validateEmail(m.GetEmail()); err != nil {
-		err = AuthLoginByEmailAndPasswordRequestValidationError{
+		err = AuthUserRegisterRequestValidationError{
 			field:  "Email",
 			reason: "value must be a valid email address",
 			cause:  err,
@@ -71,7 +81,7 @@ func (m *AuthLoginByEmailAndPasswordRequest) validate(all bool) error {
 	}
 
 	if utf8.RuneCountInString(m.GetPassword()) < 8 {
-		err := AuthLoginByEmailAndPasswordRequestValidationError{
+		err := AuthUserRegisterRequestValidationError{
 			field:  "Password",
 			reason: "value length must be at least 8 runes",
 		}
@@ -81,14 +91,25 @@ func (m *AuthLoginByEmailAndPasswordRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	if _, ok := EnumRole_name[int32(m.GetRole())]; !ok {
+		err := AuthUserRegisterRequestValidationError{
+			field:  "Role",
+			reason: "value must be one of the defined enum values",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
 	if len(errors) > 0 {
-		return AuthLoginByEmailAndPasswordRequestMultiError(errors)
+		return AuthUserRegisterRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-func (m *AuthLoginByEmailAndPasswordRequest) _validateHostname(host string) error {
+func (m *AuthUserRegisterRequest) _validateHostname(host string) error {
 	s := strings.ToLower(strings.TrimSuffix(host, "."))
 
 	if len(host) > 253 {
@@ -118,7 +139,7 @@ func (m *AuthLoginByEmailAndPasswordRequest) _validateHostname(host string) erro
 	return nil
 }
 
-func (m *AuthLoginByEmailAndPasswordRequest) _validateEmail(addr string) error {
+func (m *AuthUserRegisterRequest) _validateEmail(addr string) error {
 	a, err := mail.ParseAddress(addr)
 	if err != nil {
 		return err
@@ -138,14 +159,13 @@ func (m *AuthLoginByEmailAndPasswordRequest) _validateEmail(addr string) error {
 	return m._validateHostname(parts[1])
 }
 
-// AuthLoginByEmailAndPasswordRequestMultiError is an error wrapping multiple
-// validation errors returned by
-// AuthLoginByEmailAndPasswordRequest.ValidateAll() if the designated
+// AuthUserRegisterRequestMultiError is an error wrapping multiple validation
+// errors returned by AuthUserRegisterRequest.ValidateAll() if the designated
 // constraints aren't met.
-type AuthLoginByEmailAndPasswordRequestMultiError []error
+type AuthUserRegisterRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m AuthLoginByEmailAndPasswordRequestMultiError) Error() string {
+func (m AuthUserRegisterRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -154,12 +174,11 @@ func (m AuthLoginByEmailAndPasswordRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m AuthLoginByEmailAndPasswordRequestMultiError) AllErrors() []error { return m }
+func (m AuthUserRegisterRequestMultiError) AllErrors() []error { return m }
 
-// AuthLoginByEmailAndPasswordRequestValidationError is the validation error
-// returned by AuthLoginByEmailAndPasswordRequest.Validate if the designated
-// constraints aren't met.
-type AuthLoginByEmailAndPasswordRequestValidationError struct {
+// AuthUserRegisterRequestValidationError is the validation error returned by
+// AuthUserRegisterRequest.Validate if the designated constraints aren't met.
+type AuthUserRegisterRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -167,24 +186,24 @@ type AuthLoginByEmailAndPasswordRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e AuthLoginByEmailAndPasswordRequestValidationError) Field() string { return e.field }
+func (e AuthUserRegisterRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e AuthLoginByEmailAndPasswordRequestValidationError) Reason() string { return e.reason }
+func (e AuthUserRegisterRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e AuthLoginByEmailAndPasswordRequestValidationError) Cause() error { return e.cause }
+func (e AuthUserRegisterRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e AuthLoginByEmailAndPasswordRequestValidationError) Key() bool { return e.key }
+func (e AuthUserRegisterRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e AuthLoginByEmailAndPasswordRequestValidationError) ErrorName() string {
-	return "AuthLoginByEmailAndPasswordRequestValidationError"
+func (e AuthUserRegisterRequestValidationError) ErrorName() string {
+	return "AuthUserRegisterRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e AuthLoginByEmailAndPasswordRequestValidationError) Error() string {
+func (e AuthUserRegisterRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -196,14 +215,14 @@ func (e AuthLoginByEmailAndPasswordRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sAuthLoginByEmailAndPasswordRequest.%s: %s%s",
+		"invalid %sAuthUserRegisterRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = AuthLoginByEmailAndPasswordRequestValidationError{}
+var _ error = AuthUserRegisterRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -211,33 +230,47 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = AuthLoginByEmailAndPasswordRequestValidationError{}
+} = AuthUserRegisterRequestValidationError{}
 
-// Validate checks the field values on AuthLogoutByTokenRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *AuthLogoutByTokenRequest) Validate() error {
+// Validate checks the field values on AuthUserLoginByEmailAndPasswordRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *AuthUserLoginByEmailAndPasswordRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on AuthLogoutByTokenRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// AuthLogoutByTokenRequestMultiError, or nil if none found.
-func (m *AuthLogoutByTokenRequest) ValidateAll() error {
+// ValidateAll checks the field values on
+// AuthUserLoginByEmailAndPasswordRequest with the rules defined in the proto
+// definition for this message. If any rules are violated, the result is a
+// list of violation errors wrapped in
+// AuthUserLoginByEmailAndPasswordRequestMultiError, or nil if none found.
+func (m *AuthUserLoginByEmailAndPasswordRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *AuthLogoutByTokenRequest) validate(all bool) error {
+func (m *AuthUserLoginByEmailAndPasswordRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	if utf8.RuneCountInString(m.GetToken()) < 8 {
-		err := AuthLogoutByTokenRequestValidationError{
-			field:  "Token",
+	if err := m._validateEmail(m.GetEmail()); err != nil {
+		err = AuthUserLoginByEmailAndPasswordRequestValidationError{
+			field:  "Email",
+			reason: "value must be a valid email address",
+			cause:  err,
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetPassword()) < 8 {
+		err := AuthUserLoginByEmailAndPasswordRequestValidationError{
+			field:  "Password",
 			reason: "value length must be at least 8 runes",
 		}
 		if !all {
@@ -247,19 +280,70 @@ func (m *AuthLogoutByTokenRequest) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return AuthLogoutByTokenRequestMultiError(errors)
+		return AuthUserLoginByEmailAndPasswordRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// AuthLogoutByTokenRequestMultiError is an error wrapping multiple validation
-// errors returned by AuthLogoutByTokenRequest.ValidateAll() if the designated
+func (m *AuthUserLoginByEmailAndPasswordRequest) _validateHostname(host string) error {
+	s := strings.ToLower(strings.TrimSuffix(host, "."))
+
+	if len(host) > 253 {
+		return errors.New("hostname cannot exceed 253 characters")
+	}
+
+	for _, part := range strings.Split(s, ".") {
+		if l := len(part); l == 0 || l > 63 {
+			return errors.New("hostname part must be non-empty and cannot exceed 63 characters")
+		}
+
+		if part[0] == '-' {
+			return errors.New("hostname parts cannot begin with hyphens")
+		}
+
+		if part[len(part)-1] == '-' {
+			return errors.New("hostname parts cannot end with hyphens")
+		}
+
+		for _, r := range part {
+			if (r < 'a' || r > 'z') && (r < '0' || r > '9') && r != '-' {
+				return fmt.Errorf("hostname parts can only contain alphanumeric characters or hyphens, got %q", string(r))
+			}
+		}
+	}
+
+	return nil
+}
+
+func (m *AuthUserLoginByEmailAndPasswordRequest) _validateEmail(addr string) error {
+	a, err := mail.ParseAddress(addr)
+	if err != nil {
+		return err
+	}
+	addr = a.Address
+
+	if len(addr) > 254 {
+		return errors.New("email addresses cannot exceed 254 characters")
+	}
+
+	parts := strings.SplitN(addr, "@", 2)
+
+	if len(parts[0]) > 64 {
+		return errors.New("email address local phrase cannot exceed 64 characters")
+	}
+
+	return m._validateHostname(parts[1])
+}
+
+// AuthUserLoginByEmailAndPasswordRequestMultiError is an error wrapping
+// multiple validation errors returned by
+// AuthUserLoginByEmailAndPasswordRequest.ValidateAll() if the designated
 // constraints aren't met.
-type AuthLogoutByTokenRequestMultiError []error
+type AuthUserLoginByEmailAndPasswordRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m AuthLogoutByTokenRequestMultiError) Error() string {
+func (m AuthUserLoginByEmailAndPasswordRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -268,11 +352,12 @@ func (m AuthLogoutByTokenRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m AuthLogoutByTokenRequestMultiError) AllErrors() []error { return m }
+func (m AuthUserLoginByEmailAndPasswordRequestMultiError) AllErrors() []error { return m }
 
-// AuthLogoutByTokenRequestValidationError is the validation error returned by
-// AuthLogoutByTokenRequest.Validate if the designated constraints aren't met.
-type AuthLogoutByTokenRequestValidationError struct {
+// AuthUserLoginByEmailAndPasswordRequestValidationError is the validation
+// error returned by AuthUserLoginByEmailAndPasswordRequest.Validate if the
+// designated constraints aren't met.
+type AuthUserLoginByEmailAndPasswordRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -280,24 +365,24 @@ type AuthLogoutByTokenRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e AuthLogoutByTokenRequestValidationError) Field() string { return e.field }
+func (e AuthUserLoginByEmailAndPasswordRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e AuthLogoutByTokenRequestValidationError) Reason() string { return e.reason }
+func (e AuthUserLoginByEmailAndPasswordRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e AuthLogoutByTokenRequestValidationError) Cause() error { return e.cause }
+func (e AuthUserLoginByEmailAndPasswordRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e AuthLogoutByTokenRequestValidationError) Key() bool { return e.key }
+func (e AuthUserLoginByEmailAndPasswordRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e AuthLogoutByTokenRequestValidationError) ErrorName() string {
-	return "AuthLogoutByTokenRequestValidationError"
+func (e AuthUserLoginByEmailAndPasswordRequestValidationError) ErrorName() string {
+	return "AuthUserLoginByEmailAndPasswordRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e AuthLogoutByTokenRequestValidationError) Error() string {
+func (e AuthUserLoginByEmailAndPasswordRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -309,14 +394,14 @@ func (e AuthLogoutByTokenRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sAuthLogoutByTokenRequest.%s: %s%s",
+		"invalid %sAuthUserLoginByEmailAndPasswordRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = AuthLogoutByTokenRequestValidationError{}
+var _ error = AuthUserLoginByEmailAndPasswordRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -324,24 +409,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = AuthLogoutByTokenRequestValidationError{}
+} = AuthUserLoginByEmailAndPasswordRequestValidationError{}
 
-// Validate checks the field values on AuthVerifyOtpRequest with the rules
+// Validate checks the field values on AuthUserVerifyOtpRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *AuthVerifyOtpRequest) Validate() error {
+func (m *AuthUserVerifyOtpRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on AuthVerifyOtpRequest with the rules
-// defined in the proto definition for this message. If any rules are
+// ValidateAll checks the field values on AuthUserVerifyOtpRequest with the
+// rules defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// AuthVerifyOtpRequestMultiError, or nil if none found.
-func (m *AuthVerifyOtpRequest) ValidateAll() error {
+// AuthUserVerifyOtpRequestMultiError, or nil if none found.
+func (m *AuthUserVerifyOtpRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *AuthVerifyOtpRequest) validate(all bool) error {
+func (m *AuthUserVerifyOtpRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -349,7 +434,7 @@ func (m *AuthVerifyOtpRequest) validate(all bool) error {
 	var errors []error
 
 	if utf8.RuneCountInString(m.GetOtp()) < 4 {
-		err := AuthVerifyOtpRequestValidationError{
+		err := AuthUserVerifyOtpRequestValidationError{
 			field:  "Otp",
 			reason: "value length must be at least 4 runes",
 		}
@@ -360,19 +445,19 @@ func (m *AuthVerifyOtpRequest) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return AuthVerifyOtpRequestMultiError(errors)
+		return AuthUserVerifyOtpRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// AuthVerifyOtpRequestMultiError is an error wrapping multiple validation
-// errors returned by AuthVerifyOtpRequest.ValidateAll() if the designated
+// AuthUserVerifyOtpRequestMultiError is an error wrapping multiple validation
+// errors returned by AuthUserVerifyOtpRequest.ValidateAll() if the designated
 // constraints aren't met.
-type AuthVerifyOtpRequestMultiError []error
+type AuthUserVerifyOtpRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m AuthVerifyOtpRequestMultiError) Error() string {
+func (m AuthUserVerifyOtpRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -381,11 +466,11 @@ func (m AuthVerifyOtpRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m AuthVerifyOtpRequestMultiError) AllErrors() []error { return m }
+func (m AuthUserVerifyOtpRequestMultiError) AllErrors() []error { return m }
 
-// AuthVerifyOtpRequestValidationError is the validation error returned by
-// AuthVerifyOtpRequest.Validate if the designated constraints aren't met.
-type AuthVerifyOtpRequestValidationError struct {
+// AuthUserVerifyOtpRequestValidationError is the validation error returned by
+// AuthUserVerifyOtpRequest.Validate if the designated constraints aren't met.
+type AuthUserVerifyOtpRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -393,24 +478,24 @@ type AuthVerifyOtpRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e AuthVerifyOtpRequestValidationError) Field() string { return e.field }
+func (e AuthUserVerifyOtpRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e AuthVerifyOtpRequestValidationError) Reason() string { return e.reason }
+func (e AuthUserVerifyOtpRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e AuthVerifyOtpRequestValidationError) Cause() error { return e.cause }
+func (e AuthUserVerifyOtpRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e AuthVerifyOtpRequestValidationError) Key() bool { return e.key }
+func (e AuthUserVerifyOtpRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e AuthVerifyOtpRequestValidationError) ErrorName() string {
-	return "AuthVerifyOtpRequestValidationError"
+func (e AuthUserVerifyOtpRequestValidationError) ErrorName() string {
+	return "AuthUserVerifyOtpRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e AuthVerifyOtpRequestValidationError) Error() string {
+func (e AuthUserVerifyOtpRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -422,14 +507,14 @@ func (e AuthVerifyOtpRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sAuthVerifyOtpRequest.%s: %s%s",
+		"invalid %sAuthUserVerifyOtpRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = AuthVerifyOtpRequestValidationError{}
+var _ error = AuthUserVerifyOtpRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -437,151 +522,34 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = AuthVerifyOtpRequestValidationError{}
+} = AuthUserVerifyOtpRequestValidationError{}
 
-// Validate checks the field values on VerifiedAccessControlUserByTokenRequest
-// with the rules defined in the proto definition for this message. If any
-// rules are violated, the first error encountered is returned, or nil if
-// there are no violations.
-func (m *VerifiedAccessControlUserByTokenRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on
-// VerifiedAccessControlUserByTokenRequest with the rules defined in the proto
-// definition for this message. If any rules are violated, the result is a
-// list of violation errors wrapped in
-// VerifiedAccessControlUserByTokenRequestMultiError, or nil if none found.
-func (m *VerifiedAccessControlUserByTokenRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *VerifiedAccessControlUserByTokenRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if utf8.RuneCountInString(m.GetToken()) < 0 {
-		err := VerifiedAccessControlUserByTokenRequestValidationError{
-			field:  "Token",
-			reason: "value length must be at least 0 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if len(errors) > 0 {
-		return VerifiedAccessControlUserByTokenRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// VerifiedAccessControlUserByTokenRequestMultiError is an error wrapping
-// multiple validation errors returned by
-// VerifiedAccessControlUserByTokenRequest.ValidateAll() if the designated
-// constraints aren't met.
-type VerifiedAccessControlUserByTokenRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m VerifiedAccessControlUserByTokenRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m VerifiedAccessControlUserByTokenRequestMultiError) AllErrors() []error { return m }
-
-// VerifiedAccessControlUserByTokenRequestValidationError is the validation
-// error returned by VerifiedAccessControlUserByTokenRequest.Validate if the
-// designated constraints aren't met.
-type VerifiedAccessControlUserByTokenRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e VerifiedAccessControlUserByTokenRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e VerifiedAccessControlUserByTokenRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e VerifiedAccessControlUserByTokenRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e VerifiedAccessControlUserByTokenRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e VerifiedAccessControlUserByTokenRequestValidationError) ErrorName() string {
-	return "VerifiedAccessControlUserByTokenRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e VerifiedAccessControlUserByTokenRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sVerifiedAccessControlUserByTokenRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = VerifiedAccessControlUserByTokenRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = VerifiedAccessControlUserByTokenRequestValidationError{}
-
-// Validate checks the field values on AuthFindUserByTokenRequest with the
+// Validate checks the field values on AuthUserLogoutByTokenRequest with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *AuthFindUserByTokenRequest) Validate() error {
+func (m *AuthUserLogoutByTokenRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on AuthFindUserByTokenRequest with the
+// ValidateAll checks the field values on AuthUserLogoutByTokenRequest with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// AuthFindUserByTokenRequestMultiError, or nil if none found.
-func (m *AuthFindUserByTokenRequest) ValidateAll() error {
+// AuthUserLogoutByTokenRequestMultiError, or nil if none found.
+func (m *AuthUserLogoutByTokenRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *AuthFindUserByTokenRequest) validate(all bool) error {
+func (m *AuthUserLogoutByTokenRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	if utf8.RuneCountInString(m.GetToken()) < 0 {
-		err := AuthFindUserByTokenRequestValidationError{
+	if utf8.RuneCountInString(m.GetToken()) < 8 {
+		err := AuthUserLogoutByTokenRequestValidationError{
 			field:  "Token",
-			reason: "value length must be at least 0 runes",
+			reason: "value length must be at least 8 runes",
 		}
 		if !all {
 			return err
@@ -590,19 +558,19 @@ func (m *AuthFindUserByTokenRequest) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return AuthFindUserByTokenRequestMultiError(errors)
+		return AuthUserLogoutByTokenRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// AuthFindUserByTokenRequestMultiError is an error wrapping multiple
-// validation errors returned by AuthFindUserByTokenRequest.ValidateAll() if
+// AuthUserLogoutByTokenRequestMultiError is an error wrapping multiple
+// validation errors returned by AuthUserLogoutByTokenRequest.ValidateAll() if
 // the designated constraints aren't met.
-type AuthFindUserByTokenRequestMultiError []error
+type AuthUserLogoutByTokenRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m AuthFindUserByTokenRequestMultiError) Error() string {
+func (m AuthUserLogoutByTokenRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -611,11 +579,12 @@ func (m AuthFindUserByTokenRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m AuthFindUserByTokenRequestMultiError) AllErrors() []error { return m }
+func (m AuthUserLogoutByTokenRequestMultiError) AllErrors() []error { return m }
 
-// AuthFindUserByTokenRequestValidationError is the validation error returned
-// by AuthFindUserByTokenRequest.Validate if the designated constraints aren't met.
-type AuthFindUserByTokenRequestValidationError struct {
+// AuthUserLogoutByTokenRequestValidationError is the validation error returned
+// by AuthUserLogoutByTokenRequest.Validate if the designated constraints
+// aren't met.
+type AuthUserLogoutByTokenRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -623,24 +592,24 @@ type AuthFindUserByTokenRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e AuthFindUserByTokenRequestValidationError) Field() string { return e.field }
+func (e AuthUserLogoutByTokenRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e AuthFindUserByTokenRequestValidationError) Reason() string { return e.reason }
+func (e AuthUserLogoutByTokenRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e AuthFindUserByTokenRequestValidationError) Cause() error { return e.cause }
+func (e AuthUserLogoutByTokenRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e AuthFindUserByTokenRequestValidationError) Key() bool { return e.key }
+func (e AuthUserLogoutByTokenRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e AuthFindUserByTokenRequestValidationError) ErrorName() string {
-	return "AuthFindUserByTokenRequestValidationError"
+func (e AuthUserLogoutByTokenRequestValidationError) ErrorName() string {
+	return "AuthUserLogoutByTokenRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e AuthFindUserByTokenRequestValidationError) Error() string {
+func (e AuthUserLogoutByTokenRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -652,14 +621,14 @@ func (e AuthFindUserByTokenRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sAuthFindUserByTokenRequest.%s: %s%s",
+		"invalid %sAuthUserLogoutByTokenRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = AuthFindUserByTokenRequestValidationError{}
+var _ error = AuthUserLogoutByTokenRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -667,7 +636,249 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = AuthFindUserByTokenRequestValidationError{}
+} = AuthUserLogoutByTokenRequestValidationError{}
+
+// Validate checks the field values on AuthUserVerifyAccessControlRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *AuthUserVerifyAccessControlRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AuthUserVerifyAccessControlRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// AuthUserVerifyAccessControlRequestMultiError, or nil if none found.
+func (m *AuthUserVerifyAccessControlRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AuthUserVerifyAccessControlRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if utf8.RuneCountInString(m.GetToken()) < 0 {
+		err := AuthUserVerifyAccessControlRequestValidationError{
+			field:  "Token",
+			reason: "value length must be at least 0 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.FullMethodName != nil {
+		// no validation rules for FullMethodName
+	}
+
+	if m.HttpUrl != nil {
+		// no validation rules for HttpUrl
+	}
+
+	if m.HttpMethod != nil {
+		// no validation rules for HttpMethod
+	}
+
+	if len(errors) > 0 {
+		return AuthUserVerifyAccessControlRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// AuthUserVerifyAccessControlRequestMultiError is an error wrapping multiple
+// validation errors returned by
+// AuthUserVerifyAccessControlRequest.ValidateAll() if the designated
+// constraints aren't met.
+type AuthUserVerifyAccessControlRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AuthUserVerifyAccessControlRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AuthUserVerifyAccessControlRequestMultiError) AllErrors() []error { return m }
+
+// AuthUserVerifyAccessControlRequestValidationError is the validation error
+// returned by AuthUserVerifyAccessControlRequest.Validate if the designated
+// constraints aren't met.
+type AuthUserVerifyAccessControlRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AuthUserVerifyAccessControlRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AuthUserVerifyAccessControlRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AuthUserVerifyAccessControlRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AuthUserVerifyAccessControlRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AuthUserVerifyAccessControlRequestValidationError) ErrorName() string {
+	return "AuthUserVerifyAccessControlRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AuthUserVerifyAccessControlRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAuthUserVerifyAccessControlRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AuthUserVerifyAccessControlRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AuthUserVerifyAccessControlRequestValidationError{}
+
+// Validate checks the field values on AuthUserFindUserByTokenRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AuthUserFindUserByTokenRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AuthUserFindUserByTokenRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// AuthUserFindUserByTokenRequestMultiError, or nil if none found.
+func (m *AuthUserFindUserByTokenRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AuthUserFindUserByTokenRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if utf8.RuneCountInString(m.GetToken()) < 0 {
+		err := AuthUserFindUserByTokenRequestValidationError{
+			field:  "Token",
+			reason: "value length must be at least 0 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return AuthUserFindUserByTokenRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// AuthUserFindUserByTokenRequestMultiError is an error wrapping multiple
+// validation errors returned by AuthUserFindUserByTokenRequest.ValidateAll()
+// if the designated constraints aren't met.
+type AuthUserFindUserByTokenRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AuthUserFindUserByTokenRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AuthUserFindUserByTokenRequestMultiError) AllErrors() []error { return m }
+
+// AuthUserFindUserByTokenRequestValidationError is the validation error
+// returned by AuthUserFindUserByTokenRequest.Validate if the designated
+// constraints aren't met.
+type AuthUserFindUserByTokenRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AuthUserFindUserByTokenRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AuthUserFindUserByTokenRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AuthUserFindUserByTokenRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AuthUserFindUserByTokenRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AuthUserFindUserByTokenRequestValidationError) ErrorName() string {
+	return "AuthUserFindUserByTokenRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AuthUserFindUserByTokenRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAuthUserFindUserByTokenRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AuthUserFindUserByTokenRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AuthUserFindUserByTokenRequestValidationError{}
 
 // Validate checks the field values on FindUserByIdRequest with the rules
 // defined in the proto definition for this message. If any rules are

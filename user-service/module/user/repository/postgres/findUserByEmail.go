@@ -13,6 +13,8 @@ func (r *userPostgresqlRepository) FindUserByEmail(ctx context.Context, requestI
 	user := new(orm.User)
 	if err := tx.WithContext(ctx).
 		Where("email = ?", email).
+		Preload("Role").
+		Preload("Role.AccessControls").
 		First(user).
 		Error; err != nil {
 		r.logger.Error(fmt.Sprintf("requestId : %s , error finding user by email and password: %v", requestId, err))

@@ -49,7 +49,7 @@ func (r *Role) ToProto() *pb.Role {
 	return proto
 }
 
-func RolesToProto(roles []Role) []*pb.Role {
+func RolesToProto(roles []*Role) []*pb.Role {
 	var protos []*pb.Role
 	for _, role := range roles {
 		protos = append(protos, role.ToProto())

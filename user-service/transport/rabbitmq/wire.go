@@ -8,6 +8,8 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/redis"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
+	accessControlPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/postgres"
+	accessControlRedisRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/redis"
 	authConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/consumer"
 	userRedisRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
 	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
@@ -34,6 +36,8 @@ func ProvideRabbitMQServer() *Server {
 		userPostgresqlRepository.Set,
 		userRedisRepository.Set,
 		rolePostgresqlRepository.Set,
+		accessControlPostgresqlRepository.Set,
+		accessControlRedisRepository.Set,
 
 		// UseCase Layer
 		userUseCase.Set,

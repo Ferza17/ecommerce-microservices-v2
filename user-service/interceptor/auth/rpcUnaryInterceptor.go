@@ -2,10 +2,10 @@ package auth
 
 import (
 	"context"
-	"fmt"
 	accessControlUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/usecase"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/token"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -19,46 +19,44 @@ func AuthRPCUnaryInterceptor(
 ) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
 
-		//TODO:
-		// 1. Add Interceptor RequestID
-		// 2. Get RequestID From context
-
 		// Validate is excluded method
-		isExcluded, err := accessControlUseCase.IsExcludedUrl(ctx, "", info.FullMethod)
+		isExcluded, _ := accessControlUseCase.IsExcludedRPC(ctx, pkgContext.GetRequestIDFromContext(ctx), info.FullMethod)
 		if err != nil {
+			logger.Error("Interceptor.AuthRPCUnaryInterceptor", zap.Error(status.Error(codes.PermissionDenied, err.Error())))
 			return nil, status.Error(codes.PermissionDenied, err.Error())
 		}
 
+		// Bypass if excluded methods
 		if isExcluded {
 			return handler(ctx, req)
 		}
 
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
-			logger.Error(fmt.Sprintf("missing metadata"))
+			logger.Error("Interceptor.AuthRPCUnaryInterceptor", zap.Error(status.Error(codes.Unauthenticated, "missing metadata")))
 			return nil, status.Error(codes.Unauthenticated, "missing metadata")
 		}
 
 		// Extract authorization header
-		authHeaders := md.Get("authorization")
+		authHeaders := md.Get(pkgContext.CtxKeyAuthorization)
 		if len(authHeaders) == 0 {
-			logger.Error(fmt.Sprintf("missing authorization header"))
+			logger.Error("Interceptor.AuthRPCUnaryInterceptor", zap.Error(status.Error(codes.Unauthenticated, "no authorization header")))
 			return nil, status.Error(codes.Unauthenticated, "missing authorization header")
 		}
 
 		authHeader := authHeaders[0]
 		if !strings.HasPrefix(authHeader, "Bearer ") {
-			logger.Error("Invalid authorization header format")
+			logger.Error("Interceptor.AuthRPCUnaryInterceptor", zap.Error(status.Error(codes.Unauthenticated, "invalid authorization header")))
 			return nil, status.Error(codes.Unauthenticated, "invalid authorization header format")
 		}
 
 		tokenHeader := strings.TrimPrefix(authHeader, "Bearer ")
 		if tokenHeader == "" {
-			logger.Error("Missing token")
+			logger.Error("Interceptor.AuthRPCUnaryInterceptor", zap.Error(status.Error(codes.Unauthenticated, "invalid authorization header")))
 			return nil, status.Error(codes.Unauthenticated, "missing token")
 		}
 
-		ctx = token.SetTokenToContext(ctx, tokenHeader)
+		ctx = pkgContext.SetAuthorizationToContext(ctx, tokenHeader)
 		return handler(ctx, req)
 	}
 }
