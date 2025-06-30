@@ -10,46 +10,35 @@ import (
 
 type (
 	JWTConfig struct {
-		SecretKey       string
-		ExpirationHours int
-		Issuer          string
+		SecretKey          string
+		ExpirationDuration time.Duration
+		Issuer             string
 	}
 )
 
-func NewJWTConfig(secretKey string, expirationHours int, issuer string) *JWTConfig {
-	return &JWTConfig{
-		SecretKey:       config.Get().JwtAccessTokenSecret,
-		ExpirationHours: 1,
-		Issuer:          issuer,
-	}
-}
-
 func DefaultRefreshTokenConfig() *JWTConfig {
 	return &JWTConfig{
-		SecretKey:       config.Get().JwtAccessTokenSecret,
-		ExpirationHours: 1,
-		Issuer:          config.Get().ServiceName,
+		SecretKey:          config.Get().JwtAccessTokenSecret,
+		ExpirationDuration: config.Get().JwtRefreshTokenExpirationTime,
+		Issuer:             config.Get().ServiceName,
 	}
 }
 
 func DefaultAccessTokenConfig() *JWTConfig {
 	return &JWTConfig{
-		SecretKey:       config.Get().JwtAccessTokenSecret,
-		ExpirationHours: 1, //TODO: Save on ENV
-		Issuer:          config.Get().ServiceName,
+		SecretKey:          config.Get().JwtAccessTokenSecret,
+		ExpirationDuration: config.Get().JwtAccessTokenExpirationTime,
+		Issuer:             config.Get().ServiceName,
 	}
 }
 
-func GenerateClaim(user *pb.User, role *pb.Role, accessControls []*pb.AccessControl, config *JWTConfig) *Claim {
+func GenerateClaim(user *pb.User, config *JWTConfig) *Claim {
 	now := time.Now()
-	exp := now.Add(time.Duration(config.ExpirationHours) * time.Hour)
-
+	exp := now.Add(config.ExpirationDuration)
 	return &Claim{
-		User:          user,
-		Role:          role,
-		AccessControl: accessControls,
-		CreatedAt:     &now,
-		ExpiredAt:     &exp,
+		UserId:    user.Id,
+		CreatedAt: &now,
+		ExpiredAt: &exp,
 		StandardClaims: jwt.StandardClaims{
 			Id:        user.Id,
 			Subject:   user.Id,
@@ -95,7 +84,7 @@ func ValidateJWTToken(tokenString string, config *JWTConfig) (*Claim, error) {
 	}
 
 	// Additional validation
-	if err := claim.Valid(); err != nil {
+	if err = claim.Valid(); err != nil {
 		return nil, err
 	}
 

@@ -2,29 +2,19 @@ package presenter
 
 import (
 	"context"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
 	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
-
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
+	"go.uber.org/zap"
 )
 
 func (p *UserPresenter) FindUserByEmailAndPassword(ctx context.Context, req *userRpc.FindUserByEmailAndPasswordRequest) (*userRpc.User, error) {
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return nil, status.Error(codes.InvalidArgument, "metadata not found")
-	}
-	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.FindUserByEmailAndPassword")
+	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "UserPresenter.FindUserByEmailAndPassword")
 	defer span.End()
-
-	requestID := ""
-	if values := md.Get(enum.XRequestIDHeader.String()); len(values) > 0 {
-		requestID = values[0]
-	}
+	requestID := pkgContext.GetRequestIDFromContext(ctx)
 
 	res, err := p.userUseCase.FindUserByEmailAndPassword(ctx, requestID, req)
 	if err != nil {
+		p.logger.Error("UserPresenter.FindUserByEmailAndPassword", zap.String("requestID", requestID), zap.Error(err))
 		return nil, err
 	}
 	return res, nil

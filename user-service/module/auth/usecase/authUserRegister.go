@@ -3,18 +3,24 @@ package usecase
 import (
 	"context"
 	"errors"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/orm"
+	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/notification"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/util"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 	"time"
 )
 
-func (u *authUseCase) AuthUserRegister(ctx context.Context, requestId string, req *pb.AuthUserRegisterRequest) (*pb.AuthUserRegisterResponse, error) {
+func (u *authUseCase) AuthUserRegister(ctx context.Context, requestId string, req *pb.AuthUserRegisterRequest) (*emptypb.Empty, error) {
 	var (
 		tx  = u.postgresSQL.GormDB.Begin()
 		now = time.Now()
@@ -49,6 +55,13 @@ func (u *authUseCase) AuthUserRegister(ctx context.Context, requestId string, re
 		return nil, err
 	}
 
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		tx.Rollback()
+		u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(errors.New("error hashing password")))
+		return nil, err
+	}
+	req.Password = string(hashedPassword)
 	user := orm.UserFromProto(&pb.User{
 		Id:         uuid.NewString(),
 		Name:       req.Name,
@@ -70,10 +83,30 @@ func (u *authUseCase) AuthUserRegister(ctx context.Context, requestId string, re
 	// Not Intentionally returning password as a response
 	result.Password = ""
 
+	otp := util.GenerateOTP()
+	if err = u.authRedisRepository.SetOtp(ctx, requestId, otp, result.ID); err != nil {
+		u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	reqUserEmailOtp := &notificationRpc.SendOtpEmailNotificationRequest{
+		Email:            req.Email,
+		Otp:              otp,
+		NotificationType: notificationRpc.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_OTP,
+	}
+
+	message, err := proto.Marshal(reqUserEmailOtp)
+	if err != nil {
+		u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, config.Get().ExchangeNotification, config.Get().QueueNotificationEmailOtpCreated, message); err != nil {
+		u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
+		return nil, status.Error(codes.Internal, err.Error())
+	}
 	tx.Commit()
-	return &pb.AuthUserRegisterResponse{
-		User:          result.ToProto(),
-		Role:          role.ToProto(),
-		AccessControl: orm.AccessControlsToProto(role.AccessControls),
-	}, nil
+
+	tx.Commit()
+	return nil, nil
 }

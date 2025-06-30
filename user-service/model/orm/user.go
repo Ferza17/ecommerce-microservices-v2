@@ -42,7 +42,7 @@ func (u *User) ToProto() *pb.User {
 		proto.UpdatedAt = timestamppb.New(*u.UpdatedAt)
 	}
 
-	if u.Role.ID != "" {
+	if u.Role != nil && u.Role.ID != "" {
 		proto.Role = u.Role.ToProto()
 	}
 

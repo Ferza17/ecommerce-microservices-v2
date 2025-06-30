@@ -21,7 +21,6 @@ const (
 )
 
 // AUTH RESPONSE DEFINITION
-// NEW
 type AuthUserRegisterResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -377,53 +376,6 @@ func (x *AuthUserFindUserByTokenResponse) GetAccessControls() []*AccessControl {
 }
 
 // USER RESPONSE DEFINITION
-type CreateUserResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-}
-
-func (x *CreateUserResponse) Reset() {
-	*x = CreateUserResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_user_response_proto_msgTypes[6]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *CreateUserResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateUserResponse) ProtoMessage() {}
-
-func (x *CreateUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_user_response_proto_msgTypes[6]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateUserResponse.ProtoReflect.Descriptor instead.
-func (*CreateUserResponse) Descriptor() ([]byte, []int) {
-	return file_v1_user_response_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *CreateUserResponse) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
 type UpdateUserByIdResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -435,7 +387,7 @@ type UpdateUserByIdResponse struct {
 func (x *UpdateUserByIdResponse) Reset() {
 	*x = UpdateUserByIdResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_user_response_proto_msgTypes[7]
+		mi := &file_v1_user_response_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -448,7 +400,7 @@ func (x *UpdateUserByIdResponse) String() string {
 func (*UpdateUserByIdResponse) ProtoMessage() {}
 
 func (x *UpdateUserByIdResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_user_response_proto_msgTypes[7]
+	mi := &file_v1_user_response_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -461,7 +413,7 @@ func (x *UpdateUserByIdResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateUserByIdResponse.ProtoReflect.Descriptor instead.
 func (*UpdateUserByIdResponse) Descriptor() ([]byte, []int) {
-	return file_v1_user_response_proto_rawDescGZIP(), []int{7}
+	return file_v1_user_response_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *UpdateUserByIdResponse) GetId() string {
@@ -525,18 +477,15 @@ var file_v1_user_response_proto_rawDesc = []byte{
 	0x12, 0x3c, 0x0a, 0x0f, 0x61, 0x63, 0x63, 0x65, 0x73, 0x73, 0x5f, 0x63, 0x6f, 0x6e, 0x74, 0x72,
 	0x6f, 0x6c, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x75, 0x73, 0x65, 0x72,
 	0x2e, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x52, 0x0e,
-	0x61, 0x63, 0x63, 0x65, 0x73, 0x73, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x73, 0x22, 0x24,
-	0x0a, 0x12, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x02, 0x69, 0x64, 0x22, 0x28, 0x0a, 0x16, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x73,
-	0x65, 0x72, 0x42, 0x79, 0x49, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x0e,
-	0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x42, 0x4b,
-	0x0a, 0x08, 0x63, 0x6f, 0x6d, 0x2e, 0x75, 0x73, 0x65, 0x72, 0x42, 0x0d, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x48, 0x02, 0x50, 0x01, 0xa2, 0x02, 0x03,
-	0x55, 0x58, 0x58, 0xaa, 0x02, 0x04, 0x55, 0x73, 0x65, 0x72, 0xca, 0x02, 0x04, 0x55, 0x73, 0x65,
-	0x72, 0xe2, 0x02, 0x10, 0x55, 0x73, 0x65, 0x72, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61,
-	0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x04, 0x55, 0x73, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x61, 0x63, 0x63, 0x65, 0x73, 0x73, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x73, 0x22, 0x28,
+	0x0a, 0x16, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x73, 0x65, 0x72, 0x42, 0x79, 0x49, 0x64,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x42, 0x4b, 0x0a, 0x08, 0x63, 0x6f, 0x6d, 0x2e,
+	0x75, 0x73, 0x65, 0x72, 0x42, 0x0d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x50, 0x72,
+	0x6f, 0x74, 0x6f, 0x48, 0x02, 0x50, 0x01, 0xa2, 0x02, 0x03, 0x55, 0x58, 0x58, 0xaa, 0x02, 0x04,
+	0x55, 0x73, 0x65, 0x72, 0xca, 0x02, 0x04, 0x55, 0x73, 0x65, 0x72, 0xe2, 0x02, 0x10, 0x55, 0x73,
+	0x65, 0x72, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02,
+	0x04, 0x55, 0x73, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -551,7 +500,7 @@ func file_v1_user_response_proto_rawDescGZIP() []byte {
 	return file_v1_user_response_proto_rawDescData
 }
 
-var file_v1_user_response_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_v1_user_response_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_v1_user_response_proto_goTypes = []interface{}{
 	(*AuthUserRegisterResponse)(nil),                // 0: user.AuthUserRegisterResponse
 	(*AuthUserLoginByEmailAndPasswordResponse)(nil), // 1: user.AuthUserLoginByEmailAndPasswordResponse
@@ -559,27 +508,26 @@ var file_v1_user_response_proto_goTypes = []interface{}{
 	(*AuthUserLogoutByTokenResponse)(nil),           // 3: user.AuthUserLogoutByTokenResponse
 	(*AuthUserVerifyAccessControlResponse)(nil),     // 4: user.AuthUserVerifyAccessControlResponse
 	(*AuthUserFindUserByTokenResponse)(nil),         // 5: user.AuthUserFindUserByTokenResponse
-	(*CreateUserResponse)(nil),                      // 6: user.CreateUserResponse
-	(*UpdateUserByIdResponse)(nil),                  // 7: user.UpdateUserByIdResponse
-	(*User)(nil),                                    // 8: user.User
-	(*Role)(nil),                                    // 9: user.Role
-	(*AccessControl)(nil),                           // 10: user.AccessControl
+	(*UpdateUserByIdResponse)(nil),                  // 6: user.UpdateUserByIdResponse
+	(*User)(nil),                                    // 7: user.User
+	(*Role)(nil),                                    // 8: user.Role
+	(*AccessControl)(nil),                           // 9: user.AccessControl
 }
 var file_v1_user_response_proto_depIdxs = []int32{
-	8,  // 0: user.AuthUserRegisterResponse.user:type_name -> user.User
-	9,  // 1: user.AuthUserRegisterResponse.role:type_name -> user.Role
-	10, // 2: user.AuthUserRegisterResponse.access_control:type_name -> user.AccessControl
-	8,  // 3: user.AuthUserVerifyAccessControlResponse.user:type_name -> user.User
-	9,  // 4: user.AuthUserVerifyAccessControlResponse.role:type_name -> user.Role
-	10, // 5: user.AuthUserVerifyAccessControlResponse.access_controls:type_name -> user.AccessControl
-	8,  // 6: user.AuthUserFindUserByTokenResponse.user:type_name -> user.User
-	9,  // 7: user.AuthUserFindUserByTokenResponse.role:type_name -> user.Role
-	10, // 8: user.AuthUserFindUserByTokenResponse.access_controls:type_name -> user.AccessControl
-	9,  // [9:9] is the sub-list for method output_type
-	9,  // [9:9] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	7, // 0: user.AuthUserRegisterResponse.user:type_name -> user.User
+	8, // 1: user.AuthUserRegisterResponse.role:type_name -> user.Role
+	9, // 2: user.AuthUserRegisterResponse.access_control:type_name -> user.AccessControl
+	7, // 3: user.AuthUserVerifyAccessControlResponse.user:type_name -> user.User
+	8, // 4: user.AuthUserVerifyAccessControlResponse.role:type_name -> user.Role
+	9, // 5: user.AuthUserVerifyAccessControlResponse.access_controls:type_name -> user.AccessControl
+	7, // 6: user.AuthUserFindUserByTokenResponse.user:type_name -> user.User
+	8, // 7: user.AuthUserFindUserByTokenResponse.role:type_name -> user.Role
+	9, // 8: user.AuthUserFindUserByTokenResponse.access_controls:type_name -> user.AccessControl
+	9, // [9:9] is the sub-list for method output_type
+	9, // [9:9] is the sub-list for method input_type
+	9, // [9:9] is the sub-list for extension type_name
+	9, // [9:9] is the sub-list for extension extendee
+	0, // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_v1_user_response_proto_init() }
@@ -662,18 +610,6 @@ func file_v1_user_response_proto_init() {
 			}
 		}
 		file_v1_user_response_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateUserResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_v1_user_response_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*UpdateUserByIdResponse); i {
 			case 0:
 				return &v.state
@@ -692,7 +628,7 @@ func file_v1_user_response_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_v1_user_response_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -3,10 +3,7 @@ package user;
 
 import "v1/user/model.proto";
 
-
-
 // AUTH RESPONSE DEFINITION
-// NEW
 message AuthUserRegisterResponse {
   user.User user = 1;
   user.Role role = 2;
@@ -40,16 +37,7 @@ message AuthUserFindUserByTokenResponse {
   repeated user.AccessControl access_controls = 4;
 }
 
-// END NEW
-
-
-
 // USER RESPONSE DEFINITION
-message CreateUserResponse {
-  string id = 1;
-}
-
 message UpdateUserByIdResponse {
-
   string id = 1;
 }

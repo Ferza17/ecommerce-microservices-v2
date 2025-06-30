@@ -26,7 +26,7 @@ func (u *authUseCase) AuthUserFindUserByToken(ctx context.Context, requestId str
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	user, err := u.userPostgresqlRepository.FindUserById(ctx, requestId, claimedToken.GetUserID(), tx)
+	user, err := u.userPostgresqlRepository.FindUserById(ctx, requestId, claimedToken.UserId, tx)
 	if err != nil {
 		tx.Rollback()
 		if errors.Is(err, gorm.ErrRecordNotFound) {

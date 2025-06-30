@@ -14,6 +14,9 @@ type (
 	IAccessControlUseCase interface {
 		IsExcludedRPC(ctx context.Context, requestId string, url string) (bool, error)
 		IsExcludedHTTP(ctx context.Context, requestId string, method, url string) (bool, error)
+
+		IsHasRPCAccess(ctx context.Context, requestId string, role string, fullMethodName string) (bool, error)
+		IsHasHTTPAccess(ctx context.Context, requestId string, role string, httpMethod string, httpUrl string) (bool, error)
 	}
 
 	accessControlUseCase struct {

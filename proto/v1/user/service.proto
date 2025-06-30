@@ -47,25 +47,24 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 
 service UserService {
   // COMMAND
-  rpc CreateUser(user.CreateUserRequest) returns (google.protobuf.Empty){
+  rpc UpdateUserById(user.UpdateUserByIdRequest) returns (google.protobuf.Empty){
     option (user.acl) = {
       roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
       is_public: false,
       http: {
         method: "post",
-        url: "/v1/user/users"
+        url: "/v1/user/users/{id}"
       },
       broker: {
         event_type: "user.created"
       }
     };
     option (google.api.http) = {
-      post: "/v1/user/users",
+      post: "/v1/user/users/{id}",
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      summary: "create a new user";
-      description: "it can be used from rabbitMQ Queue with EXCHANGE user.exchange, QUEUE user.created. this endpoint will be block with middleware and interceptor",
+      summary: "update existing user by provided id";
       tags: ["UserService"];
       security: {
         security_requirement: {
@@ -125,7 +124,7 @@ service UserService {
 
 service AuthService {
   // COMMAND
-  rpc AuthUserRegister(user.AuthUserRegisterRequest) returns (user.AuthUserRegisterResponse) {
+  rpc AuthUserRegister(user.AuthUserRegisterRequest) returns (google.protobuf.Empty) {
     option (user.acl) = {
       is_public: true,
       http: {

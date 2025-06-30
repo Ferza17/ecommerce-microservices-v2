@@ -13,14 +13,14 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	postgres4 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/postgres"
 	redis3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/redis"
-	usecase3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/usecase"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/presenter"
 	redis2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
+	usecase2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
 	postgres3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/repository/postgres"
 	presenter2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/presenter"
 	postgres2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/postgres"
-	usecase2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/usecase"
+	usecase3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 )
 
@@ -32,16 +32,16 @@ func ProvideGrpcServer() *Server {
 	postgresSQL := postgres.NewPostgresqlInfrastructure(iZapLogger)
 	iUserPostgresqlRepository := postgres2.NewUserPostgresqlRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
 	iRolePostgresqlRepository := postgres3.NewRolePostgresqlRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
-	iAccessControlPostgresqlRepository := postgres4.NewAccessControlPostgresqlRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
 	iRedisInfrastructure := redis.NewRedisInfrastructure(iZapLogger)
 	iAuthRedisRepository := redis2.NewAuthRedisRepository(iRedisInfrastructure, iTelemetryInfrastructure, iZapLogger)
+	iAccessControlPostgresqlRepository := postgres4.NewAccessControlPostgresqlRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
 	iAccessControlRedisRepository := redis3.NewAccessControlRedisRepository(iRedisInfrastructure, iTelemetryInfrastructure, iZapLogger)
+	iAccessControlUseCase := usecase.NewAccessControlUseCase(iAccessControlPostgresqlRepository, iAccessControlRedisRepository, iTelemetryInfrastructure, postgresSQL, iZapLogger)
 	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iTelemetryInfrastructure, iZapLogger)
-	iAuthUseCase := usecase.NewAuthUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iAccessControlPostgresqlRepository, iAuthRedisRepository, iAccessControlRedisRepository, iRabbitMQInfrastructure, iTelemetryInfrastructure, postgresSQL, iZapLogger)
+	iAuthUseCase := usecase2.NewAuthUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iAuthRedisRepository, iAccessControlUseCase, iRabbitMQInfrastructure, iTelemetryInfrastructure, postgresSQL, iZapLogger)
 	authPresenter := presenter.NewAuthPresenter(iAuthUseCase, iTelemetryInfrastructure, iZapLogger)
-	iUserUseCase := usecase2.NewUserUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iRabbitMQInfrastructure, iAuthRedisRepository, postgresSQL, iTelemetryInfrastructure, iZapLogger)
+	iUserUseCase := usecase3.NewUserUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iRabbitMQInfrastructure, iAuthRedisRepository, postgresSQL, iTelemetryInfrastructure, iZapLogger)
 	userPresenter := presenter2.NewUserPresenter(iUserUseCase, iTelemetryInfrastructure, iZapLogger)
-	iAccessControlUseCase := usecase3.NewAccessControlUseCase(iAccessControlPostgresqlRepository, iAccessControlRedisRepository, iTelemetryInfrastructure, postgresSQL, iZapLogger)
-	server := NewServer(iZapLogger, iTelemetryInfrastructure, authPresenter, userPresenter, iAccessControlUseCase)
+	server := NewServer(iZapLogger, iTelemetryInfrastructure, authPresenter, userPresenter, iAccessControlUseCase, iAuthUseCase)
 	return server
 }

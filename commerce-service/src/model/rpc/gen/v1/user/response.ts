@@ -10,10 +10,7 @@ import { AccessControl, Role, User } from "./model";
 
 export const protobufPackage = "user";
 
-/**
- * AUTH RESPONSE DEFINITION
- * NEW
- */
+/** AUTH RESPONSE DEFINITION */
 export interface AuthUserRegisterResponse {
   user: User | undefined;
   role: Role | undefined;
@@ -48,10 +45,6 @@ export interface AuthUserFindUserByTokenResponse {
 }
 
 /** USER RESPONSE DEFINITION */
-export interface CreateUserResponse {
-  id: string;
-}
-
 export interface UpdateUserByIdResponse {
   id: string;
 }
@@ -560,64 +553,6 @@ export const AuthUserFindUserByTokenResponse: MessageFns<AuthUserFindUserByToken
     message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
     message.role = (object.role !== undefined && object.role !== null) ? Role.fromPartial(object.role) : undefined;
     message.accessControls = object.accessControls?.map((e) => AccessControl.fromPartial(e)) || [];
-    return message;
-  },
-};
-
-function createBaseCreateUserResponse(): CreateUserResponse {
-  return { id: "" };
-}
-
-export const CreateUserResponse: MessageFns<CreateUserResponse> = {
-  encode(message: CreateUserResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): CreateUserResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseCreateUserResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.id = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): CreateUserResponse {
-    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
-  },
-
-  toJSON(message: CreateUserResponse): unknown {
-    const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<CreateUserResponse>): CreateUserResponse {
-    return CreateUserResponse.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<CreateUserResponse>): CreateUserResponse {
-    const message = createBaseCreateUserResponse();
-    message.id = object.id ?? "";
     return message;
   },
 };

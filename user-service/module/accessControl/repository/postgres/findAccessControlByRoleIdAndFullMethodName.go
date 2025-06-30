@@ -10,14 +10,15 @@ import (
 func (r *accessControlPostgresSQLRepository) FindAccessControlByRoleIdAndFullMethodName(ctx context.Context, requestId string, roleId, fullMethodName string, tx *gorm.DB) (*orm.AccessControl, error) {
 	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.FindRoleByName")
 	defer span.End()
-	role := new(orm.AccessControl)
+	acl := new(orm.AccessControl)
 	if err := tx.WithContext(ctx).
-		Where("role_id = ?", roleId).
-		Where("full_method_name = ?", fullMethodName).
-		First(role).
+		Table("access_controls ac").
+		Where("ac.full_method_name = ?", fullMethodName).
+		Where("ac.role_id = ?", roleId).
+		First(acl).
 		Error; err != nil {
 		r.logger.Error(fmt.Sprintf("requestId : %s , error finding role by name: %v", requestId, err))
 		return nil, err
 	}
-	return role, nil
+	return acl, nil
 }

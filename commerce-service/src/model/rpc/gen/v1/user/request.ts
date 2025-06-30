@@ -47,13 +47,6 @@ export interface FindUserByIdRequest {
   id: string;
 }
 
-export interface CreateUserRequest {
-  name: string;
-  email: string;
-  password: string;
-  Role: EnumRole;
-}
-
 export interface UpdateUserByIdRequest {
   id: string;
   name?: string | undefined;
@@ -587,114 +580,6 @@ export const FindUserByIdRequest: MessageFns<FindUserByIdRequest> = {
   fromPartial(object: DeepPartial<FindUserByIdRequest>): FindUserByIdRequest {
     const message = createBaseFindUserByIdRequest();
     message.id = object.id ?? "";
-    return message;
-  },
-};
-
-function createBaseCreateUserRequest(): CreateUserRequest {
-  return { name: "", email: "", password: "", Role: 0 };
-}
-
-export const CreateUserRequest: MessageFns<CreateUserRequest> = {
-  encode(message: CreateUserRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.name !== "") {
-      writer.uint32(18).string(message.name);
-    }
-    if (message.email !== "") {
-      writer.uint32(26).string(message.email);
-    }
-    if (message.password !== "") {
-      writer.uint32(34).string(message.password);
-    }
-    if (message.Role !== 0) {
-      writer.uint32(40).int32(message.Role);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): CreateUserRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseCreateUserRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.name = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.email = reader.string();
-          continue;
-        }
-        case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
-          message.password = reader.string();
-          continue;
-        }
-        case 5: {
-          if (tag !== 40) {
-            break;
-          }
-
-          message.Role = reader.int32() as any;
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): CreateUserRequest {
-    return {
-      name: isSet(object.name) ? globalThis.String(object.name) : "",
-      email: isSet(object.email) ? globalThis.String(object.email) : "",
-      password: isSet(object.password) ? globalThis.String(object.password) : "",
-      Role: isSet(object.Role) ? enumRoleFromJSON(object.Role) : 0,
-    };
-  },
-
-  toJSON(message: CreateUserRequest): unknown {
-    const obj: any = {};
-    if (message.name !== "") {
-      obj.name = message.name;
-    }
-    if (message.email !== "") {
-      obj.email = message.email;
-    }
-    if (message.password !== "") {
-      obj.password = message.password;
-    }
-    if (message.Role !== 0) {
-      obj.Role = enumRoleToJSON(message.Role);
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<CreateUserRequest>): CreateUserRequest {
-    return CreateUserRequest.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<CreateUserRequest>): CreateUserRequest {
-    const message = createBaseCreateUserRequest();
-    message.name = object.name ?? "";
-    message.email = object.email ?? "";
-    message.password = object.password ?? "";
-    message.Role = object.Role ?? 0;
     return message;
   },
 };

@@ -26,15 +26,14 @@ import {
   AuthUserRegisterRequest,
   AuthUserVerifyAccessControlRequest,
   AuthUserVerifyOtpRequest,
-  CreateUserRequest,
   FindUserByEmailAndPasswordRequest,
   FindUserByIdRequest,
+  UpdateUserByIdRequest,
 } from "./request";
 import {
   AuthUserFindUserByTokenResponse,
   AuthUserLoginByEmailAndPasswordResponse,
   AuthUserLogoutByTokenResponse,
-  AuthUserRegisterResponse,
   AuthUserVerifyAccessControlResponse,
   AuthUserVerifyOtpResponse,
 } from "./response";
@@ -44,12 +43,12 @@ export const protobufPackage = "user";
 export type UserServiceService = typeof UserServiceService;
 export const UserServiceService = {
   /** COMMAND */
-  createUser: {
-    path: "/user.UserService/CreateUser",
+  updateUserById: {
+    path: "/user.UserService/UpdateUserById",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: CreateUserRequest) => Buffer.from(CreateUserRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => CreateUserRequest.decode(value),
+    requestSerialize: (value: UpdateUserByIdRequest) => Buffer.from(UpdateUserByIdRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => UpdateUserByIdRequest.decode(value),
     responseSerialize: (value: Empty) => Buffer.from(Empty.encode(value).finish()),
     responseDeserialize: (value: Buffer) => Empty.decode(value),
   },
@@ -77,7 +76,7 @@ export const UserServiceService = {
 
 export interface UserServiceServer extends UntypedServiceImplementation {
   /** COMMAND */
-  createUser: handleUnaryCall<CreateUserRequest, Empty>;
+  updateUserById: handleUnaryCall<UpdateUserByIdRequest, Empty>;
   /** QUERY */
   findUserById: handleUnaryCall<FindUserByIdRequest, User>;
   findUserByEmailAndPassword: handleUnaryCall<FindUserByEmailAndPasswordRequest, User>;
@@ -85,17 +84,17 @@ export interface UserServiceServer extends UntypedServiceImplementation {
 
 export interface UserServiceClient extends Client {
   /** COMMAND */
-  createUser(
-    request: CreateUserRequest,
+  updateUserById(
+    request: UpdateUserByIdRequest,
     callback: (error: ServiceError | null, response: Empty) => void,
   ): ClientUnaryCall;
-  createUser(
-    request: CreateUserRequest,
+  updateUserById(
+    request: UpdateUserByIdRequest,
     metadata: Metadata,
     callback: (error: ServiceError | null, response: Empty) => void,
   ): ClientUnaryCall;
-  createUser(
-    request: CreateUserRequest,
+  updateUserById(
+    request: UpdateUserByIdRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: Empty) => void,
@@ -148,9 +147,8 @@ export const AuthServiceService = {
     responseStream: false,
     requestSerialize: (value: AuthUserRegisterRequest) => Buffer.from(AuthUserRegisterRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer) => AuthUserRegisterRequest.decode(value),
-    responseSerialize: (value: AuthUserRegisterResponse) =>
-      Buffer.from(AuthUserRegisterResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => AuthUserRegisterResponse.decode(value),
+    responseSerialize: (value: Empty) => Buffer.from(Empty.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Empty.decode(value),
   },
   authUserLoginByEmailAndPassword: {
     path: "/user.AuthService/AuthUserLoginByEmailAndPassword",
@@ -211,7 +209,7 @@ export const AuthServiceService = {
 
 export interface AuthServiceServer extends UntypedServiceImplementation {
   /** COMMAND */
-  authUserRegister: handleUnaryCall<AuthUserRegisterRequest, AuthUserRegisterResponse>;
+  authUserRegister: handleUnaryCall<AuthUserRegisterRequest, Empty>;
   authUserLoginByEmailAndPassword: handleUnaryCall<
     AuthUserLoginByEmailAndPasswordRequest,
     AuthUserLoginByEmailAndPasswordResponse
@@ -227,18 +225,18 @@ export interface AuthServiceClient extends Client {
   /** COMMAND */
   authUserRegister(
     request: AuthUserRegisterRequest,
-    callback: (error: ServiceError | null, response: AuthUserRegisterResponse) => void,
+    callback: (error: ServiceError | null, response: Empty) => void,
   ): ClientUnaryCall;
   authUserRegister(
     request: AuthUserRegisterRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: AuthUserRegisterResponse) => void,
+    callback: (error: ServiceError | null, response: Empty) => void,
   ): ClientUnaryCall;
   authUserRegister(
     request: AuthUserRegisterRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: AuthUserRegisterResponse) => void,
+    callback: (error: ServiceError | null, response: Empty) => void,
   ): ClientUnaryCall;
   authUserLoginByEmailAndPassword(
     request: AuthUserLoginByEmailAndPasswordRequest,

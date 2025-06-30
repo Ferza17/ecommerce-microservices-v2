@@ -17,6 +17,9 @@ type (
 		FindAccessControlByRoleIdAndFullMethodName(ctx context.Context, requestId string, roleId, fullMethodName string, tx *gorm.DB) (*orm.AccessControl, error)
 		FindAccessControlByRoleIdAndHttpMethodAndHttpUrl(ctx context.Context, requestId string, roleId, httpMethod, httpUrl string, tx *gorm.DB) (*orm.AccessControl, error)
 
+		FindAccessControlByRoleAndFullMethodName(ctx context.Context, requestId string, role, fullMethodName string, tx *gorm.DB) (*orm.AccessControl, error)
+		FindAccessControlByRoleAndHttpMethodAndHttpUrl(ctx context.Context, requestId string, role, httpMethod, httpUrl string, tx *gorm.DB) (*orm.AccessControl, error)
+
 		CreateAccessControl(ctx context.Context, requestId string, accessControl *orm.AccessControl, tx *gorm.DB) (*orm.AccessControl, error)
 		UpdateAccessControlById(ctx context.Context, requestId string, accessControl *orm.AccessControl, tx *gorm.DB) (*orm.AccessControl, error)
 

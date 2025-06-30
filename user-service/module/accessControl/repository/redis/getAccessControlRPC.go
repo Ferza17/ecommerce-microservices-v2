@@ -15,14 +15,13 @@ func (r *accessControlRedisRepository) GetAccessControlRPC(ctx context.Context, 
 	key := fmt.Sprintf(accessControlRPCPrefixKey, config.Get().ServiceName, role, fullMethodName)
 	val, err := r.redisInfrastructure.GetClient().Get(ctx, key).Result()
 	if err != nil {
-		r.logger.Error("AccessControlRedisRepository.GetAccessControlRPC", zap.Error(err))
-		span.RecordError(err)
+		r.logger.Error("AccessControlRedisRepository.GetAccessControlRPC", zap.String("requestId", requestId), zap.Error(err))
 		return false, err
 	}
 
 	result, err := strconv.ParseBool(val)
 	if err != nil {
-		r.logger.Error("AccessControlRedisRepository.GetAccessControlRPC", zap.Error(err))
+		r.logger.Error("AccessControlRedisRepository.GetAccessControlRPC", zap.String("requestId", requestId), zap.Error(err))
 		return false, err
 	}
 

@@ -2,7 +2,9 @@ package auth
 
 import (
 	"context"
+	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	accessControlUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/usecase"
+	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"go.uber.org/zap"
@@ -16,16 +18,12 @@ import (
 func AuthRPCUnaryInterceptor(
 	logger logger.IZapLogger,
 	accessControlUseCase accessControlUseCase.IAccessControlUseCase,
+	authUseCase authUseCase.IAuthUseCase,
 ) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
 
 		// Validate is excluded method
 		isExcluded, _ := accessControlUseCase.IsExcludedRPC(ctx, pkgContext.GetRequestIDFromContext(ctx), info.FullMethod)
-		if err != nil {
-			logger.Error("Interceptor.AuthRPCUnaryInterceptor", zap.Error(status.Error(codes.PermissionDenied, err.Error())))
-			return nil, status.Error(codes.PermissionDenied, err.Error())
-		}
-
 		// Bypass if excluded methods
 		if isExcluded {
 			return handler(ctx, req)
@@ -56,7 +54,28 @@ func AuthRPCUnaryInterceptor(
 			return nil, status.Error(codes.Unauthenticated, "missing token")
 		}
 
-		ctx = pkgContext.SetAuthorizationToContext(ctx, tokenHeader)
+		fullMethod := info.FullMethod
+		requestId := pkgContext.GetRequestIDFromContext(ctx)
+		acl, err := authUseCase.AuthUserVerifyAccessControl(
+			ctx,
+			requestId,
+			&pb.AuthUserVerifyAccessControlRequest{
+				Token:          tokenHeader,
+				FullMethodName: &fullMethod,
+			},
+		)
+
+		if err != nil {
+			logger.Error("Interceptor.AccessControlRPCInterceptor", zap.String("requestId", requestId), zap.Error(err))
+			return nil, err
+		}
+
+		if !acl.IsValid {
+			logger.Error("Interceptor.AccessControlRPCInterceptor", zap.String("requestId", requestId), zap.Error(status.Errorf(codes.PermissionDenied, "Permission denied")))
+			return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
+		}
+
+		ctx = pkgContext.SetTokenAuthorizationToContext(ctx, tokenHeader)
 		return handler(ctx, req)
 	}
 }

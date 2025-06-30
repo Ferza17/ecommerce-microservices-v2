@@ -189,7 +189,8 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/userAuthUserRegisterResponse"
+              "type": "object",
+              "properties": {}
             }
           },
           "default": {
@@ -265,46 +266,6 @@
         ],
         "tags": [
           "AuthService"
-        ]
-      }
-    },
-    "/v1/user/users": {
-      "post": {
-        "summary": "create a new user",
-        "description": "it can be used from rabbitMQ Queue with EXCHANGE user.exchange, QUEUE user.created. this endpoint will be block with middleware and interceptor",
-        "operationId": "UserService_CreateUser",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/userCreateUserRequest"
-            }
-          }
-        ],
-        "tags": [
-          "UserService"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
         ]
       }
     },
@@ -385,10 +346,70 @@
             "bearer": []
           }
         ]
+      },
+      "post": {
+        "summary": "update existing user by provided id",
+        "operationId": "UserService_UpdateUserById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserServiceUpdateUserByIdBody"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     }
   },
   "definitions": {
+    "UserServiceUpdateUserByIdBody": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "isVerified": {
+          "type": "boolean"
+        }
+      }
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -493,25 +514,6 @@
         }
       }
     },
-    "userAuthUserRegisterResponse": {
-      "type": "object",
-      "properties": {
-        "user": {
-          "$ref": "#/definitions/userUser"
-        },
-        "role": {
-          "$ref": "#/definitions/userRole"
-        },
-        "accessControl": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/userAccessControl"
-          }
-        }
-      },
-      "title": "AUTH RESPONSE DEFINITION\nNEW"
-    },
     "userAuthUserVerifyAccessControlResponse": {
       "type": "object",
       "properties": {
@@ -549,23 +551,6 @@
         },
         "refreshToken": {
           "type": "string"
-        }
-      }
-    },
-    "userCreateUserRequest": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        },
-        "Role": {
-          "$ref": "#/definitions/userEnumRole"
         }
       }
     },

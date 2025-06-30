@@ -20,7 +20,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_CreateUser_FullMethodName                 = "/user.UserService/CreateUser"
+	UserService_UpdateUserById_FullMethodName             = "/user.UserService/UpdateUserById"
 	UserService_FindUserById_FullMethodName               = "/user.UserService/FindUserById"
 	UserService_FindUserByEmailAndPassword_FullMethodName = "/user.UserService/FindUserByEmailAndPassword"
 )
@@ -30,7 +30,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
 	// COMMAND
-	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	UpdateUserById(ctx context.Context, in *UpdateUserByIdRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// QUERY
 	FindUserById(ctx context.Context, in *FindUserByIdRequest, opts ...grpc.CallOption) (*User, error)
 	FindUserByEmailAndPassword(ctx context.Context, in *FindUserByEmailAndPasswordRequest, opts ...grpc.CallOption) (*User, error)
@@ -44,10 +44,10 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
 }
 
-func (c *userServiceClient) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *userServiceClient) UpdateUserById(ctx context.Context, in *UpdateUserByIdRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, UserService_CreateUser_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, UserService_UpdateUserById_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (c *userServiceClient) FindUserByEmailAndPassword(ctx context.Context, in *
 // for forward compatibility.
 type UserServiceServer interface {
 	// COMMAND
-	CreateUser(context.Context, *CreateUserRequest) (*emptypb.Empty, error)
+	UpdateUserById(context.Context, *UpdateUserByIdRequest) (*emptypb.Empty, error)
 	// QUERY
 	FindUserById(context.Context, *FindUserByIdRequest) (*User, error)
 	FindUserByEmailAndPassword(context.Context, *FindUserByEmailAndPasswordRequest) (*User, error)
@@ -92,8 +92,8 @@ type UserServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedUserServiceServer struct{}
 
-func (UnimplementedUserServiceServer) CreateUser(context.Context, *CreateUserRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+func (UnimplementedUserServiceServer) UpdateUserById(context.Context, *UpdateUserByIdRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserById not implemented")
 }
 func (UnimplementedUserServiceServer) FindUserById(context.Context, *FindUserByIdRequest) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindUserById not implemented")
@@ -121,20 +121,20 @@ func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
 	s.RegisterService(&UserService_ServiceDesc, srv)
 }
 
-func _UserService_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateUserRequest)
+func _UserService_UpdateUserById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).CreateUser(ctx, in)
+		return srv.(UserServiceServer).UpdateUserById(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_CreateUser_FullMethodName,
+		FullMethod: UserService_UpdateUserById_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).CreateUser(ctx, req.(*CreateUserRequest))
+		return srv.(UserServiceServer).UpdateUserById(ctx, req.(*UpdateUserByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -183,8 +183,8 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateUser",
-			Handler:    _UserService_CreateUser_Handler,
+			MethodName: "UpdateUserById",
+			Handler:    _UserService_UpdateUserById_Handler,
 		},
 		{
 			MethodName: "FindUserById",
@@ -213,7 +213,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
 	// COMMAND
-	AuthUserRegister(ctx context.Context, in *AuthUserRegisterRequest, opts ...grpc.CallOption) (*AuthUserRegisterResponse, error)
+	AuthUserRegister(ctx context.Context, in *AuthUserRegisterRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	AuthUserLoginByEmailAndPassword(ctx context.Context, in *AuthUserLoginByEmailAndPasswordRequest, opts ...grpc.CallOption) (*AuthUserLoginByEmailAndPasswordResponse, error)
 	AuthUserVerifyOtp(ctx context.Context, in *AuthUserVerifyOtpRequest, opts ...grpc.CallOption) (*AuthUserVerifyOtpResponse, error)
 	AuthUserLogoutByToken(ctx context.Context, in *AuthUserLogoutByTokenRequest, opts ...grpc.CallOption) (*AuthUserLogoutByTokenResponse, error)
@@ -230,9 +230,9 @@ func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
 	return &authServiceClient{cc}
 }
 
-func (c *authServiceClient) AuthUserRegister(ctx context.Context, in *AuthUserRegisterRequest, opts ...grpc.CallOption) (*AuthUserRegisterResponse, error) {
+func (c *authServiceClient) AuthUserRegister(ctx context.Context, in *AuthUserRegisterRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AuthUserRegisterResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, AuthService_AuthUserRegister_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -295,7 +295,7 @@ func (c *authServiceClient) AuthUserFindUserByToken(ctx context.Context, in *Aut
 // for forward compatibility.
 type AuthServiceServer interface {
 	// COMMAND
-	AuthUserRegister(context.Context, *AuthUserRegisterRequest) (*AuthUserRegisterResponse, error)
+	AuthUserRegister(context.Context, *AuthUserRegisterRequest) (*emptypb.Empty, error)
 	AuthUserLoginByEmailAndPassword(context.Context, *AuthUserLoginByEmailAndPasswordRequest) (*AuthUserLoginByEmailAndPasswordResponse, error)
 	AuthUserVerifyOtp(context.Context, *AuthUserVerifyOtpRequest) (*AuthUserVerifyOtpResponse, error)
 	AuthUserLogoutByToken(context.Context, *AuthUserLogoutByTokenRequest) (*AuthUserLogoutByTokenResponse, error)
@@ -311,7 +311,7 @@ type AuthServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAuthServiceServer struct{}
 
-func (UnimplementedAuthServiceServer) AuthUserRegister(context.Context, *AuthUserRegisterRequest) (*AuthUserRegisterResponse, error) {
+func (UnimplementedAuthServiceServer) AuthUserRegister(context.Context, *AuthUserRegisterRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthUserRegister not implemented")
 }
 func (UnimplementedAuthServiceServer) AuthUserLoginByEmailAndPassword(context.Context, *AuthUserLoginByEmailAndPasswordRequest) (*AuthUserLoginByEmailAndPasswordResponse, error) {

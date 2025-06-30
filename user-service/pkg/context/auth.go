@@ -9,16 +9,16 @@ import (
 
 const CtxKeyAuthorization = "authorization"
 
-func SetAuthorizationToContext(ctx context.Context, token string) context.Context {
+func SetTokenAuthorizationToContext(ctx context.Context, token string) context.Context {
 	return context.WithValue(ctx, CtxKeyAuthorization, token)
 }
 
-func GetAuthorizationFromContext(ctx context.Context) (string, bool) {
-	token, ok := ctx.Value(CtxKeyAuthorization).(string)
-	return token, ok
+func GetTokenAuthorizationFromContext(ctx context.Context) string {
+	token, _ := ctx.Value(CtxKeyAuthorization).(string)
+	return token
 }
 
-func SetAuthorizationToMetadata(ctx context.Context, token string) context.Context {
+func SetTokenAuthorizationToMetadata(ctx context.Context, token string) context.Context {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		authMd := metadata.Pairs(CtxKeyAuthorization, token)
@@ -29,7 +29,7 @@ func SetAuthorizationToMetadata(ctx context.Context, token string) context.Conte
 	return metadata.NewIncomingContext(ctx, md)
 }
 
-func GetAuthorizationFromMetadata(ctx context.Context) (string, error) {
+func GetTokenAuthorizationFromMetadata(ctx context.Context) (string, error) {
 	md := metadata.ValueFromIncomingContext(ctx, CtxKeyAuthorization)
 	if len(md) == 0 {
 		return "", status.Error(codes.InvalidArgument, "metadata not found")

@@ -5,18 +5,18 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	loggerInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/logger"
+	requestIdInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/requestid"
+	telemetryInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/telemetry"
 	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	accessControlUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/usecase"
 	authPresenter "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/presenter"
+	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
 	userPresenter "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/presenter"
 	"github.com/google/wire"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
 
 	authInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/auth"
-	requestIdInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/requestid"
-	telemetryInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/telemetry"
-
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -37,6 +37,7 @@ type (
 
 		// For Middleware
 		accessControlUseCase accessControlUseCase.IAccessControlUseCase
+		authUseCase          authUseCase.IAuthUseCase
 	}
 )
 
@@ -48,6 +49,7 @@ func NewServer(
 	authPresenter *authPresenter.AuthPresenter,
 	userPresenter *userPresenter.UserPresenter,
 	accessControlUseCase accessControlUseCase.IAccessControlUseCase,
+	authUseCase authUseCase.IAuthUseCase,
 ) *Server {
 	return &Server{
 		address:                 config.Get().RpcHost,
@@ -57,6 +59,7 @@ func NewServer(
 		authPresenter:           authPresenter,
 		userPresenter:           userPresenter,
 		accessControlUseCase:    accessControlUseCase,
+		authUseCase:             authUseCase,
 	}
 }
 
@@ -68,9 +71,9 @@ func (srv *Server) Serve() {
 	opts := []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(
 			requestIdInterceptor.RequestIDRPCInterceptor(),
-			telemetryInterceptor.TelemetryRPCInterceptor(),
+			telemetryInterceptor.TelemetryRPCInterceptor(srv.telemetryInfrastructure),
 			loggerInterceptor.LoggerRPCInterceptor(srv.logger),
-			authInterceptor.AuthRPCUnaryInterceptor(srv.logger, srv.accessControlUseCase),
+			authInterceptor.AuthRPCUnaryInterceptor(srv.logger, srv.accessControlUseCase, srv.authUseCase),
 		),
 	}
 

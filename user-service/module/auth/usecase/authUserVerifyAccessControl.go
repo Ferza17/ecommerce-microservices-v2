@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
-	"github.com/go-redis/redis/v8"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/token"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -12,74 +12,50 @@ import (
 )
 
 func (u *authUseCase) AuthUserVerifyAccessControl(ctx context.Context, requestId string, req *pb.AuthUserVerifyAccessControlRequest) (*pb.AuthUserVerifyAccessControlResponse, error) {
-	tx := u.postgresSQL.GormDB.Begin()
+	var (
+		isValid = false
+		tx      = u.postgresSQL.GormDB.Begin()
+	)
 
 	// Claim Token
-	isValid := false
-	authClaimedToken, err := u.AuthUserFindUserByToken(ctx, requestId, &pb.AuthUserFindUserByTokenRequest{
-		Token: req.GetToken(),
-	})
+	claim, err := token.ValidateJWTToken(req.Token, token.DefaultRefreshTokenConfig())
+	if err != nil {
+		tx.Rollback()
+		return nil, status.Error(codes.Unauthenticated, err.Error())
+	}
+
+	user, err := u.userPostgresqlRepository.FindUserById(ctx, requestId, claim.UserId, tx)
 	if err != nil {
 		tx.Rollback()
 		u.logger.Error("AuthUseCase.AuthUserVerifyAccessControl", zap.String("requestId", requestId), zap.Error(err))
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, status.Error(codes.Unauthenticated, "user not found")
+		}
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	if req.FullMethodName != nil {
-		// Search cache If Exists
-		isValid, err = u.accessControlRedisRepository.GetAccessControlRPC(ctx, requestId, authClaimedToken.Role.String(), req.GetFullMethodName())
-		if err != nil && !errors.Is(err, redis.Nil) {
+		isValid, err = u.accessControlUseCase.IsHasRPCAccess(ctx, requestId, user.Role.Role, *req.FullMethodName)
+		if err != nil {
 			tx.Rollback()
-			u.logger.Error("AuthUseCase.AuthUserVerifyAccessControl", zap.String("requestId", requestId), zap.Error(err))
-			return nil, status.Error(codes.Internal, "Internal Error")
+			u.logger.Error("AuthUseCase.IsHasRPCAccess", zap.String("requestId", requestId), zap.Error(err))
+			return nil, status.Error(codes.Unauthenticated, err.Error())
 		}
-
-		if !isValid {
-			// Search on Repository
-			acl, err := u.accessControlPostgresqlRepository.FindAccessControlByRoleIdAndFullMethodName(ctx, requestId, authClaimedToken.Role.Id, req.GetFullMethodName(), tx)
-			if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-				tx.Rollback()
-				u.logger.Error("AuthUseCase.AuthUserVerifyAccessControl", zap.String("requestId", requestId), zap.Error(err))
-				return nil, status.Error(codes.Internal, "Internal Error")
-			}
-
-			if acl != nil {
-				isValid = true
-			}
-		}
-
 	}
 
 	if req.HttpMethod != nil && req.HttpUrl != nil {
-		// Search cache If Exists
-		isValid, err = u.accessControlRedisRepository.GetAccessControlHTTP(ctx, requestId, authClaimedToken.Role.String(), req.GetHttpMethod(), req.GetHttpUrl())
-		if err != nil && !errors.Is(err, redis.Nil) {
+		isValid, err = u.accessControlUseCase.IsHasHTTPAccess(ctx, requestId, user.Role.Role, *req.HttpMethod, *req.HttpUrl)
+		if err != nil {
 			tx.Rollback()
-			u.logger.Error("AuthUseCase.AuthUserVerifyAccessControl", zap.String("requestId", requestId), zap.Error(err))
-			return nil, status.Error(codes.Internal, "Internal Error")
-		}
-
-		if !isValid {
-			// Search on Repository
-			acl, err := u.accessControlPostgresqlRepository.FindAccessControlByRoleIdAndHttpMethodAndHttpUrl(ctx, requestId, authClaimedToken.Role.Id, req.GetHttpMethod(), req.GetHttpUrl(), tx)
-			if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-				tx.Rollback()
-				u.logger.Error("AuthUseCase.AuthUserVerifyAccessControl", zap.String("requestId", requestId), zap.Error(err))
-				return nil, status.Error(codes.Internal, "Internal Error")
-			}
-
-			if acl != nil {
-				isValid = true
-			}
+			u.logger.Error("AuthUseCase.IsHasRPCAccess", zap.String("requestId", requestId), zap.Error(err))
+			return nil, status.Error(codes.Unauthenticated, err.Error())
 		}
 	}
 
 	tx.Commit()
 	return &pb.AuthUserVerifyAccessControlResponse{
-		IsValid:        isValid,
-		User:           nil,
-		Role:           nil,
-		AccessControls: nil,
+		IsValid: isValid,
+		User:    user.ToProto(),
 	}, nil
 
 }

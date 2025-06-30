@@ -9,10 +9,6 @@ import (
 	"time"
 )
 
-//TODO:
-//1. Need to enhance logger PKG
-//2. Need to enhance middleware logger
-
 func LoggerRPCInterceptor(logger logger.IZapLogger) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
 		start := time.Now()
