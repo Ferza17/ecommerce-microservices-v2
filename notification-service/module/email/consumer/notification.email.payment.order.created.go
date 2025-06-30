@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/enum"
-	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/notification/v1"
+	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/context"
 	"github.com/rabbitmq/amqp091-go"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
@@ -66,7 +67,7 @@ func (c *notificationEmailConsumer) NotificationEmailPaymentOrderCreated(ctx con
 			)
 			carrier := propagation.MapCarrier{}
 			for key, value := range d.Headers {
-				if key == enum.XRequestIDHeader.String() {
+				if key == pkgContext.CtxKeyRequestID {
 					requestId = value.(string)
 				}
 

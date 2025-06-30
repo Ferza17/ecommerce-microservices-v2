@@ -3,17 +3,13 @@ package usecase
 import (
 	"context"
 	"errors"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/orm"
-	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/notification"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/util"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
@@ -80,32 +76,10 @@ func (u *authUseCase) AuthUserRegister(ctx context.Context, requestId string, re
 		return nil, status.Error(codes.Internal, "internal server error")
 	}
 
-	// Not Intentionally returning password as a response
-	result.Password = ""
-
-	otp := util.GenerateOTP()
-	if err = u.authRedisRepository.SetOtp(ctx, requestId, otp, result.ID); err != nil {
-		u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
-		return nil, status.Error(codes.Internal, err.Error())
+	if err = u.SentOTP(ctx, requestId, result.ToProto()); err != nil {
+		tx.Rollback()
+		return nil, status.Error(codes.Internal, "internal server error")
 	}
-
-	reqUserEmailOtp := &notificationRpc.SendOtpEmailNotificationRequest{
-		Email:            req.Email,
-		Otp:              otp,
-		NotificationType: notificationRpc.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_OTP,
-	}
-
-	message, err := proto.Marshal(reqUserEmailOtp)
-	if err != nil {
-		u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
-		return nil, status.Error(codes.Internal, err.Error())
-	}
-
-	if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, config.Get().ExchangeNotification, config.Get().QueueNotificationEmailOtpCreated, message); err != nil {
-		u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
-		return nil, status.Error(codes.Internal, err.Error())
-	}
-	tx.Commit()
 
 	tx.Commit()
 	return nil, nil

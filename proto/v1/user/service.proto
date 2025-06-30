@@ -140,7 +140,7 @@ service AuthService {
       tags: ["AuthService"];
     };
   }
-  rpc AuthUserLoginByEmailAndPassword(AuthUserLoginByEmailAndPasswordRequest)  returns (user.AuthUserLoginByEmailAndPasswordResponse){
+  rpc AuthUserLoginByEmailAndPassword(AuthUserLoginByEmailAndPasswordRequest)  returns (google.protobuf.Empty){
     option (user.acl) = {
       is_public: true,
       http: {

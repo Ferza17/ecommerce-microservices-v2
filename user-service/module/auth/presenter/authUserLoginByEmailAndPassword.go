@@ -7,9 +7,10 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func (p *AuthPresenter) AuthUserLoginByEmailAndPassword(ctx context.Context, req *pb.AuthUserLoginByEmailAndPasswordRequest) (*pb.AuthUserLoginByEmailAndPasswordResponse, error) {
+func (p *AuthPresenter) AuthUserLoginByEmailAndPassword(ctx context.Context, req *pb.AuthUserLoginByEmailAndPasswordRequest) (*emptypb.Empty, error) {
 	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "AuthPresenter.AuthUserLoginByEmailAndPassword")
 	defer span.End()
 	requestID := pkgContext.GetRequestIDFromContext(ctx)

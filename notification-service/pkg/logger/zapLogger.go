@@ -1,6 +1,8 @@
-package pkg
+package logger
 
 import (
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
+	"github.com/google/wire"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"log"
@@ -8,15 +10,17 @@ import (
 
 type (
 	IZapLogger interface {
-		Info(msg string)
-		Error(msg string)
-		Debug(msg string)
+		Info(fnName string, f ...zap.Field)
+		Error(fnName string, f ...zap.Field)
+		Debug(fnName string, f ...zap.Field)
 	}
 
 	zapLogger struct {
 		logger *zap.Logger
 	}
 )
+
+var Set = wire.NewSet(NewZapLogger)
 
 func NewZapLogger() IZapLogger {
 	logConfig := zap.Config{
@@ -41,14 +45,20 @@ func NewZapLogger() IZapLogger {
 	}
 }
 
-func (z *zapLogger) Info(msg string) {
-	z.logger.Info(msg)
+func (z *zapLogger) Info(fnName string, fields ...zap.Field) {
+	fields = append(fields, zap.String("service", config.Get().ServiceName))
+	fields = append(fields, zap.String("context", fnName))
+	z.logger.Info(fnName, fields...)
 }
 
-func (z *zapLogger) Error(msg string) {
-	z.logger.Error(msg)
+func (z *zapLogger) Error(fnName string, fields ...zap.Field) {
+	fields = append(fields, zap.String("service", config.Get().ServiceName))
+	fields = append(fields, zap.String("context", fnName))
+	z.logger.Error(fnName, fields...)
 }
 
-func (z *zapLogger) Debug(msg string) {
-	z.logger.Debug(msg)
+func (z *zapLogger) Debug(fnName string, fields ...zap.Field) {
+	fields = append(fields, zap.String("service", config.Get().ServiceName))
+	fields = append(fields, zap.String("msg", fnName))
+	z.logger.Debug(fnName, fields...)
 }

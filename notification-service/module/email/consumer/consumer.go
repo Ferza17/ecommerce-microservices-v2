@@ -6,6 +6,7 @@ import (
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
 	notificationUseCase "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
+	"github.com/google/wire"
 )
 
 type (
@@ -18,15 +19,17 @@ type (
 		rabbitmqInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
 		notificationUseCase     notificationUseCase.INotificationEmailUseCase
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
-		logger                  pkg.IZapLogger
+		logger                  logger.IZapLogger
 	}
 )
+
+var Set = wire.NewSet(NewNotificationConsumer)
 
 func NewNotificationConsumer(
 	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
 	notificationUseCase notificationUseCase.INotificationEmailUseCase,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
-	logger pkg.IZapLogger) INotificationEmailConsumer {
+	logger logger.IZapLogger) INotificationEmailConsumer {
 	return &notificationEmailConsumer{
 		rabbitmqInfrastructure:  rabbitmqInfrastructure,
 		notificationUseCase:     notificationUseCase,

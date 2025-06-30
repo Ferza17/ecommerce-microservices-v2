@@ -20,7 +20,12 @@ type (
 	}
 )
 
-var Set = wire.NewSet(NewAuthRedisRepository)
+const ()
+
+var (
+	Set         = wire.NewSet(NewAuthRedisRepository)
+	RedisKeyOtp = "user:otp:%s:value:user_id"
+)
 
 func NewAuthRedisRepository(
 	redisInfrastructure redisInfrastructure.IRedisInfrastructure,

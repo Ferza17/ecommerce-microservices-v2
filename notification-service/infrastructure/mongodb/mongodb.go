@@ -6,8 +6,10 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
+	"github.com/google/wire"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 )
 
 type (
@@ -20,11 +22,13 @@ type (
 
 	MongoDBInfrastructure struct {
 		mongoClient *mongo.Client
-		logger      pkg.IZapLogger
+		logger      logger.IZapLogger
 	}
 )
 
-func NewMongoDBInfrastructure(logger pkg.IZapLogger) IMongoDBInfrastructure {
+var Set = wire.NewSet(NewMongoDBInfrastructure)
+
+func NewMongoDBInfrastructure(logger logger.IZapLogger) IMongoDBInfrastructure {
 	conn, err := mongo.Connect(
 		context.Background(),
 		options.
@@ -41,11 +45,11 @@ func NewMongoDBInfrastructure(logger pkg.IZapLogger) IMongoDBInfrastructure {
 	)
 
 	if err != nil {
-		logger.Error(fmt.Sprintf("Could not connect to MongoDB: %v\n", err))
+		logger.Error("MongoDBInfrastructure.NewMongoDBInfrastructure", zap.Error(err))
 	}
 	// Make sure that connection insurable
 	if err = conn.Ping(context.Background(), nil); err != nil {
-		logger.Error(fmt.Sprintf("Could not ping MongoDB: %v\n", err))
+		logger.Error("MongoDBInfrastructure.NewMongoDBInfrastructure", zap.Error(err))
 	}
 	return &MongoDBInfrastructure{
 		mongoClient: conn,
@@ -55,7 +59,7 @@ func NewMongoDBInfrastructure(logger pkg.IZapLogger) IMongoDBInfrastructure {
 
 func (m *MongoDBInfrastructure) Close(ctx context.Context) error {
 	if err := m.mongoClient.Disconnect(ctx); err != nil {
-		m.logger.Error(fmt.Sprintf("Failed to close a connection: %v", err))
+		m.logger.Error("MongoDBInfrastructure.Close", zap.Error(err))
 		return err
 	}
 	return nil

@@ -1,7 +1,6 @@
 package requestid
 
 import (
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/google/uuid"
 	"net/http"
@@ -10,7 +9,7 @@ import (
 func RequestIDHTTPMiddleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			reqID := r.Header.Get(enum.XRequestIDHeader.String())
+			reqID := r.Header.Get(pkgContext.CtxKeyRequestID)
 			if reqID == "" {
 				reqID = uuid.NewString()
 			}

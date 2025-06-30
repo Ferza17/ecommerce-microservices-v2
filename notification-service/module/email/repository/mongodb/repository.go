@@ -7,6 +7,7 @@ import (
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/model/bson"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
+	"github.com/google/wire"
 )
 
 type (
@@ -17,14 +18,16 @@ type (
 	notificationEmailRepository struct {
 		mongoDB                 mongodbInfrastructure.IMongoDBInfrastructure
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
-		logger                  pkg.IZapLogger
+		logger                  logger.IZapLogger
 	}
 )
 
-func NewEventRepository(
+var Set = wire.NewSet(NewNotificationEmailRepository)
+
+func NewNotificationEmailRepository(
 	mongodb mongodbInfrastructure.IMongoDBInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
-	logger pkg.IZapLogger) INotificationEmailRepository {
+	logger logger.IZapLogger) INotificationEmailRepository {
 	return &notificationEmailRepository{
 		mongoDB:                 mongodb,
 		logger:                  logger,

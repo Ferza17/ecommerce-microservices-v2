@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/enum"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/context"
 	"github.com/rabbitmq/amqp091-go"
 	"go.uber.org/zap"
 	"time"
@@ -59,7 +60,7 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 			Timestamp:    time.Now(),
 			Body:         message,
 			Headers: map[string]interface{}{
-				enum.XRequestIDHeader.String(): requestId,
+				pkgContext.CtxKeyRequestID: requestId,
 			},
 		},
 	); err != nil {

@@ -32,7 +32,6 @@ import {
 } from "./request";
 import {
   AuthUserFindUserByTokenResponse,
-  AuthUserLoginByEmailAndPasswordResponse,
   AuthUserLogoutByTokenResponse,
   AuthUserVerifyAccessControlResponse,
   AuthUserVerifyOtpResponse,
@@ -157,9 +156,8 @@ export const AuthServiceService = {
     requestSerialize: (value: AuthUserLoginByEmailAndPasswordRequest) =>
       Buffer.from(AuthUserLoginByEmailAndPasswordRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer) => AuthUserLoginByEmailAndPasswordRequest.decode(value),
-    responseSerialize: (value: AuthUserLoginByEmailAndPasswordResponse) =>
-      Buffer.from(AuthUserLoginByEmailAndPasswordResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => AuthUserLoginByEmailAndPasswordResponse.decode(value),
+    responseSerialize: (value: Empty) => Buffer.from(Empty.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Empty.decode(value),
   },
   authUserVerifyOtp: {
     path: "/user.AuthService/AuthUserVerifyOtp",
@@ -210,10 +208,7 @@ export const AuthServiceService = {
 export interface AuthServiceServer extends UntypedServiceImplementation {
   /** COMMAND */
   authUserRegister: handleUnaryCall<AuthUserRegisterRequest, Empty>;
-  authUserLoginByEmailAndPassword: handleUnaryCall<
-    AuthUserLoginByEmailAndPasswordRequest,
-    AuthUserLoginByEmailAndPasswordResponse
-  >;
+  authUserLoginByEmailAndPassword: handleUnaryCall<AuthUserLoginByEmailAndPasswordRequest, Empty>;
   authUserVerifyOtp: handleUnaryCall<AuthUserVerifyOtpRequest, AuthUserVerifyOtpResponse>;
   authUserLogoutByToken: handleUnaryCall<AuthUserLogoutByTokenRequest, AuthUserLogoutByTokenResponse>;
   authUserVerifyAccessControl: handleUnaryCall<AuthUserVerifyAccessControlRequest, AuthUserVerifyAccessControlResponse>;
@@ -240,18 +235,18 @@ export interface AuthServiceClient extends Client {
   ): ClientUnaryCall;
   authUserLoginByEmailAndPassword(
     request: AuthUserLoginByEmailAndPasswordRequest,
-    callback: (error: ServiceError | null, response: AuthUserLoginByEmailAndPasswordResponse) => void,
+    callback: (error: ServiceError | null, response: Empty) => void,
   ): ClientUnaryCall;
   authUserLoginByEmailAndPassword(
     request: AuthUserLoginByEmailAndPasswordRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: AuthUserLoginByEmailAndPasswordResponse) => void,
+    callback: (error: ServiceError | null, response: Empty) => void,
   ): ClientUnaryCall;
   authUserLoginByEmailAndPassword(
     request: AuthUserLoginByEmailAndPasswordRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: AuthUserLoginByEmailAndPasswordResponse) => void,
+    callback: (error: ServiceError | null, response: Empty) => void,
   ): ClientUnaryCall;
   authUserVerifyOtp(
     request: AuthUserVerifyOtpRequest,

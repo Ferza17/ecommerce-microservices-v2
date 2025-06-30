@@ -2,6 +2,7 @@ package mailhog
 
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
+	"github.com/google/wire"
 )
 
 type (
@@ -16,11 +17,13 @@ type (
 		TemplateVars map[string]any
 	}
 	mailhogInfrastructure struct {
-		logger pkg.IZapLogger
+		logger logger.IZapLogger
 	}
 )
 
-func NewMailhogInfrastructure(logger pkg.IZapLogger) IMailhogInfrastructure {
+var Set = wire.NewSet(NewMailhogInfrastructure)
+
+func NewMailhogInfrastructure(logger logger.IZapLogger) IMailhogInfrastructure {
 	return &mailhogInfrastructure{
 		logger: logger,
 	}

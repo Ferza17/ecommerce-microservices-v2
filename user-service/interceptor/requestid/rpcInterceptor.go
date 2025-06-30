@@ -18,6 +18,23 @@ func RequestIDRPCInterceptor() grpc.UnaryServerInterceptor {
 
 		ctx = pkgContext.SetRequestIDToContext(ctx, reqID)
 		ctx = pkgContext.SetRequestIDToMetadata(ctx, reqID)
+
+		defer func() {
+			// Define response header metadata
+			header := metadata.Pairs(
+				pkgContext.CtxKeyRequestID, reqID,
+			)
+
+			if err == nil {
+				// Send metadata as response headers
+				if err = grpc.SetHeader(ctx, header); err != nil {
+					return
+				}
+				return
+			}
+
+		}()
+
 		return handler(ctx, req)
 	}
 }

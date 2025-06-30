@@ -2,10 +2,13 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mongodb"
+	logger2 "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/mongodb"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/spf13/cobra"
+	"go.uber.org/zap"
 	"path/filepath"
 )
 
@@ -16,29 +19,31 @@ var migrationCommand = &cobra.Command{
 		migrationPath := filepath.Join("dbMigration")
 		migrationURL := fmt.Sprintf("file://%s", migrationPath)
 
-		mongoURL := dependency.MongoDBInfrastructure.GetConnectionString()
+		mongoDB := mongodb.ProvideMongoDBInfrastructure()
+		mongoURL := mongoDB.GetConnectionString()
+		logger := logger2.ProvideLogger()
 
 		instance, err := migrate.New(migrationURL, mongoURL)
 		if err != nil {
-			dependency.Logger.Error(fmt.Sprintf("failed to create migration : %v", err))
+			logger.Error("CMD.MigrationCommand", zap.Error(fmt.Errorf("failed to create migration : %v", err)))
 			panic(err)
 		}
 
 		if len(args) == 0 {
-			dependency.Logger.Info("No migration version specified, insert argument up or down")
+			logger.Error("CMD.MigrationCommand", zap.Error(fmt.Errorf("no migration version specified, insert argument up or down")))
 			return
 		} else if args[0] == "up" {
 			if err := instance.Up(); err != nil {
-				dependency.Logger.Error(fmt.Sprintf("failed to migrate up : %v", err))
+				logger.Error("CMD.MigrationCommand", zap.Error(fmt.Errorf("failed to migrate up : %v", err)))
 				return
 			}
 		} else if args[0] == "down" {
 			if err := instance.Down(); err != nil {
-				dependency.Logger.Error(fmt.Sprintf("failed to migrate down : %v", err))
+				logger.Error("CMD.MigrationCommand", zap.Error(fmt.Errorf("failed to create down : %v", err)))
 				return
 			}
 		} else {
-			dependency.Logger.Info("Invalid migration version, insert argument up or down")
+			logger.Error("CMD.MigrationCommand", zap.Error(fmt.Errorf("invalid migration version, insert argument up or down")))
 			return
 		}
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
+	"github.com/google/wire"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -14,21 +15,18 @@ import (
 )
 
 type (
-	IGrpcServer interface {
-		Serve()
-		GracefulStop()
-	}
-
 	GrpcServer struct {
 		address string
 		port    string
 
 		grpcServer *grpc.Server
-		logger     pkg.IZapLogger
+		logger     logger.IZapLogger
 	}
 )
 
-func NewGrpcServer(logger pkg.IZapLogger) IGrpcServer {
+var Set = wire.NewSet(NewGrpcServer)
+
+func NewGrpcServer(logger logger.IZapLogger) *GrpcServer {
 	return &GrpcServer{
 		address:    config.Get().RpcHost,
 		port:       config.Get().RpcPort,

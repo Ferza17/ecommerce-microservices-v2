@@ -10,11 +10,6 @@ message AuthUserRegisterResponse {
   repeated user.AccessControl access_control = 3;
 }
 
-message AuthUserLoginByEmailAndPasswordResponse {
-  string accessToken = 1;
-  string refreshToken = 2;
-}
-
 message AuthUserVerifyOtpResponse {
   string accessToken = 1;
   string refreshToken = 2;

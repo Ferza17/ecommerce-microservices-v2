@@ -7,6 +7,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
 	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/rabbitmq/amqp091-go"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
@@ -72,11 +73,11 @@ func (c *userConsumer) UserUpdated(ctx context.Context) error {
 			)
 			carrier := propagation.MapCarrier{}
 			for key, value := range d.Headers {
-				if key == enum.XRequestIDHeader.String() {
+				if key == pkgContext.CtxKeyRequestID {
 					requestId = value.(string)
 				}
 
-				if key == enum.AuthorizationHeader.String() {
+				if key == pkgContext.CtxKeyAuthorization {
 					//ctx = token.SetTokenToContext(ctx, value.(string))
 				}
 

@@ -6,6 +6,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
+	"github.com/google/wire"
 	"github.com/rabbitmq/amqp091-go"
 )
 
@@ -17,13 +18,15 @@ type (
 	}
 	RabbitMQInfrastructure struct {
 		amqpConn                *amqp091.Connection
-		logger                  pkg.IZapLogger
+		logger                  logger.IZapLogger
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 	}
 )
 
+var Set = wire.NewSet(NewRabbitMQInfrastructure)
+
 func NewRabbitMQInfrastructure(
-	logger pkg.IZapLogger,
+	logger logger.IZapLogger,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 ) IRabbitMQInfrastructure {
 	amqpConn, err := amqp091.Dial(

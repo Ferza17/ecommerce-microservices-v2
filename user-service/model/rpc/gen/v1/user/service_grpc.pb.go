@@ -214,7 +214,7 @@ const (
 type AuthServiceClient interface {
 	// COMMAND
 	AuthUserRegister(ctx context.Context, in *AuthUserRegisterRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	AuthUserLoginByEmailAndPassword(ctx context.Context, in *AuthUserLoginByEmailAndPasswordRequest, opts ...grpc.CallOption) (*AuthUserLoginByEmailAndPasswordResponse, error)
+	AuthUserLoginByEmailAndPassword(ctx context.Context, in *AuthUserLoginByEmailAndPasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	AuthUserVerifyOtp(ctx context.Context, in *AuthUserVerifyOtpRequest, opts ...grpc.CallOption) (*AuthUserVerifyOtpResponse, error)
 	AuthUserLogoutByToken(ctx context.Context, in *AuthUserLogoutByTokenRequest, opts ...grpc.CallOption) (*AuthUserLogoutByTokenResponse, error)
 	AuthUserVerifyAccessControl(ctx context.Context, in *AuthUserVerifyAccessControlRequest, opts ...grpc.CallOption) (*AuthUserVerifyAccessControlResponse, error)
@@ -240,9 +240,9 @@ func (c *authServiceClient) AuthUserRegister(ctx context.Context, in *AuthUserRe
 	return out, nil
 }
 
-func (c *authServiceClient) AuthUserLoginByEmailAndPassword(ctx context.Context, in *AuthUserLoginByEmailAndPasswordRequest, opts ...grpc.CallOption) (*AuthUserLoginByEmailAndPasswordResponse, error) {
+func (c *authServiceClient) AuthUserLoginByEmailAndPassword(ctx context.Context, in *AuthUserLoginByEmailAndPasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AuthUserLoginByEmailAndPasswordResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, AuthService_AuthUserLoginByEmailAndPassword_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -296,7 +296,7 @@ func (c *authServiceClient) AuthUserFindUserByToken(ctx context.Context, in *Aut
 type AuthServiceServer interface {
 	// COMMAND
 	AuthUserRegister(context.Context, *AuthUserRegisterRequest) (*emptypb.Empty, error)
-	AuthUserLoginByEmailAndPassword(context.Context, *AuthUserLoginByEmailAndPasswordRequest) (*AuthUserLoginByEmailAndPasswordResponse, error)
+	AuthUserLoginByEmailAndPassword(context.Context, *AuthUserLoginByEmailAndPasswordRequest) (*emptypb.Empty, error)
 	AuthUserVerifyOtp(context.Context, *AuthUserVerifyOtpRequest) (*AuthUserVerifyOtpResponse, error)
 	AuthUserLogoutByToken(context.Context, *AuthUserLogoutByTokenRequest) (*AuthUserLogoutByTokenResponse, error)
 	AuthUserVerifyAccessControl(context.Context, *AuthUserVerifyAccessControlRequest) (*AuthUserVerifyAccessControlResponse, error)
@@ -314,7 +314,7 @@ type UnimplementedAuthServiceServer struct{}
 func (UnimplementedAuthServiceServer) AuthUserRegister(context.Context, *AuthUserRegisterRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthUserRegister not implemented")
 }
-func (UnimplementedAuthServiceServer) AuthUserLoginByEmailAndPassword(context.Context, *AuthUserLoginByEmailAndPasswordRequest) (*AuthUserLoginByEmailAndPasswordResponse, error) {
+func (UnimplementedAuthServiceServer) AuthUserLoginByEmailAndPassword(context.Context, *AuthUserLoginByEmailAndPasswordRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthUserLoginByEmailAndPassword not implemented")
 }
 func (UnimplementedAuthServiceServer) AuthUserVerifyOtp(context.Context, *AuthUserVerifyOtpRequest) (*AuthUserVerifyOtpResponse, error) {

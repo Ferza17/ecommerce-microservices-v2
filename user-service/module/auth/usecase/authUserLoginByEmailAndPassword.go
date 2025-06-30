@@ -9,10 +9,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"gorm.io/gorm"
 )
 
-func (u *authUseCase) AuthUserLoginByEmailAndPassword(ctx context.Context, requestId string, req *pb.AuthUserLoginByEmailAndPasswordRequest) (*pb.AuthUserLoginByEmailAndPasswordResponse, error) {
+func (u *authUseCase) AuthUserLoginByEmailAndPassword(ctx context.Context, requestId string, req *pb.AuthUserLoginByEmailAndPasswordRequest) (*emptypb.Empty, error) {
 	tx := u.postgresSQL.GormDB.Begin()
 	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.AuthUserLoginByEmailAndPassword")
 	defer span.End()
@@ -42,19 +43,11 @@ func (u *authUseCase) AuthUserLoginByEmailAndPassword(ctx context.Context, reque
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	// Generate Access & Refresh Token
-	accessToken, refreshToken, err := u.GenerateAccessToken(ctx, requestId, user)
-	if err != nil {
+	if err = u.SentOTP(ctx, requestId, user.ToProto()); err != nil {
 		tx.Rollback()
-		u.logger.Error("AuthUseCase.AuthUserLoginByEmailAndPassword", zap.String("requestId", requestId), zap.Error(errors.New("error generating token")))
-		return nil, err
+		return nil, status.Error(codes.Internal, "internal server error")
 	}
 
-	// Build Response
-	resp := &pb.AuthUserLoginByEmailAndPasswordResponse{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-	}
 	tx.Commit()
-	return resp, nil
+	return nil, nil
 }

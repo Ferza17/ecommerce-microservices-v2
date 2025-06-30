@@ -2,7 +2,7 @@ package enum
 
 import (
 	"errors"
-	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/notification/v1"
+	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification"
 )
 
 type NotificationType string

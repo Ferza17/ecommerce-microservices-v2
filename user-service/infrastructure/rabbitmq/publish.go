@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/rabbitmq/amqp091-go"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
@@ -58,7 +59,7 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 	for k, v := range carrier {
 		headers[k] = v
 	}
-	headers[enum.XRequestIDHeader.String()] = requestId
+	headers[pkgContext.CtxKeyRequestID] = requestId
 
 	// Publish message
 	if err = amqpChannel.PublishWithContext(

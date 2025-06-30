@@ -17,11 +17,6 @@ export interface AuthUserRegisterResponse {
   accessControl: AccessControl[];
 }
 
-export interface AuthUserLoginByEmailAndPasswordResponse {
-  accessToken: string;
-  refreshToken: string;
-}
-
 export interface AuthUserVerifyOtpResponse {
   accessToken: string;
   refreshToken: string;
@@ -139,82 +134,6 @@ export const AuthUserRegisterResponse: MessageFns<AuthUserRegisterResponse> = {
     message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
     message.role = (object.role !== undefined && object.role !== null) ? Role.fromPartial(object.role) : undefined;
     message.accessControl = object.accessControl?.map((e) => AccessControl.fromPartial(e)) || [];
-    return message;
-  },
-};
-
-function createBaseAuthUserLoginByEmailAndPasswordResponse(): AuthUserLoginByEmailAndPasswordResponse {
-  return { accessToken: "", refreshToken: "" };
-}
-
-export const AuthUserLoginByEmailAndPasswordResponse: MessageFns<AuthUserLoginByEmailAndPasswordResponse> = {
-  encode(message: AuthUserLoginByEmailAndPasswordResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.accessToken !== "") {
-      writer.uint32(10).string(message.accessToken);
-    }
-    if (message.refreshToken !== "") {
-      writer.uint32(18).string(message.refreshToken);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): AuthUserLoginByEmailAndPasswordResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseAuthUserLoginByEmailAndPasswordResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.accessToken = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.refreshToken = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): AuthUserLoginByEmailAndPasswordResponse {
-    return {
-      accessToken: isSet(object.accessToken) ? globalThis.String(object.accessToken) : "",
-      refreshToken: isSet(object.refreshToken) ? globalThis.String(object.refreshToken) : "",
-    };
-  },
-
-  toJSON(message: AuthUserLoginByEmailAndPasswordResponse): unknown {
-    const obj: any = {};
-    if (message.accessToken !== "") {
-      obj.accessToken = message.accessToken;
-    }
-    if (message.refreshToken !== "") {
-      obj.refreshToken = message.refreshToken;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<AuthUserLoginByEmailAndPasswordResponse>): AuthUserLoginByEmailAndPasswordResponse {
-    return AuthUserLoginByEmailAndPasswordResponse.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<AuthUserLoginByEmailAndPasswordResponse>): AuthUserLoginByEmailAndPasswordResponse {
-    const message = createBaseAuthUserLoginByEmailAndPasswordResponse();
-    message.accessToken = object.accessToken ?? "";
-    message.refreshToken = object.refreshToken ?? "";
     return message;
   },
 };
