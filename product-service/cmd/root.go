@@ -2,10 +2,7 @@ package cmd
 
 import (
 	"context"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/bootstrap"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/transport/grpc"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/transport/rabbitmq"
 	"github.com/spf13/cobra"
 	"log"
 )
@@ -19,32 +16,17 @@ var rootCommand = &cobra.Command{
 
 func Run() {
 	cmd := &cobra.Command{}
-	cmd.AddCommand(rootCommand, runCommand, rpcCommand, migrationCommand)
+	cmd.AddCommand(rootCommand, runCommand, migrationCommand)
 	if err := cmd.Execute(); err != nil {
 		log.Panic(err)
 	}
 }
 
-var (
-	dependency     *bootstrap.Bootstrap
-	grpcServer     *grpc.GrpcTransport
-	rabbitMQServer *rabbitmq.Server
-)
-
 func init() {
 	config.SetConfig(".")
-	dependency = bootstrap.NewBootstrap()
-	grpcServer = grpc.NewServer(dependency)
-	rabbitMQServer = rabbitmq.NewServer(dependency)
 }
 
 func Shutdown(ctx context.Context) (err error) {
-	grpcServer.GracefulStop()
-
-	if err = dependency.PostgreSQLInfrastructure.Close(); err != nil {
-		return err
-	}
-
 	log.Println("Shutdown...")
 	return
 }

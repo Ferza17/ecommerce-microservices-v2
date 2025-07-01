@@ -91,7 +91,9 @@ func (srv *Server) Serve() {
 	// Mark the service as healthy
 	healthServer := health.NewServer()
 	grpc_health_v1.RegisterHealthServer(srv.grpcServer, healthServer)
-	healthServer.SetServingStatus(config.Get().ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
+	healthServer.SetServingStatus(config.Get().UserServiceServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
+
+	log.Printf("Starting gRPC server on %s:%s", srv.address, srv.port)
 
 	// Enable Reflection to Evans grpc client
 	reflection.Register(srv.grpcServer)

@@ -12,7 +12,7 @@ func (r *accessControlRedisRepository) GetAccessControlRPCExcluded(ctx context.C
 	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AuthRedisRepository.GetAccessControlRPCExcluded")
 	defer span.End()
 
-	key := fmt.Sprintf(accessControlRPCExcludedPrefixKey, config.Get().ServiceName, fullMethodName)
+	key := fmt.Sprintf(accessControlRPCExcludedPrefixKey, config.Get().UserServiceServiceName, fullMethodName)
 	val, err := r.redisInfrastructure.GetClient().Get(ctx, key).Result()
 	if err != nil {
 		r.logger.Error("AccessControlRedisRepository.GetAccessControlRPCExcluded", zap.Error(err))

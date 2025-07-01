@@ -1,6 +1,6 @@
 -- +goose Up
 
-INSERT INTO PRODUCTS (id, name, description, uom, image, price, stock, created_at, updated_at, discarded_at)
+INSERT INTO products (id, name, description, uom, image, price, stock, created_at, updated_at, discarded_at)
 VALUES
 -- 1
 (gen_random_uuid(), 'Mountain Boots', 'Durable boots for rugged mountain terrain.', 'pair', 'https://picsum.photos/200?1', 129.99, 50, NOW(), NOW(), NULL),

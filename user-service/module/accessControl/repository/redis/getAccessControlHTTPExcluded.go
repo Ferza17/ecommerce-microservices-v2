@@ -13,7 +13,7 @@ func (r *accessControlRedisRepository) GetAccessControlHTTPExcluded(ctx context.
 	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AccessControlRedisRepository.GetAccessControlHTTPExcluded")
 	defer span.End()
 
-	key := fmt.Sprintf(accessControlHTTPExcludedPrefixKey, config.Get().ServiceName, method, url)
+	key := fmt.Sprintf(accessControlHTTPExcludedPrefixKey, config.Get().UserServiceServiceName, method, url)
 	val, err := r.redisInfrastructure.GetClient().Get(ctx, key).Result()
 	if err != nil {
 		r.logger.Error("AccessControlRedisRepository.GetAccessControlHTTPExcluded", zap.Error(err), zap.Error(errors.New(fmt.Sprintf("requestId : %s , error getting HTTP Access Control Excluded: %v", requestId, err))))

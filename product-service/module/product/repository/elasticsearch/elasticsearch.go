@@ -5,9 +5,10 @@ import (
 	elasticsearchInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/elasticsearch"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/orm"
-	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
+	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product"
+	"github.com/google/wire"
 
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/logger"
 )
 
 type (
@@ -19,16 +20,18 @@ type (
 	productElasticsearchRepository struct {
 		elasticsearchInfrastructure elasticsearchInfrastructure.IElasticsearchInfrastructure
 		telemetryInfrastructure     telemetryInfrastructure.ITelemetryInfrastructure
-		logger                      pkg.IZapLogger
+		logger                      logger.IZapLogger
 	}
 )
+
+var Set = wire.NewSet(NewProductElasticsearchRepository)
 
 const productIndex = "products"
 
 func NewProductElasticsearchRepository(
 	elasticsearchInfrastructure elasticsearchInfrastructure.IElasticsearchInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
-	logger pkg.IZapLogger,
+	logger logger.IZapLogger,
 ) IProductElasticsearchRepository {
 	return &productElasticsearchRepository{
 		elasticsearchInfrastructure: elasticsearchInfrastructure,

@@ -11,7 +11,15 @@ extend google.protobuf.MethodOptions {
 message MethodAccessControl {
   bool is_public = 1;
   repeated user.EnumRole roles = 2;
+  user.HTTP http = 3;
+  optional user.Broker broker = 5;
+}
 
-  string http_url = 3;
-  optional string event_type = 4;
+message HTTP {
+  string url = 1;
+  string method = 2;
+}
+
+message Broker {
+  string event_type = 1;
 }

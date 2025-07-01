@@ -3,7 +3,7 @@ package presenter
 import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
-	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
+	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product"
 	"time"
 
 	"google.golang.org/grpc/codes"
@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (p *ProductGrpcPresenter) FindProductById(ctx context.Context, req *productRpc.FindProductByIdRequest) (*productRpc.Product, error) {
+func (p *ProductPresenter) FindProductById(ctx context.Context, req *productRpc.FindProductByIdRequest) (*productRpc.Product, error) {
 	var (
 		ctxTimeout, cancel = context.WithTimeout(ctx, 5*time.Second)
 	)

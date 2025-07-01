@@ -3,67 +3,30 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/orm"
-	eventRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/event/v1"
-	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
+	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product"
+	"github.com/golang/protobuf/ptypes/empty"
 
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/util"
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
 )
 
-func (u *productUseCase) CreateProduct(ctx context.Context, requestId string, req *productRpc.CreateProductRequest) (*productRpc.CreateProductResponse, error) {
+func (u *productUseCase) CreateProduct(ctx context.Context, requestId string, req *productRpc.CreateProductRequest) (*empty.Empty, error) {
 	var (
-		ctxTimeout, cancel = context.WithTimeout(ctx, 5*time.Second)
-		err                error
-		tx                 = u.productPgsqlRepository.OpenTransactionWithContext(ctxTimeout)
-		now                = time.Now().UTC()
-		eventStore         = &eventRpc.EventStore{
-			RequestId:     requestId,
-			Service:       config.Get().ServiceName,
-			EventType:     config.Get().QueueProductCreated,
-			Status:        config.Get().CommonSagaStatusSuccess,
-			PreviousState: nil,
-			CreatedAt:     timestamppb.Now(),
-			UpdatedAt:     timestamppb.Now(),
-		}
+		err error
+		tx  = u.postgres.GormDB.Begin()
+		now = time.Now().UTC()
 	)
-	ctxTimeout, span := u.telemetryInfrastructure.Tracer(ctxTimeout, "UseCase.CreateProduct")
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "ProductUseCase.CreateProduct")
+	defer span.End()
 
-	defer func(err error, eventStore *eventRpc.EventStore) {
-		defer cancel()
-		defer span.End()
-		payload, err := util.ConvertStructToProtoStruct(req)
-		if err != nil {
-			u.logger.Error(fmt.Sprintf("error converting struct to proto struct: %s", err.Error()))
-		}
-		eventStore.Payload = payload
-
-		eventStoreMessage, err := proto.Marshal(eventStore)
-		if err != nil {
-			u.logger.Error(fmt.Sprintf("error marshaling message: %s", err.Error()))
-		}
-
-		if err != nil {
-			eventStore.Status = config.Get().CommonSagaStatusFailed
-		}
-
-		if err = u.rabbitmqInfrastructure.Publish(ctxTimeout, requestId, config.Get().ExchangeEvent, config.Get().QueueEventCreated, eventStoreMessage); err != nil {
-			u.logger.Error(fmt.Sprintf("error creating product event store: %s", err.Error()))
-			return
-		}
-	}(err, eventStore)
-
-	result, err := u.productPgsqlRepository.CreateProduct(ctxTimeout, &orm.Product{
+	_, err = u.productPgsqlRepository.CreateProduct(ctx, &orm.Product{
 		ID:          uuid.NewString(),
 		Name:        req.GetName(),
 		Price:       req.GetPrice(),
-		Stock:       req.GetStock(),
+		Stock:       int64(req.Stock),
 		Description: req.GetDescription(),
 		Image:       req.GetImage(),
 		Uom:         req.GetUom(),
@@ -76,8 +39,8 @@ func (u *productUseCase) CreateProduct(ctx context.Context, requestId string, re
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
+	// TODO: Insert Via CONNECTOR SINK
+
 	tx.Commit()
-	return &productRpc.CreateProductResponse{
-		Id: result,
-	}, nil
+	return nil, nil
 }

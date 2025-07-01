@@ -11,7 +11,7 @@ func (r *accessControlRedisRepository) SetAccessControlRPC(ctx context.Context, 
 	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AuthRedisRepository.SetAccessControlRPC")
 	defer span.End()
 
-	key := fmt.Sprintf(accessControlRPCPrefixKey, config.Get().ServiceName, role, fullMethodName)
+	key := fmt.Sprintf(accessControlRPCPrefixKey, config.Get().UserServiceServiceName, role, fullMethodName)
 	if err := r.redisInfrastructure.
 		GetClient().
 		SetEX(ctx, key, true, accessControlTTL).

@@ -428,7 +428,6 @@ plugins:
       - Mv1/user/response.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/user
       - Mv1/user/service.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/user
       - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/user
-  # VALIDATE-GO
   - plugin: buf.build/bufbuild/validate-go
     out: notification-service/model/rpc/gen
     opt:
@@ -542,7 +541,7 @@ plugins:
       - Mv1/user/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/user
       - Mv1/user/service.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/user
       - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/user
-  # GRPC GATEWAY
+  # GRPC-GATEWAY
   - plugin: grpc-gateway
     out: payment-service/model/rpc/gen
     opt:
@@ -654,7 +653,7 @@ plugins:
       - Mv1/user/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
       - Mv1/user/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
       - Mv1/user/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
-      - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/user
+      - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
   # GO
   - plugin: go
     out: product-service/model/rpc/gen
@@ -692,7 +691,7 @@ plugins:
       - Mv1/user/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
       - Mv1/user/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
       - Mv1/user/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
-      - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/user
+      - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
   # GRPC-GATEWAY
   - plugin: grpc-gateway
     out: product-service/model/rpc/gen
@@ -730,7 +729,7 @@ plugins:
       - Mv1/user/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
       - Mv1/user/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
       - Mv1/user/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
-      - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/user
+      - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
   - plugin: buf.build/bufbuild/validate-go
     out: product-service/model/rpc/gen
     opt:
@@ -767,7 +766,7 @@ plugins:
       - Mv1/user/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
       - Mv1/user/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
       - Mv1/user/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
-      - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/user
+      - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
   - plugin: go-grpc
     out: user-service/model/rpc/gen
     opt:

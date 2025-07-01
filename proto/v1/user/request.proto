@@ -43,6 +43,12 @@ message AuthUserFindUserByTokenRequest {
   string token = 1 [(validate.rules).string.min_len = 0];
 }
 
+message AuthServiceVerifyIsExcludedRequest {
+  optional string fullMethodName = 2;
+  optional string http_url = 3;
+  optional string http_method = 4;
+}
+
 // END NEW
 
 

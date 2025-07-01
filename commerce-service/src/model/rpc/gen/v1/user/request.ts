@@ -42,6 +42,12 @@ export interface AuthUserFindUserByTokenRequest {
   token: string;
 }
 
+export interface AuthServiceVerifyIsExcludedRequest {
+  fullMethodName?: string | undefined;
+  httpUrl?: string | undefined;
+  httpMethod?: string | undefined;
+}
+
 /** USER REQUEST DEFINITION */
 export interface FindUserByIdRequest {
   id: string;
@@ -522,6 +528,98 @@ export const AuthUserFindUserByTokenRequest: MessageFns<AuthUserFindUserByTokenR
   fromPartial(object: DeepPartial<AuthUserFindUserByTokenRequest>): AuthUserFindUserByTokenRequest {
     const message = createBaseAuthUserFindUserByTokenRequest();
     message.token = object.token ?? "";
+    return message;
+  },
+};
+
+function createBaseAuthServiceVerifyIsExcludedRequest(): AuthServiceVerifyIsExcludedRequest {
+  return { fullMethodName: undefined, httpUrl: undefined, httpMethod: undefined };
+}
+
+export const AuthServiceVerifyIsExcludedRequest: MessageFns<AuthServiceVerifyIsExcludedRequest> = {
+  encode(message: AuthServiceVerifyIsExcludedRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.fullMethodName !== undefined) {
+      writer.uint32(18).string(message.fullMethodName);
+    }
+    if (message.httpUrl !== undefined) {
+      writer.uint32(26).string(message.httpUrl);
+    }
+    if (message.httpMethod !== undefined) {
+      writer.uint32(34).string(message.httpMethod);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AuthServiceVerifyIsExcludedRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAuthServiceVerifyIsExcludedRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.fullMethodName = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.httpUrl = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.httpMethod = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AuthServiceVerifyIsExcludedRequest {
+    return {
+      fullMethodName: isSet(object.fullMethodName) ? globalThis.String(object.fullMethodName) : undefined,
+      httpUrl: isSet(object.httpUrl) ? globalThis.String(object.httpUrl) : undefined,
+      httpMethod: isSet(object.httpMethod) ? globalThis.String(object.httpMethod) : undefined,
+    };
+  },
+
+  toJSON(message: AuthServiceVerifyIsExcludedRequest): unknown {
+    const obj: any = {};
+    if (message.fullMethodName !== undefined) {
+      obj.fullMethodName = message.fullMethodName;
+    }
+    if (message.httpUrl !== undefined) {
+      obj.httpUrl = message.httpUrl;
+    }
+    if (message.httpMethod !== undefined) {
+      obj.httpMethod = message.httpMethod;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<AuthServiceVerifyIsExcludedRequest>): AuthServiceVerifyIsExcludedRequest {
+    return AuthServiceVerifyIsExcludedRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<AuthServiceVerifyIsExcludedRequest>): AuthServiceVerifyIsExcludedRequest {
+    const message = createBaseAuthServiceVerifyIsExcludedRequest();
+    message.fullMethodName = object.fullMethodName ?? undefined;
+    message.httpUrl = object.httpUrl ?? undefined;
+    message.httpMethod = object.httpMethod ?? undefined;
     return message;
   },
 };

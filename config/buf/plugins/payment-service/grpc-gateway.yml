@@ -1,4 +1,4 @@
-# GRPC GATEWAY
+# GRPC-GATEWAY
 - plugin: grpc-gateway
   out: payment-service/model/rpc/gen
   opt:

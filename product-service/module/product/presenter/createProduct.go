@@ -3,7 +3,8 @@ package presenter
 import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
-	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
+	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product"
+	"github.com/golang/protobuf/ptypes/empty"
 	"time"
 
 	"google.golang.org/grpc/codes"
@@ -11,7 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (p *ProductGrpcPresenter) CreateProduct(ctx context.Context, req *productRpc.CreateProductRequest) (*productRpc.CreateProductResponse, error) {
+func (p *ProductPresenter) CreateProduct(ctx context.Context, req *productRpc.CreateProductRequest) (*empty.Empty, error) {
 	var (
 		ctxTimeout, cancel = context.WithTimeout(ctx, 5*time.Second)
 	)

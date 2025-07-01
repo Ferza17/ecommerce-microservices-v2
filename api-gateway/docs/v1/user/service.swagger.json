@@ -23,6 +23,49 @@
     "application/json"
   ],
   "paths": {
+    "/v1/user/auth/acl/excluded": {
+      "post": {
+        "summary": "verify RPC FullmethodName or HTTP URL \u0026 HTTP Method with provided request",
+        "operationId": "AuthService_AuthServiceVerifyIsExcluded",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userAuthServiceVerifyIsExcludedResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "fullMethodName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "httpUrl",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "httpMethod",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
     "/v1/user/auth/acl/verify": {
       "post": {
         "summary": "verified access control user by provided request",
@@ -467,6 +510,14 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "userAuthServiceVerifyIsExcludedResponse": {
+      "type": "object",
+      "properties": {
+        "IsExcluded": {
+          "type": "boolean"
         }
       }
     },

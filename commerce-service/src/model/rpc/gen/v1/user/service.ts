@@ -20,6 +20,7 @@ import {
 import { Empty } from "../../google/protobuf/empty";
 import { User } from "./model";
 import {
+  AuthServiceVerifyIsExcludedRequest,
   AuthUserFindUserByTokenRequest,
   AuthUserLoginByEmailAndPasswordRequest,
   AuthUserLogoutByTokenRequest,
@@ -31,6 +32,7 @@ import {
   UpdateUserByIdRequest,
 } from "./request";
 import {
+  AuthServiceVerifyIsExcludedResponse,
   AuthUserFindUserByTokenResponse,
   AuthUserLogoutByTokenResponse,
   AuthUserVerifyAccessControlResponse,
@@ -191,6 +193,17 @@ export const AuthServiceService = {
       Buffer.from(AuthUserVerifyAccessControlResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => AuthUserVerifyAccessControlResponse.decode(value),
   },
+  authServiceVerifyIsExcluded: {
+    path: "/user.AuthService/AuthServiceVerifyIsExcluded",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: AuthServiceVerifyIsExcludedRequest) =>
+      Buffer.from(AuthServiceVerifyIsExcludedRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => AuthServiceVerifyIsExcludedRequest.decode(value),
+    responseSerialize: (value: AuthServiceVerifyIsExcludedResponse) =>
+      Buffer.from(AuthServiceVerifyIsExcludedResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => AuthServiceVerifyIsExcludedResponse.decode(value),
+  },
   /** QUERY */
   authUserFindUserByToken: {
     path: "/user.AuthService/AuthUserFindUserByToken",
@@ -212,6 +225,7 @@ export interface AuthServiceServer extends UntypedServiceImplementation {
   authUserVerifyOtp: handleUnaryCall<AuthUserVerifyOtpRequest, AuthUserVerifyOtpResponse>;
   authUserLogoutByToken: handleUnaryCall<AuthUserLogoutByTokenRequest, AuthUserLogoutByTokenResponse>;
   authUserVerifyAccessControl: handleUnaryCall<AuthUserVerifyAccessControlRequest, AuthUserVerifyAccessControlResponse>;
+  authServiceVerifyIsExcluded: handleUnaryCall<AuthServiceVerifyIsExcludedRequest, AuthServiceVerifyIsExcludedResponse>;
   /** QUERY */
   authUserFindUserByToken: handleUnaryCall<AuthUserFindUserByTokenRequest, AuthUserFindUserByTokenResponse>;
 }
@@ -292,6 +306,21 @@ export interface AuthServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: AuthUserVerifyAccessControlResponse) => void,
+  ): ClientUnaryCall;
+  authServiceVerifyIsExcluded(
+    request: AuthServiceVerifyIsExcludedRequest,
+    callback: (error: ServiceError | null, response: AuthServiceVerifyIsExcludedResponse) => void,
+  ): ClientUnaryCall;
+  authServiceVerifyIsExcluded(
+    request: AuthServiceVerifyIsExcludedRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: AuthServiceVerifyIsExcludedResponse) => void,
+  ): ClientUnaryCall;
+  authServiceVerifyIsExcluded(
+    request: AuthServiceVerifyIsExcludedRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: AuthServiceVerifyIsExcludedResponse) => void,
   ): ClientUnaryCall;
   /** QUERY */
   authUserFindUserByToken(

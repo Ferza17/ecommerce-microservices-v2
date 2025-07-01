@@ -1,4 +1,3 @@
-# VALIDATE-GO
 - plugin: buf.build/bufbuild/validate-go
   out: notification-service/model/rpc/gen
   opt:
@@ -7,6 +6,7 @@
     # EXTERNAL
     - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/external/gorm
     - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/external/validate
+
 
     # v1/commerce/*.proto
     - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/commerce

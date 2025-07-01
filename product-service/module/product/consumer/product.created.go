@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
-	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
+	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product"
 	"github.com/rabbitmq/amqp091-go"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
@@ -17,11 +17,11 @@ import (
 func (c *productConsumer) ProductCreated(ctx context.Context) error {
 	amqpChannel, err := c.rabbitMQInfrastructure.GetConnection().Channel()
 	if err != nil {
-		c.logger.Error(fmt.Sprintf("Failed to create a channel: %v", err))
+		c.logger.Error("ProductConsumer.ProductCreated", zap.Error(err))
 		return err
 	}
 
-	if err := amqpChannel.ExchangeDeclare(
+	if err = amqpChannel.ExchangeDeclare(
 		config.Get().ExchangeProduct,
 		amqp091.ExchangeDirect,
 		true,
@@ -30,18 +30,18 @@ func (c *productConsumer) ProductCreated(ctx context.Context) error {
 		true,
 		nil,
 	); err != nil {
-		c.logger.Error(fmt.Sprintf("failed to declare exchange : %v", zap.Error(err)))
+		c.logger.Error("ProductConsumer.ProductCreated", zap.String("Exchange", config.Get().ExchangeProduct), zap.Error(err))
 		return err
 	}
 
-	if err := amqpChannel.QueueBind(
+	if err = amqpChannel.QueueBind(
 		config.Get().QueueProductCreated,
 		config.Get().QueueProductCreated,
 		config.Get().ExchangeProduct,
 		false,
 		nil,
 	); err != nil {
-		c.logger.Error(fmt.Sprintf("failed to bind queue : %v", zap.Error(err)))
+		c.logger.Error("ProductConsumer.ProductCreated", zap.String("Exchange", config.Get().ExchangeProduct), zap.String("Queue", config.Get().QueueProductCreated), zap.Error(err))
 		return err
 	}
 
@@ -74,7 +74,7 @@ func (c *productConsumer) ProductCreated(ctx context.Context) error {
 					carrier[key] = strVal
 				}
 			}
-			ctx := otel.GetTextMapPropagator().Extract(context.Background(), carrier)
+			ctx = otel.GetTextMapPropagator().Extract(context.Background(), carrier)
 			ctx, span := c.telemetryInfrastructure.Tracer(ctx, "Consumer.ProductCreated")
 
 			switch d.ContentType {

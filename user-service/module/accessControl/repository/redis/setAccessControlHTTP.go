@@ -11,7 +11,7 @@ func (r *accessControlRedisRepository) SetAccessControlHTTP(ctx context.Context,
 	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AuthRedisRepository.SetAccessControlHTTP")
 	defer span.End()
 
-	key := fmt.Sprintf(accessControlHTTPPrefixKey, config.Get().ServiceName, role, method, url)
+	key := fmt.Sprintf(accessControlHTTPPrefixKey, config.Get().UserServiceServiceName, role, method, url)
 	if err := r.redisInfrastructure.
 		GetClient().
 		SetEX(ctx, key, true, accessControlTTL).

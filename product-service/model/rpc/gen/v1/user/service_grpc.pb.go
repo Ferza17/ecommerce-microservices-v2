@@ -205,6 +205,7 @@ const (
 	AuthService_AuthUserVerifyOtp_FullMethodName               = "/user.AuthService/AuthUserVerifyOtp"
 	AuthService_AuthUserLogoutByToken_FullMethodName           = "/user.AuthService/AuthUserLogoutByToken"
 	AuthService_AuthUserVerifyAccessControl_FullMethodName     = "/user.AuthService/AuthUserVerifyAccessControl"
+	AuthService_AuthServiceVerifyIsExcluded_FullMethodName     = "/user.AuthService/AuthServiceVerifyIsExcluded"
 	AuthService_AuthUserFindUserByToken_FullMethodName         = "/user.AuthService/AuthUserFindUserByToken"
 )
 
@@ -218,6 +219,7 @@ type AuthServiceClient interface {
 	AuthUserVerifyOtp(ctx context.Context, in *AuthUserVerifyOtpRequest, opts ...grpc.CallOption) (*AuthUserVerifyOtpResponse, error)
 	AuthUserLogoutByToken(ctx context.Context, in *AuthUserLogoutByTokenRequest, opts ...grpc.CallOption) (*AuthUserLogoutByTokenResponse, error)
 	AuthUserVerifyAccessControl(ctx context.Context, in *AuthUserVerifyAccessControlRequest, opts ...grpc.CallOption) (*AuthUserVerifyAccessControlResponse, error)
+	AuthServiceVerifyIsExcluded(ctx context.Context, in *AuthServiceVerifyIsExcludedRequest, opts ...grpc.CallOption) (*AuthServiceVerifyIsExcludedResponse, error)
 	// QUERY
 	AuthUserFindUserByToken(ctx context.Context, in *AuthUserFindUserByTokenRequest, opts ...grpc.CallOption) (*AuthUserFindUserByTokenResponse, error)
 }
@@ -280,6 +282,16 @@ func (c *authServiceClient) AuthUserVerifyAccessControl(ctx context.Context, in 
 	return out, nil
 }
 
+func (c *authServiceClient) AuthServiceVerifyIsExcluded(ctx context.Context, in *AuthServiceVerifyIsExcludedRequest, opts ...grpc.CallOption) (*AuthServiceVerifyIsExcludedResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AuthServiceVerifyIsExcludedResponse)
+	err := c.cc.Invoke(ctx, AuthService_AuthServiceVerifyIsExcluded_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) AuthUserFindUserByToken(ctx context.Context, in *AuthUserFindUserByTokenRequest, opts ...grpc.CallOption) (*AuthUserFindUserByTokenResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(AuthUserFindUserByTokenResponse)
@@ -300,6 +312,7 @@ type AuthServiceServer interface {
 	AuthUserVerifyOtp(context.Context, *AuthUserVerifyOtpRequest) (*AuthUserVerifyOtpResponse, error)
 	AuthUserLogoutByToken(context.Context, *AuthUserLogoutByTokenRequest) (*AuthUserLogoutByTokenResponse, error)
 	AuthUserVerifyAccessControl(context.Context, *AuthUserVerifyAccessControlRequest) (*AuthUserVerifyAccessControlResponse, error)
+	AuthServiceVerifyIsExcluded(context.Context, *AuthServiceVerifyIsExcludedRequest) (*AuthServiceVerifyIsExcludedResponse, error)
 	// QUERY
 	AuthUserFindUserByToken(context.Context, *AuthUserFindUserByTokenRequest) (*AuthUserFindUserByTokenResponse, error)
 }
@@ -325,6 +338,9 @@ func (UnimplementedAuthServiceServer) AuthUserLogoutByToken(context.Context, *Au
 }
 func (UnimplementedAuthServiceServer) AuthUserVerifyAccessControl(context.Context, *AuthUserVerifyAccessControlRequest) (*AuthUserVerifyAccessControlResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthUserVerifyAccessControl not implemented")
+}
+func (UnimplementedAuthServiceServer) AuthServiceVerifyIsExcluded(context.Context, *AuthServiceVerifyIsExcludedRequest) (*AuthServiceVerifyIsExcludedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AuthServiceVerifyIsExcluded not implemented")
 }
 func (UnimplementedAuthServiceServer) AuthUserFindUserByToken(context.Context, *AuthUserFindUserByTokenRequest) (*AuthUserFindUserByTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthUserFindUserByToken not implemented")
@@ -439,6 +455,24 @@ func _AuthService_AuthUserVerifyAccessControl_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_AuthServiceVerifyIsExcluded_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthServiceVerifyIsExcludedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).AuthServiceVerifyIsExcluded(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_AuthServiceVerifyIsExcluded_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).AuthServiceVerifyIsExcluded(ctx, req.(*AuthServiceVerifyIsExcludedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_AuthUserFindUserByToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AuthUserFindUserByTokenRequest)
 	if err := dec(in); err != nil {
@@ -483,6 +517,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AuthUserVerifyAccessControl",
 			Handler:    _AuthService_AuthUserVerifyAccessControl_Handler,
+		},
+		{
+			MethodName: "AuthServiceVerifyIsExcluded",
+			Handler:    _AuthService_AuthServiceVerifyIsExcluded_Handler,
 		},
 		{
 			MethodName: "AuthUserFindUserByToken",

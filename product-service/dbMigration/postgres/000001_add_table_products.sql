@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE PRODUCTS
+CREATE TABLE products
 (
     id           VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
     name         VARCHAR   NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE PRODUCTS
 );
 
 
-INSERT INTO PRODUCTS (name, description, uom, image, price, stock)
+INSERT INTO products (name, description, uom, image, price, stock)
 VALUES ('SANDAL',
         'Match on your feet',
         'GRAM',

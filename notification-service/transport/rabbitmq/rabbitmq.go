@@ -7,10 +7,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 	"github.com/google/wire"
 	"go.uber.org/zap"
-	"log"
-	"os"
-	"os/signal"
-	"syscall"
+	"sync"
 )
 
 type (
@@ -32,16 +29,11 @@ func NewServer(
 	}
 }
 
-func (srv *RabbitMQTransport) Serve() {
-	ctx, cancel := context.WithCancel(context.Background())
-	go func() {
-		defer cancel()
-		sigChan := make(chan os.Signal, 1)
-		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-		<-sigChan
-		log.Println("RabbitMQ shutdown...")
-	}()
+func (srv *RabbitMQTransport) Serve(ctx context.Context) {
+	ctx, cancel := context.WithCancel(ctx)
+	wg := new(sync.WaitGroup)
 
+	wg.Add(1)
 	go func() {
 		defer cancel()
 		if err := srv.notificationEmailConsumer.NotificationEmailOTP(ctx); err != nil {
@@ -49,5 +41,6 @@ func (srv *RabbitMQTransport) Serve() {
 		}
 	}()
 
-	<-ctx.Done()
+	wg.Wait()
+	cancel()
 }

@@ -3,56 +3,54 @@ package rabbitmq
 import (
 	"context"
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/bootstrap"
 	productConsumer "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/consumer"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/logger"
+	"github.com/google/wire"
 	"github.com/rabbitmq/amqp091-go"
 	"go.uber.org/zap"
-	"log"
-	"os"
-	"os/signal"
-	"syscall"
+	"sync"
 )
 
 type (
-	Server struct {
+	RabbitMQTransport struct {
 		amqpConn        *amqp091.Connection
-		logger          pkg.IZapLogger
-		dependency      *bootstrap.Bootstrap
+		logger          logger.IZapLogger
 		productConsumer productConsumer.IProductConsumer
 	}
 )
 
-func NewServer(dependency *bootstrap.Bootstrap) *Server {
-	return &Server{
-		dependency:      dependency,
-		logger:          dependency.Logger,
-		productConsumer: dependency.ProductConsumer,
+var Set = wire.NewSet(NewServer)
+
+func NewServer(
+	logger logger.IZapLogger,
+	productConsumer productConsumer.IProductConsumer,
+) *RabbitMQTransport {
+	return &RabbitMQTransport{
+		logger:          logger,
+		productConsumer: productConsumer,
 	}
 }
 
-func (srv *Server) Serve() {
-	ctx, cancel := context.WithCancel(context.Background())
-	go func() {
-		defer cancel()
-		sigChan := make(chan os.Signal, 1)
-		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-		<-sigChan
-		log.Println("AMQP shutdown...")
-	}()
+func (srv *RabbitMQTransport) Serve(ctx context.Context) {
+	ctx, cancel := context.WithCancel(ctx)
+	wg := new(sync.WaitGroup)
 
+	wg.Add(1)
 	go func() {
-		defer cancel()
+		defer wg.Done()
 		if err := srv.productConsumer.ProductCreated(ctx); err != nil {
-			srv.dependency.Logger.Error(fmt.Sprintf("failed to ProductCreated : %s", zap.Error(err).String))
+			srv.logger.Error(fmt.Sprintf("failed to ProductCreated : %s", zap.Error(err).String))
 		}
 	}()
 
+	wg.Add(1)
 	go func() {
+		defer wg.Done()
 		if err := srv.productConsumer.ProductUpdated(ctx); err != nil {
-			srv.dependency.Logger.Error(fmt.Sprintf("failed to ProductUpdated : %s", zap.Error(err).String))
+			srv.logger.Error(fmt.Sprintf("failed to ProductUpdated : %s", zap.Error(err).String))
 		}
 	}()
 
-	<-ctx.Done()
+	wg.Wait()
+	cancel()
 }

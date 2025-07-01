@@ -7,7 +7,6 @@
 package user
 
 import (
-	user "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	descriptorpb "google.golang.org/protobuf/types/descriptorpb"
@@ -27,10 +26,10 @@ type MethodAccessControl struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	IsPublic bool            `protobuf:"varint,1,opt,name=is_public,json=isPublic,proto3" json:"is_public,omitempty"`
-	Roles    []user.EnumRole `protobuf:"varint,2,rep,packed,name=roles,proto3,enum=user.EnumRole" json:"roles,omitempty"`
-	Http     *HTTP           `protobuf:"bytes,3,opt,name=http,proto3" json:"http,omitempty"`
-	Broker   *Broker         `protobuf:"bytes,5,opt,name=broker,proto3,oneof" json:"broker,omitempty"`
+	IsPublic bool       `protobuf:"varint,1,opt,name=is_public,json=isPublic,proto3" json:"is_public,omitempty"`
+	Roles    []EnumRole `protobuf:"varint,2,rep,packed,name=roles,proto3,enum=user.EnumRole" json:"roles,omitempty"`
+	Http     *HTTP      `protobuf:"bytes,3,opt,name=http,proto3" json:"http,omitempty"`
+	Broker   *Broker    `protobuf:"bytes,5,opt,name=broker,proto3,oneof" json:"broker,omitempty"`
 }
 
 func (x *MethodAccessControl) Reset() {
@@ -72,7 +71,7 @@ func (x *MethodAccessControl) GetIsPublic() bool {
 	return false
 }
 
-func (x *MethodAccessControl) GetRoles() []user.EnumRole {
+func (x *MethodAccessControl) GetRoles() []EnumRole {
 	if x != nil {
 		return x.Roles
 	}
@@ -267,7 +266,7 @@ var file_v1_user_option_proto_goTypes = []interface{}{
 	(*MethodAccessControl)(nil),        // 0: user.MethodAccessControl
 	(*HTTP)(nil),                       // 1: user.HTTP
 	(*Broker)(nil),                     // 2: user.Broker
-	(user.EnumRole)(0),                 // 3: user.EnumRole
+	(EnumRole)(0),                      // 3: user.EnumRole
 	(*descriptorpb.MethodOptions)(nil), // 4: google.protobuf.MethodOptions
 }
 var file_v1_user_option_proto_depIdxs = []int32{
@@ -288,6 +287,7 @@ func file_v1_user_option_proto_init() {
 	if File_v1_user_option_proto != nil {
 		return
 	}
+	file_v1_user_enum_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_v1_user_option_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MethodAccessControl); i {

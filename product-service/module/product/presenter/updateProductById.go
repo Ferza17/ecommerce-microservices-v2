@@ -2,11 +2,12 @@ package presenter
 
 import (
 	"context"
-	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
+	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product"
+	"github.com/golang/protobuf/ptypes/empty"
 	"time"
 )
 
-func (p *ProductGrpcPresenter) UpdateProductById(ctx context.Context, req *productRpc.UpdateProductByIdRequest) (*productRpc.Product, error) {
+func (p *ProductPresenter) UpdateProductById(ctx context.Context, req *productRpc.UpdateProductByIdRequest) (*empty.Empty, error) {
 	var (
 		ctxTimeout, cancel = context.WithTimeout(ctx, 5*time.Second)
 	)

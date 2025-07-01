@@ -20,7 +20,7 @@ func DefaultRefreshTokenConfig() *JWTConfig {
 	return &JWTConfig{
 		SecretKey:          config.Get().JwtAccessTokenSecret,
 		ExpirationDuration: config.Get().JwtRefreshTokenExpirationTime,
-		Issuer:             config.Get().ServiceName,
+		Issuer:             config.Get().UserServiceServiceName,
 	}
 }
 
@@ -28,7 +28,7 @@ func DefaultAccessTokenConfig() *JWTConfig {
 	return &JWTConfig{
 		SecretKey:          config.Get().JwtAccessTokenSecret,
 		ExpirationDuration: config.Get().JwtAccessTokenExpirationTime,
-		Issuer:             config.Get().ServiceName,
+		Issuer:             config.Get().UserServiceServiceName,
 	}
 }
 

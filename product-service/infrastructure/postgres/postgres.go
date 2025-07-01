@@ -1,12 +1,12 @@
-package postgresql
+package postgres
 
 import (
 	"database/sql"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
-	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/logger"
+	"github.com/google/wire"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"
@@ -14,23 +14,18 @@ import (
 )
 
 type (
-	IPostgreSQLInfrastructure interface {
-		Close() error
-		GormDB() *gorm.DB
-		SqlDB() *sql.DB
-	}
-
-	PostgreSQLInfrastructure struct {
-		gormDB                  *gorm.DB
-		sqlDB                   *sql.DB
-		logger                  pkg.IZapLogger
-		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
+	PostgresSQL struct {
+		GormDB *gorm.DB
+		SqlDB  *sql.DB
+		logger logger.IZapLogger
 	}
 )
 
+var Set = wire.NewSet(NewPostgresqlInfrastructure)
+
 func NewPostgresqlInfrastructure(
-	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
-	logger pkg.IZapLogger) IPostgreSQLInfrastructure {
+	logger logger.IZapLogger,
+) *PostgresSQL {
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		config.Get().PostgresHost,
 		config.Get().PostgresPort,
@@ -73,21 +68,9 @@ func NewPostgresqlInfrastructure(
 	gormSqlDB.SetConnMaxIdleTime(300 * time.Second)
 	gormSqlDB.SetConnMaxLifetime(time.Duration(300 * time.Second))
 
-	return &PostgreSQLInfrastructure{
-		gormDB:                  gormdb,
-		sqlDB:                   sqldb,
-		telemetryInfrastructure: telemetryInfrastructure,
+	return &PostgresSQL{
+		GormDB: gormdb,
+		SqlDB:  sqldb,
+		logger: logger,
 	}
-}
-
-func (p *PostgreSQLInfrastructure) Close() error {
-	return p.sqlDB.Close()
-}
-
-func (p *PostgreSQLInfrastructure) GormDB() *gorm.DB {
-	return p.gormDB
-}
-
-func (p *PostgreSQLInfrastructure) SqlDB() *sql.DB {
-	return p.sqlDB
 }

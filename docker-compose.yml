@@ -318,11 +318,11 @@ services:
   #      - local
   #    restart: unless-stopped
 
-  # user-SERVICE
-  #  user-service:
-  #    container_name: user-service
+  # product-service
+  #  product-service:
+  #    container_name: product-service
   #    build:
-  #      context: ./user-service
+  #      context: ./product-service
   #      dockerfile: Dockerfile
   #    ports:
   #      - "50056"

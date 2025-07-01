@@ -32,6 +32,10 @@ message AuthUserFindUserByTokenResponse {
   repeated user.AccessControl access_controls = 4;
 }
 
+message AuthServiceVerifyIsExcludedResponse {
+  bool IsExcluded = 1;
+}
+
 // USER RESPONSE DEFINITION
 message UpdateUserByIdResponse {
   string id = 1;

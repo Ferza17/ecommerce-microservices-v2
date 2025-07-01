@@ -7,7 +7,7 @@
 package payment
 
 import (
-	_ "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/user"
+	_ "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"

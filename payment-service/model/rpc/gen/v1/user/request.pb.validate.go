@@ -880,6 +880,123 @@ var _ interface {
 	ErrorName() string
 } = AuthUserFindUserByTokenRequestValidationError{}
 
+// Validate checks the field values on AuthServiceVerifyIsExcludedRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *AuthServiceVerifyIsExcludedRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AuthServiceVerifyIsExcludedRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// AuthServiceVerifyIsExcludedRequestMultiError, or nil if none found.
+func (m *AuthServiceVerifyIsExcludedRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AuthServiceVerifyIsExcludedRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.FullMethodName != nil {
+		// no validation rules for FullMethodName
+	}
+
+	if m.HttpUrl != nil {
+		// no validation rules for HttpUrl
+	}
+
+	if m.HttpMethod != nil {
+		// no validation rules for HttpMethod
+	}
+
+	if len(errors) > 0 {
+		return AuthServiceVerifyIsExcludedRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// AuthServiceVerifyIsExcludedRequestMultiError is an error wrapping multiple
+// validation errors returned by
+// AuthServiceVerifyIsExcludedRequest.ValidateAll() if the designated
+// constraints aren't met.
+type AuthServiceVerifyIsExcludedRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AuthServiceVerifyIsExcludedRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AuthServiceVerifyIsExcludedRequestMultiError) AllErrors() []error { return m }
+
+// AuthServiceVerifyIsExcludedRequestValidationError is the validation error
+// returned by AuthServiceVerifyIsExcludedRequest.Validate if the designated
+// constraints aren't met.
+type AuthServiceVerifyIsExcludedRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AuthServiceVerifyIsExcludedRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AuthServiceVerifyIsExcludedRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AuthServiceVerifyIsExcludedRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AuthServiceVerifyIsExcludedRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AuthServiceVerifyIsExcludedRequestValidationError) ErrorName() string {
+	return "AuthServiceVerifyIsExcludedRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AuthServiceVerifyIsExcludedRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAuthServiceVerifyIsExcludedRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AuthServiceVerifyIsExcludedRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AuthServiceVerifyIsExcludedRequestValidationError{}
+
 // Validate checks the field values on FindUserByIdRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.

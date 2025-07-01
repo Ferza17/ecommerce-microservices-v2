@@ -18,7 +18,7 @@ type (
 		// ACCESS CONTROL HTTP
 		SetAccessControlHTTP(ctx context.Context, requestId string, role string, method, url string) error
 		GetAccessControlHTTP(ctx context.Context, requestId string, role string, method, url string) (bool, error)
-		
+
 		// ACCESS EXCLUDED RPC
 		SetAccessControlRPCExcluded(ctx context.Context, requestId string, fullMethodName string) error
 		GetAccessControlRPCExcluded(ctx context.Context, requestId string, fullMethodName string) (bool, error)

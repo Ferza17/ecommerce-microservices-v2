@@ -8,10 +8,3 @@ enum EnumRole {
   ADMIN = 5505;
   SUPER_ADMIN = 5506;
 }
-
-enum TransportType {
-  RPC = 0;
-  HTTP = 1;
-  RABBITMQ = 2;
-  KAFKA = 3;
-}

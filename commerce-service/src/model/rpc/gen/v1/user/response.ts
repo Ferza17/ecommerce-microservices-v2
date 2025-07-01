@@ -39,6 +39,10 @@ export interface AuthUserFindUserByTokenResponse {
   accessControls: AccessControl[];
 }
 
+export interface AuthServiceVerifyIsExcludedResponse {
+  IsExcluded: boolean;
+}
+
 /** USER RESPONSE DEFINITION */
 export interface UpdateUserByIdResponse {
   id: string;
@@ -472,6 +476,64 @@ export const AuthUserFindUserByTokenResponse: MessageFns<AuthUserFindUserByToken
     message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
     message.role = (object.role !== undefined && object.role !== null) ? Role.fromPartial(object.role) : undefined;
     message.accessControls = object.accessControls?.map((e) => AccessControl.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseAuthServiceVerifyIsExcludedResponse(): AuthServiceVerifyIsExcludedResponse {
+  return { IsExcluded: false };
+}
+
+export const AuthServiceVerifyIsExcludedResponse: MessageFns<AuthServiceVerifyIsExcludedResponse> = {
+  encode(message: AuthServiceVerifyIsExcludedResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.IsExcluded !== false) {
+      writer.uint32(8).bool(message.IsExcluded);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AuthServiceVerifyIsExcludedResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAuthServiceVerifyIsExcludedResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.IsExcluded = reader.bool();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AuthServiceVerifyIsExcludedResponse {
+    return { IsExcluded: isSet(object.IsExcluded) ? globalThis.Boolean(object.IsExcluded) : false };
+  },
+
+  toJSON(message: AuthServiceVerifyIsExcludedResponse): unknown {
+    const obj: any = {};
+    if (message.IsExcluded !== false) {
+      obj.IsExcluded = message.IsExcluded;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<AuthServiceVerifyIsExcludedResponse>): AuthServiceVerifyIsExcludedResponse {
+    return AuthServiceVerifyIsExcludedResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<AuthServiceVerifyIsExcludedResponse>): AuthServiceVerifyIsExcludedResponse {
+    const message = createBaseAuthServiceVerifyIsExcludedResponse();
+    message.IsExcluded = object.IsExcluded ?? false;
     return message;
   },
 };

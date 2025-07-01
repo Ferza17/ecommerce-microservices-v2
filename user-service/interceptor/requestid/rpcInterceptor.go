@@ -14,6 +14,8 @@ func RequestIDRPCInterceptor() grpc.UnaryServerInterceptor {
 		md := metadata.ValueFromIncomingContext(ctx, pkgContext.CtxKeyRequestID)
 		if len(md) == 0 {
 			reqID = uuid.NewString()
+		} else {
+			reqID = md[0]
 		}
 
 		ctx = pkgContext.SetRequestIDToContext(ctx, reqID)

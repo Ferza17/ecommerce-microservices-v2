@@ -1,11 +1,12 @@
-package postgresql
+package postgres
 
 import (
 	"context"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/postgresql"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/postgres"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/orm"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/logger"
+	"github.com/google/wire"
 	"gorm.io/gorm"
 )
 
@@ -19,29 +20,25 @@ type (
 		CreateProduct(ctx context.Context, product *orm.Product, tx *gorm.DB) (string, error)
 		DeleteProductById(ctx context.Context, id string, tx *gorm.DB) error
 		UpdateProductById(ctx context.Context, product *orm.Product, tx *gorm.DB) (*orm.Product, error)
-
-		// Transaction
-		OpenTransactionWithContext(ctx context.Context) *gorm.DB
 	}
 
 	ProductPostgresqlRepository struct {
-		postgreSQLInfrastructure postgresql.IPostgreSQLInfrastructure
-		telemetryInfrastructure  telemetryInfrastructure.ITelemetryInfrastructure
-		logger                   pkg.IZapLogger
+		postgresSQLInfrastructure *postgres.PostgresSQL
+		telemetryInfrastructure   telemetryInfrastructure.ITelemetryInfrastructure
+		logger                    logger.IZapLogger
 	}
 )
 
-func NewProductPostgresqlRepository(
-	infrastructure postgresql.IPostgreSQLInfrastructure,
-	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
-	logger pkg.IZapLogger) IProductPostgresqlRepository {
-	return &ProductPostgresqlRepository{
-		postgreSQLInfrastructure: infrastructure,
-		telemetryInfrastructure:  telemetryInfrastructure,
-		logger:                   logger,
-	}
-}
+var Set = wire.NewSet(NewProductPostgresqlRepository)
 
-func (r *ProductPostgresqlRepository) OpenTransactionWithContext(ctx context.Context) *gorm.DB {
-	return r.postgreSQLInfrastructure.GormDB().WithContext(ctx).Begin()
+func NewProductPostgresqlRepository(
+	postgresSQLInfrastructure *postgres.PostgresSQL,
+	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
+	logger logger.IZapLogger,
+) IProductPostgresqlRepository {
+	return &ProductPostgresqlRepository{
+		postgresSQLInfrastructure: postgresSQLInfrastructure,
+		telemetryInfrastructure:   telemetryInfrastructure,
+		logger:                    logger,
+	}
 }

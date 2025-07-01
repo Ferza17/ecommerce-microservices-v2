@@ -2,12 +2,20 @@ package grpc
 
 import (
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/bootstrap"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
-	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/product/v1"
+	userService "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/service/user"
+	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
+	authInterceptor "github.com/ferza17/ecommerce-microservices-v2/product-service/interceptor/auth"
+	loggerInterceptor "github.com/ferza17/ecommerce-microservices-v2/product-service/interceptor/logger"
+	requestIdInterceptor "github.com/ferza17/ecommerce-microservices-v2/product-service/interceptor/requestid"
+	telemetryInterceptor "github.com/ferza17/ecommerce-microservices-v2/product-service/interceptor/telemetry"
+	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/logger"
+	"github.com/google/wire"
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
 
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/presenter"
-	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -20,17 +28,31 @@ type (
 		address    string
 		port       string
 		grpcServer *grpc.Server
-		dependency *bootstrap.Bootstrap
-	}
 
-	Option func(server *GrpcTransport)
+		logger                  logger.IZapLogger
+		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
+		productPresenter        *presenter.ProductPresenter
+
+		// For Middleware
+		userService userService.IUserService
+	}
 )
 
-func NewServer(dependency *bootstrap.Bootstrap) *GrpcTransport {
+var Set = wire.NewSet(NewServer)
+
+func NewServer(
+	logger logger.IZapLogger,
+	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
+	productPresenter *presenter.ProductPresenter,
+	userService userService.IUserService,
+) *GrpcTransport {
 	return &GrpcTransport{
-		address:    config.Get().RpcHost,
-		port:       config.Get().RpcPort,
-		dependency: dependency,
+		address:                 config.Get().ProductServiceRpcHost,
+		port:                    config.Get().ProductServiceRpcPort,
+		productPresenter:        productPresenter,
+		logger:                  logger,
+		telemetryInfrastructure: telemetryInfrastructure,
+		userService:             userService,
 	}
 }
 
@@ -41,18 +63,31 @@ func (srv *GrpcTransport) Serve() {
 	}
 
 	opts := []grpc.ServerOption{
-		grpc.StatsHandler(otelgrpc.NewServerHandler()),
+		grpc.ChainUnaryInterceptor(
+			requestIdInterceptor.RequestIDRPCInterceptor(),
+			telemetryInterceptor.TelemetryRPCInterceptor(srv.telemetryInfrastructure),
+			loggerInterceptor.LoggerRPCInterceptor(srv.logger),
+			authInterceptor.AuthRPCUnaryInterceptor(srv.logger, srv.userService),
+		),
 	}
 	srv.grpcServer = grpc.NewServer(opts...)
+
 	productRpc.RegisterProductServiceServer(
 		srv.grpcServer,
-		presenter.NewProductGrpcPresenter(srv.dependency.ProductUseCase, srv.dependency.TelemetryInfrastructure, srv.dependency.Logger),
+		srv.productPresenter,
 	)
+
+	// Mark the service as healthy
+	healthServer := health.NewServer()
+	grpc_health_v1.RegisterHealthServer(srv.grpcServer, healthServer)
+	healthServer.SetServingStatus(config.Get().UserServiceServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
+
+	log.Printf("Starting gRPC server on %s:%s", srv.address, srv.port)
 
 	// Enable Reflection to Evans grpc client
 	reflection.Register(srv.grpcServer)
 	if err = srv.grpcServer.Serve(listen); err != nil {
-		srv.dependency.Logger.Error(fmt.Sprintf("failed to serve : %s", zap.Error(err).String))
+		srv.logger.Error(fmt.Sprintf("failed to serve : %s", zap.Error(err).String))
 	}
 }
 

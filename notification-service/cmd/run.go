@@ -12,7 +12,7 @@ import (
 var runCommand = &cobra.Command{
 	Use: "run",
 	Run: func(cmd *cobra.Command, args []string) {
-		_, cancel := context.WithCancel(cmd.Context())
+		ctx, cancel := context.WithCancel(cmd.Context())
 		defer cancel()
 
 		grpcServer := grpc.ProvideGrpcServer()
@@ -31,7 +31,7 @@ var runCommand = &cobra.Command{
 		go func() {
 			defer wg.Done()
 			log.Println("========== Starting RabbitMQ Consumer ==========")
-			rabbitMQServer.Serve()
+			rabbitMQServer.Serve(ctx)
 		}()
 
 		// Wait for all goroutines to complete

@@ -8,42 +8,60 @@ import "v1/user/enum.proto";
 // ============= AUTH REQUEST DEFINITION
 
 // COMMAND
-message AuthLoginByEmailAndPasswordRequest {
-  string email = 1 [(validate.rules).string.email = true];
-  string password = 2 [(validate.rules).string.min_len = 8];
-}
 
-message AuthLogoutByTokenRequest {
-  string token = 1 [(validate.rules).string.min_len = 8];
-}
-
-message AuthVerifyOtpRequest {
-  string otp = 1 [(validate.rules).string.min_len = 4];
-}
-
-message VerifiedAccessControlUserByTokenRequest {
-  string token = 1 [(validate.rules).string.min_len = 0];
-}
-
-// QUERY
-
-message AuthFindUserByTokenRequest {
-  string token = 1 [(validate.rules).string.min_len = 0];
-}
-
-
-// USER REQUEST DEFINITION
-message FindUserByIdRequest {
-  string id = 1 [(validate.rules).string.min_len = 1];
-}
-
-message CreateUserRequest {
+// NEW
+message AuthUserRegisterRequest {
   string name = 2 [(validate.rules).string.min_len = 0];
   string email = 3 [(validate.rules).string.email = true];
   string password = 4 [(validate.rules).string.min_len = 8];
   user.EnumRole Role = 5 [(validate.rules).enum = {
     defined_only: true,
   }];
+}
+
+message AuthUserLoginByEmailAndPasswordRequest {
+  string email = 1 [(validate.rules).string.email = true];
+  string password = 2 [(validate.rules).string.min_len = 8];
+}
+
+message AuthUserVerifyOtpRequest {
+  string otp = 1 [(validate.rules).string.min_len = 4];
+}
+
+message AuthUserLogoutByTokenRequest {
+  string token = 1 [(validate.rules).string.min_len = 8];
+}
+
+message AuthUserVerifyAccessControlRequest {
+  string token = 1 [(validate.rules).string.min_len = 0];
+  optional string fullMethodName = 2;
+  optional string http_url = 3;
+  optional string http_method = 4;
+}
+
+message AuthUserFindUserByTokenRequest {
+  string token = 1 [(validate.rules).string.min_len = 0];
+}
+
+message AuthServiceVerifyIsExcludedRequest {
+  optional string fullMethodName = 2;
+  optional string http_url = 3;
+  optional string http_method = 4;
+}
+
+// END NEW
+
+
+
+
+
+
+
+// QUERY
+
+// USER REQUEST DEFINITION
+message FindUserByIdRequest {
+  string id = 1 [(validate.rules).string.min_len = 1];
 }
 
 message UpdateUserByIdRequest {

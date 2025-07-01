@@ -5,7 +5,8 @@ import (
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
 	productUseCase "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/usecase"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/logger"
+	"github.com/google/wire"
 )
 
 type (
@@ -19,15 +20,17 @@ type (
 		rabbitMQInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
 		productUseCase          productUseCase.IProductUseCase
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
-		logger                  pkg.IZapLogger
+		logger                  logger.IZapLogger
 	}
 )
+
+var Set = wire.NewSet(NewProductConsumer)
 
 func NewProductConsumer(
 	rabbitMQInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
 	productUseCase productUseCase.IProductUseCase,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
-	logger pkg.IZapLogger,
+	logger logger.IZapLogger,
 ) IProductConsumer {
 	return &productConsumer{
 		rabbitMQInfrastructure:  rabbitMQInfrastructure,
