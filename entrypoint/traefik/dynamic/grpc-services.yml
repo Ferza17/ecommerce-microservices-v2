@@ -1,0 +1,15 @@
+http:
+  routers:
+    user-service-grpc:
+      entryPoints:
+        - grpc
+      service: "user-service-grpc"
+      rule: "Host(`localhost`)"
+      tls: false
+
+
+  services:
+    user-service-grpc:
+      loadBalancer:
+        servers:
+          - url: h2c://user-service:50056

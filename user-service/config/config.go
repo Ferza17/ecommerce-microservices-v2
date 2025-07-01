@@ -2,7 +2,9 @@ package config
 
 import (
 	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
 	"log"
+	"os"
 	"strconv"
 	"time"
 
@@ -96,7 +98,15 @@ type Config struct {
 func SetConfig(path string) {
 	viper.SetConfigType("env")
 	viper.AddConfigPath(path)
-	viper.SetConfigName(".env")
+
+	switch os.Getenv("ENV") {
+	case enum.CONFIG_ENV_LOCAL:
+		viper.SetConfigName(".env.local")
+	case enum.CONFIG_ENV_PROD:
+		viper.SetConfigName(".env.production")
+	default:
+		log.Fatal("SetConfig | env is required")
+	}
 
 	err := viper.ReadInConfig()
 	if err != nil {

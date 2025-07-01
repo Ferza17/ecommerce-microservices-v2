@@ -27,7 +27,7 @@ func (u *authUseCase) AuthUserRegister(ctx context.Context, requestId string, re
 
 	// Validate is email already exists
 	existedUser, err := u.userPostgresqlRepository.FindUserByEmail(ctx, requestId, req.Email, tx)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+	if err != nil && err != gorm.ErrRecordNotFound {
 		tx.Rollback()
 		u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
 		return nil, status.Error(codes.Internal, "internal server error")

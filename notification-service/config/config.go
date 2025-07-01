@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"github.com/hashicorp/consul/api"
 	"log"
+	"os"
 	"sync"
 
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/enum"
 	"github.com/spf13/viper"
 )
 
@@ -62,7 +64,15 @@ type Config struct {
 func SetConfig(path string) {
 	viper.SetConfigType("env")
 	viper.AddConfigPath(path)
-	viper.SetConfigName(".env")
+
+	switch os.Getenv("ENV") {
+	case enum.CONFIG_ENV_LOCAL:
+		viper.SetConfigName(".env.local")
+	case enum.CONFIG_ENV_PROD:
+		viper.SetConfigName(".env.production")
+	default:
+		log.Fatal("SetConfig | env is required")
+	}
 
 	if err := viper.ReadInConfig(); err != nil {
 		panic(fmt.Sprintf("config not found: %s", err.Error()))

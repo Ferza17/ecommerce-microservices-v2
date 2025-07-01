@@ -146,6 +146,10 @@ var aclCommand = &cobra.Command{
 				Url:    "/list",
 				Method: "get",
 			},
+			"/grpc.reflection.v1alpha.ServerReflection/": {
+				Url:    "/grpc.reflection.v1alpha.ServerReflection/",
+				Method: "get",
+			},
 		}
 
 		for s, http := range healthFullMethods {

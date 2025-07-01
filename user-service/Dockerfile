@@ -1,19 +1,23 @@
 FROM golang:1.24.3-alpine AS build
 
-WORKDIR /go/src/github.com/ferza17/ecommerce-v2/product-service
+WORKDIR /go/src/github.com/ferza17/ecommerce-microservices-v2/user-service
 
 COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
 
 COPY . ./
-EXPOSE 50056
+RUN go build -o user-service
 
-RUN go build -o product-service
-
+# Final stage
 FROM alpine:latest
+
 RUN apk --no-cache add ca-certificates
+
+ENV ENV "production"
 WORKDIR /usr/bin
-COPY --from=build /go/src/github.com/ferza17/ecommerce-v2/product-service .
-CMD [ "./product-service","migration up" ]
-CMD [ "./product-service","run" ]
+
+COPY --from=build /go/src/github.com/ferza17/ecommerce-microservices-v2/user-service/user-service .
+COPY . .
+RUN chmod +x ./entrypoint.sh
+ENTRYPOINT ["./entrypoint.sh"]

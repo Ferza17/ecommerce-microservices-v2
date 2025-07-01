@@ -123,7 +123,6 @@ services:
     networks:
       - local
 
-
   #ELASTIC
   elasticsearch-local:
     container_name: elasticsearch-local
@@ -144,20 +143,6 @@ services:
       - ./entrypoint/elasticsearch/products-mapping.json:/products-mapping.json
     networks:
       - local
-
-  #Kibana
-  #  kibana-local:
-  #    container_name: kibana-local
-  #    image: kibana:8.4.1
-  #    depends_on:
-  #      - elasticsearch-local
-  #    ports:
-  #      - '5601:5601'
-  #    environment:
-  #      - 'ELASTICSEARCH_HOSTS=http://elasticsearch-local:9200'
-  #      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
-  #    networks:
-  #      - local
 
   # Service Discovery
   consul-local:
@@ -220,122 +205,47 @@ services:
     networks:
       - local
 
-  # COMMERCE-SERVICE
-  #  commerce-service:
-  #    container_name: commerce-service
-  #    build:
-  #      context: ./commerce-service
-  #      dockerfile: Dockerfile
-  #    ports:
-  #      - "50051"
-  #    environment:
-  #      - ENV=production
-  #      - CONSUL_HOST=consul-local
-  #      - CONSUL_PORT=8500
-  #    depends_on:
-  #      - consul-local
-  #      - postgres-local
-  #      - rabbitmq-local
-  #      - redis-local
-  #    networks:
-  #      - local
-  #    restart: unless-stopped
+  traefik-local:
+    image: traefik:v3.0
+    container_name: traefik-local
+    command:
+      - --configFile=/etc/traefik/traefik.yml
+    ports:
+      - "80:80"        # HTTP
+      - "443:443"      # HTTPS (optional)
+      - "9000:9000"    # gRPC entrypoint
+      - "8080:8080"    # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./entrypoint/traefik/traefik.yml:/etc/traefik/traefik.yml
+      - ./entrypoint/traefik/dynamic:/etc/traefik/dynamic
+    networks:
+      - local
 
+  # USER-SERVICE
+  user-service:
+    container_name: user-service
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    ports:
+      - "50056"  # Expose gRPC port for direct testing
+      - "40056"  # Expose HTTP port for direct testing
+    restart: always
+    networks:
+      - local
 
-  # event-store-SERVICE
-  #  event-store-service:
-  #    container_name: event-store-service
-  #    build:
-  #      context: ./event-store-service
-  #      dockerfile: Dockerfile
-  #    ports:
-  #      - "50052"
-  #    environment:
-  #      - ENV=production
-  #      - CONSUL_HOST=consul-local
-  #      - CONSUL_PORT=8500
-  #    depends_on:
-  #      - consul-local
-  #      - postgres-local
-  #      - rabbitmq-local
-  #      - redis-local
-  #    networks:
-  #      - local
-  #    restart: unless-stopped
-
-  # notification-SERVICE
-  #  notification-service:
-  #    container_name: notification-service
-  #    build:
-  #      context: ./notification-service
-  #      dockerfile: Dockerfile
-  #    ports:
-  #      - "50053"
-  #    environment:
-  #      - ENV=production
-  #      - CONSUL_HOST=consul-local
-  #      - CONSUL_PORT=8500
-  #    depends_on:
-  #      - consul-local
-  #    networks:
-  #      - local
-  #    restart: unless-stopped
-
-  # PAYMENT-SERVICE
-  #  payment-service:
-  #    container_name: payment-service
-  #    build:
-  #      context: ./payment-service
-  #      dockerfile: Dockerfile
-  #    ports:
-  #      - "50054"
-  #    environment:
-  #      - ENV=production
-  #      - CONSUL_HOST=consul-local
-  #      - CONSUL_PORT=8500
-  #    depends_on:
-  #      - consul-local
-  #    networks:
-  #      - local
-  #    restart: unless-stopped
-
-
-  # product-SERVICE
-  #  product-service:
-  #    container_name: product-service
-  #    build:
-  #      context: ./product-service
-  #      dockerfile: Dockerfile
-  #    ports:
-  #      - "50055"
-  #    environment:
-  #      - ENV=production
-  #      - CONSUL_HOST=consul-local
-  #      - CONSUL_PORT=8500
-  #    depends_on:
-  #      - consul-local
-  #    networks:
-  #      - local
-  #    restart: unless-stopped
-
-  # product-service
-  #  product-service:
-  #    container_name: product-service
-  #    build:
-  #      context: ./product-service
-  #      dockerfile: Dockerfile
-  #    ports:
-  #      - "50056"
-  #    environment:
-  #      - ENV=production
-  #      - CONSUL_HOST=consul-local
-  #      - CONSUL_PORT=8500
-  #    depends_on:
-  #      - consul-local
-  #    networks:
-  #      - local
-  #    restart: unless-stopped
-
+  # NOTIFICATION-SERVICE
+  notification-service:
+    container_name: notification-service
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    ports:
+      - "50053:50053"  # Expose gRPC port for direct testing
+    restart: always
+    networks:
+      - local
 
 networks:
   local:

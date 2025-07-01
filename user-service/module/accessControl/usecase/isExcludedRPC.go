@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"gorm.io/gorm"
 )
 
 func (u *accessControlUseCase) IsExcludedRPC(ctx context.Context, requestId string, fullMethodName string) (bool, error) {
@@ -15,6 +16,9 @@ func (u *accessControlUseCase) IsExcludedRPC(ctx context.Context, requestId stri
 	tx := u.postgresSQL.GormDB.Begin()
 	if _, err := u.accessControlPostgresqlRepository.FindAccessControlExcludedByFullMethodName(ctx, requestId, fullMethodName, tx); err != nil {
 		tx.Rollback()
+		if err == gorm.ErrRecordNotFound {
+			return false, nil
+		}
 		return false, err
 	}
 

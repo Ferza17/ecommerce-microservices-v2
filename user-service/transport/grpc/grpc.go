@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
+	authInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/auth"
 	loggerInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/logger"
 	requestIdInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/requestid"
 	telemetryInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/telemetry"
@@ -12,14 +13,12 @@ import (
 	authPresenter "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/presenter"
 	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
 	userPresenter "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/presenter"
-	"github.com/google/wire"
-	"google.golang.org/grpc/health"
-	"google.golang.org/grpc/health/grpc_health_v1"
-
-	authInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/auth"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
+	"github.com/google/wire"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
@@ -78,6 +77,8 @@ func (srv *Server) Serve() {
 	}
 
 	srv.grpcServer = grpc.NewServer(opts...)
+
+	// Register all services first
 	userRpc.RegisterUserServiceServer(
 		srv.grpcServer,
 		srv.userPresenter,
@@ -88,20 +89,20 @@ func (srv *Server) Serve() {
 		srv.authPresenter,
 	)
 
-	// Mark the service as healthy
+	// Register health service
 	healthServer := health.NewServer()
 	grpc_health_v1.RegisterHealthServer(srv.grpcServer, healthServer)
 	healthServer.SetServingStatus(config.Get().UserServiceServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
 
+	// IMPORTANT: Register reflection AFTER all services are registered
+	reflection.Register(srv.grpcServer)
+
 	log.Printf("Starting gRPC server on %s:%s", srv.address, srv.port)
 
-	// Enable Reflection to Evans grpc client
-	reflection.Register(srv.grpcServer)
 	if err = srv.grpcServer.Serve(listen); err != nil {
 		srv.logger.Error(fmt.Sprintf("failed to serve : %s", zap.Error(err).String))
 	}
 }
-
 func (srv *Server) GracefulStop() {
 	srv.grpcServer.GracefulStop()
 }

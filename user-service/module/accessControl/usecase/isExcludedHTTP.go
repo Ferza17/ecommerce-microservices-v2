@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 func (u *accessControlUseCase) IsExcludedHTTP(ctx context.Context, requestId string, method, url string) (bool, error) {
@@ -21,6 +22,9 @@ func (u *accessControlUseCase) IsExcludedHTTP(ctx context.Context, requestId str
 	if _, err = u.accessControlPostgresqlRepository.FindAccessControlExcludedByHttpUrlAndHttpMethod(ctx, requestId, method, url, tx); err != nil {
 		tx.Rollback()
 		u.logger.Error("AccessControlUseCase.IsExcludedHTTP", zap.Error(err))
+		if err == gorm.ErrRecordNotFound {
+			return false, nil
+		}
 		return false, err
 	}
 

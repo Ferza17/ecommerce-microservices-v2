@@ -35,15 +35,15 @@ func (p *Product) ToProto() *pb.Product {
 		Stock:       p.Stock,
 	}
 
-	if p.CreatedAt == nil {
+	if p.CreatedAt != nil {
 		product.CreatedAt = timestamppb.New(*p.CreatedAt)
 	}
 
-	if p.DiscardedAt == nil {
+	if p.DiscardedAt != nil {
 		product.DiscardedAt = timestamppb.New(*p.DiscardedAt)
 	}
 
-	if p.UpdatedAt == nil {
+	if p.UpdatedAt != nil {
 		product.UpdatedAt = timestamppb.New(*p.UpdatedAt)
 	}
 
