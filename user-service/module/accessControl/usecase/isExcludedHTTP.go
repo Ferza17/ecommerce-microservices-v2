@@ -4,11 +4,19 @@ import (
 	"context"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"strings"
 )
 
 func (u *accessControlUseCase) IsExcludedHTTP(ctx context.Context, requestId string, method, url string) (bool, error) {
 	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "AccessControlUseCase.IsExcludedHTTP")
 	defer span.End()
+
+	// Hardcoded for swagger api docs
+	ok := strings.Contains(url, "/docs/")
+	if ok {
+		return true, nil
+	}
+
 	// Get On Redis
 	isExcluded, err := u.accessControlRedisRepository.GetAccessControlHTTPExcluded(ctx, requestId, method, url)
 	if err != nil {

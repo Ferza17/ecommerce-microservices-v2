@@ -89,9 +89,6 @@ type Config struct {
 	UserServiceRpcPort     string
 	UserServiceHttpHost    string
 	UserServiceHttpPort    string
-
-	RpcHost string
-	RpcPort string
 }
 
 func SetConfig(path string) {
@@ -151,24 +148,6 @@ func SetConfig(path string) {
 		log.Fatal("SetConfig | Consul | SERVICE_NAME is required")
 	}
 	c.NotificationServiceName = string(pair.Value)
-
-	pair, _, err = consulClient.KV().Get(fmt.Sprintf("%s/services/user/RPC_HOST", c.Env), nil)
-	if err != nil {
-		log.Fatalf("SetConfig | could not get RPC_HOST from consul: %v", err)
-	}
-	if pair == nil {
-		log.Fatal("SetConfig | Consul | RPC_HOST is required")
-	}
-	c.RpcHost = string(pair.Value)
-
-	pair, _, err = consulClient.KV().Get(fmt.Sprintf("%s/services/user/RPC_PORT", c.Env), nil)
-	if err != nil {
-		log.Fatalf("SetConfig | could not get RPC_PORT from consul: %v", err)
-	}
-	if pair == nil {
-		log.Fatal("SetConfig | Consul | RPC_PORT is required")
-	}
-	c.RpcPort = string(pair.Value)
 
 	// Access Token Config
 	pair, _, err = consulClient.KV().Get(fmt.Sprintf("%s/services/user/JWT_ACCESS_TOKEN_SECRET", c.Env), nil)

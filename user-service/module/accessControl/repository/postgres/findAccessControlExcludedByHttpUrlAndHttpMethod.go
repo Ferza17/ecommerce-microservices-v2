@@ -13,8 +13,8 @@ func (r *accessControlPostgresSQLRepository) FindAccessControlExcludedByHttpUrlA
 
 	excluded := new(orm.AccessControlExcluded)
 	if err := tx.WithContext(ctx).
-		Where("http_method = ?", method).
 		Where("http_url = ?", url).
+		Where("http_method = ?", method).
 		First(excluded).
 		Error; err != nil {
 		r.logger.Error("AccessControlPostgresRepository.FindAccessControlExcludedByHttpUrlAndHttpMethod", zap.Error(err))

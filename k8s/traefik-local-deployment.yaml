@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --file docker-compose.yml --out k8s/
+    kompose.version: 1.36.0 (HEAD)
+  labels:
+    io.kompose.service: traefik-local
+  name: traefik-local
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: traefik-local
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert --file docker-compose.yml --out k8s/
+        kompose.version: 1.36.0 (HEAD)
+      labels:
+        io.kompose.service: traefik-local
+    spec:
+      containers:
+        - args:
+            - --configFile=/etc/traefik/traefik.yml
+          image: traefik:v3.0
+          name: traefik-local
+          ports:
+            - containerPort: 80
+              protocol: TCP
+            - containerPort: 443
+              protocol: TCP
+            - containerPort: 9000
+              protocol: TCP
+            - containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /etc/traefik/traefik.yml
+              name: traefik-local-cm1
+              subPath: traefik.yml
+            - mountPath: /etc/traefik/dynamic
+              name: traefik-local-cm2
+      restartPolicy: Always
+      volumes:
+        - configMap:
+            items:
+              - key: traefik.yml
+                path: traefik.yml
+            name: traefik-local-cm1
+          name: traefik-local-cm1
+        - configMap:
+            name: traefik-local-cm2
+          name: traefik-local-cm2

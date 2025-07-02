@@ -21,9 +21,9 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
     title: "USER SERVICE API";
     version: "1.0.0";
-    description: "API for PRODUCT, authentication, and authorization";
+    description: "API for USER, AUTHENTICATION, and AUTHORIZATION";
   };
-  schemes: HTTPS;
+  schemes: [HTTPS, HTTP];
   consumes: "application/json";
   produces: "application/json";
   security_definitions: {

@@ -84,6 +84,7 @@ func AuthHTTPMiddleware(
 
 			// Add token to request context
 			ctx = pkgContext.SetTokenAuthorizationToContext(ctx, tokenHeader)
+			ctx = pkgContext.SetTokenAuthorizationToMetadata(ctx, tokenHeader)
 			r = r.WithContext(ctx)
 			next.ServeHTTP(w, r)
 		})

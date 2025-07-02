@@ -14,7 +14,11 @@ func RequestIDHTTPMiddleware() func(http.Handler) http.Handler {
 				reqID = uuid.NewString()
 			}
 
-			r = r.WithContext(pkgContext.SetRequestIDToContext(r.Context(), reqID))
+			ctx := r.Context()
+			ctx = pkgContext.SetRequestIDToContext(ctx, reqID)
+			ctx = pkgContext.SetRequestIDToMetadata(ctx, reqID)
+
+			r = r.WithContext(ctx)
 			next.ServeHTTP(w, r)
 		})
 	}

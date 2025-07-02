@@ -51,8 +51,8 @@ func NewServer(
 	authUseCase authUseCase.IAuthUseCase,
 ) *Server {
 	return &Server{
-		address:                 config.Get().RpcHost,
-		port:                    config.Get().RpcPort,
+		address:                 config.Get().UserServiceRpcHost,
+		port:                    config.Get().UserServiceRpcPort,
 		logger:                  logger,
 		telemetryInfrastructure: telemetryInfrastructure,
 		authPresenter:           authPresenter,

@@ -6,9 +6,9 @@
 # Main Target
 # ==============================================================================
 
-all: yq-eval clean-gen generate-protos generate-descriptor copy-protos convert-to-k8s
+all: yq-eval clean-gen clean-docs generate-protos generate-descriptor copy-protos convert-to-k8s
 
-# STEP 1, ADD CONFIGURATION GENERATED FILE
+
 yq-eval:
 	@echo "Merging config/gen/*.yml into buf.gen.yaml"
 
@@ -29,7 +29,6 @@ yq-eval:
 
 	@echo "Done."
 
-# STEP 2, CLEAN GENERATED FILE
 clean-gen:
 	@echo "Cleaning proto generated file"
 
@@ -43,7 +42,12 @@ clean-gen:
 
 	@echo "Done Cleaning proto generated file"
 
-# STEP 3, GENERATED PROTO FILE
+clean-docs:
+	@echo "Cleaning docs generated file"
+	rm -r user-service/docs; \
+
+	@echo "Done Cleaning docs generated file"
+
 generate-protos:
 	@echo "=================================================="
 	@echo ">>> Generating file .proto <<<"
@@ -53,7 +57,19 @@ generate-protos:
 	@echo ">>> Done. <<<"
 	@echo "=================================================="
 
-# STEP 3, COPY PROTO FILE TO NODE.JS SERVICES
+generate-descriptor:
+	@echo "Generating descriptor.pb"
+
+	buf build --as-file-descriptor-set --output api-gateway/descriptor.pb;\
+	buf build --as-file-descriptor-set --output commerce-service/descriptor.pb;\
+	buf build --as-file-descriptor-set --output event-store-service/descriptor.pb;\
+	buf build --as-file-descriptor-set --output notification-service/descriptor.pb;\
+	buf build --as-file-descriptor-set --output payment-service/descriptor.pb;\
+	buf build --as-file-descriptor-set --output product-service/descriptor.pb;\
+	buf build --as-file-descriptor-set --output user-service/descriptor.pb;\
+
+	@echo "Done Generating descriptor.pb"
+
 copy-protos:
 	@echo "=================================================="
 	@echo ">>> copy file .proto to commerce-service/proto <<<"
@@ -69,7 +85,6 @@ copy-protos:
 	@echo ">>> Done. <<<"
 	@echo "=================================================="
 
-# STEP 4, GENERATED DOCKER COMPOSE TO K8S MANIFEST
 convert-to-k8s:
 	@echo "=================================================="
 	@echo ">>> Convert docker-compose.yml to folder k8s <<<"
@@ -88,16 +103,5 @@ convert-to-k8s:
 	@echo "=================================================="
 
 
-generate-descriptor:
-	@echo "Generating descriptor.pb"
 
-	buf build --as-file-descriptor-set --output api-gateway/descriptor.pb;\
-	buf build --as-file-descriptor-set --output commerce-service/descriptor.pb;\
-	buf build --as-file-descriptor-set --output event-store-service/descriptor.pb;\
-	buf build --as-file-descriptor-set --output notification-service/descriptor.pb;\
-	buf build --as-file-descriptor-set --output payment-service/descriptor.pb;\
-	buf build --as-file-descriptor-set --output product-service/descriptor.pb;\
-	buf build --as-file-descriptor-set --output user-service/descriptor.pb;\
-
-	@echo "Done Generating descriptor.pb"
 

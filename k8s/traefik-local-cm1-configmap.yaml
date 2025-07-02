@@ -1,0 +1,29 @@
+apiVersion: v1
+data:
+  traefik.yml: |-
+    api:
+      dashboard: true
+      insecure: true
+
+    providers:
+      file:
+        directory: /etc/traefik/dynamic
+        watch: true
+
+    # ENTRYPOINTS
+    entryPoints:
+      web:
+        address: ":80"
+
+      websecure:
+        address: ":443"
+
+      grpc:
+        address: ":9000"
+kind: ConfigMap
+metadata:
+  annotations:
+    use-subpath: "true"
+  labels:
+    io.kompose.service: traefik-local
+  name: traefik-local-cm1

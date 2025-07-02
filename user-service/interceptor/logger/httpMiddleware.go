@@ -1,8 +1,9 @@
 package logger
 
 import (
-	"fmt"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
+	"go.uber.org/zap"
 	"net/http"
 	"time"
 )
@@ -12,12 +13,21 @@ func LoggerHTTPMiddleware(
 ) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			startTime := time.Now()
-			logger.Info(fmt.Sprintf("%s %s", r.URL, time.Now().Sub(startTime)))
-
+			ctx := r.Context()
+			start := time.Now()
 			defer func() {
-				logger.Info(fmt.Sprintf("%s - %s", r.URL, time.Since(startTime)))
+				end := time.Now()
+				logger.Info(
+					"Interceptor.LoggerHTTPMiddleware",
+					zap.String("http_url", r.URL.String()),
+					zap.String("requestId", pkgContext.GetRequestIDFromContext(r.Context())),
+					zap.Time("start", start),
+					zap.Any("request", r),
+					zap.Duration("duration", time.Since(start)),
+					zap.Time("end", end),
+				)
 			}()
+			r.WithContext(ctx)
 			next.ServeHTTP(w, r)
 		})
 	}

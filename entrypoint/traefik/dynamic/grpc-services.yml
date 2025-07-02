@@ -14,6 +14,15 @@ http:
       rule: "Host(`localhost`) && PathPrefix(`/user.UserService`)"
       tls: false
 
+    user-service-user-http:
+      entryPoints:
+        - web
+      service: "user-service-http"
+      rule: "Host(`localhost`)"
+      tls: false
+
+
+
     product-service-grpc:
       entryPoints:
         - grpc
@@ -34,6 +43,11 @@ http:
       loadBalancer:
         servers:
           - url: h2c://user-service:50056
+
+    user-service-http:
+      loadBalancer:
+        servers:
+          - url: http://user-service:40056
 
     product-service-grpc:
       loadBalancer:

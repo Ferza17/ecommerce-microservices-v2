@@ -8,7 +8,6 @@ import "google/protobuf/struct.proto";
 
 
 message EventStore {
-  
   string id = 1;
   string request_id = 2;
   string service = 3;

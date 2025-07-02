@@ -150,6 +150,10 @@ var aclCommand = &cobra.Command{
 				Url:    "/grpc.reflection.v1alpha.ServerReflection/",
 				Method: "get",
 			},
+			"/docs/v1/user/service.swagger.json": {
+				Url:    "/docs/v1/user/service.swagger.json",
+				Method: "get",
+			},
 		}
 
 		for s, http := range healthFullMethods {
