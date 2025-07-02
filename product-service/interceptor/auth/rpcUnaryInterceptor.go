@@ -59,26 +59,6 @@ func AuthRPCUnaryInterceptor(
 			return nil, status.Error(codes.Unauthenticated, "missing token")
 		}
 
-		fullMethod := info.FullMethod
-		acl, err := userService.AuthUserVerifyAccessControl(
-			ctx,
-			requestId,
-			&pb.AuthUserVerifyAccessControlRequest{
-				Token:          tokenHeader,
-				FullMethodName: &fullMethod,
-			},
-		)
-
-		if err != nil {
-			logger.Error("Interceptor.AccessControlRPCInterceptor", zap.String("requestId", requestId), zap.Error(err))
-			return nil, err
-		}
-
-		if !acl.IsValid {
-			logger.Error("Interceptor.AccessControlRPCInterceptor", zap.String("requestId", requestId), zap.Error(status.Errorf(codes.PermissionDenied, "Permission denied")))
-			return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
-		}
-
 		ctx = pkgContext.SetTokenAuthorizationToContext(ctx, tokenHeader)
 		return handler(ctx, req)
 	}

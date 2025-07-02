@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
 	pb "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user"
@@ -10,12 +11,21 @@ import (
 	"go.opentelemetry.io/otel/propagation"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
-func (s *userService) AuthUserVerifyAccessControl(ctx context.Context, requestId string, in *pb.AuthUserVerifyAccessControlRequest) (*pb.AuthUserVerifyAccessControlResponse, error) {
-	md := metadata.New(map[string]string{enum.XRequestIDHeader.String(): requestId})
-	md.Set(pkgContext.CtxKeyAuthorization, fmt.Sprintf("Bearer %s", in.GetToken()))
+func (s *userService) AuthUserVerifyAccessControl(ctx context.Context, requestId string) error {
+	token := pkgContext.GetTokenAuthorizationFromContext(ctx)
+	fullMethodName, err := pkgContext.GetFullMethodNameFromContext(ctx)
+	if err != nil {
+		s.logger.Error("UserService.AuthServiceVerifyIsExcluded", zap.Error(err))
+		return status.Error(codes.Unauthenticated, "missing metadata")
+	}
+
+	md := metadata.New(map[string]string{enum.XRequestIDHeader.String(): token})
+	md.Set(pkgContext.CtxKeyAuthorization, fmt.Sprintf("Bearer %s", token))
 	carrier := propagation.MapCarrier{}
 	otel.GetTextMapPropagator().Inject(ctx, carrier)
 	for key, value := range carrier {
@@ -23,10 +33,19 @@ func (s *userService) AuthUserVerifyAccessControl(ctx context.Context, requestId
 	}
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
-	resp, err := s.authSvc.AuthUserVerifyAccessControl(ctx, in, grpc.Header(&md))
+	resp, err := s.authSvc.AuthUserVerifyAccessControl(ctx, &pb.AuthUserVerifyAccessControlRequest{
+		Token:          token,
+		FullMethodName: &fullMethodName,
+	}, grpc.Header(&md))
 	if err != nil {
 		s.logger.Error("UserService.AuthServiceVerifyIsExcluded", zap.String("requestId", requestId), zap.Error(err))
-		return nil, err
+		return err
 	}
-	return resp, nil
+
+	if !resp.IsValid {
+		s.logger.Error("UserService.AuthServiceVerifyIsExcluded", zap.String("requestId", requestId), zap.Error(errors.New("UnAuthenticated")))
+		return status.Error(codes.Unauthenticated, "unauthenticated")
+	}
+
+	return nil
 }

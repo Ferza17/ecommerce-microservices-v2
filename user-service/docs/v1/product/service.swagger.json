@@ -79,7 +79,7 @@
         ],
         "security": [
           {
-            "bearer": []
+            "Bearer": []
           }
         ]
       },
@@ -116,7 +116,7 @@
         ],
         "security": [
           {
-            "bearer": []
+            "Bearer": []
           }
         ]
       }
@@ -152,7 +152,7 @@
         ],
         "security": [
           {
-            "bearer": []
+            "Bearer": []
           }
         ]
       },
@@ -187,7 +187,7 @@
         ],
         "security": [
           {
-            "bearer": []
+            "Bearer": []
           }
         ]
       },
@@ -230,7 +230,7 @@
         ],
         "security": [
           {
-            "bearer": []
+            "Bearer": []
           }
         ]
       }
@@ -381,16 +381,16 @@
     }
   },
   "securityDefinitions": {
-    "bearer": {
+    "Bearer": {
       "type": "apiKey",
-      "description": "Enter the token with the `Bearer ` prefix, e.g. \"Bearer abcde12345\"",
+      "description": "Bearer Token (e.g., JWT) for authentication. Format: `Bearer YOUR_TOKEN`",
       "name": "Authorization",
       "in": "header"
     }
   },
   "security": [
     {
-      "bearer": []
+      "Bearer": []
     }
   ]
 }

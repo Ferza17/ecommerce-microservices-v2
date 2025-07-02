@@ -101,7 +101,7 @@ func (s *Server) Serve(ctx context.Context) error {
 	// Mount the gRPC gateway with JWT middleware wrapping
 
 	// Health check endpoint
-	router.HandleFunc("/check", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/v1/user/check", func(w http.ResponseWriter, r *http.Request) {
 		response.WriteSuccessResponse(w, http.StatusOK, []byte(`{"status": "ok", "service": "product-service"}`))
 		return
 	}).Methods("GET")
@@ -112,7 +112,7 @@ func (s *Server) Serve(ctx context.Context) error {
 		http.ServeFile(w, r, swaggerJSONPath)
 	}).Methods("GET")
 
-	router.PathPrefix("/docs/").Handler(httpSwagger.Handler(
+	router.PathPrefix("/v1/user/docs/").Handler(httpSwagger.Handler(
 		httpSwagger.URL("/docs/v1/user/service.swagger.json"), // 👈 URL must match your exposed JSON
 	))
 
@@ -121,11 +121,11 @@ func (s *Server) Serve(ctx context.Context) error {
 	router.Use(loggerInterceptor.LoggerHTTPMiddleware(s.logger))
 	router.Use(authInterceptor.AuthHTTPMiddleware(s.logger, s.accessControlUseCase, s.authUseCase))
 
-	router.PathPrefix("/v1/").Handler(gwMux)
+	router.PathPrefix("/v1/user").Handler(gwMux)
 
 	// Create an HTTP server instance
 	s.server = &http.Server{
-		Addr:    fmt.Sprintf("%s:%s", config.Get().UserServiceHttpHost, config.Get().UserServiceHttpPort),
+		Addr:    fmt.Sprintf("%s:%s", s.address, s.port),
 		Handler: router,
 	}
 

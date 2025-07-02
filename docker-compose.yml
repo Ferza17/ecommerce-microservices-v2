@@ -247,7 +247,7 @@ services:
     networks:
       - local
 
-  # NOTIFICATION-SERVICE
+  # PRODUCT-SERVICE
   product-service:
     container_name: product-service
     build:
@@ -255,6 +255,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "50055"
+      - "40055"
     restart: always
     networks:
       - local

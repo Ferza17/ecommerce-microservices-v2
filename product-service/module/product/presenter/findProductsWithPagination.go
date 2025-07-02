@@ -3,36 +3,23 @@ package presenter
 import (
 	"context"
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
 	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product"
-	"time"
-
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/context"
+	"go.uber.org/zap"
 )
 
 func (p *ProductPresenter) FindProductsWithPagination(ctx context.Context, req *productRpc.FindProductsWithPaginationRequest) (*productRpc.FindProductsWithPaginationResponse, error) {
-	var (
-		ctxTimeout, cancel = context.WithTimeout(ctx, 5*time.Second)
-	)
-	defer cancel()
 
-	ctxTimeout, span := p.telemetryInfrastructure.Tracer(ctxTimeout, "Presenter.FindProductsWithPagination")
+	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.FindProductsWithPagination")
 	defer span.End()
 
-	md, ok := metadata.FromIncomingContext(ctxTimeout)
-	if !ok {
-		p.logger.Error(fmt.Sprintf("metadata not found"))
-		return nil, status.Error(codes.InvalidArgument, "metadata not found")
+	requestId := pkgContext.GetRequestIDFromContext(ctx)
+	if err := p.userService.AuthUserVerifyAccessControl(ctx, requestId); err != nil {
+		p.logger.Error("Presenter.CreateProduct", zap.String("requestID", requestId), zap.Error(err))
+		return nil, err
 	}
 
-	requestID := ""
-	if values := md.Get(enum.XRequestIDHeader.String()); len(values) > 0 {
-		requestID = values[0]
-	}
-
-	resp, err := p.productUseCase.FindProductsWithPagination(ctxTimeout, requestID, req)
+	resp, err := p.productUseCase.FindProductsWithPagination(ctx, requestId, req)
 	if err != nil {
 		p.logger.Error(fmt.Sprintf("error finding products: %v", err))
 		return nil, err

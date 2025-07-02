@@ -9,7 +9,9 @@ import (
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/response"
+	"github.com/gorilla/mux"
 	"go.uber.org/zap"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -26,6 +28,10 @@ func AuthHTTPMiddleware(
 			requestId := pkgContext.GetRequestIDFromContext(ctx)
 			method := strings.ToLower(r.Method)
 			url := strings.ToLower(r.URL.Path)
+
+			route, _ := mux.CurrentRoute(r).GetPathTemplate()
+
+			log.Printf("Request Path: %s, Matched Path Template: %s", r.URL.Path, route)
 
 			// Validate is excluded method
 			isExcluded, _ := accessControlUseCase.IsExcludedHTTP(

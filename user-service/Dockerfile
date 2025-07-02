@@ -9,7 +9,6 @@ RUN go mod download
 COPY . ./
 RUN go build -o user-service
 
-# Final stage
 FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates

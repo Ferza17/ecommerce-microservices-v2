@@ -135,7 +135,7 @@ var aclCommand = &cobra.Command{
 		// Register Health Check for consul as excluded method to avoid response error by interceptor
 		healthFullMethods := map[string]*pb.HTTP{
 			grpc_health_v1.Health_Check_FullMethodName: &pb.HTTP{
-				Url:    "/check",
+				Url:    "/v1/user/check",
 				Method: "get",
 			},
 			grpc_health_v1.Health_Watch_FullMethodName: &pb.HTTP{
@@ -150,6 +150,7 @@ var aclCommand = &cobra.Command{
 				Url:    "/grpc.reflection.v1alpha.ServerReflection/",
 				Method: "get",
 			},
+			// SWAGGER API DOCS
 			"/docs/v1/user/service.swagger.json": {
 				Url:    "/docs/v1/user/service.swagger.json",
 				Method: "get",

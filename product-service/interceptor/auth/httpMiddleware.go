@@ -61,28 +61,6 @@ func AuthHTTPMiddleware(
 				return
 			}
 
-			// Access Control Authorization
-			acl, err := userService.AuthUserVerifyAccessControl(
-				ctx,
-				requestId,
-				&pb.AuthUserVerifyAccessControlRequest{
-					Token:      tokenHeader,
-					HttpUrl:    &url,
-					HttpMethod: &method,
-				},
-			)
-			if err != nil {
-				logger.Error("Interceptor.AuthHTTPMiddleware", zap.String("requestId", requestId), zap.Error(errors.New("invalid authorization access control")))
-				response.WriteErrorResponse(w, http.StatusUnauthorized, "UNAUTHORIZED", errors.New("invalid authorization access control"))
-				return
-			}
-
-			if !acl.IsValid {
-				logger.Error("Interceptor.AuthHTTPMiddleware", zap.String("requestId", requestId), zap.Error(errors.New("permission denied")))
-				response.WriteErrorResponse(w, http.StatusUnauthorized, "UNAUTHORIZED", errors.New("permission denied"))
-				return
-			}
-
 			// Add token to request context
 			ctx = pkgContext.SetTokenAuthorizationToContext(ctx, tokenHeader)
 			r = r.WithContext(ctx)

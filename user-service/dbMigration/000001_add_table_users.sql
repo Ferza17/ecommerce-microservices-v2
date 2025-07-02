@@ -62,5 +62,5 @@ CREATE TABLE access_control_excluded
 CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
 CREATE INDEX IF NOT EXISTS idx_users_role_id ON users (role_id);
 CREATE INDEX IF NOT EXISTS idx_users_discarded_at ON users (discarded_at);
-CREATE INDEX IF NOT EXISTS idx_access_control_excluded_discarded_at ON access_control_excluded (full_method_name);
+CREATE INDEX IF NOT EXISTS idx_access_control_excluded_discarded_at ON access_control_excluded (full_method_name, http_url, http_method);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_access_controls_service_method ON access_controls (full_method_name, role_id);

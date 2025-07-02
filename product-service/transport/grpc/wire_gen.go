@@ -30,8 +30,8 @@ func ProvideGrpcTransport() *GrpcTransport {
 	iElasticsearchInfrastructure := elasticsearch.NewElasticsearchInfrastructure(iTelemetryInfrastructure, iZapLogger)
 	iProductElasticsearchRepository := elasticsearch2.NewProductElasticsearchRepository(iElasticsearchInfrastructure, iTelemetryInfrastructure, iZapLogger)
 	iProductUseCase := usecase.NewProductUseCase(postgresSQL, iProductPostgresqlRepository, iRabbitMQInfrastructure, iProductElasticsearchRepository, iTelemetryInfrastructure, iZapLogger)
-	productPresenter := presenter.NewProductPresenter(iProductUseCase, iTelemetryInfrastructure, iZapLogger)
 	iUserService := user.NewUserService(iZapLogger)
+	productPresenter := presenter.NewProductPresenter(iProductUseCase, iTelemetryInfrastructure, iZapLogger, iUserService)
 	grpcTransport := NewServer(iZapLogger, iTelemetryInfrastructure, productPresenter, iUserService)
 	return grpcTransport
 }

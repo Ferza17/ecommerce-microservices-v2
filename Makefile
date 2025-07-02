@@ -44,6 +44,7 @@ clean-gen:
 
 clean-docs:
 	@echo "Cleaning docs generated file"
+	rm -r product-service/docs; \
 	rm -r user-service/docs; \
 
 	@echo "Done Cleaning docs generated file"

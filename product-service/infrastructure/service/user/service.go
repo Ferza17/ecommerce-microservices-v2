@@ -15,7 +15,7 @@ import (
 type (
 	IUserService interface {
 		AuthServiceVerifyIsExcluded(ctx context.Context, requestId string, in *pb.AuthServiceVerifyIsExcludedRequest) (*pb.AuthServiceVerifyIsExcludedResponse, error)
-		AuthUserVerifyAccessControl(ctx context.Context, requestId string, in *pb.AuthUserVerifyAccessControlRequest) (*pb.AuthUserVerifyAccessControlResponse, error)
+		AuthUserVerifyAccessControl(ctx context.Context, requestId string) error
 	}
 
 	userService struct {

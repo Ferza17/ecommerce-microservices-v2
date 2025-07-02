@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/transport/grpc"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/transport/http"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/transport/rabbitmq"
 	"github.com/spf13/cobra"
 	"log"
@@ -16,6 +17,7 @@ var runCommand = &cobra.Command{
 		defer cancel()
 
 		grpcServer := grpc.ProvideGrpcTransport()
+		httpServer := http.ProvideHttpTransport()
 		rabbitMQServer := rabbitmq.ProvideRabbitMQTransport()
 
 		wg := new(sync.WaitGroup)
@@ -31,6 +33,16 @@ var runCommand = &cobra.Command{
 			defer wg.Done()
 			log.Println("========== Starting RabbitMQ Consumer ==========")
 			rabbitMQServer.Serve(ctx)
+		}()
+
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			log.Println("========== Starting HTTP Server ==========")
+			if err := httpServer.Serve(ctx); err != nil {
+				log.Println("HTTP Server Error: ", err)
+				return
+			}
 		}()
 
 		// Wait for all goroutines to complete

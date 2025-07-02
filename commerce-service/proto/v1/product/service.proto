@@ -24,18 +24,19 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   produces: "application/json";
   security_definitions: {
     security: {
-      key: "bearer";
+      key: "Bearer"
       value: {
         type: TYPE_API_KEY;
         in: IN_HEADER;
         name: "Authorization";
-        description: "Enter the token with the `Bearer ` prefix, e.g. \"Bearer abcde12345\"";
+        description: "Bearer Token (e.g., JWT) for authentication. Format: `Bearer YOUR_TOKEN`";
       }
     }
   };
   security: {
     security_requirement: {
-      key: "bearer";
+      key: "Bearer";
+      value: {}
     }
   };
 };
@@ -57,7 +58,8 @@ service ProductService {
       tags: ["PRODUCT"];
       security: {
         security_requirement: {
-          key: "bearer";
+          key: "Bearer";
+          value: {}
         }
       };
     };
@@ -76,7 +78,8 @@ service ProductService {
       tags: ["PRODUCT"];
       security: {
         security_requirement: {
-          key: "bearer";
+          key: "Bearer";
+          value: {}
         }
       };
     };
@@ -94,7 +97,8 @@ service ProductService {
       tags: ["PRODUCT"];
       security: {
         security_requirement: {
-          key: "bearer";
+          key: "Bearer";
+          value: {}
         }
       };
     };
@@ -114,7 +118,8 @@ service ProductService {
       tags: ["PRODUCT"];
       security: {
         security_requirement: {
-          key: "bearer";
+          key: "Bearer";
+          value: {}
         }
       };
     };
@@ -132,7 +137,8 @@ service ProductService {
       tags: ["PRODUCT"];
       security: {
         security_requirement: {
-          key: "bearer";
+          key: "Bearer";
+          value: {}
         }
       };
     };

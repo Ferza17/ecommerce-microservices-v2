@@ -14,6 +14,11 @@ func (p *ProductPresenter) FindProductById(ctx context.Context, req *productRpc.
 	defer span.End()
 	requestID := pkgContext.GetRequestIDFromContext(ctx)
 
+	if err := p.userService.AuthUserVerifyAccessControl(ctx, requestID); err != nil {
+		p.logger.Error("Presenter.CreateProduct", zap.String("requestID", requestID), zap.Error(err))
+		return nil, err
+	}
+
 	if err := req.Validate(); err != nil {
 		p.logger.Error("ProductPresenter.FindProductById", zap.String("requestID", requestID), zap.Error(err))
 		return nil, status.Error(codes.InvalidArgument, err.Error())
