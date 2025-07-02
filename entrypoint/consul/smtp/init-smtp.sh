@@ -14,7 +14,7 @@ initialize_smtp(){
   consul kv put production/smtp/SMTP_SENDER_EMAIL "ecommerce@email.com"
   consul kv put production/smtp/SMTP_USERNAME
   consul kv put production/smtp/SMTP_PASSWORD
-  consul kv put production/smtp/SMTP_HOST "localhost"
+  consul kv put production/smtp/SMTP_HOST "mailhog-local"
   consul kv put production/smtp/SMTP_PORT "1025"
 
   echo "DONE INIT CONFIG SMTP"

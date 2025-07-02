@@ -9,7 +9,3 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	cmd.Run()
 }
-
-//TODO:
-// - add migration migration
-// - add table email template

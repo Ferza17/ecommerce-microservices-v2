@@ -17,6 +17,9 @@ func (u *authUseCase) AuthUserVerifyAccessControl(ctx context.Context, requestId
 		tx      = u.postgresSQL.GormDB.Begin()
 	)
 
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "AuthUseCase.AuthUserVerifyAccessControl")
+	defer span.End()
+
 	// Claim Token
 	claim, err := token.ValidateJWTToken(req.Token, token.DefaultRefreshTokenConfig())
 	if err != nil {

@@ -10,6 +10,8 @@ import (
 )
 
 func (u *accessControlUseCase) IsHasHTTPAccess(ctx context.Context, requestId string, role string, httpMethod string, httpUrl string) (bool, error) {
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "AccessControlUseCase.IsHasHTTPAccess")
+	defer span.End()
 	// Get On Redis First
 	isHasAccess, _ := u.accessControlRedisRepository.GetAccessControlHTTP(ctx, requestId, role, httpMethod, httpUrl)
 	if isHasAccess {

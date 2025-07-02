@@ -8,7 +8,7 @@ import (
 )
 
 func (r *accessControlPostgresSQLRepository) FindAccessControlByRoleAndFullMethodName(ctx context.Context, requestId string, role, fullMethodName string, tx *gorm.DB) (*orm.AccessControl, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.FindRoleByName")
+	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AccessControlPostgresRepository.FindRoleByName")
 	defer span.End()
 	acl := new(orm.AccessControl)
 	if err := tx.WithContext(ctx).

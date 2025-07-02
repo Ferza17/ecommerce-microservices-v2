@@ -2,10 +2,11 @@ package config
 
 import (
 	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
 	"github.com/hashicorp/consul/api"
 	"github.com/spf13/viper"
 	"log"
-	"strconv"
+	"os"
 )
 
 var c *Config
@@ -79,7 +80,13 @@ type Config struct {
 func SetConfig(path string) {
 	viper.SetConfigType("env")
 	viper.AddConfigPath(path)
-	viper.SetConfigName(".env")
+
+	switch os.Getenv("ENV") {
+	case enum.CONFIG_ENV_PROD:
+		viper.SetConfigName(".env.production")
+	default:
+		viper.SetConfigName(".env.local")
+	}
 
 	if err := viper.ReadInConfig(); err != nil {
 		panic(fmt.Sprintf("config not found: %s", err.Error()))
@@ -117,24 +124,10 @@ func SetConfig(path string) {
 	c.initExchange(kv)
 	c.initQueueProduct(kv)
 
-	if err = consulClient.Agent().ServiceRegister(&api.AgentServiceRegistration{
-		Name: c.ProductServiceServiceName,
-		Tags: []string{"v1"},
-	}); err != nil {
-		log.Fatalf("Error registering service: %v", err)
+	if err = c.RegisterConsulService(); err != nil {
+		log.Fatalf("SetConfig | could not register service: %v", err)
+		return
 	}
 
-	port, err := strconv.ParseInt(c.ProductServiceRpcPort, 10, 64)
-	if err != nil {
-		log.Fatalf("SetConfig | could not parse PORT to int: %v", err)
-	}
-	if err = consulClient.Agent().ServiceRegister(&api.AgentServiceRegistration{
-		Name:    c.ProductServiceServiceName,
-		Address: c.ProductServiceRpcHost,
-		Port:    int(port),
-		Tags:    []string{"v1"},
-	}); err != nil {
-		log.Fatalf("Error registering service: %v", err)
-	}
 	viper.WatchConfig()
 }

@@ -14,9 +14,9 @@ import (
 )
 
 func (u *authUseCase) AuthUserLoginByEmailAndPassword(ctx context.Context, requestId string, req *pb.AuthUserLoginByEmailAndPasswordRequest) (*emptypb.Empty, error) {
-	tx := u.postgresSQL.GormDB.Begin()
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.AuthUserLoginByEmailAndPassword")
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "AuthUseCase.AuthUserLoginByEmailAndPassword")
 	defer span.End()
+	tx := u.postgresSQL.GormDB.Begin()
 
 	user, err := u.userPostgresqlRepository.FindUserByEmail(ctx, requestId, req.Email, tx)
 	if err != nil {

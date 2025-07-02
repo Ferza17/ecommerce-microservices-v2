@@ -229,8 +229,8 @@ services:
       context: ./user-service
       dockerfile: Dockerfile
     ports:
-      - "50056"  # Expose gRPC port for direct testing
-      - "40056"  # Expose HTTP port for direct testing
+      - "50056"
+      - "40056"
     restart: always
     networks:
       - local
@@ -242,7 +242,19 @@ services:
       context: ./notification-service
       dockerfile: Dockerfile
     ports:
-      - "50053:50053"  # Expose gRPC port for direct testing
+      - "50053"
+    restart: always
+    networks:
+      - local
+
+  # NOTIFICATION-SERVICE
+  product-service:
+    container_name: product-service
+    build:
+      context: ./product-service
+      dockerfile: Dockerfile
+    ports:
+      - "50055"
     restart: always
     networks:
       - local

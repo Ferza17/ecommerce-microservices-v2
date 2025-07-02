@@ -13,7 +13,7 @@ func (u *userUseCase) UpdateUserById(ctx context.Context, requestId string, req 
 		err error
 		tx  = u.postgresSQLInfrastructure.GormDB.Begin()
 	)
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.UpdateUserById")
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UserUseCase.UpdateUserById")
 	defer span.End()
 
 	user, err := u.userPostgresqlRepository.FindUserById(ctx, requestId, req.Id, tx)

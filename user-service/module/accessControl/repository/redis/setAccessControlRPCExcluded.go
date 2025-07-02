@@ -8,7 +8,7 @@ import (
 )
 
 func (r *accessControlRedisRepository) SetAccessControlRPCExcluded(ctx context.Context, requestId string, fullMethodName string) error {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.SetAccessControlRPCExcluded")
+	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AccessControlRedisRepository.SetAccessControlRPCExcluded")
 	defer span.End()
 
 	key := fmt.Sprintf(accessControlRPCExcludedPrefixKey, config.Get().UserServiceServiceName, fullMethodName)

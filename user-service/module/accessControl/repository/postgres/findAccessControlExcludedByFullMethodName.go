@@ -8,7 +8,7 @@ import (
 )
 
 func (r *accessControlPostgresSQLRepository) FindAccessControlExcludedByFullMethodName(ctx context.Context, requestId string, fullMethodName string, tx *gorm.DB) (*orm.AccessControlExcluded, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.FindAccessControlExcludedByFullMethodName")
+	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AccessControlPostgresRepository.FindAccessControlExcludedByFullMethodName")
 	defer span.End()
 
 	excluded := new(orm.AccessControlExcluded)

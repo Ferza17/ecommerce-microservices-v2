@@ -7,6 +7,8 @@ import (
 )
 
 func (u *accessControlUseCase) IsExcludedHTTP(ctx context.Context, requestId string, method, url string) (bool, error) {
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "AccessControlUseCase.IsExcludedHTTP")
+	defer span.End()
 	// Get On Redis
 	isExcluded, err := u.accessControlRedisRepository.GetAccessControlHTTPExcluded(ctx, requestId, method, url)
 	if err != nil {

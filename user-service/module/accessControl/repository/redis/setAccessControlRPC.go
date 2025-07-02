@@ -8,7 +8,7 @@ import (
 )
 
 func (r *accessControlRedisRepository) SetAccessControlRPC(ctx context.Context, requestId string, role string, fullMethodName string) error {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AuthRedisRepository.SetAccessControlRPC")
+	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AccessControlRedisRepository.SetAccessControlRPC")
 	defer span.End()
 
 	key := fmt.Sprintf(accessControlRPCPrefixKey, config.Get().UserServiceServiceName, role, fullMethodName)

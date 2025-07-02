@@ -8,7 +8,7 @@ import (
 )
 
 func (r *accessControlPostgresSQLRepository) FindAccessControlByRoleIdAndHttpMethodAndHttpUrl(ctx context.Context, requestId string, roleId, httpMethod, httpUrl string, tx *gorm.DB) (*orm.AccessControl, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AccessControlRepository.FindAccessControlByRoleAndHttpMethodAndHttpUrl")
+	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AccessControlPostgresRepository.FindAccessControlByRoleAndHttpMethodAndHttpUrl")
 	defer span.End()
 	acl := new(orm.AccessControl)
 	if err := tx.WithContext(ctx).
@@ -18,7 +18,7 @@ func (r *accessControlPostgresSQLRepository) FindAccessControlByRoleIdAndHttpMet
 		Where("r.role = ?", roleId).
 		First(acl).
 		Error; err != nil {
-		r.logger.Error("AccessControlRepository.FindAccessControlByRoleIdAndHttpMethodAndHttpUrl", zap.Error(err))
+		r.logger.Error("AccessControlPostgresRepository.FindAccessControlByRoleIdAndHttpMethodAndHttpUrl", zap.Error(err))
 		return nil, err
 	}
 	return acl, nil

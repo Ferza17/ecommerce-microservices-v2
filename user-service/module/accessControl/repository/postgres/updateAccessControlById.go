@@ -8,7 +8,7 @@ import (
 )
 
 func (r *accessControlPostgresSQLRepository) UpdateAccessControlById(ctx context.Context, requestId string, accessControl *orm.AccessControl, tx *gorm.DB) (*orm.AccessControl, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.UpdateAccessControlById")
+	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AccessControlPostgresRepository.UpdateAccessControlById")
 	defer span.End()
 	if err := tx.WithContext(ctx).
 		Save(accessControl).

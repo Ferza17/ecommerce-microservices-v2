@@ -1,10 +1,31 @@
 http:
   routers:
-    user-service-grpc:
+    user-service-auth-grpc:
       entryPoints:
         - grpc
       service: "user-service-grpc"
-      rule: "Host(`localhost`)"
+      rule: "Host(`localhost`) && PathPrefix(`/user.AuthService`)"
+      tls: false
+
+    user-service-user-grpc:
+      entryPoints:
+        - grpc
+      service: "user-service-grpc"
+      rule: "Host(`localhost`) && PathPrefix(`/user.UserService`)"
+      tls: false
+
+    product-service-grpc:
+      entryPoints:
+        - grpc
+      service: "product-service-grpc"
+      rule: "Host(`localhost`) && PathPrefix(`/product.ProductService`)"
+      tls: false
+
+    grpc-reflection:
+      entryPoints:
+        - grpc
+      service: "user-service-grpc"
+      rule: "Host(`localhost`) && PathPrefix(`/grpc.reflection.v1alpha.ServerReflection`)"
       tls: false
 
 
@@ -13,3 +34,8 @@ http:
       loadBalancer:
         servers:
           - url: h2c://user-service:50056
+
+    product-service-grpc:
+      loadBalancer:
+        servers:
+          - url: h2c://product-service:50055

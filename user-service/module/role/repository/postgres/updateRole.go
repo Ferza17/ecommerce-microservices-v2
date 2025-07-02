@@ -8,7 +8,7 @@ import (
 )
 
 func (r *rolePostgresSQLRepository) UpdateRoleById(ctx context.Context, requestId string, role *orm.Role, tx *gorm.DB) (*orm.Role, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.UpdateRoleById")
+	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "RolePostgresRepository.UpdateRoleById")
 	defer span.End()
 	if err := tx.WithContext(ctx).
 		Save(role).

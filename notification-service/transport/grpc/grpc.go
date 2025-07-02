@@ -28,8 +28,8 @@ var Set = wire.NewSet(NewGrpcServer)
 
 func NewGrpcServer(logger logger.IZapLogger) *GrpcServer {
 	return &GrpcServer{
-		address:    config.Get().RpcHost,
-		port:       config.Get().RpcPort,
+		address:    config.Get().NotificationServiceRpcHost,
+		port:       config.Get().NotificationServiceRpcPort,
 		grpcServer: grpc.NewServer(),
 		logger:     logger,
 	}
@@ -43,8 +43,7 @@ func (s *GrpcServer) Serve() {
 
 	healthServer := health.NewServer()
 	grpc_health_v1.RegisterHealthServer(s.grpcServer, healthServer)
-	// Mark the service as healthy
-	healthServer.SetServingStatus(config.Get().ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
+	healthServer.SetServingStatus(config.Get().NotificationServiceServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
 
 	log.Printf("Starting gRPC server on %s:%s", s.address, s.port)
 	// Enable Reflection to Evans grpc client

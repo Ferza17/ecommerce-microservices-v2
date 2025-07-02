@@ -6,7 +6,7 @@ import (
 )
 
 func (r authRedisRepository) GetOtp(ctx context.Context, requestId string, otp string) (*string, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.GetOtp")
+	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AuthRedisRepository.GetOtp")
 	defer span.End()
 	key := fmt.Sprintf(RedisKeyOtp, otp)
 	result, err := r.redisInfrastructure.GetClient().Get(ctx, key).Result()

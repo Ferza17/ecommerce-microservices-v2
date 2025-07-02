@@ -43,7 +43,7 @@ func NewTelemetry(logger logger.IZapLogger) ITelemetryInfrastructure {
 		sdktrace.WithBatcher(exp),
 		sdktrace.WithResource(resource.NewWithAttributes(
 			semconv.SchemaURL,
-			semconv.ServiceNameKey.String(config.Get().ServiceName),
+			semconv.ServiceNameKey.String(config.Get().NotificationServiceServiceName),
 		)),
 	)
 	otel.SetTracerProvider(tp)
@@ -64,5 +64,5 @@ func (t *telemetryInfrastructure) Close(ctx context.Context) error {
 }
 
 func (t *telemetryInfrastructure) Tracer(ctx context.Context, fnName string) (context.Context, trace.Span) {
-	return t.tracerProvider.Tracer(config.Get().ServiceName).Start(ctx, fnName)
+	return t.tracerProvider.Tracer(config.Get().NotificationServiceServiceName).Start(ctx, fnName)
 }

@@ -5,7 +5,6 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
 	"log"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/hashicorp/consul/api"
@@ -49,7 +48,7 @@ type Config struct {
 	QueueProductUpdated string
 	QueueProductDeleted string
 
-	// Queue
+	// Queue User
 	QueueUserCreated string
 	QueueUserUpdated string
 	QueueUserLogin   string
@@ -57,7 +56,7 @@ type Config struct {
 
 	QueueEventCreated string
 
-	// Notification
+	// Queue Notification
 	QueueNotificationEmailOtpCreated          string
 	QueueNotificationEmailPaymentOrderCreated string
 
@@ -100,12 +99,10 @@ func SetConfig(path string) {
 	viper.AddConfigPath(path)
 
 	switch os.Getenv("ENV") {
-	case enum.CONFIG_ENV_LOCAL:
-		viper.SetConfigName(".env.local")
 	case enum.CONFIG_ENV_PROD:
 		viper.SetConfigName(".env.production")
 	default:
-		log.Fatal("SetConfig | env is required")
+		viper.SetConfigName(".env.local")
 	}
 
 	err := viper.ReadInConfig()
@@ -238,17 +235,9 @@ func SetConfig(path string) {
 		log.Fatalf("SetConfig |  is invalid")
 	}
 
-	port, err := strconv.ParseInt(c.RpcPort, 10, 64)
-	if err != nil {
-		log.Fatalf("SetConfig | could not parse PORT to int: %v", err)
-	}
-	if err = consulClient.Agent().ServiceRegister(&api.AgentServiceRegistration{
-		Name:    c.UserServiceServiceName,
-		Address: c.RpcHost,
-		Port:    int(port),
-		Tags:    []string{"v1"},
-	}); err != nil {
-		log.Fatalf("Error registering service: %v", err)
+	if err = c.RegisterConsulService(); err != nil {
+		log.Fatalf("SetConfig | could not register consul service: %v", err)
+		return
 	}
 
 	viper.WatchConfig()

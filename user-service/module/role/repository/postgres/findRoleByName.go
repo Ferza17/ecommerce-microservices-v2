@@ -8,7 +8,7 @@ import (
 )
 
 func (r *rolePostgresSQLRepository) FindRoleByName(ctx context.Context, requestId string, name string, tx *gorm.DB) (*orm.Role, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.FindRoleByName")
+	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "RolePostgresRepository.FindRoleByName")
 	defer span.End()
 	role := new(orm.Role)
 	if err := tx.WithContext(ctx).

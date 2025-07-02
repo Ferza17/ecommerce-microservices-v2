@@ -15,6 +15,10 @@ func (c *Config) initCommon(kv *api.KV) {
 		log.Fatal("SetConfig | Consul | SAGA_STATUS/PENDING host is required")
 	}
 	c.CommonSagaStatusPending = string(pair.Value)
+	if c.CommonSagaStatusPending == "" {
+		log.Fatal("SetConfig | Consul | SAGA_STATUS/PENDING host is required")
+		return
+	}
 
 	pair, _, err = kv.Get(fmt.Sprintf("%s/common/SAGA_STATUS/SUCCESS", c.Env), nil)
 	if err != nil {
@@ -24,6 +28,10 @@ func (c *Config) initCommon(kv *api.KV) {
 		log.Fatal("SetConfig | Consul | SAGA_STATUS/SUCCESS host is required")
 	}
 	c.CommonSagaStatusSuccess = string(pair.Value)
+	if c.CommonSagaStatusSuccess == "" {
+		log.Fatal("SetConfig | Consul | SAGA_STATUS/SUCCESS host is required")
+		return
+	}
 
 	pair, _, err = kv.Get(fmt.Sprintf("%s/common/SAGA_STATUS/FAILED", c.Env), nil)
 	if err != nil {
@@ -33,4 +41,8 @@ func (c *Config) initCommon(kv *api.KV) {
 		log.Fatal("SetConfig | Consul | SAGA_STATUS/FAILED host is required")
 	}
 	c.CommonSagaStatusFailed = string(pair.Value)
+	if c.CommonSagaStatusFailed == "" {
+		log.Fatal("SetConfig | Consul | SAGA_STATUS/FAILED host is required")
+		return
+	}
 }

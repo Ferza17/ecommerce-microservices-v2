@@ -8,7 +8,7 @@ import (
 )
 
 func (r *userPostgresqlRepository) FindUserByEmail(ctx context.Context, requestId string, email string, tx *gorm.DB) (*orm.User, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.FindUserByEmailWithTransaction")
+	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "UserPostgresRepository.FindUserByEmail")
 	defer span.End()
 	user := new(orm.User)
 	if err := tx.WithContext(ctx).

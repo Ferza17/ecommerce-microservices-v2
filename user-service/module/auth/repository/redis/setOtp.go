@@ -7,7 +7,7 @@ import (
 )
 
 func (r authRedisRepository) SetOtp(ctx context.Context, requestId string, otp string, value string) (err error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.SetOtp")
+	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AuthRedisRepository.SetOtp")
 	defer span.End()
 	if err = r.redisInfrastructure.
 		GetClient().

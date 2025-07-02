@@ -12,6 +12,9 @@ func (u *authUseCase) AuthServiceVerifyIsExcluded(ctx context.Context, requestId
 		err        error
 	)
 
+	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "AuthUseCase.AuthServiceVerifyIsExcluded")
+	defer span.End()
+
 	if req.FullMethodName != nil {
 		isExcluded, err = u.accessControlUseCase.IsExcludedRPC(ctx, requestId, *req.FullMethodName)
 		if err != nil {
