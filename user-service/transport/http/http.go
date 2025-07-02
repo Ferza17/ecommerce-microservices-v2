@@ -7,6 +7,7 @@ import (
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	authInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/auth"
 	loggerInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/logger"
+	metricInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/metric"
 	requestIdInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/requestid"
 	telemetryInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/telemetry"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
@@ -16,10 +17,12 @@ import (
 	userPresenter "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/presenter"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
+	pkgMetric "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/metric"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/response"
 	"github.com/google/wire"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/prometheus/client_golang/prometheus"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"google.golang.org/protobuf/encoding/protojson"
 	"log"
@@ -81,13 +84,24 @@ func (s *Server) Serve(ctx context.Context) error {
 		}),
 		runtime.WithIncomingHeaderMatcher(func(key string) (string, bool) {
 			switch key {
-			case "Authorization", "Content-Type", "Accept", pkgContext.CtxKeyRequestID, pkgContext.CtxKeyAuthorization:
+			case "Authorization",
+				"Content-Type",
+				"Accept",
+				"traceparent",
+				"tracestate",
+				"baggage",
+				pkgContext.CtxKeyRequestID,
+				pkgContext.CtxKeyAuthorization:
 				return key, true
 			default:
 				return "", false
 			}
 		}),
 	)
+
+	// For Matrics
+	prometheus.MustRegister(pkgMetric.HttpRequests)
+	prometheus.MustRegister(pkgMetric.HttpDuration)
 
 	// Register gRPC-HTTP gateway handlers
 	if err := pb.RegisterUserServiceHandlerServer(ctx, gwMux, s.userPresenter); err != nil {
@@ -106,8 +120,8 @@ func (s *Server) Serve(ctx context.Context) error {
 		return
 	}).Methods("GET")
 
+	// Route for api documentation
 	swaggerJSONPath := "./docs/v1/user/service.swagger.json"
-
 	router.HandleFunc("/docs/v1/user/service.swagger.json", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, swaggerJSONPath)
 	}).Methods("GET")
@@ -118,6 +132,7 @@ func (s *Server) Serve(ctx context.Context) error {
 
 	router.Use(requestIdInterceptor.RequestIDHTTPMiddleware())
 	router.Use(telemetryInterceptor.TelemetryHTTPMiddleware(s.telemetryInfrastructure))
+	router.Use(metricInterceptor.MetricHTTPMiddleware())
 	router.Use(loggerInterceptor.LoggerHTTPMiddleware(s.logger))
 	router.Use(authInterceptor.AuthHTTPMiddleware(s.logger, s.accessControlUseCase, s.authUseCase))
 

@@ -1,7 +1,7 @@
 
 global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
+  scrape_interval: 10s
+  evaluation_interval: 10s
 
 rule_files:
 # - "first_rules.yml"
@@ -17,12 +17,18 @@ scrape_configs:
   - job_name: 'jaeger'
     static_configs:
       - targets: ['jaeger-local:14269'] ## PROD
-    scrape_interval: 15s
+    scrape_interval: 10s
     metrics_path: /metrics
 
   # Jaeger span metrics (jika menggunakan span metrics processor)
   - job_name: 'jaeger-span-metrics'
     static_configs:
       - targets: ['jaeger-local:8888'] # PRODUCTION
-    scrape_interval: 15s
+    scrape_interval: 10s
+    metrics_path: /metrics
+
+  - job_name: 'user-service-metrics'
+    static_configs:
+      - targets: [ 'user-service:30056' ]
+    scrape_interval: 10s
     metrics_path: /metrics

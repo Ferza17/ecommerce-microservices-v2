@@ -6,6 +6,7 @@ import (
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	authInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/auth"
 	loggerInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/logger"
+	metricInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/metric"
 	requestIdInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/requestid"
 	telemetryInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/telemetry"
 	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
@@ -14,7 +15,9 @@ import (
 	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
 	userPresenter "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/presenter"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
+	pkgMetric "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/metric"
 	"github.com/google/wire"
+	"github.com/prometheus/client_golang/prometheus"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -70,11 +73,16 @@ func (srv *Server) Serve() {
 	opts := []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(
 			requestIdInterceptor.RequestIDRPCInterceptor(),
+			metricInterceptor.MetricUnaryInterceptor(),
 			telemetryInterceptor.TelemetryRPCInterceptor(srv.telemetryInfrastructure),
 			loggerInterceptor.LoggerRPCInterceptor(srv.logger),
 			authInterceptor.AuthRPCUnaryInterceptor(srv.logger, srv.accessControlUseCase, srv.authUseCase),
 		),
 	}
+
+	// For Matrics
+	prometheus.MustRegister(pkgMetric.GrpcRequests)
+	prometheus.MustRegister(pkgMetric.GrpcDuration)
 
 	srv.grpcServer = grpc.NewServer(opts...)
 

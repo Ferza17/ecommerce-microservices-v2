@@ -17,6 +17,12 @@ func (u *accessControlUseCase) IsExcludedHTTP(ctx context.Context, requestId str
 		return true, nil
 	}
 
+	// Hardcoded for metrics prometheus
+	ok = strings.Contains(url, "/metrics")
+	if ok {
+		return true, nil
+	}
+
 	// Get On Redis
 	isExcluded, err := u.accessControlRedisRepository.GetAccessControlHTTPExcluded(ctx, requestId, method, url)
 	if err != nil {

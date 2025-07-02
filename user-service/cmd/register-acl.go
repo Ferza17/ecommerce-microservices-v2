@@ -155,6 +155,10 @@ var aclCommand = &cobra.Command{
 				Url:    "/docs/v1/user/service.swagger.json",
 				Method: "get",
 			},
+			"/metrics": {
+				Url:    "/metrics",
+				Method: "get",
+			},
 		}
 
 		for s, http := range healthFullMethods {

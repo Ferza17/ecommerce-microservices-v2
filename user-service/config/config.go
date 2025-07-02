@@ -84,11 +84,12 @@ type Config struct {
 	OtpExpirationTime             time.Duration
 
 	// USER SERVICE
-	UserServiceServiceName string
-	UserServiceRpcHost     string
-	UserServiceRpcPort     string
-	UserServiceHttpHost    string
-	UserServiceHttpPort    string
+	UserServiceServiceName    string
+	UserServiceRpcHost        string
+	UserServiceRpcPort        string
+	UserServiceHttpHost       string
+	UserServiceHttpPort       string
+	UserServiceHttpMetricPort string
 }
 
 func SetConfig(path string) {

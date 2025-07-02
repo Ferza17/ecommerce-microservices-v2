@@ -229,8 +229,9 @@ services:
       context: ./user-service
       dockerfile: Dockerfile
     ports:
-      - "50056"
-      - "40056"
+      - "50056" # GRPC
+      - "40056" # HTTP
+      - "30056" # HTTP PROMETHEUS COLLECTOR
     restart: always
     networks:
       - local
