@@ -2,8 +2,6 @@ package auth
 
 import (
 	"errors"
-	"fmt"
-	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	accessControlUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/usecase"
 	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
@@ -63,28 +61,6 @@ func AuthHTTPMiddleware(
 			if tokenHeader == "" {
 				logger.Error("Interceptor.AuthHTTPMiddleware", zap.String("requestId", requestId), zap.Error(errors.New("invalid authorization header format")))
 				response.WriteErrorResponse(w, http.StatusUnauthorized, "UNAUTHENTICATED", errors.New("invalid authorization header format"))
-				return
-			}
-
-			// Access Control Authorization
-			acl, err := authUseCase.AuthUserVerifyAccessControl(
-				ctx,
-				pkgContext.GetRequestIDFromContext(ctx),
-				&pb.AuthUserVerifyAccessControlRequest{
-					Token:      tokenHeader,
-					HttpUrl:    &url,
-					HttpMethod: &method,
-				},
-			)
-			if err != nil {
-				logger.Error(fmt.Sprintf("invalid authorization access control"))
-				response.WriteErrorResponse(w, http.StatusUnauthorized, "UNAUTHORIZED", errors.New("invalid authorization access control"))
-				return
-			}
-
-			if !acl.IsValid {
-				logger.Error(fmt.Sprintf("Permission Denied"))
-				response.WriteErrorResponse(w, http.StatusUnauthorized, "UNAUTHORIZED", errors.New("permission denied"))
 				return
 			}
 

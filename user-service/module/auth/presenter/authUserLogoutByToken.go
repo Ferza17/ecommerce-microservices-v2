@@ -14,6 +14,31 @@ func (p *AuthPresenter) AuthUserLogoutByToken(ctx context.Context, req *pb.AuthU
 	defer span.End()
 	requestID := pkgContext.GetRequestIDFromContext(ctx)
 
+	fullMethodName, err := pkgContext.GetFullMethodNameFromContext(ctx)
+	if err != nil {
+		p.logger.Error("UserPresenter.FindUserByEmailAndPassword", zap.String("requestID", requestID), zap.Error(err))
+		return nil, err
+	}
+
+	// Access Control Authorization
+	acl, err := p.authUseCase.AuthUserVerifyAccessControl(
+		ctx,
+		pkgContext.GetRequestIDFromContext(ctx),
+		&pb.AuthUserVerifyAccessControlRequest{
+			Token:          pkgContext.GetTokenAuthorizationFromContext(ctx),
+			FullMethodName: &fullMethodName,
+		},
+	)
+	if err != nil {
+		p.logger.Error("UserPresenter.FindUserByEmailAndPassword", zap.String("requestID", requestID), zap.Error(err))
+		return nil, nil
+	}
+
+	if !acl.IsValid {
+		p.logger.Error("UserPresenter.FindUserByEmailAndPassword", zap.String("requestID", requestID), zap.Error(err))
+		return nil, nil
+	}
+
 	if err := req.Validate(); err != nil {
 		p.logger.Error("AuthPresenter.AuthUserLogoutByToken", zap.String("requestID", requestID), zap.Error(err))
 		return nil, status.Error(codes.InvalidArgument, err.Error())
