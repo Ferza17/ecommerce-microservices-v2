@@ -4,12 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/payment-service/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/model/orm"
 	"gorm.io/gorm"
 )
 
-func (r *paymentRepository) FindPaymentByUserIdAndStatus(ctx context.Context, requestId string, userId string, status enum.PaymentStatus) (*orm.Payment, error) {
+func (r *paymentRepository) FindPaymentByUserIdAndStatus(ctx context.Context, requestId string, userId string, status string) (*orm.Payment, error) {
 	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.FindPaymentById")
 	defer span.End()
 

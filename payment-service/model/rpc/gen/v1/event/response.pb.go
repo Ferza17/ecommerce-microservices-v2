@@ -20,6 +20,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// OLD
 type CreateEventStoreResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -67,20 +68,430 @@ func (x *CreateEventStoreResponse) GetId() string {
 	return ""
 }
 
+// NEW
+// SagaStreamResponse for streaming saga events
+type SagaStreamResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Events    []*SagaEvent `protobuf:"bytes,1,rep,name=events,proto3" json:"events,omitempty"`
+	HasMore   bool         `protobuf:"varint,2,opt,name=has_more,json=hasMore,proto3" json:"has_more,omitempty"`
+	NextToken string       `protobuf:"bytes,3,opt,name=next_token,json=nextToken,proto3" json:"next_token,omitempty"`
+}
+
+func (x *SagaStreamResponse) Reset() {
+	*x = SagaStreamResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_v1_event_response_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SagaStreamResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SagaStreamResponse) ProtoMessage() {}
+
+func (x *SagaStreamResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_event_response_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SagaStreamResponse.ProtoReflect.Descriptor instead.
+func (*SagaStreamResponse) Descriptor() ([]byte, []int) {
+	return file_v1_event_response_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *SagaStreamResponse) GetEvents() []*SagaEvent {
+	if x != nil {
+		return x.Events
+	}
+	return nil
+}
+
+func (x *SagaStreamResponse) GetHasMore() bool {
+	if x != nil {
+		return x.HasMore
+	}
+	return false
+}
+
+func (x *SagaStreamResponse) GetNextToken() string {
+	if x != nil {
+		return x.NextToken
+	}
+	return ""
+}
+
+// EventStreamResponse for streaming events
+type EventStreamResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Events    []*Event `protobuf:"bytes,1,rep,name=events,proto3" json:"events,omitempty"`
+	HasMore   bool     `protobuf:"varint,2,opt,name=has_more,json=hasMore,proto3" json:"has_more,omitempty"`
+	NextToken string   `protobuf:"bytes,3,opt,name=next_token,json=nextToken,proto3" json:"next_token,omitempty"`
+}
+
+func (x *EventStreamResponse) Reset() {
+	*x = EventStreamResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_v1_event_response_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventStreamResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventStreamResponse) ProtoMessage() {}
+
+func (x *EventStreamResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_event_response_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EventStreamResponse.ProtoReflect.Descriptor instead.
+func (*EventStreamResponse) Descriptor() ([]byte, []int) {
+	return file_v1_event_response_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *EventStreamResponse) GetEvents() []*Event {
+	if x != nil {
+		return x.Events
+	}
+	return nil
+}
+
+func (x *EventStreamResponse) GetHasMore() bool {
+	if x != nil {
+		return x.HasMore
+	}
+	return false
+}
+
+func (x *EventStreamResponse) GetNextToken() string {
+	if x != nil {
+		return x.NextToken
+	}
+	return ""
+}
+
+// Request/Response messages
+type StoreEventResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Success      bool   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	ErrorMessage string `protobuf:"bytes,2,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
+	EventId      string `protobuf:"bytes,3,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
+}
+
+func (x *StoreEventResponse) Reset() {
+	*x = StoreEventResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_v1_event_response_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StoreEventResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StoreEventResponse) ProtoMessage() {}
+
+func (x *StoreEventResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_event_response_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StoreEventResponse.ProtoReflect.Descriptor instead.
+func (*StoreEventResponse) Descriptor() ([]byte, []int) {
+	return file_v1_event_response_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *StoreEventResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *StoreEventResponse) GetErrorMessage() string {
+	if x != nil {
+		return x.ErrorMessage
+	}
+	return ""
+}
+
+func (x *StoreEventResponse) GetEventId() string {
+	if x != nil {
+		return x.EventId
+	}
+	return ""
+}
+
+type StoreSagaEventResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Success      bool   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	ErrorMessage string `protobuf:"bytes,2,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
+	EventId      string `protobuf:"bytes,3,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
+}
+
+func (x *StoreSagaEventResponse) Reset() {
+	*x = StoreSagaEventResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_v1_event_response_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StoreSagaEventResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StoreSagaEventResponse) ProtoMessage() {}
+
+func (x *StoreSagaEventResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_event_response_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StoreSagaEventResponse.ProtoReflect.Descriptor instead.
+func (*StoreSagaEventResponse) Descriptor() ([]byte, []int) {
+	return file_v1_event_response_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *StoreSagaEventResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *StoreSagaEventResponse) GetErrorMessage() string {
+	if x != nil {
+		return x.ErrorMessage
+	}
+	return ""
+}
+
+func (x *StoreSagaEventResponse) GetEventId() string {
+	if x != nil {
+		return x.EventId
+	}
+	return ""
+}
+
+type StoreCompensationEventResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Success        bool   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	ErrorMessage   string `protobuf:"bytes,2,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
+	CompensationId string `protobuf:"bytes,3,opt,name=compensation_id,json=compensationId,proto3" json:"compensation_id,omitempty"`
+}
+
+func (x *StoreCompensationEventResponse) Reset() {
+	*x = StoreCompensationEventResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_v1_event_response_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StoreCompensationEventResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StoreCompensationEventResponse) ProtoMessage() {}
+
+func (x *StoreCompensationEventResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_event_response_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StoreCompensationEventResponse.ProtoReflect.Descriptor instead.
+func (*StoreCompensationEventResponse) Descriptor() ([]byte, []int) {
+	return file_v1_event_response_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *StoreCompensationEventResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *StoreCompensationEventResponse) GetErrorMessage() string {
+	if x != nil {
+		return x.ErrorMessage
+	}
+	return ""
+}
+
+func (x *StoreCompensationEventResponse) GetCompensationId() string {
+	if x != nil {
+		return x.CompensationId
+	}
+	return ""
+}
+
+type GetCompensationEventsResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Events []*CompensationEvent `protobuf:"bytes,1,rep,name=events,proto3" json:"events,omitempty"`
+}
+
+func (x *GetCompensationEventsResponse) Reset() {
+	*x = GetCompensationEventsResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_v1_event_response_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetCompensationEventsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCompensationEventsResponse) ProtoMessage() {}
+
+func (x *GetCompensationEventsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_event_response_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCompensationEventsResponse.ProtoReflect.Descriptor instead.
+func (*GetCompensationEventsResponse) Descriptor() ([]byte, []int) {
+	return file_v1_event_response_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *GetCompensationEventsResponse) GetEvents() []*CompensationEvent {
+	if x != nil {
+		return x.Events
+	}
+	return nil
+}
+
 var File_v1_event_response_proto protoreflect.FileDescriptor
 
 var file_v1_event_response_proto_rawDesc = []byte{
 	0x0a, 0x17, 0x76, 0x31, 0x2f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x2f, 0x72, 0x65, 0x73, 0x70, 0x6f,
 	0x6e, 0x73, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x05, 0x65, 0x76, 0x65, 0x6e, 0x74,
-	0x22, 0x2a, 0x0a, 0x18, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53,
-	0x74, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x0e, 0x0a, 0x02,
-	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x42, 0x50, 0x0a, 0x09,
-	0x63, 0x6f, 0x6d, 0x2e, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x42, 0x0d, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x48, 0x02, 0x50, 0x01, 0xa2, 0x02, 0x03, 0x45,
-	0x58, 0x58, 0xaa, 0x02, 0x05, 0x45, 0x76, 0x65, 0x6e, 0x74, 0xca, 0x02, 0x05, 0x45, 0x76, 0x65,
-	0x6e, 0x74, 0xe2, 0x02, 0x11, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65,
-	0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x05, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x1a, 0x14, 0x76, 0x31, 0x2f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x2a, 0x0a, 0x18, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02,
+	0x69, 0x64, 0x22, 0x78, 0x0a, 0x12, 0x53, 0x61, 0x67, 0x61, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x28, 0x0a, 0x06, 0x65, 0x76, 0x65, 0x6e,
+	0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x65, 0x76, 0x65, 0x6e, 0x74,
+	0x2e, 0x53, 0x61, 0x67, 0x61, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x06, 0x65, 0x76, 0x65, 0x6e,
+	0x74, 0x73, 0x12, 0x19, 0x0a, 0x08, 0x68, 0x61, 0x73, 0x5f, 0x6d, 0x6f, 0x72, 0x65, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x68, 0x61, 0x73, 0x4d, 0x6f, 0x72, 0x65, 0x12, 0x1d, 0x0a,
+	0x0a, 0x6e, 0x65, 0x78, 0x74, 0x5f, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x09, 0x6e, 0x65, 0x78, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x22, 0x75, 0x0a, 0x13,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x24, 0x0a, 0x06, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x0c, 0x2e, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x2e, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x52, 0x06, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x12, 0x19, 0x0a, 0x08, 0x68, 0x61, 0x73,
+	0x5f, 0x6d, 0x6f, 0x72, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x68, 0x61, 0x73,
+	0x4d, 0x6f, 0x72, 0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x6e, 0x65, 0x78, 0x74, 0x5f, 0x74, 0x6f, 0x6b,
+	0x65, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x6e, 0x65, 0x78, 0x74, 0x54, 0x6f,
+	0x6b, 0x65, 0x6e, 0x22, 0x6e, 0x0a, 0x12, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x75, 0x63,
+	0x63, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x73, 0x75, 0x63, 0x63,
+	0x65, 0x73, 0x73, 0x12, 0x23, 0x0a, 0x0d, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x5f, 0x6d, 0x65, 0x73,
+	0x73, 0x61, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x65, 0x72, 0x72, 0x6f,
+	0x72, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x19, 0x0a, 0x08, 0x65, 0x76, 0x65, 0x6e,
+	0x74, 0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x65, 0x76, 0x65, 0x6e,
+	0x74, 0x49, 0x64, 0x22, 0x72, 0x0a, 0x16, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x53, 0x61, 0x67, 0x61,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x18, 0x0a,
+	0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07,
+	0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x12, 0x23, 0x0a, 0x0d, 0x65, 0x72, 0x72, 0x6f, 0x72,
+	0x5f, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c,
+	0x65, 0x72, 0x72, 0x6f, 0x72, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x19, 0x0a, 0x08,
+	0x65, 0x76, 0x65, 0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
+	0x65, 0x76, 0x65, 0x6e, 0x74, 0x49, 0x64, 0x22, 0x88, 0x01, 0x0a, 0x1e, 0x53, 0x74, 0x6f, 0x72,
+	0x65, 0x43, 0x6f, 0x6d, 0x70, 0x65, 0x6e, 0x73, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x45, 0x76, 0x65,
+	0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x75,
+	0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x73, 0x75, 0x63,
+	0x63, 0x65, 0x73, 0x73, 0x12, 0x23, 0x0a, 0x0d, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x5f, 0x6d, 0x65,
+	0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x65, 0x72, 0x72,
+	0x6f, 0x72, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x27, 0x0a, 0x0f, 0x63, 0x6f, 0x6d,
+	0x70, 0x65, 0x6e, 0x73, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x0e, 0x63, 0x6f, 0x6d, 0x70, 0x65, 0x6e, 0x73, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x49, 0x64, 0x22, 0x51, 0x0a, 0x1d, 0x47, 0x65, 0x74, 0x43, 0x6f, 0x6d, 0x70, 0x65, 0x6e, 0x73,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x30, 0x0a, 0x06, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x18, 0x2e, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x2e, 0x43, 0x6f, 0x6d, 0x70,
+	0x65, 0x6e, 0x73, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x06, 0x65,
+	0x76, 0x65, 0x6e, 0x74, 0x73, 0x42, 0x50, 0x0a, 0x09, 0x63, 0x6f, 0x6d, 0x2e, 0x65, 0x76, 0x65,
+	0x6e, 0x74, 0x42, 0x0d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x50, 0x72, 0x6f, 0x74,
+	0x6f, 0x48, 0x02, 0x50, 0x01, 0xa2, 0x02, 0x03, 0x45, 0x58, 0x58, 0xaa, 0x02, 0x05, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0xca, 0x02, 0x05, 0x45, 0x76, 0x65, 0x6e, 0x74, 0xe2, 0x02, 0x11, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea,
+	0x02, 0x05, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -95,16 +506,28 @@ func file_v1_event_response_proto_rawDescGZIP() []byte {
 	return file_v1_event_response_proto_rawDescData
 }
 
-var file_v1_event_response_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_v1_event_response_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_v1_event_response_proto_goTypes = []interface{}{
-	(*CreateEventStoreResponse)(nil), // 0: event.CreateEventStoreResponse
+	(*CreateEventStoreResponse)(nil),       // 0: event.CreateEventStoreResponse
+	(*SagaStreamResponse)(nil),             // 1: event.SagaStreamResponse
+	(*EventStreamResponse)(nil),            // 2: event.EventStreamResponse
+	(*StoreEventResponse)(nil),             // 3: event.StoreEventResponse
+	(*StoreSagaEventResponse)(nil),         // 4: event.StoreSagaEventResponse
+	(*StoreCompensationEventResponse)(nil), // 5: event.StoreCompensationEventResponse
+	(*GetCompensationEventsResponse)(nil),  // 6: event.GetCompensationEventsResponse
+	(*SagaEvent)(nil),                      // 7: event.SagaEvent
+	(*Event)(nil),                          // 8: event.Event
+	(*CompensationEvent)(nil),              // 9: event.CompensationEvent
 }
 var file_v1_event_response_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	7, // 0: event.SagaStreamResponse.events:type_name -> event.SagaEvent
+	8, // 1: event.EventStreamResponse.events:type_name -> event.Event
+	9, // 2: event.GetCompensationEventsResponse.events:type_name -> event.CompensationEvent
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_v1_event_response_proto_init() }
@@ -112,9 +535,82 @@ func file_v1_event_response_proto_init() {
 	if File_v1_event_response_proto != nil {
 		return
 	}
+	file_v1_event_model_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_v1_event_response_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*CreateEventStoreResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_v1_event_response_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SagaStreamResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_v1_event_response_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventStreamResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_v1_event_response_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StoreEventResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_v1_event_response_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StoreSagaEventResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_v1_event_response_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StoreCompensationEventResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_v1_event_response_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetCompensationEventsResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -132,7 +628,7 @@ func file_v1_event_response_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_v1_event_response_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -15,25 +15,26 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
     title: "PAYMENT SERVICE API";
     version: "1.0.0";
-    description: "API for PAYMENT, authentication, and authorization";
+    description: "API for PAYMENT";
   };
   schemes: HTTPS;
   consumes: "application/json";
   produces: "application/json";
   security_definitions: {
     security: {
-      key: "bearer";
+      key: "Bearer"
       value: {
         type: TYPE_API_KEY;
         in: IN_HEADER;
         name: "Authorization";
-        description: "Enter the token with the `Bearer ` prefix, e.g. \"Bearer abcde12345\"";
+        description: "Bearer Token (e.g., JWT) for authentication. Format: `Bearer YOUR_TOKEN`";
       }
     }
   };
   security: {
     security_requirement: {
-      key: "bearer";
+      key: "Bearer";
+      value: {}
     }
   };
 };
@@ -47,15 +48,15 @@ service PaymentService {
       is_public: false,
     };
     option (google.api.http) = {
-      post: "/v1/payment/payments"
-      body: "*",
+      get: "/v1/payment/payments/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       summary: "Create a new payment";
       tags: ["PAYMENT"];
       security: {
         security_requirement: {
-          key: "bearer";
+          key: "Bearer";
+          value: {}
         }
       };
     };
@@ -66,14 +67,16 @@ service PaymentService {
       is_public: false,
     };
     option (google.api.http) = {
-      get: "/v1/payment/payments/{id}/{status}"
+      post: "/v1/payment/payments/status"
+      body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       summary: "get a payment by user id and status";
       tags: ["PAYMENT"];
       security: {
         security_requirement: {
-          key: "bearer";
+          key: "Bearer";
+          value: {}
         }
       };
     };
@@ -95,7 +98,8 @@ service PaymentProviderService {
       tags: ["PAYMENT"];
       security: {
         security_requirement: {
-          key: "bearer";
+          key: "Bearer";
+          value: {}
         }
       };
     };
@@ -113,7 +117,8 @@ service PaymentProviderService {
       tags: ["PAYMENT"];
       security: {
         security_requirement: {
-          key: "bearer";
+          key: "Bearer";
+          value: {}
         }
       };
     };

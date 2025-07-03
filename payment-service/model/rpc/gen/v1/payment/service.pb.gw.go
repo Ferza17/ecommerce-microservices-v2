@@ -39,12 +39,18 @@ func request_PaymentService_FindPaymentById_0(ctx context.Context, marshaler run
 	var (
 		protoReq FindPaymentByIdRequest
 		metadata runtime.ServerMetadata
+		err      error
 	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
 	if req.Body != nil {
 		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	val, ok := pathParams["id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+	}
+	protoReq.Id, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 	msg, err := client.FindPaymentById(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
@@ -54,9 +60,15 @@ func local_request_PaymentService_FindPaymentById_0(ctx context.Context, marshal
 	var (
 		protoReq FindPaymentByIdRequest
 		metadata runtime.ServerMetadata
+		err      error
 	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	val, ok := pathParams["id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+	}
+	protoReq.Id, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 	msg, err := server.FindPaymentById(ctx, &protoReq)
 	return msg, metadata, err
@@ -66,29 +78,13 @@ func request_PaymentService_FindPaymentByUserIdAndStatus_0(ctx context.Context, 
 	var (
 		protoReq FindPaymentByUserIdAndStatusRequest
 		metadata runtime.ServerMetadata
-		e        int32
-		err      error
 	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
 	if req.Body != nil {
 		_, _ = io.Copy(io.Discard, req.Body)
 	}
-	val, ok := pathParams["id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
-	}
-	protoReq.Id, err = runtime.String(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
-	}
-	val, ok = pathParams["status"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "status")
-	}
-	e, err = runtime.Enum(val, PaymentStatus_value)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "status", err)
-	}
-	protoReq.Status = PaymentStatus(e)
 	msg, err := client.FindPaymentByUserIdAndStatus(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
@@ -97,26 +93,10 @@ func local_request_PaymentService_FindPaymentByUserIdAndStatus_0(ctx context.Con
 	var (
 		protoReq FindPaymentByUserIdAndStatusRequest
 		metadata runtime.ServerMetadata
-		e        int32
-		err      error
 	)
-	val, ok := pathParams["id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	protoReq.Id, err = runtime.String(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
-	}
-	val, ok = pathParams["status"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "status")
-	}
-	e, err = runtime.Enum(val, PaymentStatus_value)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "status", err)
-	}
-	protoReq.Status = PaymentStatus(e)
 	msg, err := server.FindPaymentByUserIdAndStatus(ctx, &protoReq)
 	return msg, metadata, err
 }
@@ -201,13 +181,13 @@ func local_request_PaymentProviderService_FindPaymentProviderById_0(ctx context.
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterPaymentServiceHandlerFromEndpoint instead.
 // GRPC interceptors will not work for this type of registration. To use interceptors, you must use the "runtime.WithMiddlewares" option in the "runtime.NewServeMux" call.
 func RegisterPaymentServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server PaymentServiceServer) error {
-	mux.Handle(http.MethodPost, pattern_PaymentService_FindPaymentById_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_PaymentService_FindPaymentById_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/payment.PaymentService/FindPaymentById", runtime.WithHTTPPathPattern("/v1/payment/payments"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/payment.PaymentService/FindPaymentById", runtime.WithHTTPPathPattern("/v1/payment/payments/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -221,13 +201,13 @@ func RegisterPaymentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		}
 		forward_PaymentService_FindPaymentById_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodGet, pattern_PaymentService_FindPaymentByUserIdAndStatus_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPost, pattern_PaymentService_FindPaymentByUserIdAndStatus_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/payment.PaymentService/FindPaymentByUserIdAndStatus", runtime.WithHTTPPathPattern("/v1/payment/payments/{id}/{status}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/payment.PaymentService/FindPaymentByUserIdAndStatus", runtime.WithHTTPPathPattern("/v1/payment/payments/status"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -331,11 +311,11 @@ func RegisterPaymentServiceHandler(ctx context.Context, mux *runtime.ServeMux, c
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
 // "PaymentServiceClient" to call the correct interceptors. This client ignores the HTTP middlewares.
 func RegisterPaymentServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client PaymentServiceClient) error {
-	mux.Handle(http.MethodPost, pattern_PaymentService_FindPaymentById_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_PaymentService_FindPaymentById_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/payment.PaymentService/FindPaymentById", runtime.WithHTTPPathPattern("/v1/payment/payments"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/payment.PaymentService/FindPaymentById", runtime.WithHTTPPathPattern("/v1/payment/payments/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -348,11 +328,11 @@ func RegisterPaymentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		}
 		forward_PaymentService_FindPaymentById_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodGet, pattern_PaymentService_FindPaymentByUserIdAndStatus_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPost, pattern_PaymentService_FindPaymentByUserIdAndStatus_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/payment.PaymentService/FindPaymentByUserIdAndStatus", runtime.WithHTTPPathPattern("/v1/payment/payments/{id}/{status}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/payment.PaymentService/FindPaymentByUserIdAndStatus", runtime.WithHTTPPathPattern("/v1/payment/payments/status"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -369,8 +349,8 @@ func RegisterPaymentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 }
 
 var (
-	pattern_PaymentService_FindPaymentById_0              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "payment", "payments"}, ""))
-	pattern_PaymentService_FindPaymentByUserIdAndStatus_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "payment", "payments", "id", "status"}, ""))
+	pattern_PaymentService_FindPaymentById_0              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"v1", "payment", "payments", "id"}, ""))
+	pattern_PaymentService_FindPaymentByUserIdAndStatus_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "payment", "payments", "status"}, ""))
 )
 
 var (

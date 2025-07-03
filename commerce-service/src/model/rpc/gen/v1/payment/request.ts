@@ -6,7 +6,8 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { PaymentItem, PaymentStatus, paymentStatusFromJSON, paymentStatusToJSON } from "./model";
+import { PaymentStatus, paymentStatusFromJSON, paymentStatusToJSON } from "./enum";
+import { PaymentItem } from "./model";
 
 export const protobufPackage = "payment";
 

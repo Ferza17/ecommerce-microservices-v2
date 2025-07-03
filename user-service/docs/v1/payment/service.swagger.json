@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "PAYMENT SERVICE API",
-    "description": "API for PAYMENT, authentication, and authorization",
+    "description": "API for PAYMENT",
     "version": "1.0.0"
   },
   "tags": [
@@ -54,7 +54,7 @@
         ],
         "security": [
           {
-            "bearer": []
+            "Bearer": []
           }
         ]
       }
@@ -90,15 +90,15 @@
         ],
         "security": [
           {
-            "bearer": []
+            "Bearer": []
           }
         ]
       }
     },
-    "/v1/payment/payments": {
+    "/v1/payment/payments/status": {
       "post": {
-        "summary": "Create a new payment",
-        "operationId": "PaymentService_FindPaymentById",
+        "summary": "get a payment by user id and status",
+        "operationId": "PaymentService_FindPaymentByUserIdAndStatus",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -119,7 +119,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/paymentFindPaymentByIdRequest"
+              "$ref": "#/definitions/paymentFindPaymentByUserIdAndStatusRequest"
             }
           }
         ],
@@ -128,15 +128,15 @@
         ],
         "security": [
           {
-            "bearer": []
+            "Bearer": []
           }
         ]
       }
     },
-    "/v1/payment/payments/{id}/{status}": {
+    "/v1/payment/payments/{id}": {
       "get": {
-        "summary": "get a payment by user id and status",
-        "operationId": "PaymentService_FindPaymentByUserIdAndStatus",
+        "summary": "Create a new payment",
+        "operationId": "PaymentService_FindPaymentById",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -157,18 +157,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "status",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "enum": [
-              "PENDING",
-              "PARTIAL",
-              "SUCCESS",
-              "FAILED"
-            ]
           }
         ],
         "tags": [
@@ -176,18 +164,21 @@
         ],
         "security": [
           {
-            "bearer": []
+            "Bearer": []
           }
         ]
       }
     }
   },
   "definitions": {
-    "paymentFindPaymentByIdRequest": {
+    "paymentFindPaymentByUserIdAndStatusRequest": {
       "type": "object",
       "properties": {
         "id": {
           "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/paymentPaymentStatus"
         }
       }
     },
@@ -318,16 +309,16 @@
     }
   },
   "securityDefinitions": {
-    "bearer": {
+    "Bearer": {
       "type": "apiKey",
-      "description": "Enter the token with the `Bearer ` prefix, e.g. \"Bearer abcde12345\"",
+      "description": "Bearer Token (e.g., JWT) for authentication. Format: `Bearer YOUR_TOKEN`",
       "name": "Authorization",
       "in": "header"
     }
   },
   "security": [
     {
-      "bearer": []
+      "Bearer": []
     }
   ]
 }

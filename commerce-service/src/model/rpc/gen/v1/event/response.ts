@@ -6,11 +6,53 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+import { CompensationEvent, Event, SagaEvent } from "./model";
 
 export const protobufPackage = "event";
 
+/** OLD */
 export interface CreateEventStoreResponse {
   id: string;
+}
+
+/**
+ * NEW
+ * SagaStreamResponse for streaming saga events
+ */
+export interface SagaStreamResponse {
+  events: SagaEvent[];
+  hasMore: boolean;
+  nextToken: string;
+}
+
+/** EventStreamResponse for streaming events */
+export interface EventStreamResponse {
+  events: Event[];
+  hasMore: boolean;
+  nextToken: string;
+}
+
+/** Request/Response messages */
+export interface StoreEventResponse {
+  success: boolean;
+  errorMessage: string;
+  eventId: string;
+}
+
+export interface StoreSagaEventResponse {
+  success: boolean;
+  errorMessage: string;
+  eventId: string;
+}
+
+export interface StoreCompensationEventResponse {
+  success: boolean;
+  errorMessage: string;
+  compensationId: string;
+}
+
+export interface GetCompensationEventsResponse {
+  events: CompensationEvent[];
 }
 
 function createBaseCreateEventStoreResponse(): CreateEventStoreResponse {
@@ -67,6 +109,528 @@ export const CreateEventStoreResponse: MessageFns<CreateEventStoreResponse> = {
   fromPartial(object: DeepPartial<CreateEventStoreResponse>): CreateEventStoreResponse {
     const message = createBaseCreateEventStoreResponse();
     message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseSagaStreamResponse(): SagaStreamResponse {
+  return { events: [], hasMore: false, nextToken: "" };
+}
+
+export const SagaStreamResponse: MessageFns<SagaStreamResponse> = {
+  encode(message: SagaStreamResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.events) {
+      SagaEvent.encode(v!, writer.uint32(10).fork()).join();
+    }
+    if (message.hasMore !== false) {
+      writer.uint32(16).bool(message.hasMore);
+    }
+    if (message.nextToken !== "") {
+      writer.uint32(26).string(message.nextToken);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): SagaStreamResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSagaStreamResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.events.push(SagaEvent.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.hasMore = reader.bool();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.nextToken = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SagaStreamResponse {
+    return {
+      events: globalThis.Array.isArray(object?.events) ? object.events.map((e: any) => SagaEvent.fromJSON(e)) : [],
+      hasMore: isSet(object.hasMore) ? globalThis.Boolean(object.hasMore) : false,
+      nextToken: isSet(object.nextToken) ? globalThis.String(object.nextToken) : "",
+    };
+  },
+
+  toJSON(message: SagaStreamResponse): unknown {
+    const obj: any = {};
+    if (message.events?.length) {
+      obj.events = message.events.map((e) => SagaEvent.toJSON(e));
+    }
+    if (message.hasMore !== false) {
+      obj.hasMore = message.hasMore;
+    }
+    if (message.nextToken !== "") {
+      obj.nextToken = message.nextToken;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<SagaStreamResponse>): SagaStreamResponse {
+    return SagaStreamResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<SagaStreamResponse>): SagaStreamResponse {
+    const message = createBaseSagaStreamResponse();
+    message.events = object.events?.map((e) => SagaEvent.fromPartial(e)) || [];
+    message.hasMore = object.hasMore ?? false;
+    message.nextToken = object.nextToken ?? "";
+    return message;
+  },
+};
+
+function createBaseEventStreamResponse(): EventStreamResponse {
+  return { events: [], hasMore: false, nextToken: "" };
+}
+
+export const EventStreamResponse: MessageFns<EventStreamResponse> = {
+  encode(message: EventStreamResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.events) {
+      Event.encode(v!, writer.uint32(10).fork()).join();
+    }
+    if (message.hasMore !== false) {
+      writer.uint32(16).bool(message.hasMore);
+    }
+    if (message.nextToken !== "") {
+      writer.uint32(26).string(message.nextToken);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): EventStreamResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseEventStreamResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.events.push(Event.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.hasMore = reader.bool();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.nextToken = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): EventStreamResponse {
+    return {
+      events: globalThis.Array.isArray(object?.events) ? object.events.map((e: any) => Event.fromJSON(e)) : [],
+      hasMore: isSet(object.hasMore) ? globalThis.Boolean(object.hasMore) : false,
+      nextToken: isSet(object.nextToken) ? globalThis.String(object.nextToken) : "",
+    };
+  },
+
+  toJSON(message: EventStreamResponse): unknown {
+    const obj: any = {};
+    if (message.events?.length) {
+      obj.events = message.events.map((e) => Event.toJSON(e));
+    }
+    if (message.hasMore !== false) {
+      obj.hasMore = message.hasMore;
+    }
+    if (message.nextToken !== "") {
+      obj.nextToken = message.nextToken;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<EventStreamResponse>): EventStreamResponse {
+    return EventStreamResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<EventStreamResponse>): EventStreamResponse {
+    const message = createBaseEventStreamResponse();
+    message.events = object.events?.map((e) => Event.fromPartial(e)) || [];
+    message.hasMore = object.hasMore ?? false;
+    message.nextToken = object.nextToken ?? "";
+    return message;
+  },
+};
+
+function createBaseStoreEventResponse(): StoreEventResponse {
+  return { success: false, errorMessage: "", eventId: "" };
+}
+
+export const StoreEventResponse: MessageFns<StoreEventResponse> = {
+  encode(message: StoreEventResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.success !== false) {
+      writer.uint32(8).bool(message.success);
+    }
+    if (message.errorMessage !== "") {
+      writer.uint32(18).string(message.errorMessage);
+    }
+    if (message.eventId !== "") {
+      writer.uint32(26).string(message.eventId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): StoreEventResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseStoreEventResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.success = reader.bool();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.errorMessage = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.eventId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): StoreEventResponse {
+    return {
+      success: isSet(object.success) ? globalThis.Boolean(object.success) : false,
+      errorMessage: isSet(object.errorMessage) ? globalThis.String(object.errorMessage) : "",
+      eventId: isSet(object.eventId) ? globalThis.String(object.eventId) : "",
+    };
+  },
+
+  toJSON(message: StoreEventResponse): unknown {
+    const obj: any = {};
+    if (message.success !== false) {
+      obj.success = message.success;
+    }
+    if (message.errorMessage !== "") {
+      obj.errorMessage = message.errorMessage;
+    }
+    if (message.eventId !== "") {
+      obj.eventId = message.eventId;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<StoreEventResponse>): StoreEventResponse {
+    return StoreEventResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<StoreEventResponse>): StoreEventResponse {
+    const message = createBaseStoreEventResponse();
+    message.success = object.success ?? false;
+    message.errorMessage = object.errorMessage ?? "";
+    message.eventId = object.eventId ?? "";
+    return message;
+  },
+};
+
+function createBaseStoreSagaEventResponse(): StoreSagaEventResponse {
+  return { success: false, errorMessage: "", eventId: "" };
+}
+
+export const StoreSagaEventResponse: MessageFns<StoreSagaEventResponse> = {
+  encode(message: StoreSagaEventResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.success !== false) {
+      writer.uint32(8).bool(message.success);
+    }
+    if (message.errorMessage !== "") {
+      writer.uint32(18).string(message.errorMessage);
+    }
+    if (message.eventId !== "") {
+      writer.uint32(26).string(message.eventId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): StoreSagaEventResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseStoreSagaEventResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.success = reader.bool();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.errorMessage = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.eventId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): StoreSagaEventResponse {
+    return {
+      success: isSet(object.success) ? globalThis.Boolean(object.success) : false,
+      errorMessage: isSet(object.errorMessage) ? globalThis.String(object.errorMessage) : "",
+      eventId: isSet(object.eventId) ? globalThis.String(object.eventId) : "",
+    };
+  },
+
+  toJSON(message: StoreSagaEventResponse): unknown {
+    const obj: any = {};
+    if (message.success !== false) {
+      obj.success = message.success;
+    }
+    if (message.errorMessage !== "") {
+      obj.errorMessage = message.errorMessage;
+    }
+    if (message.eventId !== "") {
+      obj.eventId = message.eventId;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<StoreSagaEventResponse>): StoreSagaEventResponse {
+    return StoreSagaEventResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<StoreSagaEventResponse>): StoreSagaEventResponse {
+    const message = createBaseStoreSagaEventResponse();
+    message.success = object.success ?? false;
+    message.errorMessage = object.errorMessage ?? "";
+    message.eventId = object.eventId ?? "";
+    return message;
+  },
+};
+
+function createBaseStoreCompensationEventResponse(): StoreCompensationEventResponse {
+  return { success: false, errorMessage: "", compensationId: "" };
+}
+
+export const StoreCompensationEventResponse: MessageFns<StoreCompensationEventResponse> = {
+  encode(message: StoreCompensationEventResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.success !== false) {
+      writer.uint32(8).bool(message.success);
+    }
+    if (message.errorMessage !== "") {
+      writer.uint32(18).string(message.errorMessage);
+    }
+    if (message.compensationId !== "") {
+      writer.uint32(26).string(message.compensationId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): StoreCompensationEventResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseStoreCompensationEventResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.success = reader.bool();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.errorMessage = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.compensationId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): StoreCompensationEventResponse {
+    return {
+      success: isSet(object.success) ? globalThis.Boolean(object.success) : false,
+      errorMessage: isSet(object.errorMessage) ? globalThis.String(object.errorMessage) : "",
+      compensationId: isSet(object.compensationId) ? globalThis.String(object.compensationId) : "",
+    };
+  },
+
+  toJSON(message: StoreCompensationEventResponse): unknown {
+    const obj: any = {};
+    if (message.success !== false) {
+      obj.success = message.success;
+    }
+    if (message.errorMessage !== "") {
+      obj.errorMessage = message.errorMessage;
+    }
+    if (message.compensationId !== "") {
+      obj.compensationId = message.compensationId;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<StoreCompensationEventResponse>): StoreCompensationEventResponse {
+    return StoreCompensationEventResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<StoreCompensationEventResponse>): StoreCompensationEventResponse {
+    const message = createBaseStoreCompensationEventResponse();
+    message.success = object.success ?? false;
+    message.errorMessage = object.errorMessage ?? "";
+    message.compensationId = object.compensationId ?? "";
+    return message;
+  },
+};
+
+function createBaseGetCompensationEventsResponse(): GetCompensationEventsResponse {
+  return { events: [] };
+}
+
+export const GetCompensationEventsResponse: MessageFns<GetCompensationEventsResponse> = {
+  encode(message: GetCompensationEventsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.events) {
+      CompensationEvent.encode(v!, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetCompensationEventsResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetCompensationEventsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.events.push(CompensationEvent.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetCompensationEventsResponse {
+    return {
+      events: globalThis.Array.isArray(object?.events)
+        ? object.events.map((e: any) => CompensationEvent.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: GetCompensationEventsResponse): unknown {
+    const obj: any = {};
+    if (message.events?.length) {
+      obj.events = message.events.map((e) => CompensationEvent.toJSON(e));
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<GetCompensationEventsResponse>): GetCompensationEventsResponse {
+    return GetCompensationEventsResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<GetCompensationEventsResponse>): GetCompensationEventsResponse {
+    const message = createBaseGetCompensationEventsResponse();
+    message.events = object.events?.map((e) => CompensationEvent.fromPartial(e)) || [];
     return message;
   },
 };

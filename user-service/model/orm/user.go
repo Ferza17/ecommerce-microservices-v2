@@ -26,63 +26,80 @@ func (User) TableName() string {
 }
 
 func (u *User) ToProto() *pb.User {
-	proto := &pb.User{
+	return &pb.User{
 		Id:         u.ID,
 		Name:       u.Name,
 		Email:      u.Email,
 		Password:   u.Password,
 		IsVerified: u.IsVerified,
+		CreatedAt: func() *timestamppb.Timestamp {
+			if u.CreatedAt != nil {
+				return timestamppb.New(*u.CreatedAt)
+			}
+			return nil
+		}(),
+		UpdatedAt: func() *timestamppb.Timestamp {
+			if u.UpdatedAt != nil {
+				return timestamppb.New(*u.UpdatedAt)
+			}
+			return nil
+		}(),
+		Role: func() *pb.Role {
+			if u.Role != nil && u.Role.ID != "" {
+				return u.Role.ToProto()
+			}
+			return nil
+		}(),
+		DiscardedAt: func() *timestamppb.Timestamp {
+			if u.DiscardedAt != nil {
+				return timestamppb.New(*u.DiscardedAt)
+			}
+			return nil
+		}(),
 	}
-
-	if u.CreatedAt != nil {
-		proto.CreatedAt = timestamppb.New(*u.CreatedAt)
-	}
-
-	if u.UpdatedAt != nil {
-		proto.UpdatedAt = timestamppb.New(*u.UpdatedAt)
-	}
-
-	if u.Role != nil && u.Role.ID != "" {
-		proto.Role = u.Role.ToProto()
-	}
-
-	if u.DiscardedAt != nil {
-		proto.DiscardedAt = timestamppb.New(*u.DiscardedAt)
-	}
-
-	return proto
 }
 
 func UserFromProto(proto *pb.User) *User {
-	user := &User{
+	return &User{
 		ID:         proto.Id,
 		Name:       proto.Name,
 		Email:      proto.Email,
 		Password:   proto.Password,
 		IsVerified: proto.IsVerified,
+		CreatedAt: func() *time.Time {
+			if proto.CreatedAt != nil {
+				t := proto.CreatedAt.AsTime()
+				return &t
+			}
+			return nil
+		}(),
+		UpdatedAt: func() *time.Time {
+			if proto.UpdatedAt != nil {
+				t := proto.UpdatedAt.AsTime()
+				return &t
+			}
+			return nil
+		}(),
+		DiscardedAt: func() *time.Time {
+			if proto.DiscardedAt != nil {
+				t := proto.DiscardedAt.AsTime()
+				return &t
+			}
+			return nil
+		}(),
+		RoleID: func() string {
+			if proto.Role != nil {
+				return proto.Role.Id
+			}
+			return ""
+		}(),
+		Role: func() *Role {
+			if proto.Role != nil {
+				return RoleFromProto(proto.Role)
+			}
+			return nil
+		}(),
 	}
-
-	if proto.CreatedAt != nil {
-		t := proto.CreatedAt.AsTime()
-		user.CreatedAt = &t
-	}
-
-	if proto.UpdatedAt != nil {
-		t := proto.UpdatedAt.AsTime()
-		user.UpdatedAt = &t
-	}
-
-	if proto.DiscardedAt != nil {
-		discardedTime := proto.DiscardedAt.AsTime()
-		user.DiscardedAt = &discardedTime
-	}
-
-	if proto.Role != nil {
-		user.Role = RoleFromProto(proto.Role)
-		user.RoleID = proto.Role.Id
-	}
-
-	return user
 }
 
 // UsersToProto

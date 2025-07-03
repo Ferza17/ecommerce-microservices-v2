@@ -20,16 +20,16 @@ func (Role) TableName() string {
 }
 
 func RoleFromProto(proto *pb.Role) *Role {
-	role := &Role{
+	return &Role{
 		ID:   proto.Id,
 		Role: proto.Role.String(),
+		AccessControls: func() []*AccessControl {
+			if proto.AccessControls == nil {
+				return AccessControlsFromProto(proto.AccessControls)
+			}
+			return nil
+		}(),
 	}
-
-	for _, acProto := range proto.AccessControls {
-		role.AccessControls = append(role.AccessControls, AccessControlFromProto(acProto))
-	}
-
-	return role
 }
 
 func (r *Role) ToProto() *pb.Role {

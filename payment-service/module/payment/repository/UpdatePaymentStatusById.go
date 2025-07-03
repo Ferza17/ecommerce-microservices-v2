@@ -3,20 +3,19 @@ package repository
 import (
 	"context"
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/payment-service/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/model/orm"
 	"gorm.io/gorm"
 )
 
-func (r *paymentRepository) UpdatePaymentStatusByIdWithTransaction(ctx context.Context, requestId string, id string, status enum.PaymentStatus, tx *gorm.DB) error {
+func (r *paymentRepository) UpdatePaymentStatusByIdWithTransaction(ctx context.Context, requestId string, id string, status string, tx *gorm.DB) error {
 	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.UpdatePaymentStatusByIdWithTransaction")
 	defer span.End()
 
 	// Use the provided transaction to update the status
 	result := tx.WithContext(ctx).
-		Model(&orm.Payment{}). // Reference the ORM model
-		Where("id = ?", id). // Match provider by ID
-		Update("status", status.String()) // Update the "status" column with the new value
+		Model(&orm.Payment{}).   // Reference the ORM model
+		Where("id = ?", id).     // Match provider by ID
+		Update("status", status) // Update the "status" column with the new value
 
 	if result.Error != nil {
 		// Log error if the update fails

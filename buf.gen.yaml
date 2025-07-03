@@ -19,8 +19,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/notification
@@ -29,6 +32,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/product
@@ -57,8 +61,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/notification
@@ -67,6 +74,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/product
@@ -79,7 +87,6 @@ plugins:
       - Mv1/user/response.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/user
       - Mv1/user/service.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/user
       - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/user
-  # GRPC-GATEWAY
   - plugin: grpc-gateway
     out: api-gateway/model/rpc/gen
     opt:
@@ -95,8 +102,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/notification
@@ -105,6 +115,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/product
@@ -117,7 +128,6 @@ plugins:
       - Mv1/user/response.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/user
       - Mv1/user/service.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/user
       - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/user
-  # OPEN-API-V2
   - plugin: openapiv2
     out: api-gateway/docs
     opt:
@@ -133,8 +143,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/notification
@@ -143,6 +156,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/product
@@ -170,8 +184,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/notification
@@ -180,6 +197,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/product
@@ -216,8 +234,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/notification
@@ -226,6 +247,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/product
@@ -254,8 +276,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/notification
@@ -264,6 +289,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/product
@@ -276,7 +302,6 @@ plugins:
       - Mv1/user/response.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/user
       - Mv1/user/service.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/user
       - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/user
-  # GRPC-GATEWAY
   - plugin: grpc-gateway
     out: event-store-service/model/rpc/gen
     opt:
@@ -292,8 +317,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/notification
@@ -302,6 +330,48 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/payment
+      # v1/product/*.proto
+      - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/product
+      - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/product
+      - Mv1/product/response.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/product
+      - Mv1/product/service.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/product
+      # v1/user/*.proto
+      - Mv1/user/enum.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/user
+      - Mv1/user/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/user
+      - Mv1/user/request.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/user
+      - Mv1/user/response.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/user
+      - Mv1/user/service.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/user
+      - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/user
+  - plugin: buf.build/bufbuild/validate-go
+    out: event-store-service/model/rpc/gen
+    opt:
+      - paths=source_relative
+      # EXTERNAL
+      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/external/gorm
+      - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/external/validate
+      # v1/commerce/*.proto
+      - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/commerce
+      - Mv1/commerce/request.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/commerce
+      - Mv1/commerce/response.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/commerce
+      - Mv1/commerce/service.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/commerce
+      # v1/common/*.proto
+      - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/common/response
+      # v1/event/*.proto
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
+      - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/event
+      # v1/notification/*.proto
+      - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/notification
+      - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/notification
+      # v1/payment/*.proto
+      - Mv1/payment/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/payment
+      - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/payment
+      - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/payment
+      - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/product
@@ -330,8 +400,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification
@@ -340,6 +413,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/product
@@ -368,8 +442,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification
@@ -378,6 +455,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/product
@@ -390,7 +468,6 @@ plugins:
       - Mv1/user/response.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/user
       - Mv1/user/service.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/user
       - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/user
-  # GRPC-GATEWAY
   - plugin: grpc-gateway
     out: notification-service/model/rpc/gen
     opt:
@@ -406,8 +483,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification
@@ -416,6 +496,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/product
@@ -443,8 +524,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification
@@ -453,6 +537,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/product
@@ -481,8 +566,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/notification
@@ -491,6 +579,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/product
@@ -519,8 +608,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/notification
@@ -529,6 +621,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/product
@@ -541,7 +634,6 @@ plugins:
       - Mv1/user/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/user
       - Mv1/user/service.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/user
       - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/user
-  # GRPC-GATEWAY
   - plugin: grpc-gateway
     out: payment-service/model/rpc/gen
     opt:
@@ -557,8 +649,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/notification
@@ -567,6 +662,48 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
+      # v1/product/*.proto
+      - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/product
+      - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/product
+      - Mv1/product/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/product
+      - Mv1/product/service.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/product
+      # v1/user/*.proto
+      - Mv1/user/enum.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/user
+      - Mv1/user/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/user
+      - Mv1/user/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/user
+      - Mv1/user/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/user
+      - Mv1/user/service.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/user
+      - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/user
+  - plugin: openapiv2
+    out: payment-service/docs
+    opt:
+      - generate_unbound_methods=true
+      # EXTERNAL
+      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/external/gorm
+      - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/external/validate
+      # v1/commerce/*.proto
+      - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/commerce
+      - Mv1/commerce/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/commerce
+      - Mv1/commerce/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/commerce
+      - Mv1/commerce/service.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/commerce
+      # v1/common/*.proto
+      - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/common/response
+      # v1/event/*.proto
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      # v1/notification/*.proto
+      - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/notification
+      - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/notification
+      # v1/payment/*.proto
+      - Mv1/payment/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
+      - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
+      - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
+      - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/product
@@ -594,8 +731,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/notification
@@ -604,6 +744,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/product
@@ -632,8 +773,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/notification
@@ -642,6 +786,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product
@@ -670,8 +815,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/notification
@@ -680,6 +828,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product
@@ -692,7 +841,6 @@ plugins:
       - Mv1/user/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
       - Mv1/user/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
       - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user
-  # GRPC-GATEWAY
   - plugin: grpc-gateway
     out: product-service/model/rpc/gen
     opt:
@@ -708,8 +856,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/notification
@@ -718,6 +869,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product
@@ -745,8 +897,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/notification
@@ -755,6 +910,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product
@@ -782,8 +938,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/notification
@@ -792,6 +951,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product
@@ -820,8 +980,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/notification
@@ -830,6 +993,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/product
@@ -858,8 +1022,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/notification
@@ -868,6 +1035,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/product
@@ -880,7 +1048,6 @@ plugins:
       - Mv1/user/response.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user
       - Mv1/user/service.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user
       - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user
-  # GRPC-GATEWAY
   - plugin: grpc-gateway
     out: user-service/model/rpc/gen
     opt:
@@ -896,8 +1063,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/notification
@@ -906,6 +1076,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/product
@@ -933,8 +1104,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/notification
@@ -943,6 +1117,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/product
@@ -970,8 +1145,11 @@ plugins:
       # v1/common/*.proto
       - Mv1/common/response/response.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/common/response
       # v1/event/*.proto
-      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
+      - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
       - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
+      - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
+      - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
+      - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event
       # v1/notification/*.proto
       - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/notification
       - Mv1/notification/request.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/notification
@@ -980,6 +1158,7 @@ plugins:
       - Mv1/payment/request.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/payment
       - Mv1/payment/response.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/payment
       - Mv1/payment/service.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/payment
+      - Mv1/payment/enum.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/payment
       # v1/product/*.proto
       - Mv1/product/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/product
       - Mv1/product/request.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/product

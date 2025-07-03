@@ -3,7 +3,7 @@ package presenter
 import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
-	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/payment/v1"
+	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/provider/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
 	"github.com/google/wire"

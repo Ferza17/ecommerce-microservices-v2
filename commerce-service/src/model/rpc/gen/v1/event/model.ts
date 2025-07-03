@@ -6,11 +6,21 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+import { Any } from "../../google/protobuf/any";
 import { Struct } from "../../google/protobuf/struct";
 import { Timestamp } from "../../google/protobuf/timestamp";
+import {
+  CompensationStatus,
+  compensationStatusFromJSON,
+  compensationStatusToJSON,
+  SagaEventType,
+  sagaEventTypeFromJSON,
+  sagaEventTypeToJSON,
+} from "./enum";
 
 export const protobufPackage = "event";
 
+/** OLD */
 export interface EventStore {
   id: string;
   requestId: string;
@@ -22,6 +32,61 @@ export interface EventStore {
   previousState?: { [key: string]: any } | undefined;
   createdAt: Date | undefined;
   updatedAt: Date | undefined;
+}
+
+/** SagaEvent represents events specific to SAGA orchestration */
+export interface SagaEvent {
+  id: string;
+  sagaId: string;
+  sagaType: string;
+  stepName: string;
+  eventType: SagaEventType;
+  timestamp: Date | undefined;
+  payload: Any | undefined;
+  metadata: { [key: string]: string };
+  correlationId: string;
+  causationId: string;
+}
+
+export interface SagaEvent_MetadataEntry {
+  key: string;
+  value: string;
+}
+
+/** Event represents a domain event in the event store */
+export interface Event {
+  id: string;
+  aggregateId: string;
+  aggregateType: string;
+  eventType: string;
+  version: number;
+  timestamp: Date | undefined;
+  data: Any | undefined;
+  metadata: { [key: string]: string };
+}
+
+export interface Event_MetadataEntry {
+  key: string;
+  value: string;
+}
+
+/** CompensationEvent represents a compensation action */
+export interface CompensationEvent {
+  id: string;
+  sagaId: string;
+  originalEventId: string;
+  serviceName: string;
+  operation: string;
+  timestamp: Date | undefined;
+  compensationData: Any | undefined;
+  status: CompensationStatus;
+  errorMessage: string;
+  metadata: { [key: string]: string };
+}
+
+export interface CompensationEvent_MetadataEntry {
+  key: string;
+  value: string;
 }
 
 function createBaseEventStore(): EventStore {
@@ -222,6 +287,906 @@ export const EventStore: MessageFns<EventStore> = {
   },
 };
 
+function createBaseSagaEvent(): SagaEvent {
+  return {
+    id: "",
+    sagaId: "",
+    sagaType: "",
+    stepName: "",
+    eventType: 0,
+    timestamp: undefined,
+    payload: undefined,
+    metadata: {},
+    correlationId: "",
+    causationId: "",
+  };
+}
+
+export const SagaEvent: MessageFns<SagaEvent> = {
+  encode(message: SagaEvent, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.sagaId !== "") {
+      writer.uint32(18).string(message.sagaId);
+    }
+    if (message.sagaType !== "") {
+      writer.uint32(26).string(message.sagaType);
+    }
+    if (message.stepName !== "") {
+      writer.uint32(34).string(message.stepName);
+    }
+    if (message.eventType !== 0) {
+      writer.uint32(40).int32(message.eventType);
+    }
+    if (message.timestamp !== undefined) {
+      Timestamp.encode(toTimestamp(message.timestamp), writer.uint32(50).fork()).join();
+    }
+    if (message.payload !== undefined) {
+      Any.encode(message.payload, writer.uint32(58).fork()).join();
+    }
+    Object.entries(message.metadata).forEach(([key, value]) => {
+      SagaEvent_MetadataEntry.encode({ key: key as any, value }, writer.uint32(66).fork()).join();
+    });
+    if (message.correlationId !== "") {
+      writer.uint32(74).string(message.correlationId);
+    }
+    if (message.causationId !== "") {
+      writer.uint32(82).string(message.causationId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): SagaEvent {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSagaEvent();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.sagaId = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.sagaType = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.stepName = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.eventType = reader.int32() as any;
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.timestamp = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.payload = Any.decode(reader, reader.uint32());
+          continue;
+        }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          const entry8 = SagaEvent_MetadataEntry.decode(reader, reader.uint32());
+          if (entry8.value !== undefined) {
+            message.metadata[entry8.key] = entry8.value;
+          }
+          continue;
+        }
+        case 9: {
+          if (tag !== 74) {
+            break;
+          }
+
+          message.correlationId = reader.string();
+          continue;
+        }
+        case 10: {
+          if (tag !== 82) {
+            break;
+          }
+
+          message.causationId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SagaEvent {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      sagaId: isSet(object.sagaId) ? globalThis.String(object.sagaId) : "",
+      sagaType: isSet(object.sagaType) ? globalThis.String(object.sagaType) : "",
+      stepName: isSet(object.stepName) ? globalThis.String(object.stepName) : "",
+      eventType: isSet(object.eventType) ? sagaEventTypeFromJSON(object.eventType) : 0,
+      timestamp: isSet(object.timestamp) ? fromJsonTimestamp(object.timestamp) : undefined,
+      payload: isSet(object.payload) ? Any.fromJSON(object.payload) : undefined,
+      metadata: isObject(object.metadata)
+        ? Object.entries(object.metadata).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+          acc[key] = String(value);
+          return acc;
+        }, {})
+        : {},
+      correlationId: isSet(object.correlationId) ? globalThis.String(object.correlationId) : "",
+      causationId: isSet(object.causationId) ? globalThis.String(object.causationId) : "",
+    };
+  },
+
+  toJSON(message: SagaEvent): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.sagaId !== "") {
+      obj.sagaId = message.sagaId;
+    }
+    if (message.sagaType !== "") {
+      obj.sagaType = message.sagaType;
+    }
+    if (message.stepName !== "") {
+      obj.stepName = message.stepName;
+    }
+    if (message.eventType !== 0) {
+      obj.eventType = sagaEventTypeToJSON(message.eventType);
+    }
+    if (message.timestamp !== undefined) {
+      obj.timestamp = message.timestamp.toISOString();
+    }
+    if (message.payload !== undefined) {
+      obj.payload = Any.toJSON(message.payload);
+    }
+    if (message.metadata) {
+      const entries = Object.entries(message.metadata);
+      if (entries.length > 0) {
+        obj.metadata = {};
+        entries.forEach(([k, v]) => {
+          obj.metadata[k] = v;
+        });
+      }
+    }
+    if (message.correlationId !== "") {
+      obj.correlationId = message.correlationId;
+    }
+    if (message.causationId !== "") {
+      obj.causationId = message.causationId;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<SagaEvent>): SagaEvent {
+    return SagaEvent.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<SagaEvent>): SagaEvent {
+    const message = createBaseSagaEvent();
+    message.id = object.id ?? "";
+    message.sagaId = object.sagaId ?? "";
+    message.sagaType = object.sagaType ?? "";
+    message.stepName = object.stepName ?? "";
+    message.eventType = object.eventType ?? 0;
+    message.timestamp = object.timestamp ?? undefined;
+    message.payload = (object.payload !== undefined && object.payload !== null)
+      ? Any.fromPartial(object.payload)
+      : undefined;
+    message.metadata = Object.entries(object.metadata ?? {}).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = globalThis.String(value);
+      }
+      return acc;
+    }, {});
+    message.correlationId = object.correlationId ?? "";
+    message.causationId = object.causationId ?? "";
+    return message;
+  },
+};
+
+function createBaseSagaEvent_MetadataEntry(): SagaEvent_MetadataEntry {
+  return { key: "", value: "" };
+}
+
+export const SagaEvent_MetadataEntry: MessageFns<SagaEvent_MetadataEntry> = {
+  encode(message: SagaEvent_MetadataEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): SagaEvent_MetadataEntry {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSagaEvent_MetadataEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.key = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SagaEvent_MetadataEntry {
+    return {
+      key: isSet(object.key) ? globalThis.String(object.key) : "",
+      value: isSet(object.value) ? globalThis.String(object.value) : "",
+    };
+  },
+
+  toJSON(message: SagaEvent_MetadataEntry): unknown {
+    const obj: any = {};
+    if (message.key !== "") {
+      obj.key = message.key;
+    }
+    if (message.value !== "") {
+      obj.value = message.value;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<SagaEvent_MetadataEntry>): SagaEvent_MetadataEntry {
+    return SagaEvent_MetadataEntry.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<SagaEvent_MetadataEntry>): SagaEvent_MetadataEntry {
+    const message = createBaseSagaEvent_MetadataEntry();
+    message.key = object.key ?? "";
+    message.value = object.value ?? "";
+    return message;
+  },
+};
+
+function createBaseEvent(): Event {
+  return {
+    id: "",
+    aggregateId: "",
+    aggregateType: "",
+    eventType: "",
+    version: 0,
+    timestamp: undefined,
+    data: undefined,
+    metadata: {},
+  };
+}
+
+export const Event: MessageFns<Event> = {
+  encode(message: Event, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.aggregateId !== "") {
+      writer.uint32(18).string(message.aggregateId);
+    }
+    if (message.aggregateType !== "") {
+      writer.uint32(26).string(message.aggregateType);
+    }
+    if (message.eventType !== "") {
+      writer.uint32(34).string(message.eventType);
+    }
+    if (message.version !== 0) {
+      writer.uint32(40).int64(message.version);
+    }
+    if (message.timestamp !== undefined) {
+      Timestamp.encode(toTimestamp(message.timestamp), writer.uint32(50).fork()).join();
+    }
+    if (message.data !== undefined) {
+      Any.encode(message.data, writer.uint32(58).fork()).join();
+    }
+    Object.entries(message.metadata).forEach(([key, value]) => {
+      Event_MetadataEntry.encode({ key: key as any, value }, writer.uint32(66).fork()).join();
+    });
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): Event {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseEvent();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.aggregateId = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.aggregateType = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.eventType = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.version = longToNumber(reader.int64());
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.timestamp = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.data = Any.decode(reader, reader.uint32());
+          continue;
+        }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          const entry8 = Event_MetadataEntry.decode(reader, reader.uint32());
+          if (entry8.value !== undefined) {
+            message.metadata[entry8.key] = entry8.value;
+          }
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Event {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      aggregateId: isSet(object.aggregateId) ? globalThis.String(object.aggregateId) : "",
+      aggregateType: isSet(object.aggregateType) ? globalThis.String(object.aggregateType) : "",
+      eventType: isSet(object.eventType) ? globalThis.String(object.eventType) : "",
+      version: isSet(object.version) ? globalThis.Number(object.version) : 0,
+      timestamp: isSet(object.timestamp) ? fromJsonTimestamp(object.timestamp) : undefined,
+      data: isSet(object.data) ? Any.fromJSON(object.data) : undefined,
+      metadata: isObject(object.metadata)
+        ? Object.entries(object.metadata).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+          acc[key] = String(value);
+          return acc;
+        }, {})
+        : {},
+    };
+  },
+
+  toJSON(message: Event): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.aggregateId !== "") {
+      obj.aggregateId = message.aggregateId;
+    }
+    if (message.aggregateType !== "") {
+      obj.aggregateType = message.aggregateType;
+    }
+    if (message.eventType !== "") {
+      obj.eventType = message.eventType;
+    }
+    if (message.version !== 0) {
+      obj.version = Math.round(message.version);
+    }
+    if (message.timestamp !== undefined) {
+      obj.timestamp = message.timestamp.toISOString();
+    }
+    if (message.data !== undefined) {
+      obj.data = Any.toJSON(message.data);
+    }
+    if (message.metadata) {
+      const entries = Object.entries(message.metadata);
+      if (entries.length > 0) {
+        obj.metadata = {};
+        entries.forEach(([k, v]) => {
+          obj.metadata[k] = v;
+        });
+      }
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<Event>): Event {
+    return Event.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<Event>): Event {
+    const message = createBaseEvent();
+    message.id = object.id ?? "";
+    message.aggregateId = object.aggregateId ?? "";
+    message.aggregateType = object.aggregateType ?? "";
+    message.eventType = object.eventType ?? "";
+    message.version = object.version ?? 0;
+    message.timestamp = object.timestamp ?? undefined;
+    message.data = (object.data !== undefined && object.data !== null) ? Any.fromPartial(object.data) : undefined;
+    message.metadata = Object.entries(object.metadata ?? {}).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = globalThis.String(value);
+      }
+      return acc;
+    }, {});
+    return message;
+  },
+};
+
+function createBaseEvent_MetadataEntry(): Event_MetadataEntry {
+  return { key: "", value: "" };
+}
+
+export const Event_MetadataEntry: MessageFns<Event_MetadataEntry> = {
+  encode(message: Event_MetadataEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): Event_MetadataEntry {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseEvent_MetadataEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.key = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Event_MetadataEntry {
+    return {
+      key: isSet(object.key) ? globalThis.String(object.key) : "",
+      value: isSet(object.value) ? globalThis.String(object.value) : "",
+    };
+  },
+
+  toJSON(message: Event_MetadataEntry): unknown {
+    const obj: any = {};
+    if (message.key !== "") {
+      obj.key = message.key;
+    }
+    if (message.value !== "") {
+      obj.value = message.value;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<Event_MetadataEntry>): Event_MetadataEntry {
+    return Event_MetadataEntry.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<Event_MetadataEntry>): Event_MetadataEntry {
+    const message = createBaseEvent_MetadataEntry();
+    message.key = object.key ?? "";
+    message.value = object.value ?? "";
+    return message;
+  },
+};
+
+function createBaseCompensationEvent(): CompensationEvent {
+  return {
+    id: "",
+    sagaId: "",
+    originalEventId: "",
+    serviceName: "",
+    operation: "",
+    timestamp: undefined,
+    compensationData: undefined,
+    status: 0,
+    errorMessage: "",
+    metadata: {},
+  };
+}
+
+export const CompensationEvent: MessageFns<CompensationEvent> = {
+  encode(message: CompensationEvent, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.sagaId !== "") {
+      writer.uint32(18).string(message.sagaId);
+    }
+    if (message.originalEventId !== "") {
+      writer.uint32(26).string(message.originalEventId);
+    }
+    if (message.serviceName !== "") {
+      writer.uint32(34).string(message.serviceName);
+    }
+    if (message.operation !== "") {
+      writer.uint32(42).string(message.operation);
+    }
+    if (message.timestamp !== undefined) {
+      Timestamp.encode(toTimestamp(message.timestamp), writer.uint32(50).fork()).join();
+    }
+    if (message.compensationData !== undefined) {
+      Any.encode(message.compensationData, writer.uint32(58).fork()).join();
+    }
+    if (message.status !== 0) {
+      writer.uint32(64).int32(message.status);
+    }
+    if (message.errorMessage !== "") {
+      writer.uint32(74).string(message.errorMessage);
+    }
+    Object.entries(message.metadata).forEach(([key, value]) => {
+      CompensationEvent_MetadataEntry.encode({ key: key as any, value }, writer.uint32(82).fork()).join();
+    });
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): CompensationEvent {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCompensationEvent();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.sagaId = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.originalEventId = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.serviceName = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.operation = reader.string();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.timestamp = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.compensationData = Any.decode(reader, reader.uint32());
+          continue;
+        }
+        case 8: {
+          if (tag !== 64) {
+            break;
+          }
+
+          message.status = reader.int32() as any;
+          continue;
+        }
+        case 9: {
+          if (tag !== 74) {
+            break;
+          }
+
+          message.errorMessage = reader.string();
+          continue;
+        }
+        case 10: {
+          if (tag !== 82) {
+            break;
+          }
+
+          const entry10 = CompensationEvent_MetadataEntry.decode(reader, reader.uint32());
+          if (entry10.value !== undefined) {
+            message.metadata[entry10.key] = entry10.value;
+          }
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CompensationEvent {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      sagaId: isSet(object.sagaId) ? globalThis.String(object.sagaId) : "",
+      originalEventId: isSet(object.originalEventId) ? globalThis.String(object.originalEventId) : "",
+      serviceName: isSet(object.serviceName) ? globalThis.String(object.serviceName) : "",
+      operation: isSet(object.operation) ? globalThis.String(object.operation) : "",
+      timestamp: isSet(object.timestamp) ? fromJsonTimestamp(object.timestamp) : undefined,
+      compensationData: isSet(object.compensationData) ? Any.fromJSON(object.compensationData) : undefined,
+      status: isSet(object.status) ? compensationStatusFromJSON(object.status) : 0,
+      errorMessage: isSet(object.errorMessage) ? globalThis.String(object.errorMessage) : "",
+      metadata: isObject(object.metadata)
+        ? Object.entries(object.metadata).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+          acc[key] = String(value);
+          return acc;
+        }, {})
+        : {},
+    };
+  },
+
+  toJSON(message: CompensationEvent): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.sagaId !== "") {
+      obj.sagaId = message.sagaId;
+    }
+    if (message.originalEventId !== "") {
+      obj.originalEventId = message.originalEventId;
+    }
+    if (message.serviceName !== "") {
+      obj.serviceName = message.serviceName;
+    }
+    if (message.operation !== "") {
+      obj.operation = message.operation;
+    }
+    if (message.timestamp !== undefined) {
+      obj.timestamp = message.timestamp.toISOString();
+    }
+    if (message.compensationData !== undefined) {
+      obj.compensationData = Any.toJSON(message.compensationData);
+    }
+    if (message.status !== 0) {
+      obj.status = compensationStatusToJSON(message.status);
+    }
+    if (message.errorMessage !== "") {
+      obj.errorMessage = message.errorMessage;
+    }
+    if (message.metadata) {
+      const entries = Object.entries(message.metadata);
+      if (entries.length > 0) {
+        obj.metadata = {};
+        entries.forEach(([k, v]) => {
+          obj.metadata[k] = v;
+        });
+      }
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<CompensationEvent>): CompensationEvent {
+    return CompensationEvent.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<CompensationEvent>): CompensationEvent {
+    const message = createBaseCompensationEvent();
+    message.id = object.id ?? "";
+    message.sagaId = object.sagaId ?? "";
+    message.originalEventId = object.originalEventId ?? "";
+    message.serviceName = object.serviceName ?? "";
+    message.operation = object.operation ?? "";
+    message.timestamp = object.timestamp ?? undefined;
+    message.compensationData = (object.compensationData !== undefined && object.compensationData !== null)
+      ? Any.fromPartial(object.compensationData)
+      : undefined;
+    message.status = object.status ?? 0;
+    message.errorMessage = object.errorMessage ?? "";
+    message.metadata = Object.entries(object.metadata ?? {}).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = globalThis.String(value);
+      }
+      return acc;
+    }, {});
+    return message;
+  },
+};
+
+function createBaseCompensationEvent_MetadataEntry(): CompensationEvent_MetadataEntry {
+  return { key: "", value: "" };
+}
+
+export const CompensationEvent_MetadataEntry: MessageFns<CompensationEvent_MetadataEntry> = {
+  encode(message: CompensationEvent_MetadataEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): CompensationEvent_MetadataEntry {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCompensationEvent_MetadataEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.key = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CompensationEvent_MetadataEntry {
+    return {
+      key: isSet(object.key) ? globalThis.String(object.key) : "",
+      value: isSet(object.value) ? globalThis.String(object.value) : "",
+    };
+  },
+
+  toJSON(message: CompensationEvent_MetadataEntry): unknown {
+    const obj: any = {};
+    if (message.key !== "") {
+      obj.key = message.key;
+    }
+    if (message.value !== "") {
+      obj.value = message.value;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<CompensationEvent_MetadataEntry>): CompensationEvent_MetadataEntry {
+    return CompensationEvent_MetadataEntry.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<CompensationEvent_MetadataEntry>): CompensationEvent_MetadataEntry {
+    const message = createBaseCompensationEvent_MetadataEntry();
+    message.key = object.key ?? "";
+    message.value = object.value ?? "";
+    return message;
+  },
+};
+
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T
@@ -250,6 +1215,17 @@ function fromJsonTimestamp(o: any): Date {
   } else {
     return fromTimestamp(Timestamp.fromJSON(o));
   }
+}
+
+function longToNumber(int64: { toString(): string }): number {
+  const num = globalThis.Number(int64.toString());
+  if (num > globalThis.Number.MAX_SAFE_INTEGER) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  if (num < globalThis.Number.MIN_SAFE_INTEGER) {
+    throw new globalThis.Error("Value is smaller than Number.MIN_SAFE_INTEGER");
+  }
+  return num;
 }
 
 function isObject(value: any): boolean {

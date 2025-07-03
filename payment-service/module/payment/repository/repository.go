@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"github.com/ferza17/ecommerce-microservices-v2/payment-service/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/postgresql"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/model/orm"
@@ -14,11 +13,11 @@ import (
 type (
 	IPaymentRepository interface {
 		FindPaymentById(ctx context.Context, requestId string, id string) (*orm.Payment, error)
-		FindPaymentByUserIdAndStatus(ctx context.Context, requestId string, userId string, status enum.PaymentStatus) (*orm.Payment, error)
+		FindPaymentByUserIdAndStatus(ctx context.Context, requestId string, userId string, status string) (*orm.Payment, error)
 
 		CreatePayment(ctx context.Context, requestId string, request *orm.Payment, tx *gorm.DB) (string, error)
 		CreatePaymentItem(ctx context.Context, paymentItem *orm.PaymentItem, tx *gorm.DB) (string, error)
-		UpdatePaymentStatusByIdWithTransaction(ctx context.Context, requestId string, id string, status enum.PaymentStatus, tx *gorm.DB) error
+		UpdatePaymentStatusByIdWithTransaction(ctx context.Context, requestId string, id string, status string, tx *gorm.DB) error
 		LockPaymentByIdWithTransaction(ctx context.Context, requestId string, id string, tx *gorm.DB) (*orm.Payment, error)
 
 		// OpenTransactionWithContext

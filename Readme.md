@@ -14,7 +14,7 @@
 - [X] Implement Distributed Tracing using **Jaeger**
 - [X] Implement Metrics Collector using **Prometheus**
 - [X] Implement Service Discovery using **Consul**
-- [X] Implement Load Balancer using **Traefik**
+- [X] Implement Load Balance And Reverse Proxy using **Traefik**
 
 
 ## Author
