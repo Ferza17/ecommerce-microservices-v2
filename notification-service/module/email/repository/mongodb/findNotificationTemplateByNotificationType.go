@@ -14,7 +14,7 @@ func (r *notificationEmailRepository) FindNotificationTemplateByNotificationType
 		ctxTimeout, cancel = context.WithTimeout(ctx, 5*time.Second)
 	)
 	defer cancel()
-	ctxTimeout, span := r.telemetryInfrastructure.Tracer(ctxTimeout, "Repository.FindNotificationTemplateByNotificationType")
+	ctxTimeout, span := r.telemetryInfrastructure.StartSpanFromContext(ctxTimeout, "NotificationMongoDBRepository.FindNotificationTemplateByNotificationType")
 	defer span.End()
 	resp := new(model.NotificationTemplate)
 	filter := bson.M{"type": notificationType.String()}

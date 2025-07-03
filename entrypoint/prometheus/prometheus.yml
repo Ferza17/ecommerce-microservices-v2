@@ -31,3 +31,9 @@ scrape_configs:
       - targets: [ 'user-service:30056' ]
     scrape_interval: 30s
     metrics_path: /v1/user/metrics
+
+  - job_name: 'notification-service-metrics'
+    static_configs:
+      - targets: [ 'notification-service:30053' ]
+    scrape_interval: 30s
+    metrics_path: /v1/notification/metrics

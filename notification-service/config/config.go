@@ -2,7 +2,9 @@ package config
 
 import (
 	"fmt"
+	pkgMetric "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/metric"
 	"github.com/hashicorp/consul/api"
+	"github.com/prometheus/client_golang/prometheus"
 	"log"
 	"os"
 	"sync"
@@ -23,12 +25,13 @@ type Config struct {
 	ConsulHost string `mapstructure:"CONSUL_HOST"`
 	ConsulPort string `mapstructure:"CONSUL_PORT"`
 
-	// USER SERVICE
-	NotificationServiceServiceName string
-	NotificationServiceRpcHost     string
-	NotificationServiceRpcPort     string
-	NotificationServiceHttpHost    string
-	NotificationServiceHttpPort    string
+	// Notification SERVICE
+	NotificationServiceServiceName    string
+	NotificationServiceRpcHost        string
+	NotificationServiceRpcPort        string
+	NotificationServiceHttpHost       string
+	NotificationServiceHttpPort       string
+	NotificationServiceMetricHttpPort string
 
 	JaegerTelemetryHost string
 	JaegerTelemetryPort string
@@ -52,7 +55,7 @@ type Config struct {
 	// Queue Notification
 	QueueNotificationEmailOtpCreated          string
 	QueueNotificationEmailPaymentOrderCreated string
-	
+
 	CommonSagaStatusPending string
 	CommonSagaStatusSuccess string
 	CommonSagaStatusFailed  string
@@ -158,5 +161,16 @@ func SetConfig(path string) {
 		log.Fatalf("SetConfig | could not register service: %v", err)
 		return
 	}
+
+	// Register Prometheus
+	prometheus.MustRegister(
+		pkgMetric.GrpcRequestsTotal,
+		pkgMetric.GrpcRequestDuration,
+		pkgMetric.HttpRequestsTotal,
+		pkgMetric.HttpRequestDuration,
+		pkgMetric.RabbitmqMessagesPublished,
+		pkgMetric.RabbitmqMessagesConsumed,
+	)
+
 	viper.WatchConfig()
 }

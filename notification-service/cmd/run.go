@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/transport/grpc"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/transport/http"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/transport/rabbitmq"
 	"github.com/spf13/cobra"
 	"log"
@@ -32,6 +33,16 @@ var runCommand = &cobra.Command{
 			defer wg.Done()
 			log.Println("========== Starting RabbitMQ Consumer ==========")
 			rabbitMQServer.Serve(ctx)
+		}()
+
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			log.Println("========== Starting HTTP Metric Collector ==========")
+			if err := http.ServeHttpPrometheusMetricCollector(); err != nil {
+				log.Fatal(err)
+				return
+			}
 		}()
 
 		// Wait for all goroutines to complete

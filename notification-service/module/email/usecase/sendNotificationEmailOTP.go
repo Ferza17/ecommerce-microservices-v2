@@ -14,7 +14,7 @@ func (u *notificationEmailUseCase) SendNotificationEmailOTP(ctx context.Context,
 		err error
 	)
 
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.SendUserOtpEmailNotification")
+	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "UseCase.SendUserOtpEmailNotification")
 	defer span.End()
 
 	notificationType, err := enum.NotificationTypeParseIntToNotificationType(int(req.NotificationType))
