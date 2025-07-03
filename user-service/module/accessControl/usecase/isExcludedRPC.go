@@ -7,7 +7,7 @@ import (
 )
 
 func (u *accessControlUseCase) IsExcludedRPC(ctx context.Context, requestId string, fullMethodName string) (bool, error) {
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "AccessControlUseCase.IsExcludedRPC")
+	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "AccessControlUseCase.IsExcludedRPC")
 	defer span.End()
 	// Get On Redis
 	isExcluded, _ := u.accessControlRedisRepository.GetAccessControlRPCExcluded(ctx, requestId, fullMethodName)

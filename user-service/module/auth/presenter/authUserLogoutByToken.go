@@ -10,7 +10,7 @@ import (
 )
 
 func (p *AuthPresenter) AuthUserLogoutByToken(ctx context.Context, req *pb.AuthUserLogoutByTokenRequest) (*pb.AuthUserLogoutByTokenResponse, error) {
-	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "AuthPresenter.AuthUserLogoutByToken")
+	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthPresenter.AuthUserLogoutByToken")
 	defer span.End()
 	requestID := pkgContext.GetRequestIDFromContext(ctx)
 

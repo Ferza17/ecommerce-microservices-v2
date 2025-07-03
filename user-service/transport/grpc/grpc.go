@@ -15,9 +15,7 @@ import (
 	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
 	userPresenter "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/presenter"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
-	pkgMetric "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/metric"
 	"github.com/google/wire"
-	"github.com/prometheus/client_golang/prometheus"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -79,10 +77,6 @@ func (srv *Server) Serve() {
 			authInterceptor.AuthRPCUnaryInterceptor(srv.logger, srv.accessControlUseCase, srv.authUseCase),
 		),
 	}
-
-	// For Matrics
-	prometheus.MustRegister(pkgMetric.GrpcRequests)
-	prometheus.MustRegister(pkgMetric.GrpcDuration)
 
 	srv.grpcServer = grpc.NewServer(opts...)
 

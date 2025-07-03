@@ -9,7 +9,7 @@ import (
 )
 
 func (r *accessControlRedisRepository) GetAccessControlHTTP(ctx context.Context, requestId string, role string, method, url string) (bool, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AccessControlRedisRepository.GetAccessControlHTTP")
+	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "AccessControlRedisRepository.GetAccessControlHTTP")
 	defer span.End()
 
 	key := fmt.Sprintf(accessControlHTTPPrefixKey, config.Get().UserServiceServiceName, role, method, url)

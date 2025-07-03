@@ -9,7 +9,7 @@ import (
 )
 
 func (r *accessControlRedisRepository) GetAccessControlRPC(ctx context.Context, requestId string, role string, fullMethodName string) (bool, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AccessControlRedisRepository.GetAccessControlRPC")
+	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "AccessControlRedisRepository.GetAccessControlRPC")
 	defer span.End()
 
 	key := fmt.Sprintf(accessControlRPCPrefixKey, config.Get().UserServiceServiceName, role, fullMethodName)

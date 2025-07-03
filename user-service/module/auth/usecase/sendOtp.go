@@ -13,7 +13,7 @@ import (
 )
 
 func (u *authUseCase) SentOTP(ctx context.Context, requestId string, user *pb.User) error {
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "AuthUseCase.SentOTP")
+	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthUseCase.SentOTP")
 	defer span.End()
 
 	otp := util.GenerateOTP()

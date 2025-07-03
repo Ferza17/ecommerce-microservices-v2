@@ -8,7 +8,7 @@ import (
 )
 
 func (r *userPostgresqlRepository) UpdateUserById(ctx context.Context, requestId string, req *orm.User, tx *gorm.DB) (*orm.User, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "UserPostgresRepository.UpdateUserById")
+	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "UserPostgresRepository.UpdateUserById")
 	defer span.End()
 
 	err := tx.WithContext(ctx).Save(req).Error

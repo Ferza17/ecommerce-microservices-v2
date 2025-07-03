@@ -11,7 +11,7 @@ import (
 )
 
 func (p *AuthPresenter) AuthUserVerifyOtp(ctx context.Context, req *userRpc.AuthUserVerifyOtpRequest) (*userRpc.AuthUserVerifyOtpResponse, error) {
-	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "AuthPresenter.AuthUserVerifyOtp")
+	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthPresenter.AuthUserVerifyOtp")
 	defer span.End()
 	requestID := pkgContext.GetRequestIDFromContext(ctx)
 

@@ -3,6 +3,8 @@ package config
 import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
+	pkgMetric "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/metric"
+	"github.com/prometheus/client_golang/prometheus"
 	"log"
 	"os"
 	"time"
@@ -89,7 +91,7 @@ type Config struct {
 	UserServiceRpcPort        string
 	UserServiceHttpHost       string
 	UserServiceHttpPort       string
-	UserServiceHttpMetricPort string
+	UserServiceMetricHttpPort string
 }
 
 func SetConfig(path string) {
@@ -219,6 +221,16 @@ func SetConfig(path string) {
 		log.Fatalf("SetConfig | could not register consul service: %v", err)
 		return
 	}
+
+	// Register Prometheus
+	prometheus.MustRegister(
+		pkgMetric.GrpcRequestsTotal,
+		pkgMetric.GrpcRequestDuration,
+		pkgMetric.HttpRequestsTotal,
+		pkgMetric.HttpRequestDuration,
+		pkgMetric.RabbitmqMessagesPublished,
+		pkgMetric.RabbitmqMessagesConsumed,
+	)
 
 	viper.WatchConfig()
 }

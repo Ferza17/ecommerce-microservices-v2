@@ -28,7 +28,6 @@ func AuthHTTPMiddleware(
 			url := strings.ToLower(r.URL.Path)
 
 			route, _ := mux.CurrentRoute(r).GetPathTemplate()
-
 			log.Printf("Request Path: %s, Matched Path Template: %s", r.URL.Path, route)
 
 			// Validate is excluded method

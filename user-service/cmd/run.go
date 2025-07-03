@@ -48,8 +48,11 @@ var runCommand = &cobra.Command{
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			log.Println("========== Starting HTTP Server Metrics Collector ==========")
-			http.ServeHTTPMetricCollector()
+			log.Println("========== Starting Metric Collector HTTP Server ==========")
+			if err := http.ServeHttpPrometheusMetricCollector(); err != nil {
+				log.Panic(err)
+				return
+			}
 		}()
 
 		// Wait for all goroutines to complete

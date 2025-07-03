@@ -8,7 +8,7 @@ import (
 )
 
 func (r *accessControlPostgresSQLRepository) FindAccessControlExcludedByHttpUrlAndHttpMethod(ctx context.Context, requestId string, method, url string, tx *gorm.DB) (*orm.AccessControlExcluded, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AccessControlPostgresRepository.FindAccessControlExcludedByHttpUrlAndHttpMethod")
+	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "AccessControlPostgresRepository.FindAccessControlExcludedByHttpUrlAndHttpMethod")
 	defer span.End()
 
 	excluded := new(orm.AccessControlExcluded)

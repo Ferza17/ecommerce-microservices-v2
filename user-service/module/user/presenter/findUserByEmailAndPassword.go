@@ -8,7 +8,7 @@ import (
 )
 
 func (p *UserPresenter) FindUserByEmailAndPassword(ctx context.Context, req *userRpc.FindUserByEmailAndPasswordRequest) (*userRpc.User, error) {
-	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "UserPresenter.FindUserByEmailAndPassword")
+	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "UserPresenter.FindUserByEmailAndPassword")
 	defer span.End()
 	requestID := pkgContext.GetRequestIDFromContext(ctx)
 

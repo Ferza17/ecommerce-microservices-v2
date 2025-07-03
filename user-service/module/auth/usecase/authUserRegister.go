@@ -22,7 +22,7 @@ func (u *authUseCase) AuthUserRegister(ctx context.Context, requestId string, re
 		now = time.Now()
 	)
 
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "AuthUseCase.AuthUserRegister")
+	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthUseCase.AuthUserRegister")
 	defer span.End()
 
 	// Validate is email already exists

@@ -11,7 +11,7 @@ import (
 )
 
 func (p *AuthPresenter) AuthServiceVerifyIsExcluded(ctx context.Context, req *pb.AuthServiceVerifyIsExcludedRequest) (*pb.AuthServiceVerifyIsExcludedResponse, error) {
-	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "AuthPresenter.AuthServiceVerifyIsExcluded")
+	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthPresenter.AuthServiceVerifyIsExcluded")
 	defer span.End()
 	requestID := pkgContext.GetRequestIDFromContext(ctx)
 

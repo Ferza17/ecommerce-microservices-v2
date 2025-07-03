@@ -8,7 +8,7 @@ import (
 )
 
 func (r *userPostgresqlRepository) FindUserById(ctx context.Context, requestId string, id string, tx *gorm.DB) (*orm.User, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "UserPostgresRepository.FindUserById")
+	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "UserPostgresRepository.FindUserById")
 	defer span.End()
 	user := new(orm.User)
 	if err := tx.WithContext(ctx).

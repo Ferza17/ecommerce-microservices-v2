@@ -6,6 +6,8 @@ import (
 )
 
 func (u *authUseCase) AuthUserLogoutByToken(ctx context.Context, requestId string, req *pb.AuthUserLogoutByTokenRequest) (*pb.AuthUserLogoutByTokenResponse, error) {
+	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthUseCase.AuthUserLogoutByToken")
+	defer span.End()
 	//TODO
 	// 1. Delete Session related to user
 	// 2. Delete Cache related to user

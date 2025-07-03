@@ -10,7 +10,7 @@ import (
 )
 
 func (u *accessControlUseCase) IsHasRPCAccess(ctx context.Context, requestId string, role string, fullMethodName string) (bool, error) {
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "AccessControlUseCase.IsHasRPCAccess")
+	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "AccessControlUseCase.IsHasRPCAccess")
 	defer span.End()
 	// Get On Redis First
 	isHasAccess, _ := u.accessControlRedisRepository.GetAccessControlRPC(ctx, requestId, role, fullMethodName)

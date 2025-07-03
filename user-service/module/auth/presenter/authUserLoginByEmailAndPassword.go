@@ -11,7 +11,7 @@ import (
 )
 
 func (p *AuthPresenter) AuthUserLoginByEmailAndPassword(ctx context.Context, req *pb.AuthUserLoginByEmailAndPasswordRequest) (*emptypb.Empty, error) {
-	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "AuthPresenter.AuthUserLoginByEmailAndPassword")
+	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthPresenter.AuthUserLoginByEmailAndPassword")
 	defer span.End()
 	requestID := pkgContext.GetRequestIDFromContext(ctx)
 

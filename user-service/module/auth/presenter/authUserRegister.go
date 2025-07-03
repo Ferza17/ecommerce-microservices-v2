@@ -11,7 +11,7 @@ import (
 )
 
 func (p *AuthPresenter) AuthUserRegister(ctx context.Context, req *pb.AuthUserRegisterRequest) (*emptypb.Empty, error) {
-	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "AuthPresenter.AuthUserRegister")
+	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthPresenter.AuthUserRegister")
 	defer span.End()
 	requestID := pkgContext.GetRequestIDFromContext(ctx)
 

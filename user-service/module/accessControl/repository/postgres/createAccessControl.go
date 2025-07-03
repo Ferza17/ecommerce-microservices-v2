@@ -8,7 +8,7 @@ import (
 )
 
 func (r *accessControlPostgresSQLRepository) CreateAccessControl(ctx context.Context, requestId string, accessControl *orm.AccessControl, tx *gorm.DB) (*orm.AccessControl, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AccessControlPostgresRepository.CreateAccessControlWithTransaction")
+	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "AccessControlPostgresRepository.CreateAccessControlWithTransaction")
 	defer span.End()
 	if err := tx.WithContext(ctx).
 		Create(accessControl).

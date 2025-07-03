@@ -2,9 +2,8 @@ package metric
 
 import "github.com/prometheus/client_golang/prometheus"
 
-// Prometheus metrics
 var (
-	GrpcRequests = prometheus.NewCounterVec(
+	GrpcRequestsTotal = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "grpc_requests_total",
 			Help: "Total number of gRPC requests",
@@ -12,29 +11,45 @@ var (
 		[]string{"method", "status"},
 	)
 
-	GrpcDuration = prometheus.NewHistogramVec(
+	GrpcRequestDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
 			Name:    "grpc_request_duration_seconds",
-			Help:    "Duration of gRPC requests in seconds",
+			Help:    "Duration of gRPC requests",
 			Buckets: prometheus.DefBuckets,
 		},
 		[]string{"method"},
 	)
 
-	HttpRequests = prometheus.NewCounterVec(
+	HttpRequestsTotal = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "http_requests_total",
 			Help: "Total number of HTTP requests",
 		},
-		[]string{"method", "endpoint", "status"},
+		[]string{"method", "path", "status"},
 	)
 
-	HttpDuration = prometheus.NewHistogramVec(
+	HttpRequestDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
 			Name:    "http_request_duration_seconds",
-			Help:    "Duration of HTTP requests in seconds",
+			Help:    "Duration of HTTP requests",
 			Buckets: prometheus.DefBuckets,
 		},
-		[]string{"method", "endpoint"},
+		[]string{"method", "path"},
+	)
+
+	RabbitmqMessagesPublished = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "rabbitmq_messages_published_total",
+			Help: "Total number of RabbitMQ messages published",
+		},
+		[]string{"queue", "status"},
+	)
+
+	RabbitmqMessagesConsumed = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "rabbitmq_messages_consumed_total",
+			Help: "Total number of RabbitMQ messages consumed",
+		},
+		[]string{"queue", "status"},
 	)
 )

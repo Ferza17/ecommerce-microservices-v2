@@ -10,7 +10,7 @@ import (
 )
 
 func (r *accessControlRedisRepository) GetAccessControlHTTPExcluded(ctx context.Context, requestId string, method, url string) (bool, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AccessControlRedisRepository.GetAccessControlHTTPExcluded")
+	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "AccessControlRedisRepository.GetAccessControlHTTPExcluded")
 	defer span.End()
 
 	key := fmt.Sprintf(accessControlHTTPExcludedPrefixKey, config.Get().UserServiceServiceName, method, url)

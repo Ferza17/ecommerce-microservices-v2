@@ -19,8 +19,8 @@ func MetricUnaryInterceptor() grpc.UnaryServerInterceptor {
 			status = "error"
 		}
 
-		pkgMetric.GrpcRequests.WithLabelValues(info.FullMethod, status).Inc()
-		pkgMetric.GrpcDuration.WithLabelValues(info.FullMethod).Observe(duration)
+		pkgMetric.GrpcRequestsTotal.WithLabelValues(info.FullMethod, status).Inc()
+		pkgMetric.GrpcRequestDuration.WithLabelValues(info.FullMethod).Observe(duration)
 
 		return resp, err
 	}

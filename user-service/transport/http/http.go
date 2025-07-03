@@ -17,12 +17,10 @@ import (
 	userPresenter "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/presenter"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
-	pkgMetric "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/metric"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/response"
 	"github.com/google/wire"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/prometheus/client_golang/prometheus"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"google.golang.org/protobuf/encoding/protojson"
 	"log"
@@ -99,10 +97,6 @@ func (s *Server) Serve(ctx context.Context) error {
 		}),
 	)
 
-	// For Matrics
-	prometheus.MustRegister(pkgMetric.HttpRequests)
-	prometheus.MustRegister(pkgMetric.HttpDuration)
-
 	// Register gRPC-HTTP gateway handlers
 	if err := pb.RegisterUserServiceHandlerServer(ctx, gwMux, s.userPresenter); err != nil {
 		return fmt.Errorf("failed to register gRPC gateway handlers: %w", err)
@@ -111,8 +105,6 @@ func (s *Server) Serve(ctx context.Context) error {
 	if err := pb.RegisterAuthServiceHandlerServer(ctx, gwMux, s.authPresenter); err != nil {
 		return fmt.Errorf("failed to register gRPC gateway handlers: %w", err)
 	}
-
-	// Mount the gRPC gateway with JWT middleware wrapping
 
 	// Health check endpoint
 	router.HandleFunc("/v1/user/check", func(w http.ResponseWriter, r *http.Request) {
@@ -132,7 +124,7 @@ func (s *Server) Serve(ctx context.Context) error {
 
 	router.Use(requestIdInterceptor.RequestIDHTTPMiddleware())
 	router.Use(telemetryInterceptor.TelemetryHTTPMiddleware(s.telemetryInfrastructure))
-	router.Use(metricInterceptor.MetricHTTPMiddleware())
+	router.Use(metricInterceptor.MetricHTTPMiddleware(s.telemetryInfrastructure))
 	router.Use(loggerInterceptor.LoggerHTTPMiddleware(s.logger))
 	router.Use(authInterceptor.AuthHTTPMiddleware(s.logger, s.accessControlUseCase, s.authUseCase))
 

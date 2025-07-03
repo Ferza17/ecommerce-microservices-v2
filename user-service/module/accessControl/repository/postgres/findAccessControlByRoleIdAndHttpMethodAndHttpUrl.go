@@ -8,7 +8,7 @@ import (
 )
 
 func (r *accessControlPostgresSQLRepository) FindAccessControlByRoleIdAndHttpMethodAndHttpUrl(ctx context.Context, requestId string, roleId, httpMethod, httpUrl string, tx *gorm.DB) (*orm.AccessControl, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AccessControlPostgresRepository.FindAccessControlByRoleAndHttpMethodAndHttpUrl")
+	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "AccessControlPostgresRepository.FindAccessControlByRoleAndHttpMethodAndHttpUrl")
 	defer span.End()
 	acl := new(orm.AccessControl)
 	if err := tx.WithContext(ctx).

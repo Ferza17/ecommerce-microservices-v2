@@ -1,7 +1,7 @@
 
 global:
-  scrape_interval: 10s
-  evaluation_interval: 10s
+  scrape_interval: 30s
+  evaluation_interval: 30s
 
 rule_files:
 # - "first_rules.yml"
@@ -11,24 +11,23 @@ scrape_configs:
   # Prometheus self-monitoring
   - job_name: 'prometheus'
     static_configs:
-      - targets: ['prometheus-local:9090'] # PRODUCTION
+      - targets: ['prometheus-local:9090']
 
   # Jaeger metrics scraping
   - job_name: 'jaeger'
     static_configs:
-      - targets: ['jaeger-local:14269'] ## PROD
-    scrape_interval: 10s
+      - targets: ['jaeger-local:14269']
+    scrape_interval: 30s
     metrics_path: /metrics
 
-  # Jaeger span metrics (jika menggunakan span metrics processor)
   - job_name: 'jaeger-span-metrics'
     static_configs:
-      - targets: ['jaeger-local:8888'] # PRODUCTION
-    scrape_interval: 10s
+      - targets: ['jaeger-local:8888']
+    scrape_interval: 30s
     metrics_path: /metrics
 
   - job_name: 'user-service-metrics'
     static_configs:
       - targets: [ 'user-service:30056' ]
-    scrape_interval: 10s
-    metrics_path: /metrics
+    scrape_interval: 30s
+    metrics_path: /v1/user/metrics

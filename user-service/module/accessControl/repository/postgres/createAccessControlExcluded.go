@@ -8,7 +8,7 @@ import (
 )
 
 func (r *accessControlPostgresSQLRepository) CreateAccessControlExcluded(ctx context.Context, requestId string, accessControlExcluded *orm.AccessControlExcluded, tx *gorm.DB) (*orm.AccessControlExcluded, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "AccessControlPostgresRepository.CreateAccessControlExcluded")
+	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "AccessControlPostgresRepository.CreateAccessControlExcluded")
 	defer span.End()
 	if err := tx.WithContext(ctx).
 		Create(accessControlExcluded).

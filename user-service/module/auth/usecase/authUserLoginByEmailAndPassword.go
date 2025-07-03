@@ -14,7 +14,7 @@ import (
 )
 
 func (u *authUseCase) AuthUserLoginByEmailAndPassword(ctx context.Context, requestId string, req *pb.AuthUserLoginByEmailAndPasswordRequest) (*emptypb.Empty, error) {
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "AuthUseCase.AuthUserLoginByEmailAndPassword")
+	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthUseCase.AuthUserLoginByEmailAndPassword")
 	defer span.End()
 	tx := u.postgresSQL.GormDB.Begin()
 

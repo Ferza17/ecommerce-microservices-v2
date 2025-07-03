@@ -11,7 +11,7 @@ import (
 )
 
 func (p *AuthPresenter) AuthUserVerifyAccessControl(ctx context.Context, req *pb.AuthUserVerifyAccessControlRequest) (*pb.AuthUserVerifyAccessControlResponse, error) {
-	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "AuthPresenter.AuthUserVerifyAccessControlByToken")
+	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthPresenter.AuthUserVerifyAccessControlByToken")
 	defer span.End()
 	requestID := pkgContext.GetRequestIDFromContext(ctx)
 

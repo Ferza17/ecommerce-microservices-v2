@@ -54,12 +54,12 @@ func (c *Config) initUserService(kv *api.KV) {
 	}
 	c.UserServiceHttpPort = string(pair.Value)
 
-	pair, _, err = kv.Get(fmt.Sprintf("%s/services/user/HTTP_METRIC_PORT", c.Env), nil)
+	pair, _, err = kv.Get(fmt.Sprintf("%s/services/user/METRIC_HTTP_PORT", c.Env), nil)
 	if err != nil {
-		log.Fatalf("SetConfig | could not get HTTP_METRIC_PORT from consul: %v", err)
+		log.Fatalf("SetConfig | could not get METRIC_HTTP_PORT from consul: %v", err)
 	}
 	if pair == nil {
-		log.Fatal("SetConfig | Consul | HTTP_METRIC_PORT is required")
+		log.Fatal("SetConfig | Consul | METRIC_HTTP_PORT is required")
 	}
-	c.UserServiceHttpMetricPort = string(pair.Value)
+	c.UserServiceMetricHttpPort = string(pair.Value)
 }

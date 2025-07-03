@@ -17,7 +17,7 @@ func (u *userUseCase) FindUserByEmailAndPassword(ctx context.Context, requestId 
 	var (
 		tx = u.postgresSQLInfrastructure.GormDB.Begin()
 	)
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UserUseCase.FindUserByEmailAndPassword")
+	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "UserUseCase.FindUserByEmailAndPassword")
 	defer span.End()
 
 	user, err := u.userPostgresqlRepository.FindUserByEmail(ctx, requestId, request.Email, tx)

@@ -10,7 +10,7 @@ import (
 )
 
 func (p *AuthPresenter) AuthUserFindUserByToken(ctx context.Context, req *pb.AuthUserFindUserByTokenRequest) (*pb.AuthUserFindUserByTokenResponse, error) {
-	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "AuthPresenter.AuthUserFindUserByToken")
+	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthPresenter.AuthUserFindUserByToken")
 	defer span.End()
 	requestID := pkgContext.GetRequestIDFromContext(ctx)
 

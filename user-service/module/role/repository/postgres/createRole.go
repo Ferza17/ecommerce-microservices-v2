@@ -8,7 +8,7 @@ import (
 )
 
 func (r *rolePostgresSQLRepository) CreateRole(ctx context.Context, requestId string, role *orm.Role, tx *gorm.DB) (*orm.Role, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "RolePostgresRepository.CreateRole")
+	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "RolePostgresRepository.CreateRole")
 	defer span.End()
 	if err := tx.WithContext(ctx).
 		Create(role).

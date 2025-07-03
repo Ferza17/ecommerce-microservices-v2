@@ -16,7 +16,7 @@ func (u *authUseCase) GenerateAccessToken(ctx context.Context, requestId string,
 		defaultRefreshTokenCfg = token.DefaultRefreshTokenConfig()
 	)
 
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "AuthUseCase.GenerateAccessToken")
+	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthUseCase.GenerateAccessToken")
 	defer span.End()
 
 	accessToken, err = token.GenerateToken(

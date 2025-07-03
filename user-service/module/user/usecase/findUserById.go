@@ -11,7 +11,7 @@ import (
 )
 
 func (u *userUseCase) FindUserById(ctx context.Context, requestId string, req *userRpc.FindUserByIdRequest) (*userRpc.User, error) {
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UserUseCase.FindUserById")
+	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "UserUseCase.FindUserById")
 	defer span.End()
 
 	tx := u.postgresSQLInfrastructure.GormDB.Begin()

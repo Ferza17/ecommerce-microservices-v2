@@ -8,7 +8,7 @@ import (
 )
 
 func (p *UserPresenter) FindUserById(ctx context.Context, req *userRpc.FindUserByIdRequest) (*userRpc.User, error) {
-	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "UserPresenter.FindUserById")
+	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "UserPresenter.FindUserById")
 	defer span.End()
 	requestID := pkgContext.GetRequestIDFromContext(ctx)
 

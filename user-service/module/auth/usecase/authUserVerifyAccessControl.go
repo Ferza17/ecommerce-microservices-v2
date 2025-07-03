@@ -17,7 +17,7 @@ func (u *authUseCase) AuthUserVerifyAccessControl(ctx context.Context, requestId
 		tx      = u.postgresSQL.GormDB.Begin()
 	)
 
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "AuthUseCase.AuthUserVerifyAccessControl")
+	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthUseCase.AuthUserVerifyAccessControl")
 	defer span.End()
 
 	// Claim Token
