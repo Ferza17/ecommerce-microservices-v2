@@ -8,21 +8,14 @@
 - [X] Implement CQRS
 - [X] Implement SAGA
 - [X] Implement Event Sourcing
-- [X] Implement gRPC
-- [X] Implement message queuing
-- [X] Implement Distributed Tracing
 - [X] Implement Circuit Breaker
-- [X] Implement Payment Service
-- [ ] Implement Unit Test, mocking use mockery
-- [ ] Add Smart Contracts with Solidity
+- [X] Implement gRPC
+- [X] Implement message queuing using RabbitMQ
+- [X] Implement Distributed Tracing using Jaeger
+- [X] Implement Metrics Collector using Prometheus
+- [X] Implement Service Discovery using Consul
+- [X] Implement Load Balancer using Traefik
 
-
-
-## STEP
-* Install Docker
-* Install buf
-* Install protoc-gen-validate with go install
-* For Mac user do `chmod +x ./entrypoint/postgres/postgresql-initdb.sh` on root folder
 
 ## Author
 
