@@ -11,7 +11,6 @@ import (
 
 func (t *telemetryInfrastructure) StartSpanFromRabbitMQHeader(ctx context.Context, headers amqp091.Table, fnName string) (context.Context, trace.Span) {
 	var span trace.Span
-	tracer := t.tracerProvider.Tracer(t.serviceName)
 
 	if headers != nil {
 		if _, ok := headers[pkgContext.ContextKeyTracerparent].(string); ok {
@@ -22,8 +21,7 @@ func (t *telemetryInfrastructure) StartSpanFromRabbitMQHeader(ctx context.Contex
 				}
 			}
 
-			parentCtx := t.extractSpanFromTextMapPropagator(ctx, carrier)
-			ctx, span = tracer.Start(parentCtx, fnName)
+			ctx, span = t.StartSpanFromContext(t.extractSpanFromTextMapPropagator(ctx, carrier), fnName)
 		} else {
 			ctx, span = t.StartSpanFromContext(ctx, fnName)
 		}

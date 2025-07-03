@@ -12,13 +12,11 @@ import (
 
 func (t *telemetryInfrastructure) StartSpanFromHttpRequest(r *http.Request, fnName string) (context.Context, trace.Span) {
 	var span trace.Span
-	tracer := t.tracerProvider.Tracer(t.serviceName)
 	ctx := r.Context()
 
 	if traceparent := r.Header.Get(pkgContext.ContextKeyTracerparent); traceparent != "" {
 		carrier := propagation.HeaderCarrier(r.Header)
-		parentCtx := otel.GetTextMapPropagator().Extract(ctx, carrier)
-		ctx, span = tracer.Start(parentCtx, r.Method+" "+r.URL.Path)
+		ctx, span = t.StartSpanFromContext(otel.GetTextMapPropagator().Extract(ctx, carrier), fnName)
 	} else {
 		ctx, span = t.StartSpanFromContext(ctx, fnName)
 	}

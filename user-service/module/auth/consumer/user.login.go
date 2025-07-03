@@ -120,7 +120,7 @@ func (c *authConsumer) UserLogin(ctx context.Context) error {
 			}
 
 			c.logger.Info(fmt.Sprintf("received a %s message: %s", d.RoutingKey, d.Body))
-			if _, err = c.authUseCase.AuthUserLoginByEmailAndPassword(ctx, requestId, &request); err != nil {
+			if _, err = c.authUseCase.AuthUserLoginByEmailAndPassword(newCtx, requestId, &request); err != nil {
 				pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserLogin, "failed").Inc()
 				span.RecordError(err)
 				span.End()

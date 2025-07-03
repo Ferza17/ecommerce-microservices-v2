@@ -121,7 +121,7 @@ func (c *userConsumer) UserCreated(ctx context.Context) error {
 			}
 
 			//c.logger.Info(fmt.Sprintf("received a %s message: %s", d.RoutingKey, d.Body))
-			//if _, err = c.userUseCase.UpdateUserById(ctx, requestId, &request); err != nil {
+			//if _, err = c.userUseCase.UpdateUserById(newCtx, requestId, &request); err != nil {
 			//	pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserCreated, "failed").Inc()
 			//	span.RecordError(err)
 			//	span.End()
@@ -130,7 +130,6 @@ func (c *userConsumer) UserCreated(ctx context.Context) error {
 			//	continue messages
 			//}
 
-			d.Ack(false)
 			pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserCreated, "success").Inc()
 			span.End()
 			cancelCtx()

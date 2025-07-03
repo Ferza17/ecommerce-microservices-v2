@@ -47,6 +47,13 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 		return err
 	}
 
+	carrier := c.telemetryInfrastructure.InjectSpanToTextMapPropagator(ctx)
+	headers := amqp091.Table{}
+	for k, v := range carrier {
+		headers[k] = v
+	}
+	headers[pkgContext.CtxKeyRequestID] = requestId
+
 	// Publish message
 	if _, err = amqpChannel.PublishWithDeferredConfirmWithContext(
 		ctx,
@@ -59,9 +66,7 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 			DeliveryMode: amqp091.Transient,
 			Timestamp:    time.Now(),
 			Body:         message,
-			Headers: map[string]interface{}{
-				pkgContext.CtxKeyRequestID: requestId,
-			},
+			Headers:      headers,
 		},
 	); err != nil {
 		c.logger.Error(fmt.Sprintf("Failed to publish a message: %v", err))

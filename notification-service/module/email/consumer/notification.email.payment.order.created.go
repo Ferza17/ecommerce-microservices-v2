@@ -120,7 +120,7 @@ func (c *notificationEmailConsumer) NotificationEmailPaymentOrderCreated(ctx con
 			}
 
 			c.logger.Info(fmt.Sprintf("received a %s message: %s", d.RoutingKey, d.Body))
-			if err = c.notificationUseCase.SendNotificationEmailPaymentOrderCreated(ctx, requestId, &request); err != nil {
+			if err = c.notificationUseCase.SendNotificationEmailPaymentOrderCreated(newCtx, requestId, &request); err != nil {
 				pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueNotificationEmailPaymentOrderCreated, "failed").Inc()
 				span.RecordError(err)
 				span.End()
@@ -129,7 +129,6 @@ func (c *notificationEmailConsumer) NotificationEmailPaymentOrderCreated(ctx con
 				continue messages
 			}
 
-			d.Ack(false)
 			pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueNotificationEmailPaymentOrderCreated, "success").Inc()
 			span.End()
 			cancelCtx()

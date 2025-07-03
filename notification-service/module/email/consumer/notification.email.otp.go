@@ -71,7 +71,7 @@ func (c *notificationEmailConsumer) NotificationEmailOTP(ctx context.Context) er
 			var (
 				request           pb.SendOtpEmailNotificationRequest
 				requestId         string
-				newCtx, cancelCtx = context.WithTimeout(ctx, 20)
+				newCtx, cancelCtx = context.WithTimeout(ctx, 10)
 			)
 			for key, value := range d.Headers {
 				if key == pkgContext.CtxKeyRequestID {
@@ -120,7 +120,7 @@ func (c *notificationEmailConsumer) NotificationEmailOTP(ctx context.Context) er
 			}
 
 			c.logger.Info(fmt.Sprintf("received a %s message: %s", d.RoutingKey, d.Body))
-			if err = c.notificationUseCase.SendNotificationEmailOTP(ctx, requestId, &request); err != nil {
+			if err = c.notificationUseCase.SendNotificationEmailOTP(newCtx, requestId, &request); err != nil {
 				pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueNotificationEmailOtpCreated, "failed").Inc()
 				span.RecordError(err)
 				span.End()
@@ -129,7 +129,6 @@ func (c *notificationEmailConsumer) NotificationEmailOTP(ctx context.Context) er
 				continue messages
 			}
 
-			d.Ack(false)
 			pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueNotificationEmailOtpCreated, "success").Inc()
 			span.End()
 			cancelCtx()
