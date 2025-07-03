@@ -10,7 +10,7 @@ import (
 )
 
 func (p *ProductPresenter) FindProductById(ctx context.Context, req *productRpc.FindProductByIdRequest) (*productRpc.Product, error) {
-	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "AuthPresenter.AuthUserRegister")
+	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthPresenter.AuthUserRegister")
 	defer span.End()
 	requestID := pkgContext.GetRequestIDFromContext(ctx)
 

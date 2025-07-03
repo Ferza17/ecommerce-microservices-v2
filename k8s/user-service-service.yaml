@@ -15,5 +15,8 @@ spec:
     - name: "40056"
       port: 40056
       targetPort: 40056
+    - name: "30056"
+      port: 30056
+      targetPort: 30056
   selector:
     io.kompose.service: user-service

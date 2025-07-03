@@ -17,7 +17,7 @@ func (u *productUseCase) FindProductsWithPagination(ctx context.Context, request
 	)
 	defer cancel()
 
-	ctxTimeout, span := u.telemetryInfrastructure.Tracer(ctxTimeout, "UseCase.FindProductsWithPagination")
+	ctxTimeout, span := u.telemetryInfrastructure.StartSpanFromContext(ctxTimeout, "UseCase.FindProductsWithPagination")
 	defer span.End()
 
 	fetchedProducts, total, err := u.productElasticsearchRepository.FindProductsWithPagination(ctxTimeout, requestId, req)

@@ -19,7 +19,7 @@ func (r *productElasticsearchRepository) FindProductsWithPagination(ctx context.
 	)
 	defer cancel()
 
-	ctxTimeout, span := r.telemetryInfrastructure.Tracer(ctxTimeout, "Repository.Elasticsearch.FindProductsWithPagination")
+	ctxTimeout, span := r.telemetryInfrastructure.StartSpanFromContext(ctxTimeout, "Repository.Elasticsearch.FindProductsWithPagination")
 	defer span.End()
 
 	reqBody := map[string]interface{}{}

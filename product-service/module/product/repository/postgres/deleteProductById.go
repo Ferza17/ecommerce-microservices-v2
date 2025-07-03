@@ -11,7 +11,7 @@ func (r *ProductPostgresqlRepository) DeleteProductById(ctx context.Context, id 
 		ctxTimeout, cancel = context.WithTimeout(ctx, 5*time.Second)
 	)
 	defer cancel()
-	ctxTimeout, span := r.telemetryInfrastructure.Tracer(ctxTimeout, "Repository.DeleteProductById")
+	ctxTimeout, span := r.telemetryInfrastructure.StartSpanFromContext(ctxTimeout, "Repository.DeleteProductById")
 	defer span.End()
 	//TODO implement me
 	panic("implement me")

@@ -9,7 +9,7 @@ import (
 )
 
 func (p *ProductPresenter) UpdateProductById(ctx context.Context, req *productRpc.UpdateProductByIdRequest) (*empty.Empty, error) {
-	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.UpdateProductById")
+	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "Presenter.UpdateProductById")
 	defer span.End()
 
 	requestId := pkgContext.GetRequestIDFromContext(ctx)

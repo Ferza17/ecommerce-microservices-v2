@@ -9,7 +9,7 @@ import (
 )
 
 func (p *ProductPresenter) DeleteProductById(ctx context.Context, req *productRpc.DeleteProductByIdRequest) (*empty.Empty, error) {
-	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.DeleteProductById")
+	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "Presenter.DeleteProductById")
 	defer span.End()
 	requestId := pkgContext.GetRequestIDFromContext(ctx)
 

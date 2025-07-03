@@ -2,8 +2,8 @@ apiVersion: v1
 data:
   prometheus.yml: |2-
     global:
-      scrape_interval: 15s
-      evaluation_interval: 15s
+      scrape_interval: 30s
+      evaluation_interval: 30s
 
     rule_files:
     # - "first_rules.yml"
@@ -13,21 +13,32 @@ data:
       # Prometheus self-monitoring
       - job_name: 'prometheus'
         static_configs:
-          - targets: ['prometheus-local:9090'] # PRODUCTION
+          - targets: ['prometheus-local:9090']
 
       # Jaeger metrics scraping
       - job_name: 'jaeger'
         static_configs:
-          - targets: ['jaeger-local:14269'] ## PROD
-        scrape_interval: 15s
+          - targets: ['jaeger-local:14269']
+        scrape_interval: 30s
         metrics_path: /metrics
 
-      # Jaeger span metrics (jika menggunakan span metrics processor)
-      - job_name: 'jaeger-span-metrics'
+      - job_name: 'user-service-metrics'
         static_configs:
-          - targets: ['jaeger-local:8888'] # PRODUCTION
-        scrape_interval: 15s
-        metrics_path: /metrics
+          - targets: [ 'user-service:30056' ]
+        scrape_interval: 30s
+        metrics_path: /v1/user/metrics
+
+      - job_name: 'notification-service-metrics'
+        static_configs:
+          - targets: [ 'notification-service:30053' ]
+        scrape_interval: 30s
+        metrics_path: /v1/notification/metrics
+
+      - job_name: 'product-service-metrics'
+        static_configs:
+          - targets: [ 'product-service:30055' ]
+        scrape_interval: 30s
+        metrics_path: /v1/product/metrics
 kind: ConfigMap
 metadata:
   annotations:

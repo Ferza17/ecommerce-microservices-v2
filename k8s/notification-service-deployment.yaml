@@ -26,4 +26,8 @@ spec:
           ports:
             - containerPort: 50053
               protocol: TCP
+            - containerPort: 40053
+              protocol: TCP
+            - containerPort: 30053
+              protocol: TCP
       restartPolicy: Always

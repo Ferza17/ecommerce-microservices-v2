@@ -12,7 +12,7 @@ func (r *ProductPostgresqlRepository) UpdateProductById(ctx context.Context, pro
 		ctxTimeout, cancel = context.WithTimeout(ctx, 5*time.Second)
 	)
 	defer cancel()
-	ctxTimeout, span := r.telemetryInfrastructure.Tracer(ctxTimeout, "Repository.UpdateProductById")
+	ctxTimeout, span := r.telemetryInfrastructure.StartSpanFromContext(ctxTimeout, "Repository.UpdateProductById")
 	defer span.End()
 	//TODO implement me
 	panic("implement me")

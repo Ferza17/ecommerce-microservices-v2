@@ -28,4 +28,6 @@ spec:
               protocol: TCP
             - containerPort: 40055
               protocol: TCP
+            - containerPort: 30055
+              protocol: TCP
       restartPolicy: Always

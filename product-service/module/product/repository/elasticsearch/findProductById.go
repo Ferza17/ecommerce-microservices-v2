@@ -9,7 +9,7 @@ import (
 )
 
 func (r *productElasticsearchRepository) FindProductById(ctx context.Context, requestId string, id string) (*orm.Product, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.Elasticsearch.FindProductById")
+	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "Repository.Elasticsearch.FindProductById")
 	defer span.End()
 
 	res, err := r.elasticsearchInfrastructure.GetClient().Get(productIndex, id)

@@ -9,7 +9,7 @@ import (
 )
 
 func (u *productUseCase) FindProductById(ctx context.Context, requestId string, req *productRpc.FindProductByIdRequest) (*productRpc.Product, error) {
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "ProductUseCase.FindProductById")
+	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "ProductUseCase.FindProductById")
 	defer span.End()
 
 	fetchProduct, err := u.productElasticsearchRepository.FindProductById(ctx, requestId, req.GetId())

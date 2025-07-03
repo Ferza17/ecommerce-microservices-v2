@@ -12,5 +12,11 @@ spec:
     - name: "50053"
       port: 50053
       targetPort: 50053
+    - name: "40053"
+      port: 40053
+      targetPort: 40053
+    - name: "30053"
+      port: 30053
+      targetPort: 30053
   selector:
     io.kompose.service: notification-service

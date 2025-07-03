@@ -12,7 +12,7 @@ func (r *ProductPostgresqlRepository) CreateProduct(ctx context.Context, product
 		ctxTimeout, cancel = context.WithTimeout(ctx, 5*time.Second)
 	)
 	defer cancel()
-	ctxTimeout, span := r.telemetryInfrastructure.Tracer(ctxTimeout, "Repository.CreateProduct")
+	ctxTimeout, span := r.telemetryInfrastructure.StartSpanFromContext(ctxTimeout, "Repository.CreateProduct")
 	defer span.End()
 	if err := tx.WithContext(ctxTimeout).
 		Table("products").

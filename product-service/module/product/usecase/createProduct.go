@@ -19,7 +19,7 @@ func (u *productUseCase) CreateProduct(ctx context.Context, requestId string, re
 		tx  = u.postgres.GormDB.Begin()
 		now = time.Now().UTC()
 	)
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "ProductUseCase.CreateProduct")
+	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "ProductUseCase.CreateProduct")
 	defer span.End()
 
 	_, err = u.productPgsqlRepository.CreateProduct(ctx, &orm.Product{

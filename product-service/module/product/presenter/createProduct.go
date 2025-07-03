@@ -9,7 +9,7 @@ import (
 )
 
 func (p *ProductPresenter) CreateProduct(ctx context.Context, req *productRpc.CreateProductRequest) (*empty.Empty, error) {
-	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.CreateProduct")
+	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "Presenter.CreateProduct")
 	defer span.End()
 	requestId := pkgContext.GetRequestIDFromContext(ctx)
 

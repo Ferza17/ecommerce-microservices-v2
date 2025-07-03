@@ -4,18 +4,21 @@ initialize_product_service() {
   echo "INIT PRODUCT SERVICE"
 
   ## Local
-  curl --request PUT --data 'local' http://localhost:8500/v1/kv/local/services/product/ENV
-  curl --request PUT --data 'product-service' http://localhost:8500/v1/kv/local/services/product/SERVICE_NAME
-  curl --request PUT --data 'localhost' http://localhost:8500/v1/kv/local/services/product/RPC_HOST
-  curl --request PUT --data '50055' http://localhost:8500/v1/kv/local/services/product/RPC_PORT
-  curl --request PUT --data 'localhost' http://localhost:8500/v1/kv/local/services/product/HTTP_HOST
-  curl --request PUT --data '40055' http://localhost:8500/v1/kv/local/services/product/HTTP_PORT
+  consul kv put local/services/product/ENV 'local' 
+  consul kv put local/services/product/SERVICE_NAME 'product-service' 
+  consul kv put local/services/product/RPC_HOST 'localhost' 
+  consul kv put local/services/product/RPC_PORT '50055' 
+  consul kv put local/services/product/HTTP_HOST 'localhost' 
+  consul kv put local/services/product/HTTP_PORT '40055'
+  consul kv put local/services/product/METRIC_HTTP_PORT '30055'
+
   ## Production
-  curl --request PUT --data 'production' http://localhost:8500/v1/kv/production/services/product/ENV
-  curl --request PUT --data 'product-service' http://localhost:8500/v1/kv/production/services/product/SERVICE_NAME
-  curl --request PUT --data 'product-service' http://localhost:8500/v1/kv/production/services/product/RPC_HOST
-  curl --request PUT --data '50055' http://localhost:8500/v1/kv/production/services/product/RPC_PORT
-  curl --request PUT --data 'product-service' http://localhost:8500/v1/kv/production/services/product/HTTP_HOST
-  curl --request PUT --data '40055' http://localhost:8500/v1/kv/production/services/product/HTTP_PORT
+  consul kv put production/services/product/ENV 'production' 
+  consul kv put production/services/product/SERVICE_NAME 'product-service' 
+  consul kv put production/services/product/RPC_HOST 'product-service' 
+  consul kv put production/services/product/RPC_PORT '50055' 
+  consul kv put production/services/product/HTTP_HOST 'product-service' 
+  consul kv put production/services/product/HTTP_PORT '40055'
+  consul kv put production/services/product/METRIC_HTTP_PORT '30055'
   echo "DONE INIT PRODUCT SERVICE"
 }

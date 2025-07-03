@@ -13,7 +13,7 @@ func (r *ProductPostgresqlRepository) FindProductById(ctx context.Context, id st
 		ctxTimeout, cancel = context.WithTimeout(ctx, 5*time.Second)
 	)
 	defer cancel()
-	ctxTimeout, span := r.telemetryInfrastructure.Tracer(ctxTimeout, "Repository.FindProductById")
+	ctxTimeout, span := r.telemetryInfrastructure.StartSpanFromContext(ctxTimeout, "Repository.FindProductById")
 	defer span.End()
 	product := new(orm.Product)
 	if err := tx.WithContext(ctxTimeout).

@@ -243,7 +243,7 @@ services:
       context: ./notification-service
       dockerfile: Dockerfile
     ports:
-      - "50053" #GRPC
+      - "50053" # GRPC
       - "40053" # HTTP
       - "30053" # HTTP METRIC COLLECTOR
     restart: always
@@ -257,8 +257,9 @@ services:
       context: ./product-service
       dockerfile: Dockerfile
     ports:
-      - "50055"
-      - "40055"
+      - "50055" # GRPC
+      - "40055" # HTTP
+      - "30055" # HTTP METRIC COLLECTOR
     restart: always
     networks:
       - local
