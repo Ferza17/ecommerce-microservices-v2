@@ -1,0 +1,28 @@
+-- +goose Up
+
+INSERT INTO providers (id, name, method, discarded_at)
+VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a01', 'Bank Alpha', 'BANK', NULL),
+       ('b1fccb00-0d1c-5ef9-cc7e-7cc0ce491b02', 'CoinFlow', 'CRYPTO_CURRENCY', NULL),
+       ('c2gddc11-1e2d-6fg0-dd8f-8dd1df5a2c03', 'SwiftDebit', 'DEBIT', NULL),
+       ('d3heede2-2f3e-7gh1-ee90-9ee2ef6b3d04', 'SecureCredit', 'CREDIT', NULL),
+       ('e4iffef3-3g4f-8hi2-ff01-0ff3fg7c4e05', 'FastCOD', 'CASH_ON_DELIVERY', NULL),
+       ('f5jgfg44-4h5g-9ij3-gg12-1gg4gh8d5f06', 'Bank Beta', 'BANK', NULL),
+       ('g6khhg55-5i6h-0jk4-hh23-2hh5hi9e6g07', 'CryptoVault', 'CRYPTO_CURRENCY', NULL),
+       ('h7ljji66-6j7i-1kl5-ii34-3ii6ij0f7h08', 'QuickDebit', 'DEBIT', NULL),
+       ('i8mkkj77-7k8j-2lm6-jj45-4jj7jk1g8i09', 'GlobalCredit', 'CREDIT', NULL),
+       ('j9nllk88-8l9k-3mn7-kk56-5kk8kl2h9j10', 'ExpressCOD', 'CASH_ON_DELIVERY', NULL),
+       ('k0opml99-9m0l-4no8-ll67-6ll9lm3i0k11', 'Bank Gamma', 'BANK', NULL),
+       ('l1pqnm00-0n1m-5op9-mm78-7mm0mn4j1l12', 'DigitalCoin', 'CRYPTO_CURRENCY', NULL),
+       ('m2qrno11-1o2n-6pq0-nn89-8nn1no5k2m13', 'DirectDebit', 'DEBIT', NULL),
+       ('n3srpo22-2p3o-7qr1-oo90-9oo2op6l3n14', 'PremiumCredit', 'CREDIT', NULL),
+       ('o4tsqp33-3q4p-8st2-pp01-0pp3pq7m4o15', 'CODPlus', 'CASH_ON_DELIVERY', NULL),
+       ('p5utrq44-4r5q-9uv3-qq12-1qq4qr8n5p16', 'Bank Delta', 'BANK', NULL),
+       ('q6vusr55-5s6r-0vw4-rr23-2rr5rs9o6q17', 'BlockChainPay', 'CRYPTO_CURRENCY', NULL),
+       ('r7wvts66-6t7s-1wx5-ss34-3ss6st0p7r18', 'InstantDebit', 'DEBIT', NULL),
+       ('s8xuwu77-7u8w-2xy6-tt45-4tt7uv1q8s19', 'EliteCredit', 'CREDIT', NULL),
+       ('t9yvxv88-8v9x-3yz7-uu56-5uu8vw2r9t20', 'UltraCOD', 'CASH_ON_DELIVERY', NULL),
+       ('u0zwyw99-9w0y-4za8-vv67-6vv9wx3s0u21', 'Bank Epsilon', 'BANK', NULL),
+       ('v1axzx00-0x1z-5ab9-ww78-7ww0xy4t1v22', 'DecentralPay', 'CRYPTO_CURRENCY', NULL),
+       ('w2byay11-1y2a-6bc0-xx89-8xx1yz5u2w23', 'SmartDebit', 'DEBIT', NULL),
+       ('x3czbz22-2z3b-7cd1-yy90-9yy2za6v3x24', 'MasterCredit', 'CREDIT', NULL),
+       ('y4daac33-3a4c-8de2-zz01-0zz3ab7w4y25', 'PrimeCOD', 'CASH_ON_DELIVERY', NULL);

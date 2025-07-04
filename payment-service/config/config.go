@@ -206,5 +206,10 @@ func SetConfig(path string) {
 		pkgMetric.RabbitmqMessagesConsumed,
 	)
 
+	if err = c.RegisterConsulService(); err != nil {
+		log.Fatalf("SetConfig | could not register service: %v", err)
+		return
+	}
+
 	viper.WatchConfig()
 }

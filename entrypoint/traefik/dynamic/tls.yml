@@ -1,0 +1,14 @@
+# TLS Configuration
+tls:
+  certificates:
+    # Add more certificates if needed
+    - certFile: /etc/traefik/certs/localhost-cert.pem
+      keyFile: /etc/traefik/certs/localhost-key.pem
+      stores:
+        - default
+
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /etc/traefik/certs/localhost-cert.pem
+        keyFile: /etc/traefik/certs/localhost-key.pem

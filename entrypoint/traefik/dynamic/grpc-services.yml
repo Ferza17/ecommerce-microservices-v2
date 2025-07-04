@@ -1,5 +1,7 @@
 http:
   routers:
+    ###################### GRPC ####################################
+
     user-service-auth-grpc:
       entryPoints:
         - grpc
@@ -14,25 +16,11 @@ http:
       rule: "Host(`localhost`) && PathPrefix(`/user.UserService`)"
       tls: false
 
-    user-service-user-http:
-      entryPoints:
-        - web
-      service: "user-service-http"
-      rule: "Host(`localhost`) && (PathPrefix(`/v1/user`) || PathPrefix(`/docs/v1/user`))"
-      tls: false
-
     product-service-grpc:
       entryPoints:
         - grpc
       service: "product-service-grpc"
       rule: "Host(`localhost`) && PathPrefix(`/product.ProductService`)"
-      tls: false
-
-    product-service-product-http:
-      entryPoints:
-        - web
-      service: "product-service-http"
-      rule: "Host(`localhost`) && (PathPrefix(`/v1/product`) || PathPrefix(`/docs/v1/product`))"
       tls: false
 
     payment-service-provider-grpc:
@@ -49,20 +37,35 @@ http:
       rule: "Host(`localhost`) && PathPrefix(`/payment.PaymentService`)"
       tls: false
 
-    payment-service-http:
-      entryPoints:
-        - web
-      service: "payment-service-http"
-      rule: "Host(`localhost`) && (PathPrefix(`/v1/payment`) || PathPrefix(`/docs/v1/payment`))"
-      tls: false
-
-
     grpc-reflection:
       entryPoints:
         - grpc
       service: "user-service-grpc"
       rule: "Host(`localhost`) && PathPrefix(`/grpc.reflection.v1alpha.ServerReflection`)"
       tls: false
+
+    ###################### WEBSECURE ####################################
+
+    user-service-user-http:
+      entryPoints:
+        - websecure
+      service: "user-service-http"
+      rule: "Host(`localhost`) && (PathPrefix(`/v1/user`) || PathPrefix(`/docs/v1/user`))"
+      tls: true
+
+    product-service-product-http:
+      entryPoints:
+        - websecure
+      service: "product-service-http"
+      rule: "Host(`localhost`) && (PathPrefix(`/v1/product`) || PathPrefix(`/docs/v1/product`))"
+      tls: true
+
+    payment-service-http:
+      entryPoints:
+        - websecure
+      service: "payment-service-http"
+      rule: "Host(`localhost`) && (PathPrefix(`/v1/payment`) || PathPrefix(`/docs/v1/payment`))"
+      tls: true
 
   services:
     user-service-grpc:

@@ -7,7 +7,6 @@ providers:
     directory: /etc/traefik/dynamic
     watch: true
 
-# ENTRYPOINTS
 entryPoints:
   web:
     address: ":80"

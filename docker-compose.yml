@@ -1,6 +1,7 @@
 name: "ecommerce-v2"
 services:
 
+  # POSTGRESQL DATABASE
   postgres-local:
     container_name: postgres-local
     ports:
@@ -14,6 +15,7 @@ services:
     networks:
       - local
 
+  # MONGODB DATABASE
   mongo-local:
     container_name: mongo-local
     image: mongo
@@ -26,16 +28,28 @@ services:
     networks:
       - local
 
-  # FOR TEST EMAIL NOTIFICATION
-  mailhog-local:
-    image: mailhog/mailhog:latest
-    container_name: mailhog-local
+  # ELASTICSEARCH DATABASE
+  elasticsearch-local:
+    container_name: elasticsearch-local
+    image: elasticsearch:8.4.1
+    restart: always
+    environment:
+      - "discovery.type=single-node"
+      - "cluster.name=products"
+      - "node.name=node1"
+      - "bootstrap.memory_lock=false"
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - "xpack.security.enabled=false"
     ports:
-      - '1025:1025'
-      - '8025:8025'
+      - '9200:9200'
+      - '9300:9300'
+    volumes:
+      - ./entrypoint/elasticsearch/init-index.sh:/init-index.sh
+      - ./entrypoint/elasticsearch/products-mapping.json:/products-mapping.json
     networks:
       - local
 
+  # REDIS DATABASE
   redis-local:
     container_name: redis-local
     ports:
@@ -51,6 +65,17 @@ services:
     networks:
       - local
 
+  # FOR TEST EMAIL NOTIFICATION
+  mailhog-local:
+    image: mailhog/mailhog:latest
+    container_name: mailhog-local
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+    networks:
+      - local
+
+  # MESSAGE BROKER
   rabbitmq-local:
     container_name: rabbitmq-local
     image: rabbitmq:3.11-management
@@ -74,7 +99,6 @@ services:
 
     networks:
       - local
-
 
   # FOR TRACING
   jaeger-local:
@@ -120,27 +144,6 @@ services:
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--storage.tsdb.retention.time=200h'
       - '--web.enable-lifecycle'
-    networks:
-      - local
-
-  #ELASTIC
-  elasticsearch-local:
-    container_name: elasticsearch-local
-    image: elasticsearch:8.4.1
-    restart: always
-    environment:
-      - "discovery.type=single-node"
-      - "cluster.name=products"
-      - "node.name=node1"
-      - "bootstrap.memory_lock=false"
-      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
-      - "xpack.security.enabled=false"
-    ports:
-      - '9200:9200'
-      - '9300:9300'
-    volumes:
-      - ./entrypoint/elasticsearch/init-index.sh:/init-index.sh
-      - ./entrypoint/elasticsearch/products-mapping.json:/products-mapping.json
     networks:
       - local
 
@@ -205,6 +208,7 @@ services:
     networks:
       - local
 
+  # REVERSE PROXY AND LOAD BALANCER
   traefik-local:
     image: traefik:v3.0
     container_name: traefik-local
@@ -219,6 +223,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./entrypoint/traefik/traefik.yml:/etc/traefik/traefik.yml
       - ./entrypoint/traefik/dynamic:/etc/traefik/dynamic
+      - ./entrypoint/traefik/certs:/etc/traefik/certs
     networks:
       - local
 
@@ -264,7 +269,7 @@ services:
     networks:
       - local
 
-  # PRODUCT-SERVICE
+  # PAYMENT-SERVICE
   payment-service:
     container_name: payment-service
     build:
