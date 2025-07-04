@@ -4,15 +4,14 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/enum"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/context"
 	"github.com/rabbitmq/amqp091-go"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/propagation"
 	"go.uber.org/zap"
 	"time"
 )
 
 func (c *RabbitMQInfrastructure) PublishDelayedMessage(ctx context.Context, requestId string, exchange string, queue string, message []byte, delayMs int) error {
-	ctx, span := c.telemetryInfrastructure.Tracer(ctx, "RabbitMQInfrastructure.Publish")
+	ctx, span := c.telemetryInfrastructure.StartSpanFromContext(ctx, "RabbitMQInfrastructure.Publish")
 
 	amqpChannel, err := c.amqpConn.Channel()
 	if err != nil {
@@ -54,13 +53,12 @@ func (c *RabbitMQInfrastructure) PublishDelayedMessage(ctx context.Context, requ
 		return err
 	}
 
-	carrier := propagation.MapCarrier{}
-	otel.GetTextMapPropagator().Inject(ctx, carrier)
+	carrier := c.telemetryInfrastructure.InjectSpanToTextMapPropagator(ctx)
 	headers := amqp091.Table{}
 	for k, v := range carrier {
 		headers[k] = v
 	}
-	headers[enum.XRequestIDHeader.String()] = requestId
+	headers[pkgContext.CtxKeyRequestID] = requestId
 	headers[enum.XDelayedType.String()] = "direct"
 	headers[enum.XDelayHeader.String()] = delayMs
 

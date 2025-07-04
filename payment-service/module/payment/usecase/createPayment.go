@@ -12,11 +12,11 @@ import (
 )
 
 func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, request *paymentRpc.CreatePaymentRequest) error {
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.CreatePayment")
+	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "PaymentUseCase.CreatePayment")
 	defer span.End()
 
 	// Begin transaction
-	tx := u.paymentRepository.OpenTransactionWithContext(ctx)
+	tx := u.postgres.GormDB.Begin()
 
 	// Map the request into the ORM Payment model
 	payment := &orm.Payment{
@@ -63,7 +63,6 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 		return fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
-	// Log success
-	u.logger.Info(fmt.Sprintf("Successfully created payment and payment items, requestId: %s, paymentId: %s", requestId, paymentID))
+	tx.Commit()
 	return nil
 }

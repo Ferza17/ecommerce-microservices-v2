@@ -2,6 +2,7 @@ package presenter
 
 import (
 	"context"
+	userService "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/user"
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
 	"github.com/google/wire"
 
@@ -20,6 +21,7 @@ type (
 		paymentRpc.UnimplementedPaymentServiceServer
 		paymentUseCase          usecase.IPaymentUseCase
 		telemetryInfrastructure telemetry.ITelemetryInfrastructure
+		userService             userService.IUserService
 		logger                  logger.IZapLogger
 	}
 )
@@ -33,11 +35,13 @@ var Set = wire.NewSet(
 func NewPaymentPresenter(
 	paymentUseCase usecase.IPaymentUseCase,
 	telemetryInfrastructure telemetry.ITelemetryInfrastructure,
+	userService userService.IUserService,
 	logger logger.IZapLogger,
 ) IPaymentPresenter {
 	return &paymentPresenter{
 		paymentUseCase:          paymentUseCase,
 		telemetryInfrastructure: telemetryInfrastructure,
+		userService:             userService,
 		logger:                  logger,
 	}
 }

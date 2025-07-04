@@ -129,7 +129,6 @@ func (c *authConsumer) UserLogin(ctx context.Context) error {
 				continue messages
 			}
 
-			d.Ack(false)
 			pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserLogin, "success").Inc()
 			span.End()
 			cancelCtx()

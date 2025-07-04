@@ -11,7 +11,7 @@ import (
 )
 
 // ProvidePostgreSQLInfrastructure wires dependencies for IPostgreSQLInfrastructure.
-func ProvidePostgreSQLInfrastructure() IPostgreSQLInfrastructure {
+func ProvidePostgreSQLInfrastructure() *PostgresSQL {
 	wire.Build(
 		logger.Set,
 		Set,

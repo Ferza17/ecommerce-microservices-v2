@@ -3,6 +3,12 @@ package grpc
 import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
+	userService "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/user"
+	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
+	authInterceptor "github.com/ferza17/ecommerce-microservices-v2/payment-service/interceptor/auth"
+	loggerInterceptor "github.com/ferza17/ecommerce-microservices-v2/payment-service/interceptor/logger"
+	requestIdInterceptor "github.com/ferza17/ecommerce-microservices-v2/payment-service/interceptor/requestid"
+	telemetryInterceptor "github.com/ferza17/ecommerce-microservices-v2/payment-service/interceptor/telemetry"
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
 	paymentPresenter "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/presenter"
 	paymentProviderPresenter "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/provider/presenter"
@@ -13,6 +19,7 @@ import (
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
+	"log"
 	"net"
 )
 
@@ -29,6 +36,9 @@ type (
 		paymentPresenter         paymentPresenter.IPaymentPresenter
 		paymentProviderPresenter paymentProviderPresenter.IPaymentProviderPresenter
 
+		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
+		userService             userService.IUserService
+
 		grpcServer *grpc.Server
 		logger     logger.IZapLogger
 	}
@@ -39,16 +49,16 @@ func NewGrpcServer(
 	logger logger.IZapLogger,
 	paymentPresenter paymentPresenter.IPaymentPresenter,
 	paymentProviderPresenter paymentProviderPresenter.IPaymentProviderPresenter,
-	options ...grpc.ServerOption,
+	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
+	userService userService.IUserService,
 ) IGrpcServer {
-	grpcServer := grpc.NewServer(options...)
-
 	return &GrpcServer{
-		address:                  config.Get().RpcHost,
-		port:                     config.Get().RpcPort,
+		address:                  config.Get().PaymentServiceRpcHost,
+		port:                     config.Get().PaymentServiceRpcPort,
 		paymentPresenter:         paymentPresenter,
 		paymentProviderPresenter: paymentProviderPresenter,
-		grpcServer:               grpcServer,
+		telemetryInfrastructure:  telemetryInfrastructure,
+		userService:              userService,
 		logger:                   logger,
 	}
 }
@@ -56,17 +66,7 @@ func NewGrpcServer(
 // Set is a Wire provider set for GrpcServer dependencies.
 var Set = wire.NewSet(
 	NewGrpcServer,
-	ProvideGrpcServerOptions,
 )
-
-func ProvideGrpcServerOptions() []grpc.ServerOption {
-	// Add any default server options you need here
-	return []grpc.ServerOption{
-		// Example options:
-		// grpc.MaxRecvMsgSize(1024 * 1024 * 4), // 4MB
-		// grpc.MaxSendMsgSize(1024 * 1024 * 4), // 4MB
-	}
-}
 
 func (s *GrpcServer) Serve() {
 	listen, err := net.Listen("tcp", fmt.Sprintf(":%s", s.port))
@@ -74,13 +74,25 @@ func (s *GrpcServer) Serve() {
 		s.logger.Error(fmt.Sprintf("Err Listen : %v", err))
 	}
 
+	opts := []grpc.ServerOption{
+		grpc.ChainUnaryInterceptor(
+			requestIdInterceptor.RequestIDRPCInterceptor(),
+			telemetryInterceptor.TelemetryRPCInterceptor(s.telemetryInfrastructure),
+			loggerInterceptor.LoggerRPCInterceptor(s.logger),
+			authInterceptor.AuthRPCUnaryInterceptor(s.logger, s.userService),
+		),
+	}
+	s.grpcServer = grpc.NewServer(opts...)
+
 	paymentRpc.RegisterPaymentServiceServer(s.grpcServer, s.paymentPresenter)
 	paymentRpc.RegisterPaymentProviderServiceServer(s.grpcServer, s.paymentProviderPresenter)
 
 	// Mark the service as healthy
 	healthServer := health.NewServer()
 	grpc_health_v1.RegisterHealthServer(s.grpcServer, healthServer)
-	healthServer.SetServingStatus(config.Get().ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
+	healthServer.SetServingStatus(config.Get().PaymentServiceServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
+
+	log.Printf("Starting gRPC server on %s:%s", s.address, s.port)
 
 	// Enable Reflection to Evans grpc client
 	reflection.Register(s.grpcServer)

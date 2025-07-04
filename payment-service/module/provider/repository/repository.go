@@ -8,16 +8,17 @@ import (
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
 	"github.com/google/wire"
+	"gorm.io/gorm"
 )
 
 type (
 	IPaymentProviderRepository interface {
-		FindPaymentProviderById(ctx context.Context, requestId string, id string) (*orm.Provider, error)
-		FindPaymentProviders(ctx context.Context, requestId string, request *paymentRpc.FindPaymentProvidersRequest) ([]*orm.Provider, error)
+		FindPaymentProviderById(ctx context.Context, requestId string, id string, tx *gorm.DB) (*orm.Provider, error)
+		FindPaymentProviders(ctx context.Context, requestId string, request *paymentRpc.FindPaymentProvidersRequest, tx *gorm.DB) ([]*orm.Provider, error)
 	}
 
 	paymentProviderRepository struct {
-		postgresSQLInfrastructure postgresql.IPostgreSQLInfrastructure
+		postgresSQLInfrastructure *postgresql.PostgresSQL
 		telemetryInfrastructure   telemetry.ITelemetryInfrastructure
 		logger                    logger.IZapLogger
 	}
@@ -30,7 +31,7 @@ var Set = wire.NewSet(
 
 // NewPaymentProviderRepository creates and returns a new instance of IPaymentProviderRepository.
 func NewPaymentProviderRepository(
-	postgresSQLInfrastructure postgresql.IPostgreSQLInfrastructure,
+	postgresSQLInfrastructure *postgresql.PostgresSQL,
 	telemetryInfrastructure telemetry.ITelemetryInfrastructure,
 	logger logger.IZapLogger,
 ) IPaymentProviderRepository {

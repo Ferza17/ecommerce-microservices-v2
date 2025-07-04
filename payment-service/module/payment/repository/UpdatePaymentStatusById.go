@@ -8,7 +8,7 @@ import (
 )
 
 func (r *paymentRepository) UpdatePaymentStatusByIdWithTransaction(ctx context.Context, requestId string, id string, status string, tx *gorm.DB) error {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.UpdatePaymentStatusByIdWithTransaction")
+	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "PaymentPostgresRepository.UpdatePaymentStatusByIdWithTransaction")
 	defer span.End()
 
 	// Use the provided transaction to update the status

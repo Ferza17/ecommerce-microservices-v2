@@ -6,6 +6,7 @@ package grpc
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/postgresql"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
+	userService "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/user"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
 	paymentPresenter "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/presenter"
 	paymentRepository "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/repository"
@@ -25,6 +26,7 @@ func ProvideGrpcServer() IGrpcServer {
 		postgresql.Set,
 		telemetry.Set,
 		rabbitmq.Set,
+		userService.Set,
 
 		// Repository layer
 		paymentRepository.Set,

@@ -10,12 +10,12 @@ import (
 )
 
 func (p *ProductPresenter) FindProductById(ctx context.Context, req *productRpc.FindProductByIdRequest) (*productRpc.Product, error) {
-	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthPresenter.AuthUserRegister")
+	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "ProductPresenter.FindProductById")
 	defer span.End()
 	requestID := pkgContext.GetRequestIDFromContext(ctx)
 
 	if err := p.userService.AuthUserVerifyAccessControl(ctx, requestID); err != nil {
-		p.logger.Error("Presenter.CreateProduct", zap.String("requestID", requestID), zap.Error(err))
+		p.logger.Error("ProductPresenter.CreateProduct", zap.String("requestID", requestID), zap.Error(err))
 		return nil, err
 	}
 

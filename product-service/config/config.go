@@ -71,7 +71,7 @@ type Config struct {
 	UserServiceHttpHost    string
 	UserServiceHttpPort    string
 
-	// USER SERVICE
+	// PRODUCT SERVICE
 	ProductServiceServiceName    string
 	ProductServiceRpcHost        string
 	ProductServiceRpcPort        string

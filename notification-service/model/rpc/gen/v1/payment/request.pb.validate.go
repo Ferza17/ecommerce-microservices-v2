@@ -584,9 +584,9 @@ func (m *FindPaymentByUserIdAndStatusRequest) validate(all bool) error {
 
 	var errors []error
 
-	if utf8.RuneCountInString(m.GetId()) < 1 {
+	if utf8.RuneCountInString(m.GetUserId()) < 1 {
 		err := FindPaymentByUserIdAndStatusRequestValidationError{
-			field:  "Id",
+			field:  "UserId",
 			reason: "value length must be at least 1 runes",
 		}
 		if !all {

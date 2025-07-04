@@ -8,8 +8,7 @@ package logger
 
 // Injectors from wire.go:
 
-// ProvideZapLogger wires dependencies for IZapLogger
-func ProvideZapLogger() IZapLogger {
+func ProvideLogger() IZapLogger {
 	iZapLogger := NewZapLogger()
 	return iZapLogger
 }

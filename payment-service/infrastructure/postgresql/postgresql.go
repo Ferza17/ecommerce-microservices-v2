@@ -14,15 +14,9 @@ import (
 )
 
 type (
-	IPostgreSQLInfrastructure interface {
-		Close() error
-		GormDB() *gorm.DB
-		SqlDB() *sql.DB
-	}
-
-	PostgreSQLInfrastructure struct {
-		gormDB *gorm.DB
-		sqlDB  *sql.DB
+	PostgresSQL struct {
+		GormDB *gorm.DB
+		SqlDB  *sql.DB
 		logger logger.IZapLogger
 	}
 )
@@ -32,7 +26,7 @@ var Set = wire.NewSet(
 	NewPostgresqlInfrastructure,
 )
 
-func NewPostgresqlInfrastructure(logger logger.IZapLogger) IPostgreSQLInfrastructure {
+func NewPostgresqlInfrastructure(logger logger.IZapLogger) *PostgresSQL {
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		config.Get().PostgresHost,
 		config.Get().PostgresPort,
@@ -73,20 +67,8 @@ func NewPostgresqlInfrastructure(logger logger.IZapLogger) IPostgreSQLInfrastruc
 	gormSqlDB.SetConnMaxIdleTime(300 * time.Second)
 	gormSqlDB.SetConnMaxLifetime(time.Duration(300 * time.Second))
 
-	return &PostgreSQLInfrastructure{
-		gormDB: gormdb,
-		sqlDB:  sqldb,
+	return &PostgresSQL{
+		GormDB: gormdb,
+		SqlDB:  sqldb,
 	}
-}
-
-func (p *PostgreSQLInfrastructure) Close() error {
-	return p.sqlDB.Close()
-}
-
-func (p *PostgreSQLInfrastructure) GormDB() *gorm.DB {
-	return p.gormDB
-}
-
-func (p *PostgreSQLInfrastructure) SqlDB() *sql.DB {
-	return p.sqlDB
 }

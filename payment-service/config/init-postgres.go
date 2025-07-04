@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-func (c *Config) initDatabasePostgres(kv *api.KV) {
+func (c *Config) initPostgres(kv *api.KV) {
 	pair, _, err := kv.Get(fmt.Sprintf("%s/database/postgres/POSTGRES_USERNAME", c.Env), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get POSTGRES_USERNAME from consul: %v", err)

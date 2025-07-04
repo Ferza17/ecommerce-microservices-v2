@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/postgresql"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
@@ -20,6 +21,7 @@ type (
 		paymentProviderRepository repository.IPaymentProviderRepository
 		rabbitmqInfrastructure    rabbitmq.IRabbitMQInfrastructure
 		telemetryInfrastructure   telemetry.ITelemetryInfrastructure
+		postgresql                *postgresql.PostgresSQL
 		logger                    logger.IZapLogger
 	}
 )
@@ -29,12 +31,14 @@ func NewPaymentProviderUseCase(
 	paymentProviderRepository repository.IPaymentProviderRepository,
 	rabbitmqInfrastructure rabbitmq.IRabbitMQInfrastructure,
 	telemetryInfrastructure telemetry.ITelemetryInfrastructure,
+	postgresql *postgresql.PostgresSQL,
 	logger logger.IZapLogger,
 ) IPaymentProviderUseCase {
 	return &paymentProviderUseCase{
 		paymentProviderRepository: paymentProviderRepository,
 		rabbitmqInfrastructure:    rabbitmqInfrastructure,
 		telemetryInfrastructure:   telemetryInfrastructure,
+		postgresql:                postgresql,
 		logger:                    logger,
 	}
 }

@@ -2,10 +2,14 @@ package config
 
 import (
 	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/enum"
+	pkgMetric "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/metric"
 	"github.com/hashicorp/consul/api"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/viper"
 	"log"
 	"os"
+	"strconv"
 	"sync"
 )
 
@@ -20,40 +24,42 @@ type Config struct {
 	ConsulHost string `mapstructure:"CONSUL_HOST"`
 	ConsulPort string `mapstructure:"CONSUL_PORT"`
 
-	// From Consul
-	ServiceName               string
+	// From CONSUL; Local Service Config
 	PaymentOrderCancelledInMs int
 
-	NotificationServiceName string
+	// COMMON Config
+	CommonSagaStatusPending string
+	CommonSagaStatusSuccess string
+	CommonSagaStatusFailed  string
 
+	// JAEGER TELEMETRY Config
 	JaegerTelemetryHost string
 	JaegerTelemetryPort string
 
+	// RABBITMQ Config
 	RabbitMQUsername string
 	RabbitMQPassword string
 	RabbitMQHost     string
 	RabbitMQPort     string
 
+	// EXCHANGE Config
+	ExchangeCommerce       string
 	ExchangeEvent          string
 	ExchangeNotification   string
-	ExchangePaymentDirect  string
+	ExchangeProduct        string
+	ExchangeUser           string
 	ExchangePaymentDelayed string
+	ExchangePaymentDirect  string
 
-	// EVENT QUEUE
-	QueueEventCreated string
+	// Queue Notification Config
+	QueueNotificationEmailOtpCreated          string
+	QueueNotificationEmailPaymentOrderCreated string
 
-	// PAYMENT QUEUE
+	// Queue Payment Config
 	QueuePaymentOrderCreated          string
 	QueuePaymentOrderDelayedCancelled string
 
-	// NOTIFICATION QUEUE
-	QueueNotificationCreated                  string
-	QueueNotificationEmailPaymentOrderCreated string
-
-	CommonSagaStatusPending string
-	CommonSagaStatusSuccess string
-	CommonSagaStatusFailed  string
-
+	// POSTGRES CONFIG
 	PostgresHost         string
 	PostgresPort         string
 	PostgresUsername     string
@@ -61,30 +67,55 @@ type Config struct {
 	PostgresDatabaseName string
 	PostgresSSLMode      string
 
-	RpcHost string
-	RpcPort string
+	// REDIS Config
+	RedisHost     string
+	RedisPort     string
+	RedisPassword string
+	RedisDB       int
+
+	// User Service Config
+	UserServiceServiceName    string
+	UserServiceRpcHost        string
+	UserServiceRpcPort        string
+	UserServiceHttpHost       string
+	UserServiceHttpPort       string
+	UserServiceMetricHttpPort string
+
+	// Product Service Config
+	ProductServiceServiceName    string
+	ProductServiceRpcHost        string
+	ProductServiceRpcPort        string
+	ProductServiceHttpHost       string
+	ProductServiceHttpPort       string
+	ProductServiceMetricHttpPort string
+
+	// Payment Service Config
+	PaymentServiceServiceName    string
+	PaymentServiceRpcHost        string
+	PaymentServiceRpcPort        string
+	PaymentServiceHttpHost       string
+	PaymentServiceHttpPort       string
+	PaymentServiceMetricHttpPort string
 }
 
 func SetConfig(path string) {
 	c = &Config{}
-	if c.Env = os.Getenv("ENV"); c.Env != "" {
-		log.Println("Load Config from OS ENV")
+	viper.SetConfigType("env")
+	viper.AddConfigPath(path)
 
-		c.ConsulHost = os.Getenv("CONSUL_HOST")
-		c.ConsulPort = os.Getenv("CONSUL_PORT")
-	} else {
-		log.Println("Load Config from .env")
-		viper.SetConfigType("env")
-		viper.AddConfigPath(path)
-		viper.SetConfigName(".env")
+	switch os.Getenv("ENV") {
+	case enum.CONFIG_ENV_PROD:
+		viper.SetConfigName(".env.production")
+	default:
+		viper.SetConfigName(".env.local")
+	}
 
-		err := viper.ReadInConfig()
-		if err != nil {
-			panic(fmt.Sprintf("config not found: %s", err.Error()))
-		}
-		if err := viper.Unmarshal(&c); err != nil {
-			log.Fatalf("SetConfig | could not parse config: %v", err)
-		}
+	err := viper.ReadInConfig()
+	if err != nil {
+		panic(fmt.Sprintf("config not found: %s", err.Error()))
+	}
+	if err := viper.Unmarshal(&c); err != nil {
+		log.Fatalf("SetConfig | could not parse config: %v", err)
 	}
 
 	if c.Env == "" {
@@ -104,6 +135,21 @@ func SetConfig(path string) {
 		log.Fatalf("SetConfig | could not connect to consul: %v", err)
 	}
 
+	// Local Config
+	pair, _, err := client.KV().Get(fmt.Sprintf("%s/services/payment/PAYMENT_ORDER_CANCELLED_IN_MS", c.Env), nil)
+	if err != nil {
+		log.Fatalf("SetConfig | could not get  from consul: %v", err)
+	}
+	if pair == nil {
+		log.Fatal("SetConfig | Consul |  is required")
+	}
+	temp, err := strconv.ParseInt(string(pair.Value), 10, 64)
+	if err != nil {
+		log.Fatalf("SetConfig | could not parse PAYMENT_ORDER_CANCELLED_IN_MS to int: %v", err)
+	}
+	c.PaymentOrderCancelledInMs = int(temp)
+	// End Local Config
+
 	// Get Consul Key / Value
 	wg := sync.WaitGroup{}
 
@@ -119,8 +165,9 @@ func SetConfig(path string) {
 	go func() {
 		defer wg.Done()
 		c.initRabbitmq(client.KV())
-		c.initRabbitmqExchange(client.KV())
-		c.initRabbitmqQueue(client.KV())
+		c.initExchange(client.KV())
+		c.initQueueNotification(client.KV())
+		c.initQueuePayment(client.KV())
 	}()
 
 	// COMMON Config
@@ -130,20 +177,34 @@ func SetConfig(path string) {
 		c.initCommon(client.KV())
 	}()
 
-	// Postgres Config
+	// Database Config
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		c.initDatabasePostgres(client.KV())
+		c.initPostgres(client.KV())
+		c.initRedis(client.KV())
 	}()
 
-	// Payment Service Config
+	// Service Config
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 		c.initPaymentService(client.KV())
+		c.initUserService(client.KV())
+		c.initProductService(client.KV())
 	}()
 
 	wg.Wait()
+
+	// Register Prometheus
+	prometheus.MustRegister(
+		pkgMetric.GrpcRequestsTotal,
+		pkgMetric.GrpcRequestDuration,
+		pkgMetric.HttpRequestsTotal,
+		pkgMetric.HttpRequestDuration,
+		pkgMetric.RabbitmqMessagesPublished,
+		pkgMetric.RabbitmqMessagesConsumed,
+	)
+
 	viper.WatchConfig()
 }

@@ -174,7 +174,7 @@
     "paymentFindPaymentByUserIdAndStatusRequest": {
       "type": "object",
       "properties": {
-        "id": {
+        "userId": {
           "type": "string"
         },
         "status": {

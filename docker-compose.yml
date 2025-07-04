@@ -264,6 +264,20 @@ services:
     networks:
       - local
 
+  # PRODUCT-SERVICE
+  payment-service:
+    container_name: payment-service
+    build:
+      context: ./payment-service
+      dockerfile: Dockerfile
+    ports:
+      - "50054" # GRPC
+      - "40054" # HTTP
+      - "30054" # HTTP METRIC COLLECTOR
+    restart: always
+    networks:
+      - local
+
 networks:
   local:
     driver: bridge

@@ -7,11 +7,13 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/enum"
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/context"
+	pkgMetric "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/metric"
 	"github.com/rabbitmq/amqp091-go"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/attribute"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
+	"sync"
 )
 
 func (c *paymentConsumer) PaymentOrderCreated(ctx context.Context) error {
@@ -45,7 +47,7 @@ func (c *paymentConsumer) PaymentOrderCreated(ctx context.Context) error {
 		return err
 	}
 
-	msgs, err := amqpChannel.Consume(
+	deliveries, err := amqpChannel.Consume(
 		config.Get().QueuePaymentOrderCreated,
 		"",
 		true,
@@ -55,56 +57,84 @@ func (c *paymentConsumer) PaymentOrderCreated(ctx context.Context) error {
 		nil,
 	)
 
-	ctx, cancel := context.WithCancel(context.Background())
+	if err != nil {
+		c.logger.Error(fmt.Sprintf("failed to consume : %v", zap.Error(err)))
+		return err
+	}
+
+	wg := new(sync.WaitGroup)
+	wg.Add(1)
 	go func(deliveries <-chan amqp091.Delivery) {
-		defer cancel()
+		defer wg.Done()
 	messages:
 		for d := range deliveries {
 			var (
-				request   paymentRpc.CreatePaymentRequest
-				requestId string
+				request           paymentRpc.CreatePaymentRequest
+				requestId         string
+				newCtx, cancelCtx = context.WithTimeout(ctx, 20)
 			)
-			carrier := propagation.MapCarrier{}
 			for key, value := range d.Headers {
-				if key == enum.XRequestIDHeader.String() {
+				if key == pkgContext.CtxKeyRequestID {
 					requestId = value.(string)
+					newCtx = pkgContext.SetRequestIDToContext(ctx, requestId)
 				}
 
-				if strVal, ok := value.(string); ok {
-					carrier[key] = strVal
+				if key == pkgContext.CtxKeyAuthorization {
+					newCtx = pkgContext.SetTokenAuthorizationToContext(ctx, value.(string))
 				}
 			}
-			ctx := otel.GetTextMapPropagator().Extract(context.Background(), carrier)
-			ctx, span := c.telemetryInfrastructure.Tracer(ctx, "AuthConsumer.UserLogin")
+
+			newCtx, span := c.telemetryInfrastructure.StartSpanFromRabbitMQHeader(newCtx, d.Headers, "PaymentConsumer.PaymentOrderCreated")
+			span.SetAttributes(attribute.String("messaging.destination", config.Get().QueuePaymentOrderCreated))
+			span.SetAttributes(attribute.String(pkgContext.CtxKeyRequestID, requestId))
 
 			switch d.ContentType {
 			case enum.XProtobuf.String():
 				if err = proto.Unmarshal(d.Body, &request); err != nil {
 					c.logger.Error(fmt.Sprintf("requsetID : %s , failed to unmarshal request : %v", requestId, zap.Error(err)))
+					pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueuePaymentOrderCreated, "failed").Inc()
+					span.RecordError(err)
 					span.End()
+					d.Nack(false, true)
+					cancelCtx()
 					continue messages
 				}
 			case enum.JSON.String():
 				if err = json.Unmarshal(d.Body, &request); err != nil {
 					c.logger.Error(fmt.Sprintf("failed to unmarshal request : %v", zap.Error(err)))
+					pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueuePaymentOrderCreated, "failed").Inc()
+					span.RecordError(err)
 					span.End()
+					d.Nack(false, true)
+					cancelCtx()
 					continue messages
 				}
 			default:
 				c.logger.Error(fmt.Sprintf("failed to get request id"))
+				pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueuePaymentOrderCreated, "failed").Inc()
+				span.RecordError(err)
 				span.End()
+				d.Nack(false, true)
+				cancelCtx()
 				continue messages
 			}
 
-			if err = c.paymentUseCase.CreatePayment(ctx, requestId, &request); err != nil {
-				c.logger.Error(fmt.Sprintf("failed to CreatePayment : %v", zap.Error(err)))
+			c.logger.Info(fmt.Sprintf("received a %s message: %s", d.RoutingKey, d.Body))
+			if err = c.paymentUseCase.CreatePayment(newCtx, requestId, &request); err != nil {
+				pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueuePaymentOrderCreated, "failed").Inc()
+				span.RecordError(err)
 				span.End()
+				d.Nack(false, true)
+				cancelCtx()
 				continue messages
 			}
+
+			pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueuePaymentOrderCreated, "success").Inc()
 			span.End()
+			cancelCtx()
 		}
-	}(msgs)
+	}(deliveries)
 
-	<-ctx.Done()
+	wg.Wait()
 	return nil
 }

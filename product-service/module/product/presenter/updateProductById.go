@@ -9,12 +9,17 @@ import (
 )
 
 func (p *ProductPresenter) UpdateProductById(ctx context.Context, req *productRpc.UpdateProductByIdRequest) (*empty.Empty, error) {
-	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "Presenter.UpdateProductById")
+	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "ProductPresenter.UpdateProductById")
 	defer span.End()
-
 	requestId := pkgContext.GetRequestIDFromContext(ctx)
+
 	if err := p.userService.AuthUserVerifyAccessControl(ctx, requestId); err != nil {
-		p.logger.Error("Presenter.CreateProduct", zap.String("requestID", requestId), zap.Error(err))
+		p.logger.Error("ProductPresenter.UpdateProductById", zap.String("requestID", requestId), zap.Error(err))
+		return nil, err
+	}
+
+	if err := req.Validate(); err != nil {
+		p.logger.Error("ProductPresenter.UpdateProductById", zap.String("requestID", requestId), zap.Error(err))
 		return nil, err
 	}
 

@@ -30,7 +30,7 @@ message FindPaymentByIdRequest {
 }
 
 message FindPaymentByUserIdAndStatusRequest {
-  string id = 1 [(validate.rules).string.min_len = 1];
+  string user_id = 1 [(validate.rules).string.min_len = 1];
   payment.PaymentStatus status = 2 [(validate.rules).enum.defined_only = true];
 }
 

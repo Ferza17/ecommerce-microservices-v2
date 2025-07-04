@@ -11,24 +11,27 @@ import (
 )
 
 func (u *paymentUseCase) FindPaymentByUserIdAndStatus(ctx context.Context, requestId string, request *paymentRpc.FindPaymentByUserIdAndStatusRequest) (*paymentRpc.Payment, error) {
-	// Start tracing the use case
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.FindPaymentProviders")
+	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "PaymentUseCase.CreatePayment")
 	defer span.End()
 
+	// Begin transaction
+	tx := u.postgres.GormDB.Begin()
+
 	// Call the repository method
-	payment, err := u.paymentRepository.FindPaymentByUserIdAndStatus(ctx, requestId, request.Id, request.Status.String())
+	payment, err := u.paymentRepository.FindPaymentByUserIdAndStatus(ctx, requestId, request.UserId, request.Status.String(), tx)
 	if err != nil {
+		tx.Rollback()
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			u.logger.Error(fmt.Sprintf("Payment not found for UserID: %s, Status: %s, RequestId: %s",
-				request.Id, request.Status, requestId))
+				request.GetUserId(), request.Status, requestId))
 			return nil, status.Error(codes.NotFound, err.Error())
 		}
 		u.logger.Error(fmt.Sprintf("Failed to fetch payment for UserID: %s, Status: %s, RequestId: %s, Error: %v",
-			request.Id, request.Status, requestId, err))
+			request.GetUserId(), request.Status, requestId, err))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	// Return the response
+	tx.Commit()
 	return payment.ToProto(), nil
 
 }

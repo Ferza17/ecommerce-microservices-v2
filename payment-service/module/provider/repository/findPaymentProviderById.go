@@ -8,14 +8,12 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *paymentProviderRepository) FindPaymentProviderById(ctx context.Context, requestId string, id string) (*orm.Provider, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.FindPaymentProviderById")
+func (r *paymentProviderRepository) FindPaymentProviderById(ctx context.Context, requestId string, id string, tx *gorm.DB) (*orm.Provider, error) {
+	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "ProviderRepository.FindPaymentProviderById")
 	defer span.End()
-	var provider *orm.Provider
-
+	var provider orm.Provider
 	// Attempt to find the provider by its ID
-	if err := r.postgresSQLInfrastructure.
-		GormDB().
+	if err := tx.
 		WithContext(ctx).
 		First(&provider, "id = ? AND discarded_at IS NULL", id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -28,5 +26,5 @@ func (r *paymentProviderRepository) FindPaymentProviderById(ctx context.Context,
 		return nil, err
 	}
 
-	return provider, nil
+	return &provider, nil
 }

@@ -3,31 +3,30 @@ package presenter
 import (
 	"context"
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/payment-service/enum"
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/context"
+	"go.uber.org/zap"
 )
 
-func (p *paymentPresenter) FindPaymentById(ctx context.Context, request *paymentRpc.FindPaymentByIdRequest) (*paymentRpc.Payment, error) {
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return nil, status.Error(codes.InvalidArgument, "metadata not found")
-	}
-	ctx, span := p.telemetryInfrastructure.Tracer(ctx, "Presenter.FindPaymentById")
+func (p *paymentPresenter) FindPaymentById(ctx context.Context, req *paymentRpc.FindPaymentByIdRequest) (*paymentRpc.Payment, error) {
+	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "PaymentPresenter.FindPaymentById")
 	defer span.End()
+	requestId := pkgContext.GetRequestIDFromContext(ctx)
 
-	requestID := ""
-	if values := md.Get(enum.XRequestIDHeader.String()); len(values) > 0 {
-		requestID = values[0]
+	if err := p.userService.AuthUserVerifyAccessControl(ctx, requestId); err != nil {
+		p.logger.Error("PaymentPresenter.FindPaymentById", zap.String("requestID", requestId), zap.Error(err))
+		return nil, err
+	}
+
+	if err := req.Validate(); err != nil {
+		p.logger.Error("PaymentPresenter.FindPaymentById", zap.String("requestID", requestId), zap.Error(err))
+		return nil, err
 	}
 
 	// Call the use case's FindPaymentById method
-	payment, err := p.paymentUseCase.FindPaymentById(ctx, requestID, request)
+	payment, err := p.paymentUseCase.FindPaymentById(ctx, requestId, req)
 	if err != nil {
-		// Log the error and return it
-		p.logger.Error(fmt.Sprintf("Failed to find payment. RequestId: %s, Error: %v", requestID, err))
+		p.logger.Error(fmt.Sprintf("Failed to find payment. RequestId: %s, Error: %v", requestId, err))
 		return nil, err
 	}
 

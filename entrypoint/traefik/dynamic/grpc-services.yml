@@ -35,6 +35,27 @@ http:
       rule: "Host(`localhost`) && (PathPrefix(`/v1/product`) || PathPrefix(`/docs/v1/product`))"
       tls: false
 
+    payment-service-provider-grpc:
+      entryPoints:
+        - grpc
+      service: "payment-service-grpc"
+      rule: "Host(`localhost`) && PathPrefix(`/payment.ProviderService`)"
+      tls: false
+
+    payment-service-payment-grpc:
+      entryPoints:
+        - grpc
+      service: "payment-service-grpc"
+      rule: "Host(`localhost`) && PathPrefix(`/payment.PaymentService`)"
+      tls: false
+
+    payment-service-http:
+      entryPoints:
+        - web
+      service: "payment-service-http"
+      rule: "Host(`localhost`) && (PathPrefix(`/v1/payment`) || PathPrefix(`/docs/v1/payment`))"
+      tls: false
+
 
     grpc-reflection:
       entryPoints:
@@ -63,3 +84,13 @@ http:
       loadBalancer:
         servers:
           - url: http://product-service:40055
+
+    payment-service-grpc:
+      loadBalancer:
+        servers:
+          - url: h2c://payment-service:50054
+
+    payment-service-http:
+      loadBalancer:
+        servers:
+          - url: http://payment-service:40054

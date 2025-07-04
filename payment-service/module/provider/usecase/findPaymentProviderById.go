@@ -11,9 +11,15 @@ import (
 )
 
 func (p *paymentProviderUseCase) FindPaymentProviderById(ctx context.Context, requestId string, request *paymentRpc.FindPaymentProviderByIdRequest) (*paymentRpc.Provider, error) {
+	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "ProviderUseCase.FindPaymentProviderById")
+	defer span.End()
+
+	tx := p.postgresql.GormDB.Begin()
+
 	// Fetch the provider by ID from the repository
-	provider, err := p.paymentProviderRepository.FindPaymentProviderById(ctx, requestId, request.GetId())
+	provider, err := p.paymentProviderRepository.FindPaymentProviderById(ctx, requestId, request.GetId(), tx)
 	if err != nil {
+		tx.Rollback()
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			p.logger.Error(fmt.Sprintf("Provider not found for ID: %s", request.GetId()))
 			return nil, status.Error(codes.NotFound, "provider not found")
@@ -26,9 +32,12 @@ func (p *paymentProviderUseCase) FindPaymentProviderById(ctx context.Context, re
 
 	// Handle the case when no provider is found
 	if provider == nil {
+		tx.Rollback()
 		p.logger.Error(fmt.Sprintf("Provider not found for ID: %s", request.GetId()))
 		return nil, status.Error(codes.NotFound, "provider not found")
 	}
+
+	tx.Commit()
 
 	// Return the response
 	return provider.ToProto(), nil

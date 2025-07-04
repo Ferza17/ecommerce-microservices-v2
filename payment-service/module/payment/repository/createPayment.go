@@ -8,7 +8,7 @@ import (
 )
 
 func (r *paymentRepository) CreatePayment(ctx context.Context, requestId string, request *orm.Payment, tx *gorm.DB) (string, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.CreatePayment")
+	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "PaymentPostgresRepository.CreatePayment")
 	defer span.End()
 
 	// Validate that the transaction object exists

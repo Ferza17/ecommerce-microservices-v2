@@ -33,7 +33,7 @@ export interface FindPaymentByIdRequest {
 }
 
 export interface FindPaymentByUserIdAndStatusRequest {
-  id: string;
+  userId: string;
   status: PaymentStatus;
 }
 
@@ -347,13 +347,13 @@ export const FindPaymentByIdRequest: MessageFns<FindPaymentByIdRequest> = {
 };
 
 function createBaseFindPaymentByUserIdAndStatusRequest(): FindPaymentByUserIdAndStatusRequest {
-  return { id: "", status: 0 };
+  return { userId: "", status: 0 };
 }
 
 export const FindPaymentByUserIdAndStatusRequest: MessageFns<FindPaymentByUserIdAndStatusRequest> = {
   encode(message: FindPaymentByUserIdAndStatusRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
+    if (message.userId !== "") {
+      writer.uint32(10).string(message.userId);
     }
     if (message.status !== 0) {
       writer.uint32(16).int32(message.status);
@@ -373,7 +373,7 @@ export const FindPaymentByUserIdAndStatusRequest: MessageFns<FindPaymentByUserId
             break;
           }
 
-          message.id = reader.string();
+          message.userId = reader.string();
           continue;
         }
         case 2: {
@@ -395,15 +395,15 @@ export const FindPaymentByUserIdAndStatusRequest: MessageFns<FindPaymentByUserId
 
   fromJSON(object: any): FindPaymentByUserIdAndStatusRequest {
     return {
-      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
       status: isSet(object.status) ? paymentStatusFromJSON(object.status) : 0,
     };
   },
 
   toJSON(message: FindPaymentByUserIdAndStatusRequest): unknown {
     const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
+    if (message.userId !== "") {
+      obj.userId = message.userId;
     }
     if (message.status !== 0) {
       obj.status = paymentStatusToJSON(message.status);
@@ -416,7 +416,7 @@ export const FindPaymentByUserIdAndStatusRequest: MessageFns<FindPaymentByUserId
   },
   fromPartial(object: DeepPartial<FindPaymentByUserIdAndStatusRequest>): FindPaymentByUserIdAndStatusRequest {
     const message = createBaseFindPaymentByUserIdAndStatusRequest();
-    message.id = object.id ?? "";
+    message.userId = object.userId ?? "";
     message.status = object.status ?? 0;
     return message;
   },

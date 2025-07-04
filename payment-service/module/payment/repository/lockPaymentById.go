@@ -9,7 +9,7 @@ import (
 )
 
 func (r *paymentRepository) LockPaymentByIdWithTransaction(ctx context.Context, requestId string, id string, tx *gorm.DB) (*orm.Payment, error) {
-	ctx, span := r.telemetryInfrastructure.Tracer(ctx, "Repository.LockPaymentById")
+	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "PaymentPostgresRepository.LockPaymentByIdWithTransaction")
 	defer span.End()
 
 	var payment orm.Payment
@@ -21,7 +21,7 @@ func (r *paymentRepository) LockPaymentByIdWithTransaction(ctx context.Context, 
 		Clauses(clause.Locking{
 			Strength: clause.LockingStrengthUpdate,
 			Options:  clause.LockingOptionsNoWait,
-		}). // Apply row-level lock
+		}).              // Apply row-level lock
 		First(&payment). // Select the row
 		Error; err != nil {
 		if err == gorm.ErrRecordNotFound {

@@ -7,8 +7,9 @@ import (
 	"github.com/google/wire"
 )
 
-// ProvideZapLogger wires dependencies for IZapLogger
-func ProvideZapLogger() IZapLogger {
-	wire.Build(Set)
+func ProvideLogger() IZapLogger {
+	wire.Build(
+		Set,
+	)
 	return nil
 }

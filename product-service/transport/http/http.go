@@ -87,8 +87,6 @@ func (s *HttpTransport) Serve(ctx context.Context) error {
 		return fmt.Errorf("failed to register gRPC gateway handlers: %w", err)
 	}
 
-	// Mount the gRPC gateway with JWT middleware wrapping
-
 	// Health check endpoint
 	router.HandleFunc("/v1/product/check", func(w http.ResponseWriter, r *http.Request) {
 		response.WriteSuccessResponse(w, http.StatusOK, []byte(`{"status": "ok", "service": "product-service"}`))

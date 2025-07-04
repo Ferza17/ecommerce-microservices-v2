@@ -18,5 +18,10 @@ func (p *ProductPresenter) DeleteProductById(ctx context.Context, req *productRp
 		return nil, err
 	}
 
+	if err := req.Validate(); err != nil {
+		p.logger.Error("ProductPresenter.CreateProduct", zap.String("requestID", requestId), zap.Error(err))
+		return nil, err
+	}
+
 	return nil, nil
 }

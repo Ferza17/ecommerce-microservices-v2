@@ -12,11 +12,10 @@ import (
 func (u *paymentUseCase) PaymentOrderDelayedCancelled(ctx context.Context, requestId string, request *paymentRpc.PaymentOrderDelayedCancelledRequest) error {
 	var (
 		err error
-		tx  = u.paymentRepository.OpenTransactionWithContext(ctx)
+		tx  = u.postgres.GormDB.Begin()
 	)
 
-	// Start tracing the use case
-	ctx, span := u.telemetryInfrastructure.Tracer(ctx, "UseCase.FindPaymentProviders")
+	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "PaymentUseCase.CreatePayment")
 	defer span.End()
 
 	payment, err := u.paymentRepository.LockPaymentByIdWithTransaction(ctx, requestId, request.Id, tx)
@@ -32,14 +31,17 @@ func (u *paymentUseCase) PaymentOrderDelayedCancelled(ctx context.Context, reque
 	}
 
 	if payment.Status == paymentRpc.PaymentStatus_SUCCESS.String() {
+		tx.Rollback()
 		u.logger.Info(fmt.Sprintf("payment already success, requestId: %s, error: %v", requestId, err))
 		return nil
 	}
 
 	if err = u.paymentRepository.UpdatePaymentStatusByIdWithTransaction(ctx, requestId, payment.ID, paymentRpc.PaymentStatus_FAILED.String(), tx); err != nil {
+		tx.Rollback()
 		u.logger.Error(fmt.Sprintf("Failed to update payment status, requestId: %s, error: %v", requestId, err))
 		return status.Error(codes.Internal, err.Error())
 	}
 
+	tx.Commit()
 	return nil
 }
