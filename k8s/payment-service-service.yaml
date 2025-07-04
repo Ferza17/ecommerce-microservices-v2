@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --file docker-compose.yml --out k8s/
+    kompose.version: 1.36.0 (HEAD)
+  labels:
+    io.kompose.service: payment-service
+  name: payment-service
+spec:
+  ports:
+    - name: "50054"
+      port: 50054
+      targetPort: 50054
+    - name: "40054"
+      port: 40054
+      targetPort: 40054
+    - name: "30054"
+      port: 30054
+      targetPort: 30054
+  selector:
+    io.kompose.service: payment-service

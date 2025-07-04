@@ -28,9 +28,9 @@ func (c *Config) RegisterConsulService() error {
 		Check: &api.AgentServiceCheck{
 			GRPC:                           fmt.Sprintf("%s:%s", c.PaymentServiceRpcHost, c.PaymentServiceRpcPort),
 			GRPCUseTLS:                     false,
-			Interval:                       "10s", // Less frequent checks
+			Interval:                       "30s", // Less frequent checks
 			Timeout:                        "5s",  // Reasonable timeout
-			DeregisterCriticalServiceAfter: "30s", // Give more time before deregistering
+			DeregisterCriticalServiceAfter: "40s", // Give more time before deregistering
 		},
 		Connect: &api.AgentServiceConnect{
 			Native: true,

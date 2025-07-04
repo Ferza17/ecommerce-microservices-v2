@@ -6,7 +6,7 @@
 # Main Target
 # ==============================================================================
 
-all: yq-eval clean-gen clean-docs generate-protos generate-descriptor copy-protos convert-to-k8s
+all: yq-eval clean-gen clean-docs generate-protos generate-descriptor copy-protos convert-to-k8s generate-ssl-cert
 
 
 yq-eval:

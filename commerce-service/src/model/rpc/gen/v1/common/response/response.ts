@@ -6,34 +6,34 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Struct } from "../../../google/protobuf/struct";
+import { Any } from "../../../google/protobuf/any";
 
 export const protobufPackage = "response";
 
 export interface Response {
+  error: string;
   message: string;
-  rpcStatusCode: number;
-  httpStatusCode: number;
-  data: { [key: string]: any } | undefined;
+  Code: number;
+  data: Any | undefined;
 }
 
 function createBaseResponse(): Response {
-  return { message: "", rpcStatusCode: 0, httpStatusCode: 0, data: undefined };
+  return { error: "", message: "", Code: 0, data: undefined };
 }
 
 export const Response: MessageFns<Response> = {
   encode(message: Response, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.error !== "") {
+      writer.uint32(10).string(message.error);
+    }
     if (message.message !== "") {
-      writer.uint32(10).string(message.message);
+      writer.uint32(18).string(message.message);
     }
-    if (message.rpcStatusCode !== 0) {
-      writer.uint32(16).int32(message.rpcStatusCode);
-    }
-    if (message.httpStatusCode !== 0) {
-      writer.uint32(24).int32(message.httpStatusCode);
+    if (message.Code !== 0) {
+      writer.uint32(24).int32(message.Code);
     }
     if (message.data !== undefined) {
-      Struct.encode(Struct.wrap(message.data), writer.uint32(34).fork()).join();
+      Any.encode(message.data, writer.uint32(34).fork()).join();
     }
     return writer;
   },
@@ -50,15 +50,15 @@ export const Response: MessageFns<Response> = {
             break;
           }
 
-          message.message = reader.string();
+          message.error = reader.string();
           continue;
         }
         case 2: {
-          if (tag !== 16) {
+          if (tag !== 18) {
             break;
           }
 
-          message.rpcStatusCode = reader.int32();
+          message.message = reader.string();
           continue;
         }
         case 3: {
@@ -66,7 +66,7 @@ export const Response: MessageFns<Response> = {
             break;
           }
 
-          message.httpStatusCode = reader.int32();
+          message.Code = reader.int32();
           continue;
         }
         case 4: {
@@ -74,7 +74,7 @@ export const Response: MessageFns<Response> = {
             break;
           }
 
-          message.data = Struct.unwrap(Struct.decode(reader, reader.uint32()));
+          message.data = Any.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -88,26 +88,26 @@ export const Response: MessageFns<Response> = {
 
   fromJSON(object: any): Response {
     return {
+      error: isSet(object.error) ? globalThis.String(object.error) : "",
       message: isSet(object.message) ? globalThis.String(object.message) : "",
-      rpcStatusCode: isSet(object.rpcStatusCode) ? globalThis.Number(object.rpcStatusCode) : 0,
-      httpStatusCode: isSet(object.httpStatusCode) ? globalThis.Number(object.httpStatusCode) : 0,
-      data: isObject(object.data) ? object.data : undefined,
+      Code: isSet(object.Code) ? globalThis.Number(object.Code) : 0,
+      data: isSet(object.data) ? Any.fromJSON(object.data) : undefined,
     };
   },
 
   toJSON(message: Response): unknown {
     const obj: any = {};
+    if (message.error !== "") {
+      obj.error = message.error;
+    }
     if (message.message !== "") {
       obj.message = message.message;
     }
-    if (message.rpcStatusCode !== 0) {
-      obj.rpcStatusCode = Math.round(message.rpcStatusCode);
-    }
-    if (message.httpStatusCode !== 0) {
-      obj.httpStatusCode = Math.round(message.httpStatusCode);
+    if (message.Code !== 0) {
+      obj.Code = Math.round(message.Code);
     }
     if (message.data !== undefined) {
-      obj.data = message.data;
+      obj.data = Any.toJSON(message.data);
     }
     return obj;
   },
@@ -117,10 +117,10 @@ export const Response: MessageFns<Response> = {
   },
   fromPartial(object: DeepPartial<Response>): Response {
     const message = createBaseResponse();
+    message.error = object.error ?? "";
     message.message = object.message ?? "";
-    message.rpcStatusCode = object.rpcStatusCode ?? 0;
-    message.httpStatusCode = object.httpStatusCode ?? 0;
-    message.data = object.data ?? undefined;
+    message.Code = object.Code ?? 0;
+    message.data = (object.data !== undefined && object.data !== null) ? Any.fromPartial(object.data) : undefined;
     return message;
   },
 };
@@ -132,10 +132,6 @@ export type DeepPartial<T> = T extends Builtin ? T
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
-
-function isObject(value: any): boolean {
-  return typeof value === "object" && value !== null;
-}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

@@ -77,12 +77,22 @@ func (s *HttpServer) Serve(ctx context.Context) error {
 		}),
 		runtime.WithIncomingHeaderMatcher(func(key string) (string, bool) {
 			switch key {
-			case "Authorization", "Content-Type", "Accept", pkgContext.CtxKeyRequestID, pkgContext.CtxKeyAuthorization:
+			case "Authorization",
+				"Content-Type",
+				"Accept",
+				pkgContext.ContextKeyTracerparent,
+				"tracestate",
+				"baggage",
+				pkgContext.CtxKeyRequestID,
+				pkgContext.CtxKeyAuthorization:
 				return key, true
 			default:
 				return "", false
 			}
 		}),
+		runtime.WithErrorHandler(response.CustomErrorHandler),
+		// Other useful options
+		runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{}),
 	)
 
 	// Register Payment Provider

@@ -1,74 +1,148 @@
 apiVersion: v1
 data:
-  init-rabbitmq-queue.sh: |-
-    #!/bin/sh
+  init-rabbitmq-exchange.sh: |2
 
-    initialize_rabbitmq_queue(){
-      echo "INIT CONFIG RABBITMQ QUEUE"
+    echo "INIT CONFIG RABBITMQ EXCHANGE"
 
-      # QUEUE LOCAL USER
-      consul kv put local/broker/rabbitmq/QUEUE/USER/CREATED "user.created"
-      consul kv put local/broker/rabbitmq/QUEUE/USER/UPDATED "user.updated"
-      consul kv put local/broker/rabbitmq/QUEUE/USER/LOGIN "user.login"
-      consul kv put local/broker/rabbitmq/QUEUE/USER/LOGOUT "user.logout"
-
-      #QUEUE PRODUCTION USER
-      consul kv put production/broker/rabbitmq/QUEUE/USER/CREATED "user.created"
-      consul kv put production/broker/rabbitmq/QUEUE/USER/UPDATED "user.updated"
-      consul kv put production/broker/rabbitmq/QUEUE/USER/LOGIN "user.login"
-      consul kv put production/broker/rabbitmq/QUEUE/USER/LOGOUT "user.logout"
+    # EXCHANGE LOCAL
+    consul kv put local/broker/rabbitmq/EXCHANGE/PRODUCT "product.direct.exchange"
+    consul kv put local/broker/rabbitmq/EXCHANGE/COMMERCE "commerce.direct.exchange"
+    consul kv put local/broker/rabbitmq/EXCHANGE/EVENT "event.direct.exchange"
+    consul kv put local/broker/rabbitmq/EXCHANGE/NOTIFICATION "notification.direct.exchange"
+    consul kv put local/broker/rabbitmq/EXCHANGE/USER "user.direct.exchange"
+    consul kv put local/broker/rabbitmq/EXCHANGE/PAYMENT/DIRECT "payment.direct.exchange"
+    consul kv put local/broker/rabbitmq/EXCHANGE/PAYMENT/DELAYED "payment.delayed.exchange"
 
 
-      # QUEUE LOCAL PRODUCT
-      consul kv put local/broker/rabbitmq/QUEUE/PRODUCT/CREATED "product.created"
-      consul kv put local/broker/rabbitmq/QUEUE/PRODUCT/UPDATED "product.updated"
-      consul kv put local/broker/rabbitmq/QUEUE/PRODUCT/DELETED "product.deleted"
+    # EXCHANGE PRODUCTION
+    consul kv put production/broker/rabbitmq/EXCHANGE/PRODUCT "product.direct.exchange"
+    consul kv put production/broker/rabbitmq/EXCHANGE/COMMERCE "commerce.direct.exchange"
+    consul kv put production/broker/rabbitmq/EXCHANGE/EVENT "event.direct.exchange"
+    consul kv put production/broker/rabbitmq/EXCHANGE/NOTIFICATION "notification.direct.exchange"
+    consul kv put production/broker/rabbitmq/EXCHANGE/USER "user.direct.exchange"
+    consul kv put production/broker/rabbitmq/EXCHANGE/PAYMENT/DIRECT "payment.direct.exchange"
+    consul kv put production/broker/rabbitmq/EXCHANGE/PAYMENT/DELAYED "payment.delayed.exchange"
 
-      # QUEUE PRODUCTION PRODUCT
-      consul kv put production/broker/rabbitmq/QUEUE/PRODUCT/CREATED "product.created"
-      consul kv put production/broker/rabbitmq/QUEUE/PRODUCT/UPDATED "product.updated"
-      consul kv put production/broker/rabbitmq/QUEUE/PRODUCT/DELETED "product.deleted"
+    echo "DONE INIT CONFIG RABBITMQ EXCHANGE"
+  init-rabbitmq-proxy.sh: |2
 
-      # QUEUE LOCAL NOTIFICATION
-      consul kv put local/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/OTP/CREATED "notification.email.otp.created"
-      consul kv put local/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/PAYMENT/ORDER/CREATED "notification.email.payment.order.created"
+    echo "Registering RabbitMQ as proxy service in Consul ..."
 
-      # QUEUE PRODUCTION NOTIFICATION
-      consul kv put production/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/OTP/CREATED "notification.email.otp.created"
-      consul kv put production/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/PAYMENT/ORDER/CREATED "notification.email.payment.order.created"
+    # Wait for RabbitMQ to be available
+    echo "Waiting for RabbitMQ to be available..."
+    until nc -z rabbitmq-local 5672; do
+    echo "RabbitMQ not ready yet, waiting..."
+    sleep 2
+    done
+    echo "RabbitMQ is available"
 
-      # QUEUE LOCAL EVENT
-      consul kv put local/broker/rabbitmq/QUEUE/EVENT/CREATED "event.created"
+    # Register MongoDB service
+    consul services register \
+    -name=rabbitmq \
+    -id=rabbitmq-main \
+    -port=5672 \
+    -address=rabbitmq-local \
+    -tag=broker \
+    -tag=proxy \
+    -tag=rabbitmq
 
-      # QUEUE PRODUCTION EVENT
-      consul kv put production/broker/rabbitmq/QUEUE/EVENT/CREATED "event.created"
 
-      # QUEUE LOCAL COMMERCE
-      consul kv put local/broker/rabbitmq/QUEUE/COMMERCE/CART/CREATED "cart.created"
-      consul kv put local/broker/rabbitmq/QUEUE/COMMERCE/CART/UPDATED "cart.updated"
-      consul kv put local/broker/rabbitmq/QUEUE/COMMERCE/CART/DELETED "cart.deleted"
+    # Manual health check registration via HTTP API
+    echo "Adding health checks..."
 
-      # QUEUE PRODUCTION COMMERCE
-      consul kv put production/broker/rabbitmq/QUEUE/COMMERCE/CART/CREATED "cart.created"
-      consul kv put production/broker/rabbitmq/QUEUE/COMMERCE/CART/UPDATED "cart.updated"
-      consul kv put production/broker/rabbitmq/QUEUE/COMMERCE/CART/DELETED "cart.deleted"
+    # Health check for RabbitMQ
+    curl -s -X PUT http://consul-local:8500/v1/agent/check/register \
+    -H "Content-Type: application/json" \
+    -d '{
+    "ID": "rabbitmq-Health",
+    "Name": "RabbitMQ Health Check",
+    "TCP": "rabbitmq-local:5672",
+    "Interval": "30s",
+    "Timeout": "5s",
+    "ServiceID": "rabbitmq-main"
+    }'
 
-      # QUEUE LOCAL PAYMENT
-      consul kv put local/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED "payment.order.created"
-      consul kv put local/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED "payment.order.delayed.cancelled"
+    # Verify registration
+    echo "✅ RabbitMQ proxy registration completed"
+  init-rabbitmq-queue.sh: |2
 
-      # QUEUE PRODUCTION PAYMENT
-      consul kv put production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED "payment.order.created"
-      consul kv put production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED "payment.order.delayed.cancelled"
+    echo "INIT CONFIG RABBITMQ QUEUE"
 
-      echo "DONE INIT CONFIG RABBITMQ QUEUE"
-    }
+    # QUEUE LOCAL USER
+    consul kv put local/broker/rabbitmq/QUEUE/USER/CREATED "user.created"
+    consul kv put local/broker/rabbitmq/QUEUE/USER/UPDATED "user.updated"
+    consul kv put local/broker/rabbitmq/QUEUE/USER/LOGIN "user.login"
+    consul kv put local/broker/rabbitmq/QUEUE/USER/LOGOUT "user.logout"
 
-    initialize_rabbitmq_queue
+    #QUEUE PRODUCTION USER
+    consul kv put production/broker/rabbitmq/QUEUE/USER/CREATED "user.created"
+    consul kv put production/broker/rabbitmq/QUEUE/USER/UPDATED "user.updated"
+    consul kv put production/broker/rabbitmq/QUEUE/USER/LOGIN "user.login"
+    consul kv put production/broker/rabbitmq/QUEUE/USER/LOGOUT "user.logout"
+
+
+    # QUEUE LOCAL PRODUCT
+    consul kv put local/broker/rabbitmq/QUEUE/PRODUCT/CREATED "product.created"
+    consul kv put local/broker/rabbitmq/QUEUE/PRODUCT/UPDATED "product.updated"
+    consul kv put local/broker/rabbitmq/QUEUE/PRODUCT/DELETED "product.deleted"
+
+    # QUEUE PRODUCTION PRODUCT
+    consul kv put production/broker/rabbitmq/QUEUE/PRODUCT/CREATED "product.created"
+    consul kv put production/broker/rabbitmq/QUEUE/PRODUCT/UPDATED "product.updated"
+    consul kv put production/broker/rabbitmq/QUEUE/PRODUCT/DELETED "product.deleted"
+
+    # QUEUE LOCAL NOTIFICATION
+    consul kv put local/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/OTP/CREATED "notification.email.otp.created"
+    consul kv put local/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/PAYMENT/ORDER/CREATED "notification.email.payment.order.created"
+
+    # QUEUE PRODUCTION NOTIFICATION
+    consul kv put production/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/OTP/CREATED "notification.email.otp.created"
+    consul kv put production/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/PAYMENT/ORDER/CREATED "notification.email.payment.order.created"
+
+    # QUEUE LOCAL EVENT
+    consul kv put local/broker/rabbitmq/QUEUE/EVENT/CREATED "event.created"
+
+    # QUEUE PRODUCTION EVENT
+    consul kv put production/broker/rabbitmq/QUEUE/EVENT/CREATED "event.created"
+
+    # QUEUE LOCAL COMMERCE
+    consul kv put local/broker/rabbitmq/QUEUE/COMMERCE/CART/CREATED "cart.created"
+    consul kv put local/broker/rabbitmq/QUEUE/COMMERCE/CART/UPDATED "cart.updated"
+    consul kv put local/broker/rabbitmq/QUEUE/COMMERCE/CART/DELETED "cart.deleted"
+
+    # QUEUE PRODUCTION COMMERCE
+    consul kv put production/broker/rabbitmq/QUEUE/COMMERCE/CART/CREATED "cart.created"
+    consul kv put production/broker/rabbitmq/QUEUE/COMMERCE/CART/UPDATED "cart.updated"
+    consul kv put production/broker/rabbitmq/QUEUE/COMMERCE/CART/DELETED "cart.deleted"
+
+    # QUEUE LOCAL PAYMENT
+    consul kv put local/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED "payment.order.created"
+    consul kv put local/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED "payment.order.delayed.cancelled"
+
+    # QUEUE PRODUCTION PAYMENT
+    consul kv put production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED "payment.order.created"
+    consul kv put production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED "payment.order.delayed.cancelled"
+
+    echo "DONE INIT CONFIG RABBITMQ QUEUE"
+  init-rabbitmq.sh: |2
+
+    echo "INIT CONFIG RABBITMQ"
+    ## Local
+
+    consul kv put local/broker/rabbitmq/RABBITMQ_USERNAME "rabbitmq"
+    consul kv put local/broker/rabbitmq/RABBITMQ_PASSWORD "1234"
+    consul kv put local/broker/rabbitmq/RABBITMQ_HOST "localhost"
+    consul kv put local/broker/rabbitmq/RABBITMQ_PORT "5672"
+    ## Production
+    consul kv put production/broker/rabbitmq/RABBITMQ_USERNAME "rabbitmq"
+    consul kv put production/broker/rabbitmq/RABBITMQ_PASSWORD "1234"
+    consul kv put production/broker/rabbitmq/RABBITMQ_HOST "rabbitmq-local"
+    consul kv put production/broker/rabbitmq/RABBITMQ_PORT "5672"
+
+
+    echo "DONE INIT CONFIG RABBITMQ"
 kind: ConfigMap
 metadata:
-  annotations:
-    use-subpath: "true"
   labels:
     io.kompose.service: consul-local
   name: consul-local-cm3

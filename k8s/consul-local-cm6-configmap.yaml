@@ -1,10 +1,38 @@
 apiVersion: v1
 data:
-  init-database-elasticsearch.sh: "#!/bin/sh\n\ninitialize_database_elasticsearch(){\n  echo \"INIT CONSUL KV DATABASE ELASTICSEARCH\"\n  ## Elasticsearch Local\n  consul kv put local/database/elasticsearch/ELASTICSEARCH_USERNAME \"\"\n  consul kv put local/database/elasticsearch/ELASTICSEARCH_PASSWORD \"\"\n  consul kv put local/database/elasticsearch/ELASTICSEARCH_HOST \"localhost\"\n  consul kv put local/database/elasticsearch/ELASTICSEARCH_PORT \"9200\"\n  \n  ## Elasticsearch Production\n  consul kv put production/database/elasticsearch/ELASTICSEARCH_USERNAME \"\"\n  consul kv put production/database/elasticsearch/ELASTICSEARCH_PASSWORD \"\"\n  consul kv put production/database/elasticsearch/ELASTICSEARCH_HOST \"elasticsearch-local\"\n  consul kv put production/database/elasticsearch/ELASTICSEARCH_PORT \"9200\"\n\n  echo \"✅ DONE INIT CONSUL KV DATABASE ELASTICSEARCH\"\n}\n\ninitialize_database_elasticsearch"
+  init-telemetry-proxy.sh: |
+    echo "Registering Jaeger Telemetry as proxy service in Consul ..."
+    # Register Jaeger Telemetry service
+    consul services register \
+    -name=jaeger \
+    -id=jaeger-main \
+    -port=14268 \
+    -address=jaeger-local \
+    -tag=telemetry \
+    -tag=proxy \
+    -tag=jaeger \
+    -tag=collector \
+    -tag=http# Health check for Jaeger Collector
+    curl -s -X PUT http://consul-local:8500/v1/agent/check/register \
+    -H "Content-Type: application/json" \
+    -d '{
+    "ID": "jaeger-collector-health",
+    "Name": "Jaeger Collector Health Check",
+    "HTTP": "http://jaeger-local:14269/",
+    "Interval": "10s",
+    "Timeout": "3s",
+    "ServiceID": "jaeger-main"
+    }'# Verify registration
+    echo "✅ Jaeger Telemetry proxy registration completed"
+  init-telemetry.sh: |
+    echo "INIT CONFIG TELEMETRY"
+    # Jaeger Local
+    consul kv put local/telemetry/jaeger/JAEGER_TELEMETRY_HOST "localhost"
+    consul kv put local/telemetry/jaeger/JAEGER_TELEMETRY_PORT "14268"# Jaeger Production
+    consul kv put production/telemetry/jaeger/JAEGER_TELEMETRY_HOST "jaeger-local"
+    consul kv put production/telemetry/jaeger/JAEGER_TELEMETRY_PORT "14268"echo "DONE INIT CONFIG TELEMETRY"
 kind: ConfigMap
 metadata:
-  annotations:
-    use-subpath: "true"
   labels:
     io.kompose.service: consul-local
   name: consul-local-cm6

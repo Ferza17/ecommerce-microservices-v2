@@ -12,30 +12,24 @@ source /rabbitmq/init-rabbitmq.sh
 source /rabbitmq/init-rabbitmq-exchange.sh
 source /rabbitmq/init-rabbitmq-queue.sh
 source /rabbitmq/init-rabbitmq-proxy.sh
-source /rabbitmq/health-check-rabbitmq.sh
-
 
 # LOAD CONFIG DATABASE
 ##########################################################################################################################################################################################################################
 # ELASTICSEARCH
 source /database/elasticsearch/init-database-elasticsearch.sh
 source /database/elasticsearch/init-database-elasticsearch-proxy.sh
-source /database/elasticsearch/health-check-elasticsearch.sh
 
 # POSTGRES
 source /database/postgres/init-database-postgresql.sh
 source /database/postgres/init-database-postgresql-proxy.sh
-source /database/postgres/health-check-postgresql.sh
 
 # REDIS
 source /database/redis/init-database-redis.sh
 source /database/redis/init-database-redis-proxy.sh
-source /database/redis/health-check-redis.sh
 
 # MONGODB
 source /database/mongodb/init-database-mongodb.sh
 source /database/mongodb/init-database-mongodb-proxy.sh
-source /database/mongodb/health-check-mongodb.sh
 
 
 # LOAD CONFIG SMTP
@@ -49,40 +43,36 @@ source /smtp/init-smtp-proxy.sh
 source /telemetry/init-telemetry.sh
 source /telemetry/init-telemetry-proxy.sh
 
+# LOAD CONFIG PROMETHEUS
+##########################################################################################################################################################################################################################
+source /prometheus/init-prometheus-proxy.sh
+
+
+# LOAD CONFIG TRAEFIK
+##########################################################################################################################################################################################################################
+source /traefik/init-traefik-proxy.sh
+
 # LOAD CONFIG SERVICES
 ##########################################################################################################################################################################################################################
 source /services/init-api-gateway-service.sh
-initialize_service_api_gateway
-
 source /services/init-commerce-service.sh
-initialize_commerce_service
-
 source /services/init-event-store-service.sh
-initialize_event_store_service
-
 source /services/init-notification-service.sh
-initialize_notification_service
-
 source /services/init-payment-service.sh
-initialize_payment_service
-
 source /services/init-product-service.sh
-initialize_product_service
-
 source /services/init-user-service.sh
-initialize_user_service
 
 ##########################################################################################################################################################################################################################
 
 echo "INIT CONFIG COMMON"
-## Local
-curl --request PUT --data 'PENDING' http://localhost:8500/v1/kv/local/common/SAGA_STATUS/PENDING
-curl --request PUT --data 'SUCCESS' http://localhost:8500/v1/kv/local/common/SAGA_STATUS/SUCCESS
-curl --request PUT --data 'FAILED' http://localhost:8500/v1/kv/local/common/SAGA_STATUS/FAILED
+## LOCAL
+consul kv put local/common/SAGA_STATUS/PENDING 'PENDING'
+consul kv put local/common/SAGA_STATUS/SUCCESS 'SUCCESS'
+consul kv put local/common/SAGA_STATUS/FAILED 'FAILED'
 
-## Production
-curl --request PUT --data 'PENDING' http://localhost:8500/v1/kv/production/common/SAGA_STATUS/PENDING
-curl --request PUT --data 'SUCCESS' http://localhost:8500/v1/kv/production/common/SAGA_STATUS/SUCCESS
-curl --request PUT --data 'FAILED' http://localhost:8500/v1/kv/production/common/SAGA_STATUS/FAILED
+## PRODUCTION
+consul kv put production/common/SAGA_STATUS/PENDING 'PENDING'
+consul kv put production/common/SAGA_STATUS/SUCCESS 'SUCCESS'
+consul kv put production/common/SAGA_STATUS/FAILED 'FAILED'
 
 echo "✅ Done setting key-values."

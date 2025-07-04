@@ -53,91 +53,26 @@ spec:
           volumeMounts:
             - mountPath: /init.sh
               name: consul-local-cm0
+              readOnly: true
               subPath: init.sh
-            - mountPath: /rabbitmq/init-rabbitmq.sh
-              name: consul-local-cm1
-              subPath: init-rabbitmq.sh
-            - mountPath: /rabbitmq/init-rabbitmq-exchange.sh
+            - mountPath: /prometheus
               name: consul-local-cm2
-              subPath: init-rabbitmq-exchange.sh
-            - mountPath: /rabbitmq/init-rabbitmq-queue.sh
+              readOnly: true
+            - mountPath: /rabbitmq
               name: consul-local-cm3
-              subPath: init-rabbitmq-queue.sh
-            - mountPath: /rabbitmq/init-rabbitmq-proxy.sh
+              readOnly: true
+            - mountPath: /services
               name: consul-local-cm4
-              subPath: init-rabbitmq-proxy.sh
-            - mountPath: /rabbitmq/health-check-rabbitmq.sh
+              readOnly: true
+            - mountPath: /smtp
               name: consul-local-cm5
-              subPath: health-check-rabbitmq.sh
-            - mountPath: /database/elasticsearch/init-database-elasticsearch.sh
+              readOnly: true
+            - mountPath: /telemetry
               name: consul-local-cm6
-              subPath: init-database-elasticsearch.sh
-            - mountPath: /database/elasticsearch/init-database-elasticsearch-proxy.sh
+              readOnly: true
+            - mountPath: /traefik
               name: consul-local-cm7
-              subPath: init-database-elasticsearch-proxy.sh
-            - mountPath: /database/elasticsearch/health-check-elasticsearch.sh
-              name: consul-local-cm8
-              subPath: health-check-elasticsearch.sh
-            - mountPath: /database/redis/init-database-redis.sh
-              name: consul-local-cm9
-              subPath: init-database-redis.sh
-            - mountPath: /database/redis/health-check-redis.sh
-              name: consul-local-cm10
-              subPath: health-check-redis.sh
-            - mountPath: /database/redis/init-database-redis-proxy.sh
-              name: consul-local-cm11
-              subPath: init-database-redis-proxy.sh
-            - mountPath: /database/mongodb/init-database-mongodb.sh
-              name: consul-local-cm12
-              subPath: init-database-mongodb.sh
-            - mountPath: /database/mongodb/init-database-mongodb-proxy.sh
-              name: consul-local-cm13
-              subPath: init-database-mongodb-proxy.sh
-            - mountPath: /database/mongodb/health-check-mongodb.sh
-              name: consul-local-cm14
-              subPath: health-check-mongodb.sh
-            - mountPath: /database/postgres/init-database-postgresql.sh
-              name: consul-local-cm15
-              subPath: init-database-postgresql.sh
-            - mountPath: /database/postgres/init-database-postgresql-proxy.sh
-              name: consul-local-cm16
-              subPath: init-database-postgresql-proxy.sh
-            - mountPath: /database/postgres/health-check-postgresql.sh
-              name: consul-local-cm17
-              subPath: health-check-postgresql.sh
-            - mountPath: /smtp/init-smtp.sh
-              name: consul-local-cm18
-              subPath: init-smtp.sh
-            - mountPath: /smtp/init-smtp-proxy.sh
-              name: consul-local-cm19
-              subPath: init-smtp-proxy.sh
-            - mountPath: /telemetry/init-telemetry.sh
-              name: consul-local-cm20
-              subPath: init-telemetry.sh
-            - mountPath: /telemetry/init-telemetry-proxy.sh
-              name: consul-local-cm21
-              subPath: init-telemetry-proxy.sh
-            - mountPath: /services/init-api-gateway-service.sh
-              name: consul-local-cm22
-              subPath: init-api-gateway-service.sh
-            - mountPath: /services/init-commerce-service.sh
-              name: consul-local-cm23
-              subPath: init-commerce-service.sh
-            - mountPath: /services/init-event-store-service.sh
-              name: consul-local-cm24
-              subPath: init-event-store-service.sh
-            - mountPath: /services/init-notification-service.sh
-              name: consul-local-cm25
-              subPath: init-notification-service.sh
-            - mountPath: /services/init-payment-service.sh
-              name: consul-local-cm26
-              subPath: init-payment-service.sh
-            - mountPath: /services/init-product-service.sh
-              name: consul-local-cm27
-              subPath: init-product-service.sh
-            - mountPath: /services/init-user-service.sh
-              name: consul-local-cm28
-              subPath: init-user-service.sh
+              readOnly: true
       restartPolicy: Always
       volumes:
         - configMap:
@@ -147,170 +82,20 @@ spec:
             name: consul-local-cm0
           name: consul-local-cm0
         - configMap:
-            items:
-              - key: init-rabbitmq.sh
-                path: init-rabbitmq.sh
-            name: consul-local-cm1
-          name: consul-local-cm1
-        - configMap:
-            items:
-              - key: init-rabbitmq-exchange.sh
-                path: init-rabbitmq-exchange.sh
             name: consul-local-cm2
           name: consul-local-cm2
         - configMap:
-            items:
-              - key: init-rabbitmq-queue.sh
-                path: init-rabbitmq-queue.sh
             name: consul-local-cm3
           name: consul-local-cm3
         - configMap:
-            items:
-              - key: init-rabbitmq-proxy.sh
-                path: init-rabbitmq-proxy.sh
             name: consul-local-cm4
           name: consul-local-cm4
         - configMap:
-            items:
-              - key: health-check-rabbitmq.sh
-                path: health-check-rabbitmq.sh
             name: consul-local-cm5
           name: consul-local-cm5
         - configMap:
-            items:
-              - key: init-database-elasticsearch.sh
-                path: init-database-elasticsearch.sh
             name: consul-local-cm6
           name: consul-local-cm6
         - configMap:
-            items:
-              - key: init-database-elasticsearch-proxy.sh
-                path: init-database-elasticsearch-proxy.sh
             name: consul-local-cm7
           name: consul-local-cm7
-        - configMap:
-            items:
-              - key: health-check-elasticsearch.sh
-                path: health-check-elasticsearch.sh
-            name: consul-local-cm8
-          name: consul-local-cm8
-        - configMap:
-            items:
-              - key: init-database-redis.sh
-                path: init-database-redis.sh
-            name: consul-local-cm9
-          name: consul-local-cm9
-        - configMap:
-            items:
-              - key: health-check-redis.sh
-                path: health-check-redis.sh
-            name: consul-local-cm10
-          name: consul-local-cm10
-        - configMap:
-            items:
-              - key: init-database-redis-proxy.sh
-                path: init-database-redis-proxy.sh
-            name: consul-local-cm11
-          name: consul-local-cm11
-        - configMap:
-            items:
-              - key: init-database-mongodb.sh
-                path: init-database-mongodb.sh
-            name: consul-local-cm12
-          name: consul-local-cm12
-        - configMap:
-            items:
-              - key: init-database-mongodb-proxy.sh
-                path: init-database-mongodb-proxy.sh
-            name: consul-local-cm13
-          name: consul-local-cm13
-        - configMap:
-            items:
-              - key: health-check-mongodb.sh
-                path: health-check-mongodb.sh
-            name: consul-local-cm14
-          name: consul-local-cm14
-        - configMap:
-            items:
-              - key: init-database-postgresql.sh
-                path: init-database-postgresql.sh
-            name: consul-local-cm15
-          name: consul-local-cm15
-        - configMap:
-            items:
-              - key: init-database-postgresql-proxy.sh
-                path: init-database-postgresql-proxy.sh
-            name: consul-local-cm16
-          name: consul-local-cm16
-        - configMap:
-            items:
-              - key: health-check-postgresql.sh
-                path: health-check-postgresql.sh
-            name: consul-local-cm17
-          name: consul-local-cm17
-        - configMap:
-            items:
-              - key: init-smtp.sh
-                path: init-smtp.sh
-            name: consul-local-cm18
-          name: consul-local-cm18
-        - configMap:
-            items:
-              - key: init-smtp-proxy.sh
-                path: init-smtp-proxy.sh
-            name: consul-local-cm19
-          name: consul-local-cm19
-        - configMap:
-            items:
-              - key: init-telemetry.sh
-                path: init-telemetry.sh
-            name: consul-local-cm20
-          name: consul-local-cm20
-        - configMap:
-            items:
-              - key: init-telemetry-proxy.sh
-                path: init-telemetry-proxy.sh
-            name: consul-local-cm21
-          name: consul-local-cm21
-        - configMap:
-            items:
-              - key: init-api-gateway-service.sh
-                path: init-api-gateway-service.sh
-            name: consul-local-cm22
-          name: consul-local-cm22
-        - configMap:
-            items:
-              - key: init-commerce-service.sh
-                path: init-commerce-service.sh
-            name: consul-local-cm23
-          name: consul-local-cm23
-        - configMap:
-            items:
-              - key: init-event-store-service.sh
-                path: init-event-store-service.sh
-            name: consul-local-cm24
-          name: consul-local-cm24
-        - configMap:
-            items:
-              - key: init-notification-service.sh
-                path: init-notification-service.sh
-            name: consul-local-cm25
-          name: consul-local-cm25
-        - configMap:
-            items:
-              - key: init-payment-service.sh
-                path: init-payment-service.sh
-            name: consul-local-cm26
-          name: consul-local-cm26
-        - configMap:
-            items:
-              - key: init-product-service.sh
-                path: init-product-service.sh
-            name: consul-local-cm27
-          name: consul-local-cm27
-        - configMap:
-            items:
-              - key: init-user-service.sh
-                path: init-user-service.sh
-            name: consul-local-cm28
-          name: consul-local-cm28

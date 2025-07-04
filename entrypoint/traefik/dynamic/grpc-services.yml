@@ -7,35 +7,35 @@ http:
         - grpc
       service: "user-service-grpc"
       rule: "Host(`localhost`) && PathPrefix(`/user.AuthService`)"
-      tls: false
+      tls: true
 
     user-service-user-grpc:
       entryPoints:
         - grpc
       service: "user-service-grpc"
       rule: "Host(`localhost`) && PathPrefix(`/user.UserService`)"
-      tls: false
+      tls: true
 
     product-service-grpc:
       entryPoints:
         - grpc
       service: "product-service-grpc"
       rule: "Host(`localhost`) && PathPrefix(`/product.ProductService`)"
-      tls: false
+      tls: true
 
     payment-service-provider-grpc:
       entryPoints:
         - grpc
       service: "payment-service-grpc"
       rule: "Host(`localhost`) && PathPrefix(`/payment.ProviderService`)"
-      tls: false
+      tls: true
 
     payment-service-payment-grpc:
       entryPoints:
         - grpc
       service: "payment-service-grpc"
       rule: "Host(`localhost`) && PathPrefix(`/payment.PaymentService`)"
-      tls: false
+      tls: true
 
     grpc-reflection:
       entryPoints:

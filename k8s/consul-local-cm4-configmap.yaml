@@ -1,54 +1,132 @@
 apiVersion: v1
 data:
-  init-rabbitmq-proxy.sh: |-
-    #!/bin/sh
-
-    initialize_rabbitmq_proxy() {
-        echo "Registering RabbitMQ as proxy service in Consul ..."
-
-        # Wait for RabbitMQ to be available
-            echo "Waiting for RabbitMQ to be available..."
-            until nc -z rabbitmq-local 5672; do
-                echo "RabbitMQ not ready yet, waiting..."
-                sleep 2
-            done
-            echo "RabbitMQ is available"
-
-        # Register MongoDB service
-        consul services register \
-            -name=rabbitmq \
-            -id=rabbitmq-main \
-            -port=5672 \
-            -address=rabbitmq-local \
-            -tag=broker \
-            -tag=proxy \
-            -tag=rabbitmq
-
-
-        # Manual health check registration via HTTP API
-        echo "Adding health checks..."
-
-        # Health check for RabbitMQ
-        curl -s -X PUT http://consul-local:8500/v1/agent/check/register \
-            -H "Content-Type: application/json" \
-            -d '{
-                "ID": "rabbitmq-Health",
-                "Name": "RabbitMQ Health Check",
-                "TCP": "rabbitmq-local:5672",
-                "Interval": "10s",
-                "Timeout": "3s",
-                "ServiceID": "rabbitmq-main"
-            }'
-
-        # Verify registration
-        echo "✅ RabbitMQ proxy registration completed"
-    }
-
-    initialize_rabbitmq_proxy
+  init-api-gateway-service.sh: |
+    echo "INIT CONFIG API GATEWAY"## Local
+    curl --request PUT --data 'local' http://localhost:8500/v1/kv/local/services/api-gateway/ENV
+    curl --request PUT --data 'api-gateway-service' http://localhost:8500/v1/kv/local/services/api-gateway/SERVICE_NAME
+    curl --request PUT --data '127.0.0.1' http://localhost:8500/v1/kv/local/services/api-gateway/HTTP_HOST
+    curl --request PUT --data '3000' http://localhost:8500/v1/kv/local/services/api-gateway/HTTP_PORT
+    curl --request PUT --data '127.0.0.1' http://localhost:8500/v1/kv/local/services/api-gateway/RPC_HOST
+    curl --request PUT --data '50000' http://localhost:8500/v1/kv/local/services/api-gateway/RPC_PORT
+    ## Production
+    curl --request PUT --data 'production' http://localhost:8500/v1/kv/production/services/api-gateway/ENV
+    curl --request PUT --data 'api-gateway-service' http://localhost:8500/v1/kv/production/services/api-gateway/SERVICE_NAME
+    curl --request PUT --data 'api-gateway-service' http://localhost:8500/v1/kv/production/services/api-gateway/HTTP_HOST
+    curl --request PUT --data '3000' http://localhost:8500/v1/kv/production/services/api-gateway/HTTP_PORT
+    curl --request PUT --data 'api-gateway-service' http://localhost:8500/v1/kv/production/services/api-gateway/RPC_HOST
+    curl --request PUT --data '50000' http://localhost:8500/v1/kv/production/services/api-gateway/RPC_PORTecho "DONE INIT CONFIG API GATEWAY"
+  init-commerce-service.sh: |
+    echo "INIT CONFIG COMMERCE-SERVICE"
+    ## Local
+    curl --request PUT --data 'local' http://localhost:8500/v1/kv/local/services/commerce/ENV
+    curl --request PUT --data 'commerce-service' http://localhost:8500/v1/kv/local/services/commerce/SERVICE_NAME
+    curl --request PUT --data '127.0.0.1' http://localhost:8500/v1/kv/local/services/commerce/RPC_HOST
+    curl --request PUT --data '50051' http://localhost:8500/v1/kv/local/services/commerce/RPC_PORT
+    ## Production
+    curl --request PUT --data 'production' http://localhost:8500/v1/kv/production/services/commerce/ENV
+    curl --request PUT --data 'commerce-service' http://localhost:8500/v1/kv/production/services/commerce/SERVICE_NAME
+    curl --request PUT --data 'commerce-service' http://localhost:8500/v1/kv/production/services/commerce/RPC_HOST
+    curl --request PUT --data '50051' http://localhost:8500/v1/kv/production/services/commerce/RPC_PORTecho "DONE INIT CONFIG COMMERCE-SERVICE"
+  init-event-store-service.sh: |
+    echo "INIT EVENT-STORE SERVICE"## Local
+    curl --request PUT --data 'local' http://localhost:8500/v1/kv/local/services/event-store/ENV
+    curl --request PUT --data 'event-store-service' http://localhost:8500/v1/kv/local/services/event-store/SERVICE_NAME
+    curl --request PUT --data '127.0.0.1' http://localhost:8500/v1/kv/local/services/event-store/RPC_HOST
+    curl --request PUT --data '50052' http://localhost:8500/v1/kv/local/services/event-store/RPC_PORT
+    ## Production
+    curl --request PUT --data 'production' http://localhost:8500/v1/kv/production/services/event-store/ENV
+    curl --request PUT --data 'event-store-service' http://localhost:8500/v1/kv/production/services/event-store/SERVICE_NAME
+    curl --request PUT --data 'event-store-service' http://localhost:8500/v1/kv/production/services/event-store/RPC_HOST
+    curl --request PUT --data '50052' http://localhost:8500/v1/kv/production/services/event-store/RPC_PORTecho "DONE INIT EVENT-STORE SERVICE"
+  init-notification-service.sh: |
+    echo "INIT NOTIFICATION SERVICE"
+    ## Local
+    consul kv put local/services/notification/ENV 'local'
+    consul kv put local/services/notification/SERVICE_NAME 'notification-service'
+    consul kv put local/services/notification/RPC_HOST '127.0.0.1'
+    consul kv put local/services/notification/RPC_PORT '50053'
+    consul kv put local/services/notification/HTTP_HOST 'localhost'
+    consul kv put local/services/notification/HTTP_PORT '40053'
+    consul kv put local/services/notification/METRIC_HTTP_PORT '30053'
+    ## Production
+    consul kv put production/services/notification/ENV 'production'
+    consul kv put production/services/notification/SERVICE_NAME 'notification-service'
+    consul kv put production/services/notification/RPC_HOST 'notification-service'
+    consul kv put production/services/notification/RPC_PORT '50053'
+    consul kv put production/services/notification/HTTP_HOST 'notification-service'
+    consul kv put production/services/notification/HTTP_PORT '40053'
+    consul kv put production/services/notification/METRIC_HTTP_PORT '30053'echo "DONE INIT NOTIFICATION SERVICE"
+  init-payment-service.sh: |
+    echo "INIT PAYMENT SERVICE"
+    ## LOCAL
+    consul kv put local/services/payment/ENV 'local'
+    consul kv put local/services/payment/SERVICE_NAME 'payment-service'
+    consul kv put local/services/payment/PAYMENT_ORDER_CANCELLED_IN_MS '600000'
+    consul kv put local/services/payment/RPC_HOST 'localhost'
+    consul kv put local/services/payment/RPC_PORT '50054'
+    consul kv put local/services/payment/HTTP_HOST 'localhost'
+    consul kv put local/services/payment/HTTP_PORT '40054'
+    consul kv put local/services/payment/METRIC_PORT '30054'
+    ## PRODUCTION
+    consul kv put production/services/payment/ENV 'production'
+    consul kv put production/services/payment/SERVICE_NAME 'payment-service'
+    consul kv put production/services/payment/PAYMENT_ORDER_CANCELLED_IN_MS '600000'
+    consul kv put production/services/payment/RPC_HOST 'payment-service'
+    consul kv put production/services/payment/RPC_PORT '50054'
+    consul kv put production/services/payment/HTTP_HOST 'payment-service'
+    consul kv put production/services/payment/HTTP_PORT '40054'
+    consul kv put production/services/payment/METRIC_HTTP_PORT '30054'echo "DONE INIT PAYMENT SERVICE"
+  init-product-service.sh: |
+    echo "INIT PRODUCT SERVICE"
+    ## Local
+    consul kv put local/services/product/ENV 'local'
+    consul kv put local/services/product/SERVICE_NAME 'product-service'
+    consul kv put local/services/product/RPC_HOST 'localhost'
+    consul kv put local/services/product/RPC_PORT '50055'
+    consul kv put local/services/product/HTTP_HOST 'localhost'
+    consul kv put local/services/product/HTTP_PORT '40055'
+    consul kv put local/services/product/METRIC_HTTP_PORT '30055'
+    ## Production
+    consul kv put production/services/product/ENV 'production'
+    consul kv put production/services/product/SERVICE_NAME 'product-service'
+    consul kv put production/services/product/RPC_HOST 'product-service'
+    consul kv put production/services/product/RPC_PORT '50055'
+    consul kv put production/services/product/HTTP_HOST 'product-service'
+    consul kv put production/services/product/HTTP_PORT '40055'
+    consul kv put production/services/product/METRIC_HTTP_PORT '30055'
+    echo "DONE INIT PRODUCT SERVICE"
+  init-user-service.sh: |
+    echo "INIT USER SERVICE"
+    ## Local
+    consul kv put local/services/user/ENV 'local'
+    consul kv put local/services/user/SERVICE_NAME 'user-service'
+    consul kv put local/services/user/RPC_HOST 'localhost'
+    consul kv put local/services/user/RPC_PORT '50056'
+    consul kv put local/services/user/HTTP_HOST 'localhost'
+    consul kv put local/services/user/HTTP_PORT '40056'
+    consul kv put local/services/user/METRIC_HTTP_PORT '30056'
+    consul kv put local/services/user/JWT_ACCESS_TOKEN_SECRET 'ecommerce-service-v2'
+    consul kv put local/services/user/JWT_ACCESS_TOKEN_EXPIRATION_TIME '1h'
+    consul kv put local/services/user/JWT_REFRESH_TOKEN_SECRET 'v2-service-ecommerce'
+    consul kv put local/services/user/JWT_REFRESH_TOKEN_EXPIRATION_TIME '2d'
+    consul kv put local/services/user/OTP_EXPIRATION_TIME '10m'
+    consul kv put local/services/user/VERIFICATION_USER_LOGIN_URL 'http://localhost:4000?access_token=%s?refresh_token=?'
+    ## Production
+    consul kv put production/services/user/ENV 'local'
+    consul kv put production/services/user/SERVICE_NAME 'user-service'
+    consul kv put production/services/user/RPC_HOST 'user-service'
+    consul kv put production/services/user/RPC_PORT '50056'
+    consul kv put production/services/user/HTTP_HOST 'user-service'
+    consul kv put production/services/user/HTTP_PORT '40056'
+    consul kv put production/services/user/METRIC_HTTP_PORT '30056'
+    consul kv put production/services/user/JWT_ACCESS_TOKEN_SECRET 'ecommerce-service-v2'
+    consul kv put production/services/user/JWT_ACCESS_TOKEN_EXPIRATION_TIME '1h'
+    consul kv put production/services/user/JWT_REFRESH_TOKEN_SECRET 'v2-service-ecommerce'
+    consul kv put production/services/user/JWT_REFRESH_TOKEN_EXPIRATION_TIME '1h'
+    consul kv put production/services/user/OTP_EXPIRATION_TIME '10m'
+    consul kv put production/services/user/VERIFICATION_USER_LOGIN_URL 'http://user-service:4000?access_token=%s?refresh_token=?'echo "DONE INIT USER SERVICE"
 kind: ConfigMap
 metadata:
-  annotations:
-    use-subpath: "true"
   labels:
     io.kompose.service: consul-local
   name: consul-local-cm4

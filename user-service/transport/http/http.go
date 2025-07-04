@@ -85,7 +85,7 @@ func (s *Server) Serve(ctx context.Context) error {
 			case "Authorization",
 				"Content-Type",
 				"Accept",
-				"traceparent",
+				pkgContext.ContextKeyTracerparent,
 				"tracestate",
 				"baggage",
 				pkgContext.CtxKeyRequestID,
@@ -95,6 +95,9 @@ func (s *Server) Serve(ctx context.Context) error {
 				return "", false
 			}
 		}),
+		runtime.WithErrorHandler(response.CustomErrorHandler),
+		// Other useful options
+		runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{}),
 	)
 
 	// Register gRPC-HTTP gateway handlers

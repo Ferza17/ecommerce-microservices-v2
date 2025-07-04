@@ -39,6 +39,12 @@ data:
           - targets: [ 'product-service:30055' ]
         scrape_interval: 30s
         metrics_path: /v1/product/metrics
+
+      - job_name: 'payment-service-metrics'
+        static_configs:
+          - targets: [ 'payment-service:30054' ]
+        scrape_interval: 30s
+        metrics_path: /v1/payment/metrics
 kind: ConfigMap
 metadata:
   annotations:

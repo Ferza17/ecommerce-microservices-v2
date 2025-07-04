@@ -1,7 +1,6 @@
 .idea
 .vscode
 .continue
-.entrypoint/traefik/certs
 *.pem
 *.crt
 *.key

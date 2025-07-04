@@ -1,38 +1,38 @@
 apiVersion: v1
 data:
-  init-rabbitmq-exchange.sh: |-
-    #!/bin/sh
+  init-prometheus-proxy.sh: |2
 
-    initialize_rabbitmq_exchange() {
-      echo "INIT CONFIG RABBITMQ EXCHANGE"
-
-      # EXCHANGE LOCAL
-      consul kv put local/broker/rabbitmq/EXCHANGE/PRODUCT "product.direct.exchange"
-      consul kv put local/broker/rabbitmq/EXCHANGE/COMMERCE "commerce.direct.exchange"
-      consul kv put local/broker/rabbitmq/EXCHANGE/EVENT "event.direct.exchange"
-      consul kv put local/broker/rabbitmq/EXCHANGE/NOTIFICATION "notification.direct.exchange"
-      consul kv put local/broker/rabbitmq/EXCHANGE/USER "user.direct.exchange"
-      consul kv put local/broker/rabbitmq/EXCHANGE/PAYMENT/DIRECT "payment.direct.exchange"
-      consul kv put local/broker/rabbitmq/EXCHANGE/PAYMENT/DELAYED "payment.delayed.exchange"
+    echo "Registering Jaeger Telemetry as proxy service in Consul ..."
 
 
-      # EXCHANGE PRODUCTION
-      consul kv put production/broker/rabbitmq/EXCHANGE/PRODUCT "product.direct.exchange"
-      consul kv put production/broker/rabbitmq/EXCHANGE/COMMERCE "commerce.direct.exchange"
-      consul kv put production/broker/rabbitmq/EXCHANGE/EVENT "event.direct.exchange"
-      consul kv put production/broker/rabbitmq/EXCHANGE/NOTIFICATION "notification.direct.exchange"
-      consul kv put production/broker/rabbitmq/EXCHANGE/USER "user.direct.exchange"
-      consul kv put production/broker/rabbitmq/EXCHANGE/PAYMENT/DIRECT "payment.direct.exchange"
-      consul kv put production/broker/rabbitmq/EXCHANGE/PAYMENT/DELAYED "payment.delayed.exchange"
+    # Register Jaeger Telemetry service
+    consul services register \
+    -name=prometheus \
+    -id=prometheus-main \
+    -port=9090 \
+    -address=prometheus-local \
+    -tag=proxy \
+    -tag=prometheus \
+    -tag=metric \
+    -tag=collector \
+    -tag=http
 
-      echo "DONE INIT CONFIG RABBITMQ EXCHANGE"
-    }
+    # Health check for prometheus metric Collector
+    curl -s -X PUT http://consul-local:8500/v1/agent/check/register \
+    -H "Content-Type: application/json" \
+    -d '{
+    "ID": "prometheus-collector-health",
+    "Name": "Prometheus Consul Register",
+    "HTTP": "http://prometheus-local:9090/",
+    "Interval": "30s",
+    "Timeout": "3s",
+    "ServiceID": "prometheus-main"
+    }'
 
-    initialize_rabbitmq_exchange
+    # Verify registration
+    echo "✅ Prometheus Consul : registration completed"
 kind: ConfigMap
 metadata:
-  annotations:
-    use-subpath: "true"
   labels:
     io.kompose.service: consul-local
   name: consul-local-cm2

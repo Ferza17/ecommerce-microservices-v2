@@ -166,44 +166,14 @@ services:
       retries: 3
       start_period: 30s
     volumes:
-      - ./entrypoint/consul/init.sh:/init.sh
-      ## RABBITMQ CONFIG
-      - ./entrypoint/consul/rabbitmq/init-rabbitmq.sh:/rabbitmq/init-rabbitmq.sh
-      - ./entrypoint/consul/rabbitmq/init-rabbitmq-exchange.sh:/rabbitmq/init-rabbitmq-exchange.sh
-      - ./entrypoint/consul/rabbitmq/init-rabbitmq-queue.sh:/rabbitmq/init-rabbitmq-queue.sh
-      - ./entrypoint/consul/rabbitmq/init-rabbitmq-proxy.sh:/rabbitmq/init-rabbitmq-proxy.sh
-      - ./entrypoint/consul/rabbitmq/health-check-rabbitmq.sh:/rabbitmq/health-check-rabbitmq.sh
-      ######### DATABASE CONFIG
-      # ELASTICSEARCH
-      - ./entrypoint/consul/database/elasticsearch/init-database-elasticsearch.sh:/database/elasticsearch/init-database-elasticsearch.sh
-      - ./entrypoint/consul/database/elasticsearch/init-database-elasticsearch-proxy.sh:/database/elasticsearch/init-database-elasticsearch-proxy.sh
-      - ./entrypoint/consul/database/elasticsearch/health-check-elasticsearch.sh:/database/elasticsearch/health-check-elasticsearch.sh
-      # REDIS
-      - ./entrypoint/consul/database/redis/init-database-redis.sh:/database/redis/init-database-redis.sh
-      - ./entrypoint/consul/database/redis/health-check-redis.sh:/database/redis/health-check-redis.sh
-      - ./entrypoint/consul/database/redis/init-database-redis-proxy.sh:/database/redis/init-database-redis-proxy.sh
-      # MONGODB
-      - ./entrypoint/consul/database/mongodb/init-database-mongodb.sh:/database/mongodb/init-database-mongodb.sh
-      - ./entrypoint/consul/database/mongodb/init-database-mongodb-proxy.sh:/database/mongodb/init-database-mongodb-proxy.sh
-      - ./entrypoint/consul/database/mongodb/health-check-mongodb.sh:/database/mongodb/health-check-mongodb.sh
-      # POSTGRES
-      - ./entrypoint/consul/database/postgres/init-database-postgresql.sh:/database/postgres/init-database-postgresql.sh
-      - ./entrypoint/consul/database/postgres/init-database-postgresql-proxy.sh:/database/postgres/init-database-postgresql-proxy.sh
-      - ./entrypoint/consul/database/postgres/health-check-postgresql.sh:/database/postgres/health-check-postgresql.sh
-      ######### SMTP CONFIG
-      - ./entrypoint/consul/smtp/init-smtp.sh:/smtp/init-smtp.sh
-      - ./entrypoint/consul/smtp/init-smtp-proxy.sh:/smtp/init-smtp-proxy.sh
-      ######### TELEMETRY CONFIG
-      - ./entrypoint/consul/telemetry/init-telemetry.sh:/telemetry/init-telemetry.sh
-      - ./entrypoint/consul/telemetry/init-telemetry-proxy.sh:/telemetry/init-telemetry-proxy.sh
-      ######### SERVICES
-      - ./entrypoint/consul/services/init-api-gateway-service.sh:/services/init-api-gateway-service.sh
-      - ./entrypoint/consul/services/init-commerce-service.sh:/services/init-commerce-service.sh
-      - ./entrypoint/consul/services/init-event-store-service.sh:/services/init-event-store-service.sh
-      - ./entrypoint/consul/services/init-notification-service.sh:/services/init-notification-service.sh
-      - ./entrypoint/consul/services/init-payment-service.sh:/services/init-payment-service.sh
-      - ./entrypoint/consul/services/init-product-service.sh:/services/init-product-service.sh
-      - ./entrypoint/consul/services/init-user-service.sh:/services/init-user-service.sh
+      - ./entrypoint/consul/init.sh:/init.sh:ro
+      - ./entrypoint/consul/database:/database:ro
+      - ./entrypoint/consul/prometheus:/prometheus:ro
+      - ./entrypoint/consul/rabbitmq:/rabbitmq:ro
+      - ./entrypoint/consul/services:/services:ro
+      - ./entrypoint/consul/smtp:/smtp:ro
+      - ./entrypoint/consul/telemetry:/telemetry:ro
+      - ./entrypoint/consul/traefik:/traefik:ro
     entrypoint: [ "/bin/sh", "-c", "consul agent -dev -client=0.0.0.0 -ui & sleep 5 && sh /init.sh && tail -f /dev/null" ]
     networks:
       - local
@@ -221,9 +191,7 @@ services:
       - "8080:8080"    # Traefik dashboard
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./entrypoint/traefik/traefik.yml:/etc/traefik/traefik.yml
-      - ./entrypoint/traefik/dynamic:/etc/traefik/dynamic
-      - ./entrypoint/traefik/certs:/etc/traefik/certs
+      - ./entrypoint/traefik:/etc/traefik:ro
     networks:
       - local
 
@@ -266,6 +234,8 @@ services:
       - "40055" # HTTP
       - "30055" # HTTP METRIC COLLECTOR
     restart: always
+    depends_on:
+      - prometheus-local
     networks:
       - local
 
