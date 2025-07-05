@@ -5,7 +5,7 @@ services:
   postgres-local:
     container_name: postgres-local
     ports:
-      - '5432:5432'
+      - '5432:5432' # EXPOSE FOR LOCAL DEVELOPMENT
     image: postgres:latest
     environment:
       - POSTGRES_USER=postgres
@@ -21,7 +21,7 @@ services:
     image: mongo
     restart: always
     ports:
-      - '27017:27017'
+      - '27017:27017' # EXPOSE FOR LOCAL DEVELOPMENT
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo
       MONGO_INITDB_ROOT_PASSWORD: 1234
@@ -41,8 +41,8 @@ services:
       - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
       - "xpack.security.enabled=false"
     ports:
-      - '9200:9200'
-      - '9300:9300'
+      - '9200:9200' #EXPOSE FOR LOCAL DEVELOPMENT
+      - '9300:9300' #EXPOSE FOR LOCAL DEVELOPMENT
     volumes:
       - ./entrypoint/elasticsearch/init-index.sh:/init-index.sh
       - ./entrypoint/elasticsearch/products-mapping.json:/products-mapping.json
@@ -53,7 +53,7 @@ services:
   redis-local:
     container_name: redis-local
     ports:
-      - '6379:6379'
+      - '6379:6379' # EXPOSE FOR LOCAL DEVELOPMENT
     image: redis:latest
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
@@ -70,8 +70,8 @@ services:
     image: mailhog/mailhog:latest
     container_name: mailhog-local
     ports:
-      - '1025:1025'
-      - '8025:8025'
+      - '1025:1025' # EXPOSE FOR LOCAL DEVELOPMENT
+      - '8025:8025' # EXPOSE FOR LOCAL DEVELOPMENT
     networks:
       - local
 
@@ -80,8 +80,8 @@ services:
     container_name: rabbitmq-local
     image: rabbitmq:3.11-management
     ports:
-      - '15672:15672'
-      - '5672:5672'
+      - '15672:15672' # EXPOSE FOR LOCAL DEVELOPMENT
+      - '5672:5672' # EXPOSE FOR LOCAL DEVELOPMENT
     environment:
       RABBITMQ_DEFAULT_USER: "rabbitmq"
       RABBITMQ_DEFAULT_PASS: "1234"
@@ -114,16 +114,16 @@ services:
       # Enable span metrics connector
       - SPAN_STORAGE_TYPE=memory
     ports:
-      - '6831:6831/udp'
-      - '6832:6832/udp'
-      - '5778:5778'
-      - '16686:16686'
-      - '4317:4317'
-      - '4318:4318'
-      - '14250:14250'
-      - '14268:14268'
-      - '14269:14269'
-      - '9411:9411'
+      - '6831:6831/udp' # EXPOSE FOR LOCAL DEVELOPMENT
+      - '6832:6832/udp' # EXPOSE FOR LOCAL DEVELOPMENT
+      - '5778:5778' # EXPOSE FOR LOCAL DEVELOPMENT
+      - '16686:16686' # EXPOSE FOR LOCAL DEVELOPMENT
+      - '4317:4317' # EXPOSE FOR LOCAL DEVELOPMENT
+      - '4318:4318' # EXPOSE FOR LOCAL DEVELOPMENT
+      - '14250:14250' # EXPOSE FOR LOCAL DEVELOPMENT
+      - '14268:14268' # EXPOSE FOR LOCAL DEVELOPMENT
+      - '14269:14269' # EXPOSE FOR LOCAL DEVELOPMENT
+      - '9411:9411' # EXPOSE FOR LOCAL DEVELOPMENT
     networks:
       - local
     depends_on:
@@ -134,7 +134,7 @@ services:
     container_name: prometheus-local
     image: prom/prometheus:latest
     ports:
-      - '9090:9090'
+      - '9090:9090' # EXPOSE FOR LOCAL DEVELOPMENT
     volumes:
       - ./entrypoint/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
@@ -152,17 +152,17 @@ services:
     container_name: consul-local
     image: consul:1.10.0
     ports:
-      - "8500:8500"
-      - "8600:8600/tcp"
-      - "8600:8600/udp"
+      - "8500:8500" # EXPOSE FOR LOCAL DEVELOPMENT
+      - "8600/tcp"
+      - "8600/udp"
     command: agent -dev -client=0.0.0.0 -ui
     depends_on:
       redis-local:
         condition: service_healthy
     healthcheck:
       test: [ "CMD", "consul", "members" ]
-      interval: 10s
-      timeout: 3s
+      interval: 60s
+      timeout: 10s
       retries: 3
       start_period: 30s
     volumes:

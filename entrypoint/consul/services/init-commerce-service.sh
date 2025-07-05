@@ -8,4 +8,5 @@ curl --request PUT --data '50051' http://localhost:8500/v1/kv/local/services/com
 curl --request PUT --data 'production' http://localhost:8500/v1/kv/production/services/commerce/ENV
 curl --request PUT --data 'commerce-service' http://localhost:8500/v1/kv/production/services/commerce/SERVICE_NAME
 curl --request PUT --data 'commerce-service' http://localhost:8500/v1/kv/production/services/commerce/RPC_HOST
-curl --request PUT --data '50051' http://localhost:8500/v1/kv/production/services/commerce/RPC_PORTecho "DONE INIT CONFIG COMMERCE-SERVICE"
+curl --request PUT --data '50051' http://localhost:8500/v1/kv/production/services/commerce/RPC_PORT
+echo "DONE INIT CONFIG COMMERCE-SERVICE"

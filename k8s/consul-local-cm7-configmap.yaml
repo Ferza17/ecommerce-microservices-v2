@@ -24,7 +24,8 @@ data:
     "Interval": "30s",
     "Timeout": "3s",
     "ServiceID": "traefik-main"
-    }'# Verify registration
+    }'
+    # Verify registration
     echo "✅ Traefik Consul : registration completed"
 kind: ConfigMap
 metadata:

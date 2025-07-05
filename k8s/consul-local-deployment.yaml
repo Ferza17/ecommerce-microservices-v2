@@ -40,8 +40,8 @@ spec:
                 - members
             failureThreshold: 3
             initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 3
+            periodSeconds: 60
+            timeoutSeconds: 10
           name: consul-local
           ports:
             - containerPort: 8500

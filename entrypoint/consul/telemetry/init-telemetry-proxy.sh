@@ -19,5 +19,6 @@ curl -s -X PUT http://consul-local:8500/v1/agent/check/register \
 "Interval": "10s",
 "Timeout": "3s",
 "ServiceID": "jaeger-main"
-}'# Verify registration
+}'
+# Verify registration
 echo "✅ Jaeger Telemetry proxy registration completed"

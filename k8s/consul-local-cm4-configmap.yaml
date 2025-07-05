@@ -14,7 +14,8 @@ data:
     curl --request PUT --data 'api-gateway-service' http://localhost:8500/v1/kv/production/services/api-gateway/HTTP_HOST
     curl --request PUT --data '3000' http://localhost:8500/v1/kv/production/services/api-gateway/HTTP_PORT
     curl --request PUT --data 'api-gateway-service' http://localhost:8500/v1/kv/production/services/api-gateway/RPC_HOST
-    curl --request PUT --data '50000' http://localhost:8500/v1/kv/production/services/api-gateway/RPC_PORTecho "DONE INIT CONFIG API GATEWAY"
+    curl --request PUT --data '50000' http://localhost:8500/v1/kv/production/services/api-gateway/RPC_PORT
+    echo "DONE INIT CONFIG API GATEWAY"
   init-commerce-service.sh: |
     echo "INIT CONFIG COMMERCE-SERVICE"
     ## Local
@@ -26,7 +27,8 @@ data:
     curl --request PUT --data 'production' http://localhost:8500/v1/kv/production/services/commerce/ENV
     curl --request PUT --data 'commerce-service' http://localhost:8500/v1/kv/production/services/commerce/SERVICE_NAME
     curl --request PUT --data 'commerce-service' http://localhost:8500/v1/kv/production/services/commerce/RPC_HOST
-    curl --request PUT --data '50051' http://localhost:8500/v1/kv/production/services/commerce/RPC_PORTecho "DONE INIT CONFIG COMMERCE-SERVICE"
+    curl --request PUT --data '50051' http://localhost:8500/v1/kv/production/services/commerce/RPC_PORT
+    echo "DONE INIT CONFIG COMMERCE-SERVICE"
   init-event-store-service.sh: |
     echo "INIT EVENT-STORE SERVICE"## Local
     curl --request PUT --data 'local' http://localhost:8500/v1/kv/local/services/event-store/ENV
@@ -37,7 +39,8 @@ data:
     curl --request PUT --data 'production' http://localhost:8500/v1/kv/production/services/event-store/ENV
     curl --request PUT --data 'event-store-service' http://localhost:8500/v1/kv/production/services/event-store/SERVICE_NAME
     curl --request PUT --data 'event-store-service' http://localhost:8500/v1/kv/production/services/event-store/RPC_HOST
-    curl --request PUT --data '50052' http://localhost:8500/v1/kv/production/services/event-store/RPC_PORTecho "DONE INIT EVENT-STORE SERVICE"
+    curl --request PUT --data '50052' http://localhost:8500/v1/kv/production/services/event-store/RPC_PORT
+    echo "DONE INIT EVENT-STORE SERVICE"
   init-notification-service.sh: |
     echo "INIT NOTIFICATION SERVICE"
     ## Local
@@ -55,7 +58,8 @@ data:
     consul kv put production/services/notification/RPC_PORT '50053'
     consul kv put production/services/notification/HTTP_HOST 'notification-service'
     consul kv put production/services/notification/HTTP_PORT '40053'
-    consul kv put production/services/notification/METRIC_HTTP_PORT '30053'echo "DONE INIT NOTIFICATION SERVICE"
+    consul kv put production/services/notification/METRIC_HTTP_PORT '30053'
+    echo "DONE INIT NOTIFICATION SERVICE"
   init-payment-service.sh: |
     echo "INIT PAYMENT SERVICE"
     ## LOCAL
@@ -75,7 +79,8 @@ data:
     consul kv put production/services/payment/RPC_PORT '50054'
     consul kv put production/services/payment/HTTP_HOST 'payment-service'
     consul kv put production/services/payment/HTTP_PORT '40054'
-    consul kv put production/services/payment/METRIC_HTTP_PORT '30054'echo "DONE INIT PAYMENT SERVICE"
+    consul kv put production/services/payment/METRIC_HTTP_PORT '30054'
+    echo "DONE INIT PAYMENT SERVICE"
   init-product-service.sh: |
     echo "INIT PRODUCT SERVICE"
     ## Local
@@ -124,7 +129,8 @@ data:
     consul kv put production/services/user/JWT_REFRESH_TOKEN_SECRET 'v2-service-ecommerce'
     consul kv put production/services/user/JWT_REFRESH_TOKEN_EXPIRATION_TIME '1h'
     consul kv put production/services/user/OTP_EXPIRATION_TIME '10m'
-    consul kv put production/services/user/VERIFICATION_USER_LOGIN_URL 'http://user-service:4000?access_token=%s?refresh_token=?'echo "DONE INIT USER SERVICE"
+    consul kv put production/services/user/VERIFICATION_USER_LOGIN_URL 'http://user-service:4000?access_token=%s?refresh_token=?'
+    echo "DONE INIT USER SERVICE"
 kind: ConfigMap
 metadata:
   labels:

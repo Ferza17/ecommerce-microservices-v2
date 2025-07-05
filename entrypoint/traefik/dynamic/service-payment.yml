@@ -1,0 +1,33 @@
+http:
+  routers:
+    payment-service-provider-grpc:
+      entryPoints:
+        - grpc
+      service: "payment-service-grpc"
+      rule: "Host(`localhost`) && PathPrefix(`/payment.ProviderService`)"
+      tls: false
+
+    payment-service-payment-grpc:
+      entryPoints:
+        - grpc
+      service: "payment-service-grpc"
+      rule: "Host(`localhost`) && PathPrefix(`/payment.PaymentService`)"
+      tls: false
+
+    payment-service-http:
+      entryPoints:
+        - websecure
+      service: "payment-service-http"
+      rule: "Host(`localhost`) && (PathPrefix(`/v1/payment`) || PathPrefix(`/docs/v1/payment`))"
+      tls: true
+
+  services:
+    payment-service-grpc:
+      loadBalancer:
+        servers:
+          - url: h2c://payment-service:50054
+
+    payment-service-http:
+      loadBalancer:
+        servers:
+          - url: http://payment-service:40054

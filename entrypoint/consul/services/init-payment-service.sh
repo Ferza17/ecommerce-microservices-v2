@@ -16,4 +16,5 @@ consul kv put production/services/payment/RPC_HOST 'payment-service'
 consul kv put production/services/payment/RPC_PORT '50054'
 consul kv put production/services/payment/HTTP_HOST 'payment-service'
 consul kv put production/services/payment/HTTP_PORT '40054'
-consul kv put production/services/payment/METRIC_HTTP_PORT '30054'echo "DONE INIT PAYMENT SERVICE"
+consul kv put production/services/payment/METRIC_HTTP_PORT '30054'
+echo "DONE INIT PAYMENT SERVICE"

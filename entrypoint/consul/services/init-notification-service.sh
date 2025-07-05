@@ -14,4 +14,5 @@ consul kv put production/services/notification/RPC_HOST 'notification-service'
 consul kv put production/services/notification/RPC_PORT '50053'
 consul kv put production/services/notification/HTTP_HOST 'notification-service'
 consul kv put production/services/notification/HTTP_PORT '40053'
-consul kv put production/services/notification/METRIC_HTTP_PORT '30053'echo "DONE INIT NOTIFICATION SERVICE"
+consul kv put production/services/notification/METRIC_HTTP_PORT '30053'
+echo "DONE INIT NOTIFICATION SERVICE"

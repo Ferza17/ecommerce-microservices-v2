@@ -1,5 +1,7 @@
 package telemetry
 
+// mocktail: ITelemetryInfrastructure
+
 import (
 	"context"
 	"fmt"

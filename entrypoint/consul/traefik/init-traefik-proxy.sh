@@ -21,5 +21,6 @@ curl -s -X PUT http://consul-local:8500/v1/agent/check/register \
 "Interval": "30s",
 "Timeout": "3s",
 "ServiceID": "traefik-main"
-}'# Verify registration
+}'
+# Verify registration
 echo "✅ Traefik Consul : registration completed"

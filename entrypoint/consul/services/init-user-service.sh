@@ -26,4 +26,5 @@ consul kv put production/services/user/JWT_ACCESS_TOKEN_EXPIRATION_TIME '1h'
 consul kv put production/services/user/JWT_REFRESH_TOKEN_SECRET 'v2-service-ecommerce'
 consul kv put production/services/user/JWT_REFRESH_TOKEN_EXPIRATION_TIME '1h'
 consul kv put production/services/user/OTP_EXPIRATION_TIME '10m'
-consul kv put production/services/user/VERIFICATION_USER_LOGIN_URL 'http://user-service:4000?access_token=%s?refresh_token=?'echo "DONE INIT USER SERVICE"
+consul kv put production/services/user/VERIFICATION_USER_LOGIN_URL 'http://user-service:4000?access_token=%s?refresh_token=?'
+echo "DONE INIT USER SERVICE"

@@ -11,4 +11,5 @@ curl --request PUT --data 'api-gateway-service' http://localhost:8500/v1/kv/prod
 curl --request PUT --data 'api-gateway-service' http://localhost:8500/v1/kv/production/services/api-gateway/HTTP_HOST
 curl --request PUT --data '3000' http://localhost:8500/v1/kv/production/services/api-gateway/HTTP_PORT
 curl --request PUT --data 'api-gateway-service' http://localhost:8500/v1/kv/production/services/api-gateway/RPC_HOST
-curl --request PUT --data '50000' http://localhost:8500/v1/kv/production/services/api-gateway/RPC_PORTecho "DONE INIT CONFIG API GATEWAY"
+curl --request PUT --data '50000' http://localhost:8500/v1/kv/production/services/api-gateway/RPC_PORT
+echo "DONE INIT CONFIG API GATEWAY"
