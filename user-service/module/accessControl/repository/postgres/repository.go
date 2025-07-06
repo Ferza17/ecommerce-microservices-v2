@@ -29,7 +29,7 @@ type (
 		CreateAccessControlExcluded(ctx context.Context, requestId string, accessControlExcluded *orm.AccessControlExcluded, tx *gorm.DB) (*orm.AccessControlExcluded, error)
 	}
 	accessControlPostgresSQLRepository struct {
-		postgresSQLInfrastructure *postgres.PostgresSQL
+		postgresSQLInfrastructure postgres.IPostgresSQL
 		telemetryInfrastructure   telemetryInfrastructure.ITelemetryInfrastructure
 		logger                    logger.IZapLogger
 	}
@@ -38,7 +38,7 @@ type (
 var Set = wire.NewSet(NewAccessControlPostgresqlRepository)
 
 func NewAccessControlPostgresqlRepository(
-	postgresSQLInfrastructure *postgres.PostgresSQL,
+	postgresSQLInfrastructure postgres.IPostgresSQL,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	logger logger.IZapLogger,
 ) IAccessControlPostgresqlRepository {

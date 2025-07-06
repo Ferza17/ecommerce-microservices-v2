@@ -18,7 +18,7 @@ type (
 		UpdateRoleById(ctx context.Context, requestId string, accessControl *orm.Role, tx *gorm.DB) (*orm.Role, error)
 	}
 	rolePostgresSQLRepository struct {
-		postgresSQLInfrastructure *postgres.PostgresSQL
+		postgresSQLInfrastructure postgres.IPostgresSQL
 		telemetryInfrastructure   telemetryInfrastructure.ITelemetryInfrastructure
 		logger                    logger.IZapLogger
 	}
@@ -27,7 +27,7 @@ type (
 var Set = wire.NewSet(NewRolePostgresqlRepository)
 
 func NewRolePostgresqlRepository(
-	postgresSQLInfrastructure *postgres.PostgresSQL,
+	postgresSQLInfrastructure postgres.IPostgresSQL,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	logger logger.IZapLogger,
 ) IRolePostgresqlRepository {

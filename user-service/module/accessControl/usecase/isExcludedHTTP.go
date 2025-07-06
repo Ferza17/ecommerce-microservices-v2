@@ -34,7 +34,7 @@ func (u *accessControlUseCase) IsExcludedHTTP(ctx context.Context, requestId str
 	}
 
 	// Check On Postgres
-	tx := u.postgresSQL.GormDB.Begin()
+	tx := u.postgresSQL.GormDB().Begin()
 	if _, err = u.accessControlPostgresqlRepository.FindAccessControlExcludedByHttpUrlAndHttpMethod(ctx, requestId, method, url, tx); err != nil {
 		tx.Rollback()
 		u.logger.Error("AccessControlUseCase.IsExcludedHTTP", zap.Error(err))

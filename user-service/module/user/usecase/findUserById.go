@@ -14,7 +14,7 @@ func (u *userUseCase) FindUserById(ctx context.Context, requestId string, req *u
 	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "UserUseCase.FindUserById")
 	defer span.End()
 
-	tx := u.postgresSQLInfrastructure.GormDB.Begin()
+	tx := u.postgresSQLInfrastructure.GormDB().Begin()
 	fetchedUser, err := u.userPostgresqlRepository.FindUserById(ctx, requestId, req.Id, tx)
 	if err != nil {
 		tx.Rollback()

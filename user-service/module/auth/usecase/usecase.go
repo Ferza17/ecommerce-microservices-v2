@@ -39,7 +39,7 @@ type (
 
 		rabbitmqInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
-		postgresSQL             *postgres.PostgresSQL
+		postgresSQL             postgres.IPostgresSQL
 		logger                  logger.IZapLogger
 	}
 )
@@ -53,7 +53,7 @@ func NewAuthUseCase(
 	accessControlUseCase accessControlUseCase.IAccessControlUseCase,
 	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
-	postgresSQL *postgres.PostgresSQL,
+	postgresSQL postgres.IPostgresSQL,
 	logger logger.IZapLogger,
 ) IAuthUseCase {
 	return &authUseCase{

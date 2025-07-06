@@ -19,7 +19,7 @@ type (
 	}
 
 	userPostgresqlRepository struct {
-		postgresSQLInfrastructure *postgres.PostgresSQL
+		postgresSQLInfrastructure postgres.IPostgresSQL
 		telemetryInfrastructure   telemetryInfrastructure.ITelemetryInfrastructure
 		logger                    logger.IZapLogger
 	}
@@ -28,7 +28,7 @@ type (
 var Set = wire.NewSet(NewUserPostgresqlRepository)
 
 func NewUserPostgresqlRepository(
-	postgresSQLInfrastructure *postgres.PostgresSQL,
+	postgresSQLInfrastructure postgres.IPostgresSQL,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	logger logger.IZapLogger) IUserPostgresqlRepository {
 	return &userPostgresqlRepository{

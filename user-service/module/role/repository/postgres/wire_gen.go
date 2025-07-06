@@ -16,8 +16,8 @@ import (
 
 func ProvideRoleRepository() IRolePostgresqlRepository {
 	iZapLogger := logger.NewZapLogger()
-	postgresSQL := postgres.NewPostgresqlInfrastructure(iZapLogger)
+	iPostgresSQL := postgres.NewPostgresqlInfrastructure(iZapLogger)
 	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
-	iRolePostgresqlRepository := NewRolePostgresqlRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
+	iRolePostgresqlRepository := NewRolePostgresqlRepository(iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
 	return iRolePostgresqlRepository
 }

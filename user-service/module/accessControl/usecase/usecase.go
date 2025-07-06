@@ -23,7 +23,7 @@ type (
 		accessControlPostgresqlRepository accessControlPostgresqlRepository.IAccessControlPostgresqlRepository
 		accessControlRedisRepository      accessControlRedisRepository.IAccessControlRedisRepository
 		telemetryInfrastructure           telemetryInfrastructure.ITelemetryInfrastructure
-		postgresSQL                       *postgres.PostgresSQL
+		postgresSQL                       postgres.IPostgresSQL
 		logger                            logger.IZapLogger
 	}
 )
@@ -34,7 +34,7 @@ func NewAccessControlUseCase(
 	accessControlPostgresqlRepository accessControlPostgresqlRepository.IAccessControlPostgresqlRepository,
 	accessControlRedisRepository accessControlRedisRepository.IAccessControlRedisRepository,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
-	postgresSQL *postgres.PostgresSQL,
+	postgresSQL postgres.IPostgresSQL,
 	logger logger.IZapLogger,
 ) IAccessControlUseCase {
 	return &accessControlUseCase{

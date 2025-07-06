@@ -19,7 +19,7 @@ func (u *accessControlUseCase) IsHasHTTPAccess(ctx context.Context, requestId st
 	}
 
 	// Check On Postgres
-	tx := u.postgresSQL.GormDB.Begin()
+	tx := u.postgresSQL.GormDB().Begin()
 	if _, err := u.accessControlPostgresqlRepository.FindAccessControlByRoleAndHttpMethodAndHttpUrl(ctx, requestId, role, httpMethod, httpUrl, tx); err != nil {
 		tx.Rollback()
 		u.logger.Error("AccessControlUseCase.IsHasHTTPAccess", zap.String("requestId", requestId), zap.Error(err))

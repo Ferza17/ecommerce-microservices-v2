@@ -27,7 +27,7 @@ var aclCommand = &cobra.Command{
 		now := time.Now()
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
-		tx := postgres2.ProvidePostgresInfrastructure().GormDB.Begin()
+		tx := postgres2.ProvidePostgresInfrastructure().GormDB().Begin()
 
 		// 1. Find IF ROLE EXISTS THEN CONTINUE ELSE CREATE new ROLE
 		// 2. SAVE CREATED ID IN MAP[pb.ROLE.string()]ID

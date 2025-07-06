@@ -8,7 +8,7 @@ import (
 	"github.com/google/wire"
 )
 
-func ProvidePostgresInfrastructure() *PostgresSQL {
+func ProvidePostgresInfrastructure() IPostgresSQL {
 	wire.Build(
 		logger.Set,
 		Set,

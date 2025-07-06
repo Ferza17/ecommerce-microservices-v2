@@ -14,7 +14,7 @@ import (
 func (u *authUseCase) AuthUserVerifyAccessControl(ctx context.Context, requestId string, req *pb.AuthUserVerifyAccessControlRequest) (*pb.AuthUserVerifyAccessControlResponse, error) {
 	var (
 		isValid = false
-		tx      = u.postgresSQL.GormDB.Begin()
+		tx      = u.postgresSQL.GormDB().Begin()
 	)
 
 	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthUseCase.AuthUserVerifyAccessControl")

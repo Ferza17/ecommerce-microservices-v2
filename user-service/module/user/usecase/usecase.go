@@ -26,7 +26,7 @@ type (
 		rolePostgresqlRepository rolePostgresqlRepository.IRolePostgresqlRepository
 
 		rabbitmqInfrastructure    rabbitmqInfrastructure.IRabbitMQInfrastructure
-		postgresSQLInfrastructure *postgres.PostgresSQL
+		postgresSQLInfrastructure postgres.IPostgresSQL
 		telemetryInfrastructure   telemetryInfrastructure.ITelemetryInfrastructure
 		authRedisRepository       authRedisRepository.IAuthRedisRepository
 		logger                    logger.IZapLogger
@@ -40,7 +40,7 @@ func NewUserUseCase(
 	rolePostgresqlRepository rolePostgresqlRepository.IRolePostgresqlRepository,
 	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
 	authRedisRepository authRedisRepository.IAuthRedisRepository,
-	postgresSQLInfrastructure *postgres.PostgresSQL,
+	postgresSQLInfrastructure postgres.IPostgresSQL,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	logger logger.IZapLogger) IUserUseCase {
 	return &userUseCase{

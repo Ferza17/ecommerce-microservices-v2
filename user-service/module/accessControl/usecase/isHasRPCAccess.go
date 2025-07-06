@@ -19,7 +19,7 @@ func (u *accessControlUseCase) IsHasRPCAccess(ctx context.Context, requestId str
 	}
 
 	// Check On Postgres
-	tx := u.postgresSQL.GormDB.Begin()
+	tx := u.postgresSQL.GormDB().Begin()
 	if _, err := u.accessControlPostgresqlRepository.FindAccessControlByRoleAndFullMethodName(ctx, requestId, role, fullMethodName, tx); err != nil {
 		tx.Rollback()
 		u.logger.Error("AccessControlUseCase.IsHasRPCAccess", zap.String("requestId", requestId), zap.Error(err))

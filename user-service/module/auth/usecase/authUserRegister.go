@@ -18,7 +18,7 @@ import (
 
 func (u *authUseCase) AuthUserRegister(ctx context.Context, requestId string, req *pb.AuthUserRegisterRequest) (*emptypb.Empty, error) {
 	var (
-		tx  = u.postgresSQL.GormDB.Begin()
+		tx  = u.postgresSQL.GormDB().Begin()
 		now = time.Now()
 	)
 

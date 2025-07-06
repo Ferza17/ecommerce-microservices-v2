@@ -16,8 +16,8 @@ import (
 
 func ProvideAccessControlRepository() IAccessControlPostgresqlRepository {
 	iZapLogger := logger.NewZapLogger()
-	postgresSQL := postgres.NewPostgresqlInfrastructure(iZapLogger)
+	iPostgresSQL := postgres.NewPostgresqlInfrastructure(iZapLogger)
 	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
-	iAccessControlPostgresqlRepository := NewAccessControlPostgresqlRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
+	iAccessControlPostgresqlRepository := NewAccessControlPostgresqlRepository(iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
 	return iAccessControlPostgresqlRepository
 }

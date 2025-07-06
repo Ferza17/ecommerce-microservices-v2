@@ -11,7 +11,7 @@ import (
 func (u *userUseCase) UpdateUserById(ctx context.Context, requestId string, req *userRpc.UpdateUserByIdRequest) (*userRpc.UpdateUserByIdResponse, error) {
 	var (
 		err error
-		tx  = u.postgresSQLInfrastructure.GormDB.Begin()
+		tx  = u.postgresSQLInfrastructure.GormDB().Begin()
 	)
 	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "UserUseCase.UpdateUserById")
 	defer span.End()

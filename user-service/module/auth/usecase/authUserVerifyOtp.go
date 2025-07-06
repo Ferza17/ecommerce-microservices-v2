@@ -12,7 +12,7 @@ import (
 )
 
 func (u *authUseCase) AuthUserVerifyOtp(ctx context.Context, requestId string, req *pb.AuthUserVerifyOtpRequest) (*pb.AuthUserVerifyOtpResponse, error) {
-	tx := u.postgresSQL.GormDB.Begin()
+	tx := u.postgresSQL.GormDB().Begin()
 	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthUseCase.AuthUserVerifyOtp")
 	defer span.End()
 

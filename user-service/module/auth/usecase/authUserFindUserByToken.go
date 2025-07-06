@@ -17,7 +17,7 @@ import (
 func (u *authUseCase) AuthUserFindUserByToken(ctx context.Context, requestId string, req *pb.AuthUserFindUserByTokenRequest) (*pb.AuthUserFindUserByTokenResponse, error) {
 	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthUseCase.AuthUserFindUserByToken")
 	defer span.End()
-	tx := u.postgresSQL.GormDB.Begin()
+	tx := u.postgresSQL.GormDB().Begin()
 	claimedToken, err := token.ValidateJWTToken(req.Token, token.DefaultRefreshTokenConfig())
 	if err != nil {
 		tx.Rollback()

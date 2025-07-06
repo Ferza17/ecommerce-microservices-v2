@@ -15,7 +15,7 @@ import (
 
 func (u *userUseCase) FindUserByEmailAndPassword(ctx context.Context, requestId string, request *userRpc.FindUserByEmailAndPasswordRequest) (*userRpc.User, error) {
 	var (
-		tx = u.postgresSQLInfrastructure.GormDB.Begin()
+		tx = u.postgresSQLInfrastructure.GormDB().Begin()
 	)
 	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "UserUseCase.FindUserByEmailAndPassword")
 	defer span.End()

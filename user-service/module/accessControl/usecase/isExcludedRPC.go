@@ -16,7 +16,7 @@ func (u *accessControlUseCase) IsExcludedRPC(ctx context.Context, requestId stri
 	}
 
 	// Check On Postgres
-	tx := u.postgresSQL.GormDB.Begin()
+	tx := u.postgresSQL.GormDB().Begin()
 	if _, err := u.accessControlPostgresqlRepository.FindAccessControlExcludedByFullMethodName(ctx, requestId, fullMethodName, tx); err != nil {
 		tx.Rollback()
 		u.logger.Error("AccessControlUseCase.IsExcludedRPC", zap.Error(err))
