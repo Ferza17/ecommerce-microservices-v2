@@ -78,9 +78,15 @@ copy-protos:
 
 
 	# COPY TO COMMERCE SERVICE
-	TARGET_DIR="commerce-service/proto"; \
-	mkdir -p "$$TARGET_DIR"; \
-	rsync -av --include='*.proto' --include='*/' --exclude='*' "proto/" "$$TARGET_DIR"; \
+	TARGET_DIR_COMMERCE_SERVICE="commerce-service/proto"; \
+	mkdir -p "$$TARGET_DIR_COMMERCE_SERVICE"; \
+	rsync -av --include='*.proto' --include='*/' --exclude='*' "proto/" "$$TARGET_DIR_COMMERCE_SERVICE"; \
+
+	# COPY PROTO TO SHIPPING SERVICE
+	TARGET_DIR_SHIPPING_SERVICE="shipping-service/src/main/proto"; \
+	mkdir -p "$$TARGET_DIR_SHIPPING_SERVICE"; \
+	rsync -av --include='*.proto' --include='*/' --exclude='*' "proto/" "$$TARGET_DIR_SHIPPING_SERVICE"; \
+
 
 	@echo "=================================================="
 	@echo ">>> Done. <<<"

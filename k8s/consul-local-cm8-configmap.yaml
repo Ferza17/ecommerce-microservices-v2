@@ -1,0 +1,48 @@
+apiVersion: v1
+data:
+  register.sh: |
+    #!/bin/bash
+
+    echo "Registering PostgresSQL Exporter as proxy service in Consul ..."
+
+    # Wait for PostgresSQL Exporter to be available
+    echo "Waiting for PostgresSQL Exporter to be available..."
+    until nc -z postgres-exporter-local 9187; do
+    echo "PostgresSQL Exporter not ready yet, waiting..."
+    sleep 2
+    done
+    echo "PostgresSQL Exporter is available"
+
+
+    # Register Postgresql Exporter service
+    consul services register \
+    -name=PostgresSQL Exporter \
+    -id=postgres-exporter-main \
+    -port=9187 \
+    -address=postgres-exporter-local \
+    -tag=metrics \
+    -tag=postgresSQL \
+    -tag=PostgresSQL Exporter
+
+    # Manual health check registration via HTTP API
+    echo "Adding health checks..."
+
+    # Health check for MongoDB
+    curl -s -X PUT http://consul-local:8500/v1/agent/check/register \
+    -H "Content-Type: application/json" \
+    -d '{
+    "ID": "PostgresSQL-Exporter-health",
+    "Name": "PostgresSQL Exporter Health Check",
+    "HTTP": "http://postgres-exporter-local:9187/metrics",
+    "Interval": "30s",
+    "Timeout": "5s",
+    "ServiceID": "postgres-exporter-main"
+    }'
+
+    # Verify registration
+    echo "✅ PostgresSQL Exporter registration completed"
+kind: ConfigMap
+metadata:
+  labels:
+    io.kompose.service: consul-local
+  name: consul-local-cm8

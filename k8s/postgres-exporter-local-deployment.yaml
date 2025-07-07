@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --file docker-compose.yml --out k8s/
+    kompose.version: 1.36.0 (HEAD)
+  labels:
+    io.kompose.service: postgres-exporter-local
+  name: postgres-exporter-local
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: postgres-exporter-local
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert --file docker-compose.yml --out k8s/
+        kompose.version: 1.36.0 (HEAD)
+      labels:
+        io.kompose.service: postgres-exporter-local
+    spec:
+      containers:
+        - env:
+            - name: DATA_SOURCE_PASS
+              value: "1234"
+            - name: DATA_SOURCE_URI
+              value: postgres-local:5432/users?sslmode=disable
+            - name: DATA_SOURCE_USER
+              value: postgres
+            - name: PG_EXPORTER_INCLUDE_DATABASES
+              value: products,users,payments
+          image: prometheuscommunity/postgres-exporter:latest
+          name: postgres-exporter-local
+          ports:
+            - containerPort: 9187
+              protocol: TCP
+      restartPolicy: Always

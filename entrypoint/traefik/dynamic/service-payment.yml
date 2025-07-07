@@ -18,6 +18,8 @@ http:
       entryPoints:
         - websecure
       service: "payment-service-http"
+      middlewares:
+        - api-rate-limit@file
       rule: "Host(`localhost`) && (PathPrefix(`/v1/payment`) || PathPrefix(`/docs/v1/payment`))"
       tls: true
 

@@ -73,6 +73,9 @@ spec:
             - mountPath: /traefik
               name: consul-local-cm7
               readOnly: true
+            - mountPath: /postgres-exporter
+              name: consul-local-cm8
+              readOnly: true
       restartPolicy: Always
       volumes:
         - configMap:
@@ -99,3 +102,6 @@ spec:
         - configMap:
             name: consul-local-cm7
           name: consul-local-cm7
+        - configMap:
+            name: consul-local-cm8
+          name: consul-local-cm8

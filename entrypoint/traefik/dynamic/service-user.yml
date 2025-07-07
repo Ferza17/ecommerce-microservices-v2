@@ -18,6 +18,8 @@ http:
       entryPoints:
         - websecure
       service: "user-service-http"
+      middlewares:
+        - api-rate-limit@file
       rule: "Host(`localhost`) && (PathPrefix(`/v1/user`) || PathPrefix(`/docs/v1/user`))"
       tls: true
 

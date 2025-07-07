@@ -11,6 +11,8 @@ http:
       entryPoints:
         - websecure
       service: "product-service-http"
+      middlewares:
+        - api-rate-limit@file
       rule: "Host(`localhost`) && (PathPrefix(`/v1/product`) || PathPrefix(`/docs/v1/product`))"
       tls: true
 

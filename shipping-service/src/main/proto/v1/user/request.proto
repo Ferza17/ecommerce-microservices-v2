@@ -1,0 +1,78 @@
+syntax = "proto3";
+package user;
+
+import "external/validate/validate.proto";
+import "v1/user/enum.proto";
+
+
+// ============= AUTH REQUEST DEFINITION
+
+// COMMAND
+
+// NEW
+message AuthUserRegisterRequest {
+  string name = 2 [(validate.rules).string.min_len = 0];
+  string email = 3 [(validate.rules).string.email = true];
+  string password = 4 [(validate.rules).string.min_len = 8];
+  user.EnumRole Role = 5 [(validate.rules).enum = {
+    defined_only: true,
+  }];
+}
+
+message AuthUserLoginByEmailAndPasswordRequest {
+  string email = 1 [(validate.rules).string.email = true];
+  string password = 2 [(validate.rules).string.min_len = 8];
+}
+
+message AuthUserVerifyOtpRequest {
+  string otp = 1 [(validate.rules).string.min_len = 4];
+}
+
+message AuthUserLogoutByTokenRequest {
+  string token = 1 [(validate.rules).string.min_len = 8];
+}
+
+message AuthUserVerifyAccessControlRequest {
+  string token = 1 [(validate.rules).string.min_len = 0];
+  optional string fullMethodName = 2;
+  optional string http_url = 3;
+  optional string http_method = 4;
+}
+
+message AuthUserFindUserByTokenRequest {
+  string token = 1 [(validate.rules).string.min_len = 0];
+}
+
+message AuthServiceVerifyIsExcludedRequest {
+  optional string fullMethodName = 2;
+  optional string http_url = 3;
+  optional string http_method = 4;
+}
+
+// END NEW
+
+
+
+
+
+
+
+// QUERY
+
+// USER REQUEST DEFINITION
+message FindUserByIdRequest {
+  string id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message UpdateUserByIdRequest {
+  string id = 1 [(validate.rules).string.min_len = 0];
+  optional string name = 2 ;
+  optional string email = 3 ;
+  optional string password = 4 ;
+  optional bool is_verified = 5;
+}
+
+message FindUserByEmailAndPasswordRequest {
+  string email = 1 [(validate.rules).string.email = true];
+  string password = 2 [(validate.rules).string.min_len = 8];
+}
