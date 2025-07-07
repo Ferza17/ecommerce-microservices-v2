@@ -32,8 +32,8 @@ type UserServiceClient interface {
 	// COMMAND
 	UpdateUserById(ctx context.Context, in *UpdateUserByIdRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// QUERY
-	FindUserById(ctx context.Context, in *FindUserByIdRequest, opts ...grpc.CallOption) (*User, error)
-	FindUserByEmailAndPassword(ctx context.Context, in *FindUserByEmailAndPasswordRequest, opts ...grpc.CallOption) (*User, error)
+	FindUserById(ctx context.Context, in *FindUserByIdRequest, opts ...grpc.CallOption) (*FindUserByIdResponse, error)
+	FindUserByEmailAndPassword(ctx context.Context, in *FindUserByEmailAndPasswordRequest, opts ...grpc.CallOption) (*FindUserByEmailAndPasswordResponse, error)
 }
 
 type userServiceClient struct {
@@ -54,9 +54,9 @@ func (c *userServiceClient) UpdateUserById(ctx context.Context, in *UpdateUserBy
 	return out, nil
 }
 
-func (c *userServiceClient) FindUserById(ctx context.Context, in *FindUserByIdRequest, opts ...grpc.CallOption) (*User, error) {
+func (c *userServiceClient) FindUserById(ctx context.Context, in *FindUserByIdRequest, opts ...grpc.CallOption) (*FindUserByIdResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(User)
+	out := new(FindUserByIdResponse)
 	err := c.cc.Invoke(ctx, UserService_FindUserById_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -64,9 +64,9 @@ func (c *userServiceClient) FindUserById(ctx context.Context, in *FindUserByIdRe
 	return out, nil
 }
 
-func (c *userServiceClient) FindUserByEmailAndPassword(ctx context.Context, in *FindUserByEmailAndPasswordRequest, opts ...grpc.CallOption) (*User, error) {
+func (c *userServiceClient) FindUserByEmailAndPassword(ctx context.Context, in *FindUserByEmailAndPasswordRequest, opts ...grpc.CallOption) (*FindUserByEmailAndPasswordResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(User)
+	out := new(FindUserByEmailAndPasswordResponse)
 	err := c.cc.Invoke(ctx, UserService_FindUserByEmailAndPassword_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -81,8 +81,8 @@ type UserServiceServer interface {
 	// COMMAND
 	UpdateUserById(context.Context, *UpdateUserByIdRequest) (*emptypb.Empty, error)
 	// QUERY
-	FindUserById(context.Context, *FindUserByIdRequest) (*User, error)
-	FindUserByEmailAndPassword(context.Context, *FindUserByEmailAndPasswordRequest) (*User, error)
+	FindUserById(context.Context, *FindUserByIdRequest) (*FindUserByIdResponse, error)
+	FindUserByEmailAndPassword(context.Context, *FindUserByEmailAndPasswordRequest) (*FindUserByEmailAndPasswordResponse, error)
 }
 
 // UnimplementedUserServiceServer should be embedded to have
@@ -95,10 +95,10 @@ type UnimplementedUserServiceServer struct{}
 func (UnimplementedUserServiceServer) UpdateUserById(context.Context, *UpdateUserByIdRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserById not implemented")
 }
-func (UnimplementedUserServiceServer) FindUserById(context.Context, *FindUserByIdRequest) (*User, error) {
+func (UnimplementedUserServiceServer) FindUserById(context.Context, *FindUserByIdRequest) (*FindUserByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindUserById not implemented")
 }
-func (UnimplementedUserServiceServer) FindUserByEmailAndPassword(context.Context, *FindUserByEmailAndPasswordRequest) (*User, error) {
+func (UnimplementedUserServiceServer) FindUserByEmailAndPassword(context.Context, *FindUserByEmailAndPasswordRequest) (*FindUserByEmailAndPasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindUserByEmailAndPassword not implemented")
 }
 func (UnimplementedUserServiceServer) testEmbeddedByValue() {}

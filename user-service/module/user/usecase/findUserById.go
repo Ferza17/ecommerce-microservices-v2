@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (u *userUseCase) FindUserById(ctx context.Context, requestId string, req *userRpc.FindUserByIdRequest) (*userRpc.User, error) {
+func (u *userUseCase) FindUserById(ctx context.Context, requestId string, req *userRpc.FindUserByIdRequest) (*userRpc.FindUserByIdResponse, error) {
 	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "UserUseCase.FindUserById")
 	defer span.End()
 
@@ -25,5 +25,13 @@ func (u *userUseCase) FindUserById(ctx context.Context, requestId string, req *u
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 	tx.Commit()
-	return fetchedUser.ToProto(), nil
+	fetchedUser.Password = ""
+	return &userRpc.FindUserByIdResponse{
+		Error:   "",
+		Message: codes.OK.String(),
+		Code:    uint32(codes.OK),
+		Data: &userRpc.FindUserByIdResponse_FindUserByIdResponseData{
+			User: fetchedUser.ToProto(),
+		},
+	}, nil
 }

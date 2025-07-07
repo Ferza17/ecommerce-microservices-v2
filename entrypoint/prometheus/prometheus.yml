@@ -20,6 +20,13 @@ scrape_configs:
     scrape_interval: 30s
     metrics_path: /metrics
 
+  # POSTGRESQL METRICS EXPORTER
+  - job_name: 'postgresql'
+    static_configs:
+      - targets: [ 'postgres-exporter-local:9187' ]
+    scrape_interval: 30s
+    metrics_path: /metrics
+
   - job_name: 'user-service-metrics'
     static_configs:
       - targets: [ 'user-service:30056' ]

@@ -70,7 +70,7 @@ func AuthRPCUnaryInterceptor(
 			return nil, err
 		}
 
-		if !acl.IsValid {
+		if !acl.Data.IsValid {
 			logger.Error("Interceptor.AccessControlRPCInterceptor", zap.String("requestId", requestId), zap.Error(status.Errorf(codes.PermissionDenied, "Permission denied")))
 			return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
 		}

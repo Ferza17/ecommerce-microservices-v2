@@ -57,12 +57,18 @@ func (m *AuthUserRegisterResponse) validate(all bool) error {
 
 	var errors []error
 
+	// no validation rules for Error
+
+	// no validation rules for Message
+
+	// no validation rules for Code
+
 	if all {
-		switch v := interface{}(m.GetUser()).(type) {
+		switch v := interface{}(m.GetData()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
 				errors = append(errors, AuthUserRegisterResponseValidationError{
-					field:  "User",
+					field:  "Data",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
@@ -70,83 +76,20 @@ func (m *AuthUserRegisterResponse) validate(all bool) error {
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
 				errors = append(errors, AuthUserRegisterResponseValidationError{
-					field:  "User",
+					field:  "Data",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return AuthUserRegisterResponseValidationError{
-				field:  "User",
+				field:  "Data",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
 		}
-	}
-
-	if all {
-		switch v := interface{}(m.GetRole()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, AuthUserRegisterResponseValidationError{
-					field:  "Role",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, AuthUserRegisterResponseValidationError{
-					field:  "Role",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetRole()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return AuthUserRegisterResponseValidationError{
-				field:  "Role",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	for idx, item := range m.GetAccessControl() {
-		_, _ = idx, item
-
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, AuthUserRegisterResponseValidationError{
-						field:  fmt.Sprintf("AccessControl[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, AuthUserRegisterResponseValidationError{
-						field:  fmt.Sprintf("AccessControl[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return AuthUserRegisterResponseValidationError{
-					field:  fmt.Sprintf("AccessControl[%v]", idx),
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
 	}
 
 	if len(errors) > 0 {
@@ -251,9 +194,40 @@ func (m *AuthUserVerifyOtpResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for AccessToken
+	// no validation rules for Error
 
-	// no validation rules for RefreshToken
+	// no validation rules for Message
+
+	// no validation rules for Code
+
+	if all {
+		switch v := interface{}(m.GetData()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AuthUserVerifyOtpResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AuthUserVerifyOtpResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AuthUserVerifyOtpResponseValidationError{
+				field:  "Data",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if len(errors) > 0 {
 		return AuthUserVerifyOtpResponseMultiError(errors)
@@ -357,7 +331,40 @@ func (m *AuthUserLogoutByTokenResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for IsValid
+	// no validation rules for Error
+
+	// no validation rules for Message
+
+	// no validation rules for Code
+
+	if all {
+		switch v := interface{}(m.GetData()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AuthUserLogoutByTokenResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AuthUserLogoutByTokenResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AuthUserLogoutByTokenResponseValidationError{
+				field:  "Data",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if len(errors) > 0 {
 		return AuthUserLogoutByTokenResponseMultiError(errors)
@@ -463,14 +470,18 @@ func (m *AuthUserVerifyAccessControlResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for IsValid
+	// no validation rules for Error
+
+	// no validation rules for Message
+
+	// no validation rules for Code
 
 	if all {
-		switch v := interface{}(m.GetUser()).(type) {
+		switch v := interface{}(m.GetData()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
 				errors = append(errors, AuthUserVerifyAccessControlResponseValidationError{
-					field:  "User",
+					field:  "Data",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
@@ -478,83 +489,20 @@ func (m *AuthUserVerifyAccessControlResponse) validate(all bool) error {
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
 				errors = append(errors, AuthUserVerifyAccessControlResponseValidationError{
-					field:  "User",
+					field:  "Data",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return AuthUserVerifyAccessControlResponseValidationError{
-				field:  "User",
+				field:  "Data",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
 		}
-	}
-
-	if all {
-		switch v := interface{}(m.GetRole()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, AuthUserVerifyAccessControlResponseValidationError{
-					field:  "Role",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, AuthUserVerifyAccessControlResponseValidationError{
-					field:  "Role",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetRole()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return AuthUserVerifyAccessControlResponseValidationError{
-				field:  "Role",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	for idx, item := range m.GetAccessControls() {
-		_, _ = idx, item
-
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, AuthUserVerifyAccessControlResponseValidationError{
-						field:  fmt.Sprintf("AccessControls[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, AuthUserVerifyAccessControlResponseValidationError{
-						field:  fmt.Sprintf("AccessControls[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return AuthUserVerifyAccessControlResponseValidationError{
-					field:  fmt.Sprintf("AccessControls[%v]", idx),
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
 	}
 
 	if len(errors) > 0 {
@@ -661,12 +609,18 @@ func (m *AuthUserFindUserByTokenResponse) validate(all bool) error {
 
 	var errors []error
 
+	// no validation rules for Error
+
+	// no validation rules for Message
+
+	// no validation rules for Code
+
 	if all {
-		switch v := interface{}(m.GetUser()).(type) {
+		switch v := interface{}(m.GetData()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
 				errors = append(errors, AuthUserFindUserByTokenResponseValidationError{
-					field:  "User",
+					field:  "Data",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
@@ -674,83 +628,20 @@ func (m *AuthUserFindUserByTokenResponse) validate(all bool) error {
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
 				errors = append(errors, AuthUserFindUserByTokenResponseValidationError{
-					field:  "User",
+					field:  "Data",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return AuthUserFindUserByTokenResponseValidationError{
-				field:  "User",
+				field:  "Data",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
 		}
-	}
-
-	if all {
-		switch v := interface{}(m.GetRole()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, AuthUserFindUserByTokenResponseValidationError{
-					field:  "Role",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, AuthUserFindUserByTokenResponseValidationError{
-					field:  "Role",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetRole()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return AuthUserFindUserByTokenResponseValidationError{
-				field:  "Role",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	for idx, item := range m.GetAccessControls() {
-		_, _ = idx, item
-
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, AuthUserFindUserByTokenResponseValidationError{
-						field:  fmt.Sprintf("AccessControls[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, AuthUserFindUserByTokenResponseValidationError{
-						field:  fmt.Sprintf("AccessControls[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return AuthUserFindUserByTokenResponseValidationError{
-					field:  fmt.Sprintf("AccessControls[%v]", idx),
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
 	}
 
 	if len(errors) > 0 {
@@ -857,7 +748,40 @@ func (m *AuthServiceVerifyIsExcludedResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for IsExcluded
+	// no validation rules for Error
+
+	// no validation rules for Message
+
+	// no validation rules for Code
+
+	if all {
+		switch v := interface{}(m.GetData()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AuthServiceVerifyIsExcludedResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AuthServiceVerifyIsExcludedResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AuthServiceVerifyIsExcludedResponseValidationError{
+				field:  "Data",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if len(errors) > 0 {
 		return AuthServiceVerifyIsExcludedResponseMultiError(errors)
@@ -963,7 +887,40 @@ func (m *UpdateUserByIdResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	// no validation rules for Error
+
+	// no validation rules for Message
+
+	// no validation rules for Code
+
+	if all {
+		switch v := interface{}(m.GetData()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, UpdateUserByIdResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, UpdateUserByIdResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateUserByIdResponseValidationError{
+				field:  "Data",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if len(errors) > 0 {
 		return UpdateUserByIdResponseMultiError(errors)
@@ -1044,3 +1001,1615 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = UpdateUserByIdResponseValidationError{}
+
+// Validate checks the field values on FindUserByIdResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *FindUserByIdResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on FindUserByIdResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// FindUserByIdResponseMultiError, or nil if none found.
+func (m *FindUserByIdResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *FindUserByIdResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Error
+
+	// no validation rules for Message
+
+	// no validation rules for Code
+
+	if all {
+		switch v := interface{}(m.GetData()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, FindUserByIdResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, FindUserByIdResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return FindUserByIdResponseValidationError{
+				field:  "Data",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return FindUserByIdResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// FindUserByIdResponseMultiError is an error wrapping multiple validation
+// errors returned by FindUserByIdResponse.ValidateAll() if the designated
+// constraints aren't met.
+type FindUserByIdResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m FindUserByIdResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m FindUserByIdResponseMultiError) AllErrors() []error { return m }
+
+// FindUserByIdResponseValidationError is the validation error returned by
+// FindUserByIdResponse.Validate if the designated constraints aren't met.
+type FindUserByIdResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e FindUserByIdResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e FindUserByIdResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e FindUserByIdResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e FindUserByIdResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e FindUserByIdResponseValidationError) ErrorName() string {
+	return "FindUserByIdResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e FindUserByIdResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sFindUserByIdResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = FindUserByIdResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = FindUserByIdResponseValidationError{}
+
+// Validate checks the field values on FindUserByEmailAndPasswordResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *FindUserByEmailAndPasswordResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on FindUserByEmailAndPasswordResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// FindUserByEmailAndPasswordResponseMultiError, or nil if none found.
+func (m *FindUserByEmailAndPasswordResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *FindUserByEmailAndPasswordResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Error
+
+	// no validation rules for Message
+
+	// no validation rules for Code
+
+	if all {
+		switch v := interface{}(m.GetData()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, FindUserByEmailAndPasswordResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, FindUserByEmailAndPasswordResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return FindUserByEmailAndPasswordResponseValidationError{
+				field:  "Data",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return FindUserByEmailAndPasswordResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// FindUserByEmailAndPasswordResponseMultiError is an error wrapping multiple
+// validation errors returned by
+// FindUserByEmailAndPasswordResponse.ValidateAll() if the designated
+// constraints aren't met.
+type FindUserByEmailAndPasswordResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m FindUserByEmailAndPasswordResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m FindUserByEmailAndPasswordResponseMultiError) AllErrors() []error { return m }
+
+// FindUserByEmailAndPasswordResponseValidationError is the validation error
+// returned by FindUserByEmailAndPasswordResponse.Validate if the designated
+// constraints aren't met.
+type FindUserByEmailAndPasswordResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e FindUserByEmailAndPasswordResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e FindUserByEmailAndPasswordResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e FindUserByEmailAndPasswordResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e FindUserByEmailAndPasswordResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e FindUserByEmailAndPasswordResponseValidationError) ErrorName() string {
+	return "FindUserByEmailAndPasswordResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e FindUserByEmailAndPasswordResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sFindUserByEmailAndPasswordResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = FindUserByEmailAndPasswordResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = FindUserByEmailAndPasswordResponseValidationError{}
+
+// Validate checks the field values on
+// AuthUserRegisterResponse_AuthUserRegisterResponseData with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AuthUserRegisterResponse_AuthUserRegisterResponseData) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// AuthUserRegisterResponse_AuthUserRegisterResponseData with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AuthUserRegisterResponse_AuthUserRegisterResponseDataMultiError, or nil if
+// none found.
+func (m *AuthUserRegisterResponse_AuthUserRegisterResponseData) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AuthUserRegisterResponse_AuthUserRegisterResponseData) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetUser()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AuthUserRegisterResponse_AuthUserRegisterResponseDataValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AuthUserRegisterResponse_AuthUserRegisterResponseDataValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AuthUserRegisterResponse_AuthUserRegisterResponseDataValidationError{
+				field:  "User",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetRole()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AuthUserRegisterResponse_AuthUserRegisterResponseDataValidationError{
+					field:  "Role",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AuthUserRegisterResponse_AuthUserRegisterResponseDataValidationError{
+					field:  "Role",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetRole()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AuthUserRegisterResponse_AuthUserRegisterResponseDataValidationError{
+				field:  "Role",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	for idx, item := range m.GetAccessControl() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, AuthUserRegisterResponse_AuthUserRegisterResponseDataValidationError{
+						field:  fmt.Sprintf("AccessControl[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, AuthUserRegisterResponse_AuthUserRegisterResponseDataValidationError{
+						field:  fmt.Sprintf("AccessControl[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return AuthUserRegisterResponse_AuthUserRegisterResponseDataValidationError{
+					field:  fmt.Sprintf("AccessControl[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return AuthUserRegisterResponse_AuthUserRegisterResponseDataMultiError(errors)
+	}
+
+	return nil
+}
+
+// AuthUserRegisterResponse_AuthUserRegisterResponseDataMultiError is an error
+// wrapping multiple validation errors returned by
+// AuthUserRegisterResponse_AuthUserRegisterResponseData.ValidateAll() if the
+// designated constraints aren't met.
+type AuthUserRegisterResponse_AuthUserRegisterResponseDataMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AuthUserRegisterResponse_AuthUserRegisterResponseDataMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AuthUserRegisterResponse_AuthUserRegisterResponseDataMultiError) AllErrors() []error {
+	return m
+}
+
+// AuthUserRegisterResponse_AuthUserRegisterResponseDataValidationError is the
+// validation error returned by
+// AuthUserRegisterResponse_AuthUserRegisterResponseData.Validate if the
+// designated constraints aren't met.
+type AuthUserRegisterResponse_AuthUserRegisterResponseDataValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AuthUserRegisterResponse_AuthUserRegisterResponseDataValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e AuthUserRegisterResponse_AuthUserRegisterResponseDataValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e AuthUserRegisterResponse_AuthUserRegisterResponseDataValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e AuthUserRegisterResponse_AuthUserRegisterResponseDataValidationError) Key() bool {
+	return e.key
+}
+
+// ErrorName returns error name.
+func (e AuthUserRegisterResponse_AuthUserRegisterResponseDataValidationError) ErrorName() string {
+	return "AuthUserRegisterResponse_AuthUserRegisterResponseDataValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AuthUserRegisterResponse_AuthUserRegisterResponseDataValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAuthUserRegisterResponse_AuthUserRegisterResponseData.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AuthUserRegisterResponse_AuthUserRegisterResponseDataValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AuthUserRegisterResponse_AuthUserRegisterResponseDataValidationError{}
+
+// Validate checks the field values on
+// AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseDataMultiError, or nil
+// if none found.
+func (m *AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for AccessToken
+
+	// no validation rules for RefreshToken
+
+	if len(errors) > 0 {
+		return AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseDataMultiError(errors)
+	}
+
+	return nil
+}
+
+// AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseDataMultiError is an
+// error wrapping multiple validation errors returned by
+// AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData.ValidateAll() if
+// the designated constraints aren't met.
+type AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseDataMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseDataMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseDataMultiError) AllErrors() []error {
+	return m
+}
+
+// AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseDataValidationError is
+// the validation error returned by
+// AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData.Validate if the
+// designated constraints aren't met.
+type AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseDataValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseDataValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseDataValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseDataValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseDataValidationError) Key() bool {
+	return e.key
+}
+
+// ErrorName returns error name.
+func (e AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseDataValidationError) ErrorName() string {
+	return "AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseDataValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseDataValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseDataValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseDataValidationError{}
+
+// Validate checks the field values on
+// AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseDataMultiError,
+// or nil if none found.
+func (m *AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for IsValid
+
+	if len(errors) > 0 {
+		return AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseDataMultiError(errors)
+	}
+
+	return nil
+}
+
+// AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseDataMultiError is
+// an error wrapping multiple validation errors returned by
+// AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData.ValidateAll()
+// if the designated constraints aren't met.
+type AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseDataMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseDataMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseDataMultiError) AllErrors() []error {
+	return m
+}
+
+// AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseDataValidationError
+// is the validation error returned by
+// AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData.Validate if
+// the designated constraints aren't met.
+type AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseDataValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseDataValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseDataValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseDataValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseDataValidationError) Key() bool {
+	return e.key
+}
+
+// ErrorName returns error name.
+func (e AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseDataValidationError) ErrorName() string {
+	return "AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseDataValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseDataValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseDataValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseDataValidationError{}
+
+// Validate checks the field values on
+// AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataMultiError,
+// or nil if none found.
+func (m *AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for IsValid
+
+	if all {
+		switch v := interface{}(m.GetUser()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataValidationError{
+				field:  "User",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetRole()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataValidationError{
+					field:  "Role",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataValidationError{
+					field:  "Role",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetRole()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataValidationError{
+				field:  "Role",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	for idx, item := range m.GetAccessControls() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataValidationError{
+						field:  fmt.Sprintf("AccessControls[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataValidationError{
+						field:  fmt.Sprintf("AccessControls[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataValidationError{
+					field:  fmt.Sprintf("AccessControls[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataMultiError(errors)
+	}
+
+	return nil
+}
+
+// AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataMultiError
+// is an error wrapping multiple validation errors returned by
+// AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData.ValidateAll()
+// if the designated constraints aren't met.
+type AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataMultiError) AllErrors() []error {
+	return m
+}
+
+// AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataValidationError
+// is the validation error returned by
+// AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData.Validate
+// if the designated constraints aren't met.
+type AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataValidationError) Key() bool {
+	return e.key
+}
+
+// ErrorName returns error name.
+func (e AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataValidationError) ErrorName() string {
+	return "AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseDataValidationError{}
+
+// Validate checks the field values on
+// AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseDataMultiError,
+// or nil if none found.
+func (m *AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetUser()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseDataValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseDataValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseDataValidationError{
+				field:  "User",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseDataMultiError(errors)
+	}
+
+	return nil
+}
+
+// AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseDataMultiError
+// is an error wrapping multiple validation errors returned by
+// AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData.ValidateAll()
+// if the designated constraints aren't met.
+type AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseDataMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseDataMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseDataMultiError) AllErrors() []error {
+	return m
+}
+
+// AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseDataValidationError
+// is the validation error returned by
+// AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData.Validate
+// if the designated constraints aren't met.
+type AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseDataValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseDataValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseDataValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseDataValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseDataValidationError) Key() bool {
+	return e.key
+}
+
+// ErrorName returns error name.
+func (e AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseDataValidationError) ErrorName() string {
+	return "AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseDataValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseDataValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseDataValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseDataValidationError{}
+
+// Validate checks the field values on
+// AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseDataMultiError,
+// or nil if none found.
+func (m *AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for IsExcluded
+
+	if len(errors) > 0 {
+		return AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseDataMultiError(errors)
+	}
+
+	return nil
+}
+
+// AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseDataMultiError
+// is an error wrapping multiple validation errors returned by
+// AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData.ValidateAll()
+// if the designated constraints aren't met.
+type AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseDataMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseDataMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseDataMultiError) AllErrors() []error {
+	return m
+}
+
+// AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseDataValidationError
+// is the validation error returned by
+// AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData.Validate
+// if the designated constraints aren't met.
+type AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseDataValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseDataValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseDataValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseDataValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseDataValidationError) Key() bool {
+	return e.key
+}
+
+// ErrorName returns error name.
+func (e AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseDataValidationError) ErrorName() string {
+	return "AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseDataValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseDataValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseDataValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseDataValidationError{}
+
+// Validate checks the field values on
+// UpdateUserByIdResponse_UpdateUserByIdResponseData with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *UpdateUserByIdResponse_UpdateUserByIdResponseData) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// UpdateUserByIdResponse_UpdateUserByIdResponseData with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in
+// UpdateUserByIdResponse_UpdateUserByIdResponseDataMultiError, or nil if none found.
+func (m *UpdateUserByIdResponse_UpdateUserByIdResponseData) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateUserByIdResponse_UpdateUserByIdResponseData) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return UpdateUserByIdResponse_UpdateUserByIdResponseDataMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdateUserByIdResponse_UpdateUserByIdResponseDataMultiError is an error
+// wrapping multiple validation errors returned by
+// UpdateUserByIdResponse_UpdateUserByIdResponseData.ValidateAll() if the
+// designated constraints aren't met.
+type UpdateUserByIdResponse_UpdateUserByIdResponseDataMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateUserByIdResponse_UpdateUserByIdResponseDataMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateUserByIdResponse_UpdateUserByIdResponseDataMultiError) AllErrors() []error { return m }
+
+// UpdateUserByIdResponse_UpdateUserByIdResponseDataValidationError is the
+// validation error returned by
+// UpdateUserByIdResponse_UpdateUserByIdResponseData.Validate if the
+// designated constraints aren't met.
+type UpdateUserByIdResponse_UpdateUserByIdResponseDataValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateUserByIdResponse_UpdateUserByIdResponseDataValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e UpdateUserByIdResponse_UpdateUserByIdResponseDataValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e UpdateUserByIdResponse_UpdateUserByIdResponseDataValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e UpdateUserByIdResponse_UpdateUserByIdResponseDataValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateUserByIdResponse_UpdateUserByIdResponseDataValidationError) ErrorName() string {
+	return "UpdateUserByIdResponse_UpdateUserByIdResponseDataValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateUserByIdResponse_UpdateUserByIdResponseDataValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateUserByIdResponse_UpdateUserByIdResponseData.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateUserByIdResponse_UpdateUserByIdResponseDataValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateUserByIdResponse_UpdateUserByIdResponseDataValidationError{}
+
+// Validate checks the field values on
+// FindUserByIdResponse_FindUserByIdResponseData with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *FindUserByIdResponse_FindUserByIdResponseData) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// FindUserByIdResponse_FindUserByIdResponseData with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// FindUserByIdResponse_FindUserByIdResponseDataMultiError, or nil if none found.
+func (m *FindUserByIdResponse_FindUserByIdResponseData) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *FindUserByIdResponse_FindUserByIdResponseData) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetUser()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, FindUserByIdResponse_FindUserByIdResponseDataValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, FindUserByIdResponse_FindUserByIdResponseDataValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return FindUserByIdResponse_FindUserByIdResponseDataValidationError{
+				field:  "User",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return FindUserByIdResponse_FindUserByIdResponseDataMultiError(errors)
+	}
+
+	return nil
+}
+
+// FindUserByIdResponse_FindUserByIdResponseDataMultiError is an error wrapping
+// multiple validation errors returned by
+// FindUserByIdResponse_FindUserByIdResponseData.ValidateAll() if the
+// designated constraints aren't met.
+type FindUserByIdResponse_FindUserByIdResponseDataMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m FindUserByIdResponse_FindUserByIdResponseDataMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m FindUserByIdResponse_FindUserByIdResponseDataMultiError) AllErrors() []error { return m }
+
+// FindUserByIdResponse_FindUserByIdResponseDataValidationError is the
+// validation error returned by
+// FindUserByIdResponse_FindUserByIdResponseData.Validate if the designated
+// constraints aren't met.
+type FindUserByIdResponse_FindUserByIdResponseDataValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e FindUserByIdResponse_FindUserByIdResponseDataValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e FindUserByIdResponse_FindUserByIdResponseDataValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e FindUserByIdResponse_FindUserByIdResponseDataValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e FindUserByIdResponse_FindUserByIdResponseDataValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e FindUserByIdResponse_FindUserByIdResponseDataValidationError) ErrorName() string {
+	return "FindUserByIdResponse_FindUserByIdResponseDataValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e FindUserByIdResponse_FindUserByIdResponseDataValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sFindUserByIdResponse_FindUserByIdResponseData.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = FindUserByIdResponse_FindUserByIdResponseDataValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = FindUserByIdResponse_FindUserByIdResponseDataValidationError{}
+
+// Validate checks the field values on
+// FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDataMultiError,
+// or nil if none found.
+func (m *FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetUser()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDataValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDataValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDataValidationError{
+				field:  "User",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDataMultiError(errors)
+	}
+
+	return nil
+}
+
+// FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDataMultiError
+// is an error wrapping multiple validation errors returned by
+// FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData.ValidateAll()
+// if the designated constraints aren't met.
+type FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDataMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDataMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDataMultiError) AllErrors() []error {
+	return m
+}
+
+// FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDataValidationError
+// is the validation error returned by
+// FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData.Validate
+// if the designated constraints aren't met.
+type FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDataValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDataValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDataValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDataValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDataValidationError) Key() bool {
+	return e.key
+}
+
+// ErrorName returns error name.
+func (e FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDataValidationError) ErrorName() string {
+	return "FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDataValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDataValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sFindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDataValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDataValidationError{}

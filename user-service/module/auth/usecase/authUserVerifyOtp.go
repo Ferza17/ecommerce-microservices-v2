@@ -52,7 +52,12 @@ func (u *authUseCase) AuthUserVerifyOtp(ctx context.Context, requestId string, r
 
 	tx.Commit()
 	return &pb.AuthUserVerifyOtpResponse{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
+		Error:   "",
+		Message: codes.OK.String(),
+		Code:    uint32(codes.OK),
+		Data: &pb.AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData{
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
+		},
 	}, nil
 }

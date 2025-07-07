@@ -36,7 +36,7 @@ func AuthHTTPMiddleware(
 			}
 
 			// Bypass if excluded methods
-			if authExcluded.IsExcluded {
+			if authExcluded.Data.IsExcluded {
 				next.ServeHTTP(w, r)
 				return
 			}

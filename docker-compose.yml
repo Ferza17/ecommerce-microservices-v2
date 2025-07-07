@@ -15,6 +15,24 @@ services:
     networks:
       - local
 
+  # POSTGRESQL EXPORTER FOR PROMETHEUS METRICS
+  postgres-exporter-local:
+    container_name: postgres-exporter-local
+    image: prometheuscommunity/postgres-exporter:latest
+    ports:
+      - '9187'
+    environment:
+      DATA_SOURCE_URI: postgres-local:5432/users?sslmode=disable
+      DATA_SOURCE_USER: postgres
+      DATA_SOURCE_PASS: 1234
+      PG_EXPORTER_INCLUDE_DATABASES: products,users,payments
+    depends_on:
+      - postgres-local
+    networks:
+      - local
+    restart: unless-stopped
+
+
   # MONGODB DATABASE
   mongo-local:
     container_name: mongo-local
@@ -147,6 +165,24 @@ services:
     networks:
       - local
 
+  # GRAFANA DASHBOARD
+  grafana-local:
+    container_name: grafana-local
+    image: grafana/grafana:latest
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./entrypoint/grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_USER=grafana
+      - GF_SECURITY_ADMIN_PASSWORD=12345
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - prometheus-local
+    networks:
+      - local
+    restart: unless-stopped
+
   # Service Discovery
   consul-local:
     container_name: consul-local
@@ -174,6 +210,7 @@ services:
       - ./entrypoint/consul/smtp:/smtp:ro
       - ./entrypoint/consul/telemetry:/telemetry:ro
       - ./entrypoint/consul/traefik:/traefik:ro
+      - ./entrypoint/consul/postgres-exporter:/postgres-exporter:ro
     entrypoint: [ "/bin/sh", "-c", "consul agent -dev -client=0.0.0.0 -ui & sleep 5 && sh /init.sh && tail -f /dev/null" ]
     networks:
       - local

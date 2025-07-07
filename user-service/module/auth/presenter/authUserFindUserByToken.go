@@ -34,7 +34,7 @@ func (p *AuthPresenter) AuthUserFindUserByToken(ctx context.Context, req *pb.Aut
 		return nil, nil
 	}
 
-	if !acl.IsValid {
+	if !acl.Data.IsValid {
 		p.logger.Error("UserPresenter.FindUserByEmailAndPassword", zap.String("requestID", requestID), zap.Error(err))
 		return nil, nil
 	}

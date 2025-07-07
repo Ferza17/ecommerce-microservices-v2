@@ -42,7 +42,7 @@ func (s *userService) AuthUserVerifyAccessControl(ctx context.Context, requestId
 		return err
 	}
 
-	if !resp.IsValid {
+	if !resp.Data.IsValid {
 		s.logger.Error("UserService.AuthServiceVerifyIsExcluded", zap.String("requestId", requestId), zap.Error(errors.New("UnAuthenticated")))
 		return status.Error(codes.Unauthenticated, "unauthenticated")
 	}

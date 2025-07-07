@@ -13,7 +13,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (u *userUseCase) FindUserByEmailAndPassword(ctx context.Context, requestId string, request *userRpc.FindUserByEmailAndPasswordRequest) (*userRpc.User, error) {
+func (u *userUseCase) FindUserByEmailAndPassword(ctx context.Context, requestId string, request *userRpc.FindUserByEmailAndPasswordRequest) (*userRpc.FindUserByEmailAndPasswordResponse, error) {
 	var (
 		tx = u.postgresSQLInfrastructure.GormDB().Begin()
 	)
@@ -45,11 +45,17 @@ func (u *userUseCase) FindUserByEmailAndPassword(ctx context.Context, requestId 
 		return nil, err
 	}
 
+	// Not Intentionally Return password to client
+	user.Password = ""
+
 	tx.Commit()
-	return &userRpc.User{
-		Id:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
+	return &userRpc.FindUserByEmailAndPasswordResponse{
+		Error:   "",
+		Message: codes.OK.String(),
+		Code:    uint32(codes.OK),
+		Data: &userRpc.FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData{
+			User: user.ToProto(),
+		},
 	}, nil
 
 }

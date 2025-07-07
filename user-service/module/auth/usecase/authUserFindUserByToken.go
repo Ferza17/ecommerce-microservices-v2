@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/orm"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/token"
 	"go.uber.org/zap"
@@ -38,16 +37,13 @@ func (u *authUseCase) AuthUserFindUserByToken(ctx context.Context, requestId str
 	}
 
 	// Build Response
-	resp := &pb.AuthUserFindUserByTokenResponse{
-		User: user.ToProto(),
-	}
-	if user.Role != nil {
-		resp.Role = user.Role.ToProto()
-
-		if user.Role.AccessControls != nil {
-			resp.AccessControls = orm.AccessControlsToProto(user.Role.AccessControls)
-		}
-	}
 	tx.Commit()
-	return resp, nil
+	return &pb.AuthUserFindUserByTokenResponse{
+		Error:   "",
+		Message: codes.OK.String(),
+		Code:    uint32(codes.OK),
+		Data: &pb.AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData{
+			User: user.ToProto(),
+		},
+	}, nil
 }

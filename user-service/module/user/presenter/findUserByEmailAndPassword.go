@@ -7,7 +7,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func (p *UserPresenter) FindUserByEmailAndPassword(ctx context.Context, req *userRpc.FindUserByEmailAndPasswordRequest) (*userRpc.User, error) {
+func (p *UserPresenter) FindUserByEmailAndPassword(ctx context.Context, req *userRpc.FindUserByEmailAndPasswordRequest) (*userRpc.FindUserByEmailAndPasswordResponse, error) {
 	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "UserPresenter.FindUserByEmailAndPassword")
 	defer span.End()
 	requestID := pkgContext.GetRequestIDFromContext(ctx)
@@ -32,7 +32,7 @@ func (p *UserPresenter) FindUserByEmailAndPassword(ctx context.Context, req *use
 		return nil, nil
 	}
 
-	if !acl.IsValid {
+	if !acl.Data.IsValid {
 		p.logger.Error("UserPresenter.FindUserByEmailAndPassword", zap.String("requestID", requestID), zap.Error(err))
 		return nil, nil
 	}

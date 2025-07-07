@@ -4,6 +4,7 @@ import (
 	"context"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	"go.uber.org/zap"
+	"google.golang.org/grpc/codes"
 )
 
 func (u *authUseCase) AuthServiceVerifyIsExcluded(ctx context.Context, requestId string, req *pb.AuthServiceVerifyIsExcludedRequest) (*pb.AuthServiceVerifyIsExcludedResponse, error) {
@@ -31,6 +32,11 @@ func (u *authUseCase) AuthServiceVerifyIsExcluded(ctx context.Context, requestId
 	}
 
 	return &pb.AuthServiceVerifyIsExcludedResponse{
-		IsExcluded: isExcluded,
+		Error:   "",
+		Message: codes.OK.String(),
+		Code:    uint32(codes.OK),
+		Data: &pb.AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData{
+			IsExcluded: isExcluded,
+		},
 	}, err
 }

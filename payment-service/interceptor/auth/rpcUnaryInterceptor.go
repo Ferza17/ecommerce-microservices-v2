@@ -30,7 +30,7 @@ func AuthRPCUnaryInterceptor(
 		}
 
 		// Bypass if excluded methods
-		if authExcluded.IsExcluded {
+		if authExcluded.Data.IsExcluded {
 			return handler(ctx, req)
 		}
 

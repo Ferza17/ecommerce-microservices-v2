@@ -16,9 +16,9 @@ import (
 
 type (
 	IUserUseCase interface {
-		FindUserById(ctx context.Context, requestId string, req *userRpc.FindUserByIdRequest) (*userRpc.User, error)
+		FindUserById(ctx context.Context, requestId string, req *userRpc.FindUserByIdRequest) (*userRpc.FindUserByIdResponse, error)
 		UpdateUserById(ctx context.Context, requestId string, req *userRpc.UpdateUserByIdRequest) (*userRpc.UpdateUserByIdResponse, error)
-		FindUserByEmailAndPassword(context.Context, string, *userRpc.FindUserByEmailAndPasswordRequest) (*userRpc.User, error)
+		FindUserByEmailAndPassword(context.Context, string, *userRpc.FindUserByEmailAndPasswordRequest) (*userRpc.FindUserByEmailAndPasswordResponse, error)
 	}
 
 	userUseCase struct {

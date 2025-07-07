@@ -16,8 +16,8 @@ curl -s -X PUT http://consul-local:8500/v1/agent/check/register \
 "ID": "jaeger-collector-health",
 "Name": "Jaeger Collector Health Check",
 "HTTP": "http://jaeger-local:14269/",
-"Interval": "10s",
-"Timeout": "3s",
+"Interval": "30s",
+"Timeout": "5s",
 "ServiceID": "jaeger-main"
 }'
 # Verify registration

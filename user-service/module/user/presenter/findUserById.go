@@ -7,7 +7,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func (p *UserPresenter) FindUserById(ctx context.Context, req *userRpc.FindUserByIdRequest) (*userRpc.User, error) {
+func (p *UserPresenter) FindUserById(ctx context.Context, req *userRpc.FindUserByIdRequest) (*userRpc.FindUserByIdResponse, error) {
 	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "UserPresenter.FindUserById")
 	defer span.End()
 	requestID := pkgContext.GetRequestIDFromContext(ctx)
@@ -32,7 +32,7 @@ func (p *UserPresenter) FindUserById(ctx context.Context, req *userRpc.FindUserB
 		return nil, nil
 	}
 
-	if !acl.IsValid {
+	if !acl.Data.IsValid {
 		p.logger.Error("UserPresenter.FindUserByEmailAndPassword", zap.String("requestID", requestID), zap.Error(err))
 		return nil, nil
 	}
@@ -41,5 +41,6 @@ func (p *UserPresenter) FindUserById(ctx context.Context, req *userRpc.FindUserB
 	if err != nil {
 		return nil, err
 	}
+
 	return res, nil
 }

@@ -43,9 +43,10 @@ source /smtp/init-smtp-proxy.sh
 source /telemetry/init-telemetry.sh
 source /telemetry/init-telemetry-proxy.sh
 
-# LOAD CONFIG PROMETHEUS
+# LOAD CONFIG PROMETHEUS AND METRICS COLLECTOR
 ##########################################################################################################################################################################################################################
 source /prometheus/init-prometheus-proxy.sh
+source /postgres-exporter/register.sh
 
 
 # LOAD CONFIG TRAEFIK

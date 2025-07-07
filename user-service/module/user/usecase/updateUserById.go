@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
+	"google.golang.org/grpc/codes"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -54,6 +55,11 @@ func (u *userUseCase) UpdateUserById(ctx context.Context, requestId string, req 
 
 	tx.Commit()
 	return &userRpc.UpdateUserByIdResponse{
-		Id: result.ID,
+		Error:   "",
+		Message: codes.OK.String(),
+		Code:    uint32(codes.OK),
+		Data: &userRpc.UpdateUserByIdResponse_UpdateUserByIdResponseData{
+			Id: result.ID,
+		},
 	}, nil
 }

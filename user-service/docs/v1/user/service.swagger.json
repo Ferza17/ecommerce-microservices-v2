@@ -323,7 +323,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/userUser"
+              "$ref": "#/definitions/userFindUserByEmailAndPasswordResponse"
             }
           },
           "default": {
@@ -365,7 +365,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/userUser"
+              "$ref": "#/definitions/userFindUserByIdResponse"
             }
           },
           "default": {
@@ -438,6 +438,78 @@
     }
   },
   "definitions": {
+    "AuthServiceVerifyIsExcludedResponseAuthServiceVerifyIsExcludedResponseData": {
+      "type": "object",
+      "properties": {
+        "IsExcluded": {
+          "type": "boolean"
+        }
+      }
+    },
+    "AuthUserFindUserByTokenResponseAuthUserFindUserByTokenResponseData": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/userUser"
+        }
+      }
+    },
+    "AuthUserLogoutByTokenResponseAuthUserLogoutByTokenResponseData": {
+      "type": "object",
+      "properties": {
+        "isValid": {
+          "type": "boolean"
+        }
+      }
+    },
+    "AuthUserVerifyAccessControlResponseAuthUserVerifyAccessControlResponseData": {
+      "type": "object",
+      "properties": {
+        "isValid": {
+          "type": "boolean"
+        },
+        "user": {
+          "$ref": "#/definitions/userUser"
+        },
+        "role": {
+          "$ref": "#/definitions/userRole"
+        },
+        "accessControls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/userAccessControl"
+          }
+        }
+      }
+    },
+    "AuthUserVerifyOtpResponseAuthUserVerifyOtpResponseData": {
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "type": "string"
+        },
+        "refreshToken": {
+          "type": "string"
+        }
+      }
+    },
+    "FindUserByEmailAndPasswordResponseFindUserByEmailAndPasswordResponseData": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/userUser"
+        }
+      }
+    },
+    "FindUserByIdResponseFindUserByIdResponseData": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/userUser"
+        }
+      }
+    },
     "UserServiceUpdateUserByIdBody": {
       "type": "object",
       "properties": {
@@ -517,26 +589,36 @@
     "userAuthServiceVerifyIsExcludedResponse": {
       "type": "object",
       "properties": {
-        "IsExcluded": {
-          "type": "boolean"
+        "error": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "data": {
+          "$ref": "#/definitions/AuthServiceVerifyIsExcludedResponseAuthServiceVerifyIsExcludedResponseData"
         }
       }
     },
     "userAuthUserFindUserByTokenResponse": {
       "type": "object",
       "properties": {
-        "user": {
-          "$ref": "#/definitions/userUser"
+        "error": {
+          "type": "string"
         },
-        "role": {
-          "$ref": "#/definitions/userRole"
+        "message": {
+          "type": "string"
         },
-        "accessControls": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/userAccessControl"
-          }
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "data": {
+          "$ref": "#/definitions/AuthUserFindUserByTokenResponseAuthUserFindUserByTokenResponseData"
         }
       }
     },
@@ -551,29 +633,36 @@
     "userAuthUserLogoutByTokenResponse": {
       "type": "object",
       "properties": {
-        "isValid": {
-          "type": "boolean"
+        "error": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "data": {
+          "$ref": "#/definitions/AuthUserLogoutByTokenResponseAuthUserLogoutByTokenResponseData"
         }
       }
     },
     "userAuthUserVerifyAccessControlResponse": {
       "type": "object",
       "properties": {
-        "isValid": {
-          "type": "boolean"
+        "error": {
+          "type": "string"
         },
-        "user": {
-          "$ref": "#/definitions/userUser"
+        "message": {
+          "type": "string"
         },
-        "role": {
-          "$ref": "#/definitions/userRole"
+        "code": {
+          "type": "integer",
+          "format": "int64"
         },
-        "accessControls": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/userAccessControl"
-          }
+        "data": {
+          "$ref": "#/definitions/AuthUserVerifyAccessControlResponseAuthUserVerifyAccessControlResponseData"
         }
       }
     },
@@ -588,11 +677,18 @@
     "userAuthUserVerifyOtpResponse": {
       "type": "object",
       "properties": {
-        "accessToken": {
+        "error": {
           "type": "string"
         },
-        "refreshToken": {
+        "message": {
           "type": "string"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "data": {
+          "$ref": "#/definitions/AuthUserVerifyOtpResponseAuthUserVerifyOtpResponseData"
         }
       }
     },
@@ -605,6 +701,42 @@
         "SUPER_ADMIN"
       ],
       "default": "CUSTOMER"
+    },
+    "userFindUserByEmailAndPasswordResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "data": {
+          "$ref": "#/definitions/FindUserByEmailAndPasswordResponseFindUserByEmailAndPasswordResponseData"
+        }
+      }
+    },
+    "userFindUserByIdResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "data": {
+          "$ref": "#/definitions/FindUserByIdResponseFindUserByIdResponseData"
+        }
+      }
     },
     "userRole": {
       "type": "object",

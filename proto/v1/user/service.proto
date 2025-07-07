@@ -77,7 +77,7 @@ service UserService {
   };
 
   // QUERY
-  rpc FindUserById(user.FindUserByIdRequest) returns (user.User){
+  rpc FindUserById(user.FindUserByIdRequest) returns (user.FindUserByIdResponse){
     option (user.acl) = {
       roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
       is_public: false,
@@ -100,7 +100,7 @@ service UserService {
       };
     };
   };
-  rpc FindUserByEmailAndPassword(user.FindUserByEmailAndPasswordRequest) returns (user.User){
+  rpc FindUserByEmailAndPassword(user.FindUserByEmailAndPasswordRequest) returns (user.FindUserByEmailAndPasswordResponse){
     option (user.acl) = {
       roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
       is_public: false,

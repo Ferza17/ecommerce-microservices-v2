@@ -18,7 +18,6 @@ import {
   type UntypedServiceImplementation,
 } from "@grpc/grpc-js";
 import { Empty } from "../../google/protobuf/empty";
-import { User } from "./model";
 import {
   AuthServiceVerifyIsExcludedRequest,
   AuthUserFindUserByTokenRequest,
@@ -37,6 +36,8 @@ import {
   AuthUserLogoutByTokenResponse,
   AuthUserVerifyAccessControlResponse,
   AuthUserVerifyOtpResponse,
+  FindUserByEmailAndPasswordResponse,
+  FindUserByIdResponse,
 } from "./response";
 
 export const protobufPackage = "user";
@@ -60,8 +61,8 @@ export const UserServiceService = {
     responseStream: false,
     requestSerialize: (value: FindUserByIdRequest) => Buffer.from(FindUserByIdRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer) => FindUserByIdRequest.decode(value),
-    responseSerialize: (value: User) => Buffer.from(User.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => User.decode(value),
+    responseSerialize: (value: FindUserByIdResponse) => Buffer.from(FindUserByIdResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => FindUserByIdResponse.decode(value),
   },
   findUserByEmailAndPassword: {
     path: "/user.UserService/FindUserByEmailAndPassword",
@@ -70,8 +71,9 @@ export const UserServiceService = {
     requestSerialize: (value: FindUserByEmailAndPasswordRequest) =>
       Buffer.from(FindUserByEmailAndPasswordRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer) => FindUserByEmailAndPasswordRequest.decode(value),
-    responseSerialize: (value: User) => Buffer.from(User.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => User.decode(value),
+    responseSerialize: (value: FindUserByEmailAndPasswordResponse) =>
+      Buffer.from(FindUserByEmailAndPasswordResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => FindUserByEmailAndPasswordResponse.decode(value),
   },
 } as const;
 
@@ -79,8 +81,8 @@ export interface UserServiceServer extends UntypedServiceImplementation {
   /** COMMAND */
   updateUserById: handleUnaryCall<UpdateUserByIdRequest, Empty>;
   /** QUERY */
-  findUserById: handleUnaryCall<FindUserByIdRequest, User>;
-  findUserByEmailAndPassword: handleUnaryCall<FindUserByEmailAndPasswordRequest, User>;
+  findUserById: handleUnaryCall<FindUserByIdRequest, FindUserByIdResponse>;
+  findUserByEmailAndPassword: handleUnaryCall<FindUserByEmailAndPasswordRequest, FindUserByEmailAndPasswordResponse>;
 }
 
 export interface UserServiceClient extends Client {
@@ -103,33 +105,33 @@ export interface UserServiceClient extends Client {
   /** QUERY */
   findUserById(
     request: FindUserByIdRequest,
-    callback: (error: ServiceError | null, response: User) => void,
+    callback: (error: ServiceError | null, response: FindUserByIdResponse) => void,
   ): ClientUnaryCall;
   findUserById(
     request: FindUserByIdRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: User) => void,
+    callback: (error: ServiceError | null, response: FindUserByIdResponse) => void,
   ): ClientUnaryCall;
   findUserById(
     request: FindUserByIdRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: User) => void,
+    callback: (error: ServiceError | null, response: FindUserByIdResponse) => void,
   ): ClientUnaryCall;
   findUserByEmailAndPassword(
     request: FindUserByEmailAndPasswordRequest,
-    callback: (error: ServiceError | null, response: User) => void,
+    callback: (error: ServiceError | null, response: FindUserByEmailAndPasswordResponse) => void,
   ): ClientUnaryCall;
   findUserByEmailAndPassword(
     request: FindUserByEmailAndPasswordRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: User) => void,
+    callback: (error: ServiceError | null, response: FindUserByEmailAndPasswordResponse) => void,
   ): ClientUnaryCall;
   findUserByEmailAndPassword(
     request: FindUserByEmailAndPasswordRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: User) => void,
+    callback: (error: ServiceError | null, response: FindUserByEmailAndPasswordResponse) => void,
   ): ClientUnaryCall;
 }
 

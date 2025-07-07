@@ -58,7 +58,7 @@ func (c *Config) initProductService(kv *api.KV) {
 		log.Fatalf("SetConfig | could not get METRIC_HTTP_PORT from consul: %v", err)
 	}
 	if pair == nil {
-		log.Fatal("SetConfig | Consul | METRIC_HTTP_PORT is required")
+		log.Fatal("SetConfig | Consul | product/METRIC_HTTP_PORT is required")
 	}
 	c.ProductServiceMetricHttpPort = string(pair.Value)
 }

@@ -7,7 +7,7 @@ consul kv put local/services/payment/RPC_HOST 'localhost'
 consul kv put local/services/payment/RPC_PORT '50054'
 consul kv put local/services/payment/HTTP_HOST 'localhost'
 consul kv put local/services/payment/HTTP_PORT '40054'
-consul kv put local/services/payment/METRIC_PORT '30054'
+consul kv put local/services/payment/METRIC_HTTP_PORT '30054'
 ## PRODUCTION
 consul kv put production/services/payment/ENV 'production'
 consul kv put production/services/payment/SERVICE_NAME 'payment-service'
