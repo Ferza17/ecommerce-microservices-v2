@@ -1,3 +1,3 @@
-//go:generate mocktail -e
-
 package usecase
+
+// mocktail:IUserUseCase

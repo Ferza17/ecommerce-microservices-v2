@@ -23,6 +23,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/structpb"
 	"log"
 	"net/http"
 )
@@ -111,7 +112,16 @@ func (s *Server) Serve(ctx context.Context) error {
 
 	// Health check endpoint
 	router.HandleFunc("/v1/user/check", func(w http.ResponseWriter, r *http.Request) {
-		response.WriteSuccessResponse(w, http.StatusOK, []byte(`{"status": "ok", "service": "product-service"}`))
+		response.WriteSuccessResponse(w, http.StatusOK, &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"status": &structpb.Value{
+					Kind: &structpb.Value_StringValue{StringValue: "OK"},
+				},
+				"service": &structpb.Value{
+					Kind: &structpb.Value_StringValue{StringValue: config.Get().UserServiceServiceName},
+				},
+			},
+		})
 		return
 	}).Methods("GET")
 
@@ -122,7 +132,7 @@ func (s *Server) Serve(ctx context.Context) error {
 	}).Methods("GET")
 
 	router.PathPrefix("/v1/user/docs/").Handler(httpSwagger.Handler(
-		httpSwagger.URL("/docs/v1/user/service.swagger.json"), // 👈 URL must match your exposed JSON
+		httpSwagger.URL("/docs/v1/user/service.swagger.json"),
 	))
 
 	router.Use(requestIdInterceptor.RequestIDHTTPMiddleware())

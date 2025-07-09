@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"errors"
 	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
@@ -19,7 +18,7 @@ func (u *userUseCase) FindUserById(ctx context.Context, requestId string, req *u
 	if err != nil {
 		tx.Rollback()
 		u.logger.Error("UserUseCase.FindUserById", zap.String("requestId", requestId), zap.Error(err))
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if err == gorm.ErrRecordNotFound {
 			return nil, status.Errorf(codes.NotFound, "User not found")
 		}
 		return nil, status.Error(codes.Internal, err.Error())

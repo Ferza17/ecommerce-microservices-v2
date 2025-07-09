@@ -2,12 +2,13 @@ package response
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"net/http"
+
+	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/common/response"
 )
 
 func CustomErrorHandler(ctx context.Context, mux *runtime.ServeMux, marshaler runtime.Marshaler, w http.ResponseWriter, r *http.Request, err error) {
@@ -19,57 +20,45 @@ func CustomErrorHandler(ctx context.Context, mux *runtime.ServeMux, marshaler ru
 
 	httpStatusCode := runtime.HTTPStatusFromCode(st.Code())
 
-	errorResp := response{
+	errorResp := pb.Response{
 		Error:   st.Code().String(),
 		Message: st.Message(),
-		Code:    httpStatusCode,
-		Data:    json.RawMessage(`null`),
+		Code:    int32(httpStatusCode),
+		Data:    nil,
 	}
 
 	switch st.Code() {
 	case codes.InvalidArgument:
-		errorResp = response{
-			Code:    400,
+		errorResp = pb.Response{
+			Code:    http.StatusBadRequest,
 			Message: fmt.Sprintf("Invalid request parameters : %s", st.Message()),
 		}
 	case codes.NotFound:
-		errorResp = response{
-			Code:    404,
+		errorResp = pb.Response{
+			Code:    http.StatusNotFound,
 			Message: fmt.Sprintf("Resource not found : %s", st.Message()),
 		}
 	case codes.PermissionDenied:
-		errorResp = response{
-			Code:    403,
+		errorResp = pb.Response{
+			Code:    http.StatusForbidden,
 			Message: fmt.Sprintf("Permission denied : %s", st.Message()),
 		}
 	case codes.Unauthenticated:
-		errorResp = response{
-			Code:    401,
+		errorResp = pb.Response{
+			Code:    http.StatusUnauthorized,
 			Message: fmt.Sprintf("Authentication failed : %s", st.Message()),
 		}
 	case codes.Internal:
-		errorResp = response{
-			Code:    500,
+		errorResp = pb.Response{
+			Code:    http.StatusInternalServerError,
 			Message: "Internal server error",
 		}
 	default:
-		errorResp = response{
-			Code:    500,
+		errorResp = pb.Response{
+			Code:    http.StatusInternalServerError,
 			Message: "Unknown error",
 		}
 	}
 
-	// Marshal response to JSON
-	buf, marshalErr := marshaler.Marshal(errorResp)
-	if marshalErr != nil {
-		// Fallback to basic error response if marshaling fails
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"error":"INTERNAL","message":"Internal server error","code":500,"data":null}`))
-		return
-	}
-
-	// Set headers and write response
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(httpStatusCode)
-	w.Write(buf)
+	WriteErrorResponse(w, int(errorResp.Code), errorResp.Message, err)
 }

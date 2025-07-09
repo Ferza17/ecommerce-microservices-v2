@@ -1,0 +1,23 @@
+syntax = "proto3";
+package product;
+
+// LOCAL IMPORT
+import "v1/product/model.proto";
+
+
+
+message FindProductsWithPaginationResponse {
+  repeated product.Product data = 1;
+  int32 limit = 2;
+  int32 page = 3;
+  int32 total = 4;
+}
+
+message CreateProductResponse {
+  string  id = 1;
+}
+
+message DeleteProductByIdResponse {
+  string message = 1;
+}
+

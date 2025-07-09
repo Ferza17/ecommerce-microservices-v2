@@ -26,14 +26,14 @@ func NewIUserUseCaseMock(tb testing.TB) *iUserUseCaseMock {
 	return m
 }
 
-func (_m *iUserUseCaseMock) FindUserByEmailAndPassword(_ context.Context, bParam string, cParam *user.FindUserByEmailAndPasswordRequest) (*user.User, error) {
+func (_m *iUserUseCaseMock) FindUserByEmailAndPassword(_ context.Context, bParam string, cParam *user.FindUserByEmailAndPasswordRequest) (*user.FindUserByEmailAndPasswordResponse, error) {
 	_ret := _m.Called(bParam, cParam)
 
-	if _rf, ok := _ret.Get(0).(func(string, *user.FindUserByEmailAndPasswordRequest) (*user.User, error)); ok {
+	if _rf, ok := _ret.Get(0).(func(string, *user.FindUserByEmailAndPasswordRequest) (*user.FindUserByEmailAndPasswordResponse, error)); ok {
 		return _rf(bParam, cParam)
 	}
 
-	_ra0, _ := _ret.Get(0).(*user.User)
+	_ra0, _ := _ret.Get(0).(*user.FindUserByEmailAndPasswordResponse)
 	_rb1 := _ret.Error(1)
 
 	return _ra0, _rb1
@@ -92,12 +92,12 @@ func (_c *iUserUseCaseFindUserByEmailAndPasswordCall) Maybe() *iUserUseCaseFindU
 	return _c
 }
 
-func (_c *iUserUseCaseFindUserByEmailAndPasswordCall) TypedReturns(a *user.User, b error) *iUserUseCaseFindUserByEmailAndPasswordCall {
+func (_c *iUserUseCaseFindUserByEmailAndPasswordCall) TypedReturns(a *user.FindUserByEmailAndPasswordResponse, b error) *iUserUseCaseFindUserByEmailAndPasswordCall {
 	_c.Call = _c.Return(a, b)
 	return _c
 }
 
-func (_c *iUserUseCaseFindUserByEmailAndPasswordCall) ReturnsFn(fn func(string, *user.FindUserByEmailAndPasswordRequest) (*user.User, error)) *iUserUseCaseFindUserByEmailAndPasswordCall {
+func (_c *iUserUseCaseFindUserByEmailAndPasswordCall) ReturnsFn(fn func(string, *user.FindUserByEmailAndPasswordRequest) (*user.FindUserByEmailAndPasswordResponse, error)) *iUserUseCaseFindUserByEmailAndPasswordCall {
 	_c.Call = _c.Return(fn)
 	return _c
 }
@@ -135,14 +135,14 @@ func (_c *iUserUseCaseFindUserByEmailAndPasswordCall) OnUpdateUserByIdRaw(reques
 	return _c.Parent.OnUpdateUserByIdRaw(requestId, req)
 }
 
-func (_m *iUserUseCaseMock) FindUserById(_ context.Context, requestId string, req *user.FindUserByIdRequest) (*user.User, error) {
+func (_m *iUserUseCaseMock) FindUserById(_ context.Context, requestId string, req *user.FindUserByIdRequest) (*user.FindUserByIdResponse, error) {
 	_ret := _m.Called(requestId, req)
 
-	if _rf, ok := _ret.Get(0).(func(string, *user.FindUserByIdRequest) (*user.User, error)); ok {
+	if _rf, ok := _ret.Get(0).(func(string, *user.FindUserByIdRequest) (*user.FindUserByIdResponse, error)); ok {
 		return _rf(requestId, req)
 	}
 
-	_ra0, _ := _ret.Get(0).(*user.User)
+	_ra0, _ := _ret.Get(0).(*user.FindUserByIdResponse)
 	_rb1 := _ret.Error(1)
 
 	return _ra0, _rb1
@@ -201,12 +201,12 @@ func (_c *iUserUseCaseFindUserByIdCall) Maybe() *iUserUseCaseFindUserByIdCall {
 	return _c
 }
 
-func (_c *iUserUseCaseFindUserByIdCall) TypedReturns(a *user.User, b error) *iUserUseCaseFindUserByIdCall {
+func (_c *iUserUseCaseFindUserByIdCall) TypedReturns(a *user.FindUserByIdResponse, b error) *iUserUseCaseFindUserByIdCall {
 	_c.Call = _c.Return(a, b)
 	return _c
 }
 
-func (_c *iUserUseCaseFindUserByIdCall) ReturnsFn(fn func(string, *user.FindUserByIdRequest) (*user.User, error)) *iUserUseCaseFindUserByIdCall {
+func (_c *iUserUseCaseFindUserByIdCall) ReturnsFn(fn func(string, *user.FindUserByIdRequest) (*user.FindUserByIdResponse, error)) *iUserUseCaseFindUserByIdCall {
 	_c.Call = _c.Return(fn)
 	return _c
 }

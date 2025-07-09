@@ -1,0 +1,259 @@
+syntax = "proto3";
+package user;
+
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/api/http.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+
+// LOCAL IMPORT
+import "v1/user/model.proto";
+import "v1/user/request.proto";
+import "v1/user/response.proto";
+import "v1/user/option.proto";
+import "v1/user/enum.proto";
+
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "USER SERVICE API";
+    version: "1.0.0";
+    description: "API for USER, AUTHENTICATION, and AUTHORIZATION";
+  };
+  schemes: [HTTPS, HTTP];
+  consumes: "application/json";
+  produces: "application/json";
+  security_definitions: {
+    security: {
+      key: "Bearer"
+      value: {
+        type: TYPE_API_KEY;
+        in: IN_HEADER;
+        name: "Authorization";
+        description: "Bearer Token (e.g., JWT) for authentication. Format: `Bearer YOUR_TOKEN`";
+      }
+    }
+  };
+  security: {
+    security_requirement: {
+      key: "Bearer";
+      value: {}
+    }
+  };
+};
+
+
+service UserService {
+  // COMMAND
+  rpc UpdateUserById(user.UpdateUserByIdRequest) returns (google.protobuf.Empty){
+    option (user.acl) = {
+      roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
+      is_public: false,
+      http: {
+        method: "post",
+        url: "/v1/user/users/{id}"
+      },
+      broker: {
+        event_type: "user.created"
+      }
+    };
+    option (google.api.http) = {
+      post: "/v1/user/users/{id}",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "update existing user by provided id";
+      tags: ["UserService"];
+      security: {
+        security_requirement: {
+          key: "Bearer";
+          value: {}
+        }
+      };
+    };
+  };
+
+  // QUERY
+  rpc FindUserById(user.FindUserByIdRequest) returns (user.FindUserByIdResponse){
+    option (user.acl) = {
+      roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
+      is_public: false,
+      http: {
+        method: "get",
+        url: "/v1/user/users/{id}"
+      },
+    };
+    option (google.api.http) = {
+      get: "/v1/user/users/{id}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "get user with provided id";
+      tags: ["UserService"];
+      security: {
+        security_requirement: {
+          key: "Bearer";
+          value: {}
+        }
+      };
+    };
+  };
+  rpc FindUserByEmailAndPassword(user.FindUserByEmailAndPasswordRequest) returns (user.FindUserByEmailAndPasswordResponse){
+    option (user.acl) = {
+      roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
+      is_public: false,
+      http: {
+        method: "get",
+        url: "/v1/user/users/{email}/{password}"
+      },
+    };
+    option (google.api.http) = {
+      get: "/v1/user/users/{email}/{password}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "find user by provided email and password";
+      description: "its not commonly used for http, its only used for rpc request. this endpoint will blocked by http middleware";
+      tags: ["UserService"];
+      security: {
+        security_requirement: {
+          key: "Bearer";
+          value: {}
+        }
+      };
+    };
+  };
+}
+
+service AuthService {
+  // COMMAND
+  rpc AuthUserRegister(user.AuthUserRegisterRequest) returns (google.protobuf.Empty) {
+    option (user.acl) = {
+      is_public: true,
+      http: {
+        method: "post",
+        url: "/v1/user/auth/register"
+      },
+    };
+    option (google.api.http) = {
+      post: "/v1/user/auth/register"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "register customer by provided request";
+      tags: ["AuthService"];
+    };
+  }
+  rpc AuthUserLoginByEmailAndPassword(AuthUserLoginByEmailAndPasswordRequest)  returns (google.protobuf.Empty){
+    option (user.acl) = {
+      is_public: true,
+      http: {
+        method: "post",
+        url: "/v1/user/auth/login"
+      },
+    };
+    option (google.api.http) = {
+      post: "/v1/user/auth/login"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "user login by email and password for get access token and refresh token";
+      tags: ["AuthService"];
+    };
+  }
+  rpc AuthUserVerifyOtp(user.AuthUserVerifyOtpRequest) returns (user.AuthUserVerifyOtpResponse){
+    option (user.acl) = {
+      roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
+      is_public: true,
+      http: {
+        method: "post",
+        url: "/v1/user/auth/otp/verify"
+      },
+    };
+    option (google.api.http) = {
+      post: "/v1/user/auth/otp/verify"
+      body: "*",
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "verify user otp with provided otp";
+      tags: ["AuthService"];
+    };
+  };
+  rpc AuthUserLogoutByToken(user.AuthUserLogoutByTokenRequest) returns (user.AuthUserLogoutByTokenResponse){
+    option (user.acl) = {
+      roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
+      is_public: false,
+      http: {
+        method: "post",
+        url: "/v1/user/auth/logout"
+      },
+    };
+    option (google.api.http) = {
+      post: "/v1/user/auth/logout"
+      body: "*",
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "logout user by token";
+      description:"logout customer by provided token request";
+      tags: ["AuthService"];
+      security: {
+        security_requirement: {
+          key: "Bearer";
+          value: {}
+        }
+      };
+    };
+  };
+  rpc AuthUserVerifyAccessControl(user.AuthUserVerifyAccessControlRequest) returns (user.AuthUserVerifyAccessControlResponse){
+    option (user.acl) = {
+      roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
+      is_public: false,
+      http: {
+        method: "post",
+        url: "/v1/user/auth/acl/verify"
+      },
+    };
+    option (google.api.http) = {
+      post: "/v1/user/auth/acl/verify"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "verified access control user by provided request";
+      tags: ["AuthService"];
+    };
+  };
+  rpc AuthServiceVerifyIsExcluded(user.AuthServiceVerifyIsExcludedRequest) returns (user.AuthServiceVerifyIsExcludedResponse){
+    option (user.acl) = {
+      roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
+      is_public: true,
+      http: {
+        method: "post",
+        url: "/v1/user/auth/acl/excluded"
+      },
+    };
+    option (google.api.http) = {
+      post: "/v1/user/auth/acl/excluded"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "verify RPC FullMethodName or HTTP URL & HTTP Method with provided request";
+      tags: ["AuthService"];
+    };
+  };
+
+  // QUERY
+  rpc AuthUserFindUserByToken(user.AuthUserFindUserByTokenRequest) returns (user.AuthUserFindUserByTokenResponse){
+    option (user.acl) = {
+      roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
+      is_public: false,
+      http: {
+        method: "get",
+        url: "/v1/user/auth/{token}"
+      },
+    };
+    option (google.api.http) = {
+      get: "/v1/user/auth/{token}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "get user otp with provided token";
+      tags: ["AuthService"];
+    };
+  };
+}

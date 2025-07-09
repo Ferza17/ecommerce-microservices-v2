@@ -1,0 +1,44 @@
+syntax = "proto3";
+package event;
+
+
+import "google/protobuf/timestamp.proto";
+import "v1/event/enum.proto";
+import "v1/event/model.proto";
+
+
+
+// EventStreamRequest for querying events
+message EventStreamRequest {
+  string aggregate_id = 1;
+  string aggregate_type = 2;
+  int64 from_version = 3;
+  int64 to_version = 4;
+  google.protobuf.Timestamp from_timestamp = 5;
+  google.protobuf.Timestamp to_timestamp = 6;
+  repeated string event_types = 7;
+  int32 limit = 8;
+}
+
+
+
+// SagaStreamRequest for querying saga events
+message SagaStreamRequest {
+  string saga_id = 1;
+  string saga_type = 2;
+  repeated event.SagaEventType event_types = 3;
+  google.protobuf.Timestamp from_timestamp = 4;
+  google.protobuf.Timestamp to_timestamp = 5;
+  int32 limit = 6;
+}
+
+
+message StoreEventsRequest {
+  repeated event.Event events = 1;
+  string transaction_id = 2;
+}
+
+message GetCompensationEventsRequest {
+  string saga_id = 1;
+  CompensationStatus status = 2;
+}

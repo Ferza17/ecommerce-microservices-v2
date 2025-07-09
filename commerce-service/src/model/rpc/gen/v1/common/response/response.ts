@@ -6,7 +6,7 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Any } from "../../../google/protobuf/any";
+import { Struct } from "../../../google/protobuf/struct";
 
 export const protobufPackage = "response";
 
@@ -14,7 +14,7 @@ export interface Response {
   error: string;
   message: string;
   Code: number;
-  data: Any | undefined;
+  data: { [key: string]: any } | undefined;
 }
 
 function createBaseResponse(): Response {
@@ -33,7 +33,7 @@ export const Response: MessageFns<Response> = {
       writer.uint32(24).int32(message.Code);
     }
     if (message.data !== undefined) {
-      Any.encode(message.data, writer.uint32(34).fork()).join();
+      Struct.encode(Struct.wrap(message.data), writer.uint32(34).fork()).join();
     }
     return writer;
   },
@@ -74,7 +74,7 @@ export const Response: MessageFns<Response> = {
             break;
           }
 
-          message.data = Any.decode(reader, reader.uint32());
+          message.data = Struct.unwrap(Struct.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -91,7 +91,7 @@ export const Response: MessageFns<Response> = {
       error: isSet(object.error) ? globalThis.String(object.error) : "",
       message: isSet(object.message) ? globalThis.String(object.message) : "",
       Code: isSet(object.Code) ? globalThis.Number(object.Code) : 0,
-      data: isSet(object.data) ? Any.fromJSON(object.data) : undefined,
+      data: isObject(object.data) ? object.data : undefined,
     };
   },
 
@@ -107,7 +107,7 @@ export const Response: MessageFns<Response> = {
       obj.Code = Math.round(message.Code);
     }
     if (message.data !== undefined) {
-      obj.data = Any.toJSON(message.data);
+      obj.data = message.data;
     }
     return obj;
   },
@@ -120,7 +120,7 @@ export const Response: MessageFns<Response> = {
     message.error = object.error ?? "";
     message.message = object.message ?? "";
     message.Code = object.Code ?? 0;
-    message.data = (object.data !== undefined && object.data !== null) ? Any.fromPartial(object.data) : undefined;
+    message.data = object.data ?? undefined;
     return message;
   },
 };
@@ -132,6 +132,10 @@ export type DeepPartial<T> = T extends Builtin ? T
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
+
+function isObject(value: any): boolean {
+  return typeof value === "object" && value !== null;
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

@@ -2,7 +2,6 @@ package rabbitmq
 
 import (
 	"context"
-	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	authConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/consumer"
 	userConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/consumer"
@@ -45,7 +44,7 @@ func (srv *Server) Serve(ctx context.Context) {
 	go func() {
 		defer wg.Done()
 		if err := srv.userConsumer.UserCreated(ctx); err != nil {
-			srv.logger.Error(fmt.Sprintf("failed to UserCreated", zap.Error(err)))
+			srv.logger.Error("User Created Error", zap.Error(err))
 		}
 	}()
 
@@ -53,7 +52,7 @@ func (srv *Server) Serve(ctx context.Context) {
 	go func() {
 		defer wg.Done()
 		if err := srv.userConsumer.UserUpdated(ctx); err != nil {
-			srv.logger.Error(fmt.Sprintf("failed to UserUpdated", zap.Error(err)))
+			srv.logger.Error("User Updated Error", zap.Error(err))
 		}
 	}()
 
@@ -61,7 +60,7 @@ func (srv *Server) Serve(ctx context.Context) {
 	go func() {
 		defer wg.Done()
 		if err := srv.authConsumer.UserLogin(ctx); err != nil {
-			srv.logger.Error(fmt.Sprintf("failed to UserLogin", zap.Error(err)))
+			srv.logger.Error("User Login Error", zap.Error(err))
 		}
 	}()
 
