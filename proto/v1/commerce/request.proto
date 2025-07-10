@@ -1,8 +1,6 @@
 syntax = "proto3";
 package commerce;
 
-import "google/protobuf/timestamp.proto";
-
 
 
 // CART ITEM REQUEST DEFINITION

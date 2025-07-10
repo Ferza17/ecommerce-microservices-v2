@@ -14,7 +14,7 @@ consul kv put local/services/user/JWT_REFRESH_TOKEN_EXPIRATION_TIME '2d'
 consul kv put local/services/user/OTP_EXPIRATION_TIME '10m'
 consul kv put local/services/user/VERIFICATION_USER_LOGIN_URL 'http://localhost:4000?access_token=%s?refresh_token=?'
 ## Production
-consul kv put production/services/user/ENV 'local'
+consul kv put production/services/user/ENV 'production'
 consul kv put production/services/user/SERVICE_NAME 'user-service'
 consul kv put production/services/user/RPC_HOST 'user-service'
 consul kv put production/services/user/RPC_PORT '50056'

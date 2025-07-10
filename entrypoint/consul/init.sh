@@ -62,6 +62,7 @@ source /services/init-notification-service.sh
 source /services/init-payment-service.sh
 source /services/init-product-service.sh
 source /services/init-user-service.sh
+source /services/init-shipping-service.sh
 
 ##########################################################################################################################################################################################################################
 

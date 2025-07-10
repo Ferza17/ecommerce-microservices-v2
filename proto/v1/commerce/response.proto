@@ -1,7 +1,6 @@
 syntax = "proto3";
 package commerce;
 
-import "google/protobuf/timestamp.proto";
 import "v1/commerce/model.proto";
 
 
