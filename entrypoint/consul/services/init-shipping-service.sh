@@ -1,23 +1,26 @@
-echo "INIT SHIPPING SERVICE"
+#!/bin/sh
+
+
+echo "INIT SHIPPING service"
 
 ## LOCAL
-consul kv put local/service/shipping/ENV 'local'
-consul kv put local/service/shipping/SERVICE_NAME 'shipping-service'
-consul kv put local/service/shipping/RPC_HOST 'localhost'
-consul kv put local/service/shipping/RPC_PORT '50057'
-consul kv put local/service/shipping/HTTP_HOST 'localhost'
-consul kv put local/service/shipping/HTTP_PORT '40057'
-consul kv put local/service/shipping/METRIC_HTTP_PORT '30057'
+consul kv put local/services/shipping/ENV 'local'
+consul kv put local/services/shipping/services_NAME 'shipping-services'
+consul kv put local/services/shipping/RPC_HOST 'localhost'
+consul kv put local/services/shipping/RPC_PORT '50057'
+consul kv put local/services/shipping/HTTP_HOST 'localhost'
+consul kv put local/services/shipping/HTTP_PORT '40057'
+consul kv put local/services/shipping/METRIC_HTTP_PORT '30057'
 
 ## PRODUCTION
-consul kv put production/service/shipping/ENV 'production'
-consul kv put production/service/shipping/SERVICE_NAME 'shipping-service'
-consul kv put production/service/shipping/RPC_HOST 'shipping-service'
-consul kv put production/service/shipping/RPC_PORT '50057'
-consul kv put production/service/shipping/HTTP_HOST 'shipping-service'
-consul kv put production/service/shipping/HTTP_PORT '40057'
-consul kv put production/service/shipping/METRIC_HTTP_PORT '30057'
-echo "DONE INIT SHIPPING SERVICE"
+consul kv put production/services/shipping/ENV 'production'
+consul kv put production/services/shipping/services_NAME 'shipping-services'
+consul kv put production/services/shipping/RPC_HOST 'shipping-services'
+consul kv put production/services/shipping/RPC_PORT '50057'
+consul kv put production/services/shipping/HTTP_HOST 'shipping-services'
+consul kv put production/services/shipping/HTTP_PORT '40057'
+consul kv put production/services/shipping/METRIC_HTTP_PORT '30057'
+echo "DONE INIT SHIPPING service"
 
 
 

@@ -1,3 +1,5 @@
+#!/bin/sh
+
 echo "Registering Mailhog SMTP as proxy service in Consul ..."
 
 # Wait for Mailhog SMTP to be available

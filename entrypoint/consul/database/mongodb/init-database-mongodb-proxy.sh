@@ -1,4 +1,4 @@
-
+#!/bin/sh
 
 echo "Registering MongoDB as proxy service in Consul ..."
 

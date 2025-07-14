@@ -1,0 +1,50 @@
+syntax = "proto3";
+package event;
+
+import "v1/event/model.proto";
+
+
+// OLD
+message CreateEventStoreResponse {
+  string id = 1;
+}
+
+
+// NEW
+// SagaStreamResponse for streaming saga events
+message SagaStreamResponse {
+  repeated event.SagaEvent events = 1;
+  bool has_more = 2;
+  string next_token = 3;
+}
+
+// EventStreamResponse for streaming events
+message EventStreamResponse {
+  repeated Event events = 1;
+  bool has_more = 2;
+  string next_token = 3;
+}
+
+// Request/Response messages
+message StoreEventResponse {
+  bool success = 1;
+  string error_message = 2;
+  string event_id = 3;
+}
+
+
+message StoreSagaEventResponse {
+  bool success = 1;
+  string error_message = 2;
+  string event_id = 3;
+}
+
+message StoreCompensationEventResponse {
+  bool success = 1;
+  string error_message = 2;
+  string compensation_id = 3;
+}
+
+message GetCompensationEventsResponse {
+  repeated CompensationEvent events = 1;
+}

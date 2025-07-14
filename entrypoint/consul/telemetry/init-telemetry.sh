@@ -1,3 +1,5 @@
+#!/bin/sh
+
 echo "INIT CONFIG TELEMETRY"
 # Jaeger Local
 consul kv put local/telemetry/jaeger/JAEGER_TELEMETRY_HOST "localhost"

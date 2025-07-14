@@ -1,4 +1,4 @@
 export enum MongoDBCollection {
-  CartItemCollection = 'CartItem',
-  OrderItemCollection = 'OrderItem'
+  CartItemCollection = "CartItem",
+  OrderItemCollection = "OrderItem",
 }

@@ -1,3 +1,6 @@
+#!/bin/sh
+
+
 echo "INIT EVENT-STORE SERVICE"## Local
 curl --request PUT --data 'local' http://localhost:8500/v1/kv/local/services/event-store/ENV
 curl --request PUT --data 'event-store-service' http://localhost:8500/v1/kv/local/services/event-store/SERVICE_NAME

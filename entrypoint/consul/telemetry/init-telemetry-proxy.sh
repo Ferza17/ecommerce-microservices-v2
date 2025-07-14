@@ -1,3 +1,5 @@
+#!/bin/sh
+
 echo "Registering Jaeger Telemetry as proxy service in Consul ..."
 # Register Jaeger Telemetry service
 consul services register \

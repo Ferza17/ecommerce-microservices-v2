@@ -1,3 +1,6 @@
+#!/bin/sh
+
+
 echo "INIT USER SERVICE"
 ## Local
 consul kv put local/services/user/ENV 'local'
@@ -13,6 +16,7 @@ consul kv put local/services/user/JWT_REFRESH_TOKEN_SECRET 'v2-service-ecommerce
 consul kv put local/services/user/JWT_REFRESH_TOKEN_EXPIRATION_TIME '2d'
 consul kv put local/services/user/OTP_EXPIRATION_TIME '10m'
 consul kv put local/services/user/VERIFICATION_USER_LOGIN_URL 'http://localhost:4000?access_token=%s?refresh_token=?'
+
 ## Production
 consul kv put production/services/user/ENV 'production'
 consul kv put production/services/user/SERVICE_NAME 'user-service'

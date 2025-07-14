@@ -1,3 +1,5 @@
+#!/bin/sh
+
 echo "Registering Traefik Service in Consul ..."
 # Register Traefik Telemetry service
 consul services register \

@@ -1,3 +1,6 @@
+#!/bin/sh
+
+
 echo "INIT CONFIG API GATEWAY"## Local
 curl --request PUT --data 'local' http://localhost:8500/v1/kv/local/services/api-gateway/ENV
 curl --request PUT --data 'api-gateway-service' http://localhost:8500/v1/kv/local/services/api-gateway/SERVICE_NAME

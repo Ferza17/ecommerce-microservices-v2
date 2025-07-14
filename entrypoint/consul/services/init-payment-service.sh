@@ -1,3 +1,6 @@
+#!/bin/sh
+
+
 echo "INIT PAYMENT SERVICE"
 ## LOCAL
 consul kv put local/services/payment/ENV 'local'

@@ -1,3 +1,6 @@
+#!/bin/sh
+
+
 echo "INIT PRODUCT SERVICE"
 ## Local
 consul kv put local/services/product/ENV 'local'

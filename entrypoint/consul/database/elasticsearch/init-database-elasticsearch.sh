@@ -1,4 +1,4 @@
-
+#!/bin/sh
 
 echo "INIT CONSUL KV DATABASE ELASTICSEARCH"
 ## Elasticsearch Local

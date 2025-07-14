@@ -1,4 +1,4 @@
-
+#!/bin/sh
 
 echo "Registering RabbitMQ as proxy service in Consul ..."
 

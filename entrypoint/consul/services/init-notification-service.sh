@@ -1,3 +1,6 @@
+#!/bin/sh
+
+
 echo "INIT NOTIFICATION SERVICE"
 ## Local
 consul kv put local/services/notification/ENV 'local'

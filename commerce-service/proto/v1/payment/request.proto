@@ -13,7 +13,7 @@ message CreatePaymentRequest {
   repeated payment.PaymentItem items = 1 [(validate.rules).repeated.ignore_empty = true];
   string user_id = 2 [(validate.rules).string.min_len = 1];
   double amount = 3 [(validate.rules).double.gt = 0];
-  string provider_id = 4 [(validate.rules).string.min_len = 1];;
+  string provider_id = 4 [(validate.rules).string.min_len = 1];
 }
 
 message PaymentOrderDelayedCancelledRequest {

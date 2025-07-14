@@ -1,9 +1,9 @@
-import { Transport } from '@nestjs/microservices';
-import { ClientsProviderAsyncOptions } from '@nestjs/microservices/module/interfaces/clients-module.interface';
-import { Queue } from '../../enum/queue';
-import { ConsulService } from '../../config/consul.service';
-import { ConfigService } from '@nestjs/config';
-import { ConsulModule } from '../../config/consul.module';
+import { Transport } from "@nestjs/microservices";
+import { ClientsProviderAsyncOptions } from "@nestjs/microservices/module/interfaces/clients-module.interface";
+import { Queue } from "../../enum/queue";
+import { ConsulService } from "../../config/consul.service";
+import { ConfigService } from "@nestjs/config";
+import { ConsulModule } from "../../config/consul.module";
 
 export const ClientModuleAsyncConfig = (exchange: string, queue: string): ClientsProviderAsyncOptions => ({
   name: queue,

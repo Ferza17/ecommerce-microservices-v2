@@ -14,7 +14,7 @@ echo "=================================================="
 echo ">>> copy file .proto to shipping-service/proto <<<"
 echo "=================================================="
 
-TARGET_DIR="shipping-service/src/main/proto";
+TARGET_DIR="shipping-service/proto";
 mkdir -p "$TARGET_DIR";
 rsync -av --include='*.proto' --include='*/' --exclude='*' "proto/" "$TARGET_DIR";
 
