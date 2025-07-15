@@ -2,27 +2,31 @@ package rabbitmq
 
 import (
 	"context"
-	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
+	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
 	paymentConsumer "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/consumer"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
+	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/worker"
 	"github.com/google/wire"
-	"os"
-	"os/signal"
-	"syscall"
+	"github.com/rabbitmq/amqp091-go"
+	"go.opentelemetry.io/otel/attribute"
+	"go.uber.org/zap"
+	"log"
 )
 
 type (
 	IRabbitMQServer interface {
-		Serve()
+		Serve(ctx context.Context) error
 	}
 
 	rabbitMQServer struct {
-		rabbitMQ rabbitmq.IRabbitMQInfrastructure
-
-		paymentConsumer paymentConsumer.IPaymentConsumer
-
-		logger logger.IZapLogger
+		rabbitMQ                rabbitmq.IRabbitMQInfrastructure
+		workerPool              *pkgWorker.WorkerPool
+		paymentConsumer         paymentConsumer.IPaymentConsumer
+		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
+		logger                  logger.IZapLogger
 	}
 )
 
@@ -30,12 +34,16 @@ type (
 func NewRabbitMQServer(
 	rabbitMQ rabbitmq.IRabbitMQInfrastructure,
 	paymentConsumer paymentConsumer.IPaymentConsumer,
+	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	logger logger.IZapLogger,
 ) IRabbitMQServer {
 	return &rabbitMQServer{
-		rabbitMQ:        rabbitMQ,
-		paymentConsumer: paymentConsumer,
-		logger:          logger,
+		workerPool: pkgWorker.NewWorkerPoolTaskQueue(
+			"RabbitMQ Consumer", 9, 1000),
+		rabbitMQ:                rabbitMQ,
+		paymentConsumer:         paymentConsumer,
+		telemetryInfrastructure: telemetryInfrastructure,
+		logger:                  logger,
 	}
 }
 
@@ -44,31 +52,109 @@ var Set = wire.NewSet(
 	NewRabbitMQServer,
 )
 
-func (r rabbitMQServer) Serve() {
-	ctx, cancel := context.WithCancel(context.Background())
+func (srv *rabbitMQServer) Serve(ctx context.Context) error {
+	srv.workerPool.Start()
 
-	go func() {
-		defer cancel()
-		sigChan := make(chan os.Signal, 2)
-		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-		<-sigChan
-		err := r.paymentConsumer.Close()
-		if err != nil {
-			return
-		}
-	}()
+	queues := []struct {
+		Queue    string
+		Exchange string
+		Topic    string
+	}{
 
-	go func() {
-		if err := r.paymentConsumer.PaymentOrderCreated(ctx); err != nil {
-			r.logger.Error(fmt.Sprintf("Err PaymentOrderCreated : %v", err))
-		}
-	}()
+		{
+			Queue:    config.Get().QueuePaymentOrderCreated,
+			Exchange: config.Get().ExchangePaymentDirect,
+			Topic:    amqp091.ExchangeDirect,
+		},
+		{
+			Queue:    config.Get().QueuePaymentOrderDelayedCancelled,
+			Exchange: config.Get().ExchangePaymentDelayed,
+			Topic:    "x-delayed-message",
+		},
+	}
 
-	go func() {
-		if err := r.paymentConsumer.PaymentOrderDelayedCancelled(ctx); err != nil {
-			r.logger.Error(fmt.Sprintf("Err PaymentOrderDelayedCancelled : %v", err))
+	for _, queue := range queues {
+		if err := srv.rabbitMQ.SetupQueue(
+			queue.Exchange,
+			queue.Topic,
+			queue.Queue,
+		); err != nil {
+			srv.logger.Error("failed to setup queue", zap.Error(err))
+			return err
 		}
-	}()
+
+		go func(queue string) {
+
+			deliveries, err := srv.rabbitMQ.Consume(ctx, queue)
+			if err != nil {
+				srv.logger.Error("failed to consume queue", zap.Error(err))
+				return
+			}
+
+			for {
+				select {
+				case d, ok := <-deliveries:
+					if !ok {
+						log.Printf("Consumer channel closed for queue %s", queue)
+						return
+					}
+
+					var (
+						requestId         string
+						newCtx, cancelCtx = context.WithTimeout(ctx, 20)
+					)
+
+					for key, value := range d.Headers {
+						if key == pkgContext.CtxKeyRequestID {
+							requestId = value.(string)
+							newCtx = pkgContext.SetRequestIDToContext(ctx, requestId)
+						}
+
+						if key == pkgContext.CtxKeyAuthorization {
+							newCtx = pkgContext.SetTokenAuthorizationToContext(ctx, value.(string))
+						}
+					}
+
+					newCtx, span := srv.telemetryInfrastructure.StartSpanFromRabbitMQHeader(newCtx, d.Headers, "RabbitMQTransport")
+					span.SetAttributes(attribute.String("messaging.destination", queue))
+					span.SetAttributes(attribute.String(pkgContext.CtxKeyRequestID, requestId))
+
+					task := pkgWorker.TaskQueue{
+						QueueName: queue,
+						Ctx:       newCtx,
+						Delivery:  &d,
+					}
+
+					// REGISTER HANDLER
+					switch queue {
+					case config.Get().QueuePaymentOrderCreated:
+						task.Handler = func(ctx context.Context, d *amqp091.Delivery) error {
+							return srv.paymentConsumer.PaymentOrderCreated(ctx, d)
+						}
+					case config.Get().QueuePaymentOrderDelayedCancelled:
+						task.Handler = func(ctx context.Context, d *amqp091.Delivery) error {
+							return srv.paymentConsumer.PaymentOrderDelayedCancelled(ctx, d)
+						}
+					default:
+						log.Fatalf("invalid queue %s", queue)
+					}
+
+					task.Ctx = newCtx
+					srv.workerPool.AddTaskQueue(task)
+
+					cancelCtx()
+					span.End()
+
+				case <-ctx.Done():
+					log.Printf("Context cancelled, stopping consumer for queue %s", queue)
+					return
+				}
+			}
+
+		}(queue.Queue)
+	}
 
 	<-ctx.Done()
+	srv.workerPool.Stop()
+	return nil
 }

@@ -27,6 +27,6 @@ func ProvideGrpcServer() IRabbitMQServer {
 	iPaymentRepository := repository.NewPaymentRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
 	iPaymentUseCase := usecase.NewPaymentUseCase(iPaymentRepository, iRabbitMQInfrastructure, iTelemetryInfrastructure, iZapLogger, postgresSQL)
 	iPaymentConsumer := consumer.NewPaymentConsumer(iRabbitMQInfrastructure, iTelemetryInfrastructure, iPaymentUseCase, iZapLogger)
-	iRabbitMQServer := NewRabbitMQServer(iRabbitMQInfrastructure, iPaymentConsumer, iZapLogger)
+	iRabbitMQServer := NewRabbitMQServer(iRabbitMQInfrastructure, iPaymentConsumer, iTelemetryInfrastructure, iZapLogger)
 	return iRabbitMQServer
 }

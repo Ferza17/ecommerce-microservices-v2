@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
 	userService "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/user"
@@ -13,26 +14,26 @@ import (
 	paymentPresenter "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/presenter"
 	paymentProviderPresenter "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/provider/presenter"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
+	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/worker"
 	"github.com/google/wire"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
-	"log"
 	"net"
 )
 
 type (
 	IGrpcServer interface {
-		Serve()
+		Serve(ctx context.Context) error
 		GracefulStop()
 	}
 
 	GrpcServer struct {
-		address string
-		port    string
-
+		address                  string
+		port                     string
+		workerPool               *pkgWorker.WorkerPool
 		paymentPresenter         paymentPresenter.IPaymentPresenter
 		paymentProviderPresenter paymentProviderPresenter.IPaymentProviderPresenter
 
@@ -53,8 +54,12 @@ func NewGrpcServer(
 	userService userService.IUserService,
 ) IGrpcServer {
 	return &GrpcServer{
-		address:                  config.Get().PaymentServiceRpcHost,
-		port:                     config.Get().PaymentServiceRpcPort,
+		address: config.Get().PaymentServiceRpcHost,
+		port:    config.Get().PaymentServiceRpcPort,
+		workerPool: pkgWorker.NewWorkerPool(
+			fmt.Sprintf("GRPC SERVER ON %s:%s", config.Get().PaymentServiceRpcHost, config.Get().PaymentServiceRpcPort),
+			2,
+		),
 		paymentPresenter:         paymentPresenter,
 		paymentProviderPresenter: paymentProviderPresenter,
 		telemetryInfrastructure:  telemetryInfrastructure,
@@ -68,7 +73,9 @@ var Set = wire.NewSet(
 	NewGrpcServer,
 )
 
-func (s *GrpcServer) Serve() {
+func (s *GrpcServer) Serve(ctx context.Context) error {
+	s.workerPool.Start()
+
 	listen, err := net.Listen("tcp", fmt.Sprintf(":%s", s.port))
 	if err != nil {
 		s.logger.Error(fmt.Sprintf("Err Listen : %v", err))
@@ -92,14 +99,16 @@ func (s *GrpcServer) Serve() {
 	grpc_health_v1.RegisterHealthServer(s.grpcServer, healthServer)
 	healthServer.SetServingStatus(config.Get().PaymentServiceServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
 
-	log.Printf("Starting gRPC server on %s:%s", s.address, s.port)
-
 	// Enable Reflection to Evans grpc client
 	reflection.Register(s.grpcServer)
 	if err = s.grpcServer.Serve(listen); err != nil {
 		s.logger.Error(fmt.Sprintf("failed to serve : %s", zap.Error(err).String))
 	}
-	return
+
+	<-ctx.Done()
+	s.grpcServer.GracefulStop()
+	s.workerPool.Stop()
+	return nil
 }
 
 func (s *GrpcServer) GracefulStop() {

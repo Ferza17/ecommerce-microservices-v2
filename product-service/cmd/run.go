@@ -32,7 +32,9 @@ var runCommand = &cobra.Command{
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			rabbitMQServer.Serve(ctx)
+			if err := rabbitMQServer.Serve(ctx); err != nil {
+				log.Fatalln(err)
+			}
 		}()
 
 		wg.Add(1)

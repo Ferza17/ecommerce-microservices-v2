@@ -46,7 +46,10 @@ var runCommand = &cobra.Command{
 			close(p)
 
 			// Start the server (these blocks)
-			grpcServer.Serve()
+			if err := grpcServer.Serve(ctx); err != nil {
+				log.Fatalf("failed to start gRPC server: %s", err)
+				return
+			}
 
 		}()
 
@@ -54,15 +57,16 @@ var runCommand = &cobra.Command{
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			log.Println("Starting RabbitMQ server...")
-			rabbitMQServer.Serve()
+			if err := rabbitMQServer.Serve(ctx); err != nil {
+				log.Fatalf("failed to start RabbitMQ server: %s", err)
+				return
+			}
 		}()
 
 		// Start HTTP Server
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			log.Printf("Starting HTTP server on %s:%s...", config.Get().PaymentServiceHttpHost, config.Get().PaymentServiceHttpPort)
 			if err := httpServer.Serve(ctx); err != nil {
 				log.Fatal(err)
 				return
@@ -73,7 +77,6 @@ var runCommand = &cobra.Command{
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			log.Printf("Starting HTTP Metric Collector on %s:%s...", config.Get().PaymentServiceHttpHost, config.Get().PaymentServiceMetricHttpPort)
 			if err := http.ServeHttpPrometheusMetricCollector(); err != nil {
 				log.Fatal(err)
 				return

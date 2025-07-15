@@ -8,12 +8,13 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
 	"github.com/google/wire"
+	"github.com/rabbitmq/amqp091-go"
 )
 
 type (
 	IPaymentConsumer interface {
-		PaymentOrderCreated(ctx context.Context) error
-		PaymentOrderDelayedCancelled(ctx context.Context) error
+		PaymentOrderCreated(ctx context.Context, d *amqp091.Delivery) error
+		PaymentOrderDelayedCancelled(ctx context.Context, d *amqp091.Delivery) error
 
 		Close() error
 	}
