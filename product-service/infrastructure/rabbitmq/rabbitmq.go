@@ -12,12 +12,15 @@ import (
 
 type (
 	IRabbitMQInfrastructure interface {
+		SetupQueue(exchange string, topic string, queue string) error
+
+		Consume(ctx context.Context, queue string) (<-chan amqp091.Delivery, error)
 		Publish(ctx context.Context, requestId string, exchange string, queue string, message []byte) error
-		GetConnection() *amqp091.Connection
 		Close() error
 	}
 	RabbitMQInfrastructure struct {
 		amqpConn                *amqp091.Connection
+		channel                 *amqp091.Channel
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 		logger                  logger.IZapLogger
 	}
@@ -39,8 +42,14 @@ func NewRabbitMQInfrastructure(
 		logger.Error(fmt.Sprintf("Failed to connect to RabbitMQ: %v", err))
 	}
 
+	ch, err := amqpConn.Channel()
+	if err != nil {
+		logger.Error(fmt.Sprintf("Failed to open a channel: %v", err))
+	}
+
 	return &RabbitMQInfrastructure{
 		amqpConn:                amqpConn,
+		channel:                 ch,
 		telemetryInfrastructure: telemetryInfrastructure,
 		logger:                  logger,
 	}
@@ -52,8 +61,4 @@ func (c *RabbitMQInfrastructure) Close() error {
 		return err
 	}
 	return nil
-}
-
-func (c *RabbitMQInfrastructure) GetConnection() *amqp091.Connection {
-	return c.amqpConn
 }

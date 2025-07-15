@@ -24,21 +24,20 @@ var runCommand = &cobra.Command{
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			log.Println("========== Starting RPC Server ==========")
-			grpcServer.Serve()
+			if err := grpcServer.Serve(ctx); err != nil {
+				log.Fatalln(err)
+			}
 		}()
 
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			log.Println("========== Starting RabbitMQ Consumer ==========")
 			rabbitMQServer.Serve(ctx)
 		}()
 
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			log.Println("========== Starting HTTP Server ==========")
 			if err := httpServer.Serve(ctx); err != nil {
 				log.Println("HTTP Server Error: ", err)
 				return
@@ -48,7 +47,6 @@ var runCommand = &cobra.Command{
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			log.Println("========== Starting Metric Collector HTTP Server ==========")
 			if err := http.ServeHttpPrometheusMetricCollector(); err != nil {
 				log.Panic(err)
 				return

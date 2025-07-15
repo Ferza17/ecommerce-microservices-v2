@@ -15,6 +15,7 @@ import (
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/logger"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/response"
+	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/worker"
 	"github.com/google/wire"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -26,9 +27,10 @@ import (
 
 type (
 	HttpTransport struct {
-		address string
-		port    string
-		server  *http.Server
+		address    string
+		port       string
+		server     *http.Server
+		workerPool *pkgWorker.WorkerPool
 
 		logger                  logger.IZapLogger
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
@@ -48,6 +50,10 @@ func NewServer(
 	userService userService.IUserService,
 ) *HttpTransport {
 	return &HttpTransport{
+		workerPool: pkgWorker.NewWorkerPool(
+			fmt.Sprintf("HTTP SERVER ON %s:%s", config.Get().ProductServiceHttpHost, config.Get().ProductServiceHttpPort),
+			1,
+		),
 		address:                 config.Get().ProductServiceHttpHost,
 		port:                    config.Get().ProductServiceHttpPort,
 		productPresenter:        productPresenter,
@@ -58,6 +64,8 @@ func NewServer(
 }
 
 func (s *HttpTransport) Serve(ctx context.Context) error {
+	s.workerPool.Start()
+
 	// Create Gorilla mux router
 	router := mux.NewRouter()
 
@@ -133,5 +141,7 @@ func (s *HttpTransport) Serve(ctx context.Context) error {
 		return fmt.Errorf("HTTP server failed to start: %w", err)
 	}
 
+	<-ctx.Done()
+	s.workerPool.Stop()
 	return nil
 }

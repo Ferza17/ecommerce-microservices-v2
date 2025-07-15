@@ -7,13 +7,14 @@ import (
 	productUseCase "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/logger"
 	"github.com/google/wire"
+	"github.com/rabbitmq/amqp091-go"
 )
 
 type (
 	IProductConsumer interface {
-		ProductCreated(ctx context.Context) error
-		ProductUpdated(ctx context.Context) error
-		ProductDeleted(ctx context.Context) error
+		ProductCreated(ctx context.Context, d *amqp091.Delivery) error
+		ProductUpdated(ctx context.Context, d *amqp091.Delivery) error
+		ProductDeleted(ctx context.Context, d *amqp091.Delivery) error
 	}
 
 	productConsumer struct {

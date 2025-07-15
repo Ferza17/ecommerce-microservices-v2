@@ -16,8 +16,8 @@ type (
 	IRabbitMQInfrastructure interface {
 		SetupQueue(exchange string, topic string, queue string) error
 
+		Consume(ctx context.Context, queue string) (<-chan amqp091.Delivery, error)
 		Publish(ctx context.Context, requestId string, exchange string, queue string, message []byte) error
-		GetChannel() *amqp091.Channel
 		Close() error
 	}
 	RabbitMQInfrastructure struct {
@@ -74,8 +74,4 @@ func (c *RabbitMQInfrastructure) Close() error {
 	}
 
 	return nil
-}
-
-func (c *RabbitMQInfrastructure) GetChannel() *amqp091.Channel {
-	return c.channel
 }

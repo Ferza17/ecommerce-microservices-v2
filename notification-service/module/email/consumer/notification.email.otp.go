@@ -15,7 +15,6 @@ import (
 
 func (c *notificationEmailConsumer) NotificationEmailOTP(ctx context.Context, d *amqp091.Delivery) error {
 	ctx, span := c.telemetryInfrastructure.StartSpanFromContext(ctx, "EmailConsumer.NotificationEmailOTP")
-	defer span.End()
 
 	var (
 		request   pb.SendOtpEmailNotificationRequest

@@ -76,17 +76,9 @@ func (srv *RabbitMQTransport) Serve(ctx context.Context) error {
 
 		go func(queue string) {
 
-			deliveries, err := srv.rabbitmq.GetChannel().Consume(
-				queue, // queue
-				"",    // consumer
-				false, // auto-ack (set to false for manual acknowledgment)
-				false, // exclusive
-				false, // no-local
-				true,  // no-wait
-				nil,   // args
-			)
+			deliveries, err := srv.rabbitmq.Consume(ctx, queue)
 			if err != nil {
-				log.Fatalf("failed to register consumer for queue %s: %v", queue, err)
+				srv.logger.Error("failed to consume queue", zap.Error(err))
 				return
 			}
 

@@ -30,6 +30,6 @@ func ProvideRabbitMQTransport() *RabbitMQTransport {
 	iProductElasticsearchRepository := elasticsearch2.NewProductElasticsearchRepository(iElasticsearchInfrastructure, iTelemetryInfrastructure, iZapLogger)
 	iProductUseCase := usecase.NewProductUseCase(postgresSQL, iProductPostgresqlRepository, iRabbitMQInfrastructure, iProductElasticsearchRepository, iTelemetryInfrastructure, iZapLogger)
 	iProductConsumer := consumer.NewProductConsumer(iRabbitMQInfrastructure, iProductUseCase, iTelemetryInfrastructure, iZapLogger)
-	rabbitMQTransport := NewServer(iZapLogger, iProductConsumer)
+	rabbitMQTransport := NewServer(iZapLogger, iProductConsumer, iTelemetryInfrastructure, iRabbitMQInfrastructure)
 	return rabbitMQTransport
 }
