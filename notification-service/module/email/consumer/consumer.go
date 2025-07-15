@@ -7,12 +7,13 @@ import (
 	notificationUseCase "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 	"github.com/google/wire"
+	"github.com/rabbitmq/amqp091-go"
 )
 
 type (
 	INotificationEmailConsumer interface {
-		NotificationEmailOTP(ctx context.Context) error
-		NotificationEmailPaymentOrderCreated(ctx context.Context) error
+		NotificationEmailOTP(ctx context.Context, d *amqp091.Delivery) error
+		NotificationEmailPaymentOrderCreated(ctx context.Context, d *amqp091.Delivery) error
 	}
 
 	notificationEmailConsumer struct {

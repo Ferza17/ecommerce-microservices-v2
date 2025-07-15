@@ -11,19 +11,8 @@ import (
 )
 
 func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, exchange string, queue string, message []byte) error {
-	amqpChannel, err := c.amqpConn.Channel()
-	if err != nil {
-		c.logger.Error(fmt.Sprintf("Failed to create a channel: %v", err))
-		return err
-	}
 
-	defer func(amqpChannel *amqp091.Channel) {
-		if err = amqpChannel.Close(); err != nil {
-			c.logger.Error(fmt.Sprintf("Failed to close a channel: %v", err))
-		}
-	}(amqpChannel)
-
-	if err = amqpChannel.ExchangeDeclare(
+	if err := c.channel.ExchangeDeclare(
 		exchange,
 		amqp091.ExchangeDirect,
 		true,
@@ -36,7 +25,7 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 		return err
 	}
 
-	if err = amqpChannel.QueueBind(
+	if err := c.channel.QueueBind(
 		queue,
 		"",
 		exchange,
@@ -55,7 +44,7 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 	headers[pkgContext.CtxKeyRequestID] = requestId
 
 	// Publish message
-	if _, err = amqpChannel.PublishWithDeferredConfirmWithContext(
+	if _, err := c.channel.PublishWithDeferredConfirmWithContext(
 		ctx,
 		exchange,
 		"",

@@ -47,7 +47,7 @@ func NewRabbitMQInfrastructure(
 
 	ch, err := amqpConn.Channel()
 	if err != nil {
-		log.Fatalf("Failed to open a channel: %s", err)
+		logger.Error(fmt.Sprintf("Failed to open a channel: %s", err))
 	}
 
 	if err = ch.Qos(20, 0, false); err != nil {

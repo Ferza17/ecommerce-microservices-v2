@@ -2,18 +2,27 @@ package rabbitmq
 
 import (
 	"context"
-	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/rabbitmq"
+	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
 	notificationEmailConsumer "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/consumer"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
+	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/worker"
 	"github.com/google/wire"
+	"github.com/rabbitmq/amqp091-go"
+	"go.opentelemetry.io/otel/attribute"
 	"go.uber.org/zap"
-	"sync"
+	"log"
 )
 
 type (
 	RabbitMQTransport struct {
+		workerPool                *pkgWorker.WorkerPool
 		logger                    logger.IZapLogger
 		notificationEmailConsumer notificationEmailConsumer.INotificationEmailConsumer
+		rabbitmq                  rabbitmq.IRabbitMQInfrastructure
+		telemetryInfrastructure   telemetryInfrastructure.ITelemetryInfrastructure
 	}
 )
 
@@ -22,25 +31,129 @@ var Set = wire.NewSet(NewServer)
 func NewServer(
 	logger logger.IZapLogger,
 	notificationEmailConsumer notificationEmailConsumer.INotificationEmailConsumer,
+	rabbitmq rabbitmq.IRabbitMQInfrastructure,
+	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 ) *RabbitMQTransport {
 	return &RabbitMQTransport{
+		workerPool: pkgWorker.NewWorkerPoolTaskQueue(
+			"RabbitMQ Consumer", 9, 1000),
 		logger:                    logger,
 		notificationEmailConsumer: notificationEmailConsumer,
+		rabbitmq:                  rabbitmq,
+		telemetryInfrastructure:   telemetryInfrastructure,
 	}
 }
 
-func (srv *RabbitMQTransport) Serve(ctx context.Context) {
-	ctx, cancel := context.WithCancel(ctx)
-	wg := new(sync.WaitGroup)
+func (srv *RabbitMQTransport) Serve(ctx context.Context) error {
+	srv.workerPool.Start()
 
-	wg.Add(1)
-	go func() {
-		defer cancel()
-		if err := srv.notificationEmailConsumer.NotificationEmailOTP(ctx); err != nil {
-			srv.logger.Error(fmt.Sprintf("failed to ProductCreated : %s", zap.Error(err).String))
+	queues := []struct {
+		Queue    string
+		Exchange string
+		Topic    string
+	}{
+		{
+			Queue:    config.Get().QueueNotificationEmailOtpCreated,
+			Exchange: config.Get().ExchangeNotification,
+			Topic:    amqp091.ExchangeDirect,
+		},
+		{
+			Queue:    config.Get().QueueNotificationEmailPaymentOrderCreated,
+			Exchange: config.Get().ExchangeNotification,
+			Topic:    amqp091.ExchangeDirect,
+		},
+	}
+
+	for _, queue := range queues {
+		if err := srv.rabbitmq.SetupQueue(
+			queue.Exchange,
+			queue.Topic,
+			queue.Queue,
+		); err != nil {
+			srv.logger.Error("failed to setup queue", zap.Error(err))
+			return err
 		}
-	}()
 
-	wg.Wait()
-	cancel()
+		go func(queue string) {
+
+			deliveries, err := srv.rabbitmq.GetChannel().Consume(
+				queue, // queue
+				"",    // consumer
+				false, // auto-ack (set to false for manual acknowledgment)
+				false, // exclusive
+				false, // no-local
+				true,  // no-wait
+				nil,   // args
+			)
+			if err != nil {
+				log.Fatalf("failed to register consumer for queue %s: %v", queue, err)
+				return
+			}
+
+			for {
+				select {
+				case d, ok := <-deliveries:
+					if !ok {
+						log.Printf("Consumer channel closed for queue %s", queue)
+						return
+					}
+
+					var (
+						requestId         string
+						newCtx, cancelCtx = context.WithTimeout(ctx, 20)
+					)
+
+					for key, value := range d.Headers {
+						if key == pkgContext.CtxKeyRequestID {
+							requestId = value.(string)
+							newCtx = pkgContext.SetRequestIDToContext(ctx, requestId)
+						}
+
+						if key == pkgContext.CtxKeyAuthorization {
+							newCtx = pkgContext.SetTokenAuthorizationToContext(ctx, value.(string))
+						}
+					}
+
+					newCtx, span := srv.telemetryInfrastructure.StartSpanFromRabbitMQHeader(newCtx, d.Headers, "RabbitMQTransport")
+					span.SetAttributes(attribute.String("messaging.destination", queue))
+					span.SetAttributes(attribute.String(pkgContext.CtxKeyRequestID, requestId))
+
+					task := pkgWorker.TaskQueue{
+						QueueName: queue,
+						Ctx:       newCtx,
+						Delivery:  &d,
+					}
+
+					// REGISTER HANDLER
+					switch queue {
+					case config.Get().QueueNotificationEmailOtpCreated:
+						task.Handler = func(ctx context.Context, d *amqp091.Delivery) error {
+							return srv.notificationEmailConsumer.NotificationEmailOTP(ctx, d)
+						}
+					case config.Get().QueueNotificationEmailPaymentOrderCreated:
+						task.Handler = func(ctx context.Context, d *amqp091.Delivery) error {
+							return srv.notificationEmailConsumer.NotificationEmailPaymentOrderCreated(ctx, d)
+						}
+					default:
+						log.Fatalf("invalid queue %s", queue)
+					}
+
+					task.Ctx = newCtx
+					srv.workerPool.AddTaskQueue(task)
+
+					cancelCtx()
+					span.End()
+
+				case <-ctx.Done():
+					log.Printf("Context cancelled, stopping consumer for queue %s", queue)
+					return
+				}
+			}
+
+		}(queue.Queue)
+	}
+
+	<-ctx.Done()
+	srv.workerPool.Stop()
+	return nil
 }

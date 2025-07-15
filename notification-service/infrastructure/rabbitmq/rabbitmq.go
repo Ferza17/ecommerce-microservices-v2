@@ -8,17 +8,22 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 	"github.com/google/wire"
 	"github.com/rabbitmq/amqp091-go"
+	"go.uber.org/zap"
+	"log"
 )
 
 type (
 	IRabbitMQInfrastructure interface {
+		SetupQueue(exchange string, topic string, queue string) error
+
 		Publish(ctx context.Context, requestId string, exchange string, queue string, message []byte) error
-		GetConnection() *amqp091.Connection
+		GetChannel() *amqp091.Channel
 		Close() error
 	}
 	RabbitMQInfrastructure struct {
 		amqpConn                *amqp091.Connection
 		logger                  logger.IZapLogger
+		channel                 *amqp091.Channel
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 	}
 )
@@ -40,14 +45,29 @@ func NewRabbitMQInfrastructure(
 		logger.Error(fmt.Sprintf("Failed to connect to RabbitMQ: %v", err))
 	}
 
+	ch, err := amqpConn.Channel()
+	if err != nil {
+		logger.Error(fmt.Sprintf("Failed to open a channel: %v", err))
+	}
+
+	if err = ch.Qos(20, 0, false); err != nil {
+		log.Fatalf("Failed to set QoS: %s", err)
+	}
+
 	return &RabbitMQInfrastructure{
 		amqpConn:                amqpConn,
+		channel:                 ch,
 		logger:                  logger,
 		telemetryInfrastructure: telemetryInfrastructure,
 	}
 }
 
 func (c *RabbitMQInfrastructure) Close() error {
+	if err := c.channel.Close(); err != nil {
+		c.logger.Error("Failed to close the channel", zap.Error(err))
+		return err
+	}
+
 	if err := c.amqpConn.Close(); err != nil {
 		c.logger.Error(fmt.Sprintf("Failed to close a connection: %v", err))
 		return err
@@ -56,6 +76,6 @@ func (c *RabbitMQInfrastructure) Close() error {
 	return nil
 }
 
-func (c *RabbitMQInfrastructure) GetConnection() *amqp091.Connection {
-	return c.amqpConn
+func (c *RabbitMQInfrastructure) GetChannel() *amqp091.Channel {
+	return c.channel
 }

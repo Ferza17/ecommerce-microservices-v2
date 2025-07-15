@@ -18,7 +18,7 @@ func (c *authConsumer) UserLogin(ctx context.Context, d *amqp091.Delivery) error
 	defer span.End()
 
 	var (
-		request   pb.UpdateUserByIdRequest
+		request   pb.AuthUserLoginByEmailAndPasswordRequest
 		requestId string
 		err       error
 	)
@@ -48,7 +48,13 @@ func (c *authConsumer) UserLogin(ctx context.Context, d *amqp091.Delivery) error
 		return err
 	}
 
+	if _, err = c.authUseCase.AuthUserLoginByEmailAndPassword(ctx, requestId, &request); err != nil {
+		c.logger.Error(fmt.Sprintf("failed to request user login : %v", zap.Error(err)))
+		return err
+	}
+
 	if err = d.Ack(true); err != nil {
+		c.logger.Error(fmt.Sprintf("failed to ack delivery message : %v", zap.Error(err)))
 		return err
 	}
 	return nil

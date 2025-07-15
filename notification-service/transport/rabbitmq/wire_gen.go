@@ -28,6 +28,6 @@ func ProvideRabbitMQServer() *RabbitMQTransport {
 	iMailhogInfrastructure := mailhog.NewMailhogInfrastructure(iZapLogger)
 	iNotificationEmailUseCase := usecase.NewEventStoreUseCase(iNotificationEmailRepository, iRabbitMQInfrastructure, iMailhogInfrastructure, iTelemetryInfrastructure, iZapLogger)
 	iNotificationEmailConsumer := consumer.NewNotificationConsumer(iRabbitMQInfrastructure, iNotificationEmailUseCase, iTelemetryInfrastructure, iZapLogger)
-	rabbitMQTransport := NewServer(iZapLogger, iNotificationEmailConsumer)
+	rabbitMQTransport := NewServer(iZapLogger, iNotificationEmailConsumer, iRabbitMQInfrastructure, iTelemetryInfrastructure)
 	return rabbitMQTransport
 }

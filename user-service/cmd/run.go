@@ -29,6 +29,7 @@ var runCommand = &cobra.Command{
 			defer wg.Done()
 			err := grpcServer.Serve(ctx)
 			if err != nil {
+				log.Fatalf("error serving grpc server: %v", err)
 				return
 			}
 		}()
@@ -37,7 +38,10 @@ var runCommand = &cobra.Command{
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			rabbitMQServer.Serve(ctx)
+			if err := rabbitMQServer.Serve(ctx); err != nil {
+				log.Fatalf("error serving rabbitmq server: %v", err)
+				return
+			}
 		}()
 
 		// Start HTTP Server
@@ -45,7 +49,7 @@ var runCommand = &cobra.Command{
 		go func() {
 			defer wg.Done()
 			if err := httpServer.Serve(ctx); err != nil {
-				log.Panic(err)
+				log.Fatalf("error serving http server: %v", err)
 				return
 			}
 		}()
@@ -55,6 +59,7 @@ var runCommand = &cobra.Command{
 		go func() {
 			defer wg.Done()
 			if err := http.ServeHttpPrometheusMetricCollector(); err != nil {
+				log.Fatalf("error serving http metric collector: %v", err)
 				return
 			}
 		}()

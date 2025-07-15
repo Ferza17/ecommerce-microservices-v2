@@ -48,37 +48,41 @@ func NewServer(
 	}
 }
 
-func (srv *Server) Serve(ctx context.Context) {
+func (srv *Server) Serve(ctx context.Context) error {
 	srv.workerPool.Start()
 
 	queues := []struct {
 		Queue    string
 		Exchange string
+		Topic    string
 	}{
 		// AUTH QUEUE
 		{
 			Queue:    config.Get().QueueUserLogin,
-			Exchange: amqp091.ExchangeDirect,
+			Exchange: config.Get().ExchangeUser,
+			Topic:    amqp091.ExchangeDirect,
 		},
 		// USER QUEUE
 		{
 			Queue:    config.Get().QueueUserCreated,
-			Exchange: amqp091.ExchangeDirect,
+			Exchange: config.Get().ExchangeUser,
+			Topic:    amqp091.ExchangeDirect,
 		},
 		{
 			Queue:    config.Get().QueueUserUpdated,
-			Exchange: amqp091.ExchangeDirect,
+			Exchange: config.Get().ExchangeUser,
+			Topic:    amqp091.ExchangeDirect,
 		},
 	}
 
 	for _, queue := range queues {
 		if err := srv.amqpInfrastructure.SetupQueue(
-			config.Get().ExchangeUser,
 			queue.Exchange,
+			queue.Topic,
 			queue.Queue,
 		); err != nil {
 			srv.logger.Error("failed to setup queue", zap.Error(err))
-			return
+			return err
 		}
 		go func(queue string) {
 			deliveries, err := srv.amqpInfrastructure.GetChannel().Consume(
@@ -92,6 +96,7 @@ func (srv *Server) Serve(ctx context.Context) {
 			)
 			if err != nil {
 				log.Fatalf("failed to register consumer for queue %s: %v", queue, err)
+				return
 			}
 
 			for {
@@ -163,4 +168,5 @@ func (srv *Server) Serve(ctx context.Context) {
 
 	<-ctx.Done()
 	srv.workerPool.Stop()
+	return nil
 }

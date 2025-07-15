@@ -1,9 +1,11 @@
 package grpc
 
 import (
+	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
+	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/worker"
 	"github.com/google/wire"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -16,9 +18,9 @@ import (
 
 type (
 	GrpcServer struct {
-		address string
-		port    string
-
+		address    string
+		port       string
+		workerPool *pkgWorker.WorkerPool
 		grpcServer *grpc.Server
 		logger     logger.IZapLogger
 	}
@@ -28,6 +30,10 @@ var Set = wire.NewSet(NewGrpcServer)
 
 func NewGrpcServer(logger logger.IZapLogger) *GrpcServer {
 	return &GrpcServer{
+		workerPool: pkgWorker.NewWorkerPool(
+			fmt.Sprintf("GRPC SERVER ON %s:%s", config.Get().NotificationServiceRpcHost, config.Get().NotificationServiceRpcPort),
+			1,
+		),
 		address:    config.Get().NotificationServiceRpcHost,
 		port:       config.Get().NotificationServiceRpcPort,
 		grpcServer: grpc.NewServer(),
@@ -35,7 +41,9 @@ func NewGrpcServer(logger logger.IZapLogger) *GrpcServer {
 	}
 }
 
-func (s *GrpcServer) Serve() {
+func (s *GrpcServer) Serve(ctx context.Context) error {
+	s.workerPool.Start()
+
 	listen, err := net.Listen("tcp", fmt.Sprintf(":%s", s.port))
 	if err != nil {
 		s.logger.Error(fmt.Sprintf("Err Listen : %v", err))
@@ -51,7 +59,11 @@ func (s *GrpcServer) Serve() {
 	if err = s.grpcServer.Serve(listen); err != nil {
 		s.logger.Error(fmt.Sprintf("failed to serve : %s", zap.Error(err).String))
 	}
-	return
+
+	<-ctx.Done()
+	s.grpcServer.GracefulStop()
+	s.workerPool.Stop()
+	return nil
 }
 
 func (s *GrpcServer) GracefulStop() {
