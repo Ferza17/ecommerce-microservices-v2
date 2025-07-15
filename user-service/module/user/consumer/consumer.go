@@ -7,12 +7,13 @@ import (
 	userUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/google/wire"
+	"github.com/rabbitmq/amqp091-go"
 )
 
 type (
 	IUserConsumer interface {
-		UserCreated(ctx context.Context) error
-		UserUpdated(ctx context.Context) error
+		UserCreated(ctx context.Context, d *amqp091.Delivery) error
+		UserUpdated(ctx context.Context, d *amqp091.Delivery) error
 	}
 	userConsumer struct {
 		rabbitmqInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure

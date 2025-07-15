@@ -13,44 +13,48 @@ import (
 var runCommand = &cobra.Command{
 	Use: "run",
 	Run: func(cmd *cobra.Command, args []string) {
-		ctx, cancel := context.WithCancel(cmd.Context())
+		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 
+		// Initialize servers
 		grpcServer := grpc.ProvideGrpcServer()
 		httpServer := http.ProvideHttpServer()
 		rabbitMQServer := rabbitmq.ProvideRabbitMQServer()
 
 		wg := new(sync.WaitGroup)
+
+		// Start GRPC Server
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			log.Println("========== Starting RPC Server ==========")
-			grpcServer.Serve()
+			err := grpcServer.Serve(ctx)
+			if err != nil {
+				return
+			}
 		}()
 
+		// Start RabbitMQ Consumer
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			log.Println("========== Starting RabbitMQ Consumer ==========")
 			rabbitMQServer.Serve(ctx)
 		}()
 
+		// Start HTTP Server
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			log.Println("========== Starting HTTP Server ==========")
 			if err := httpServer.Serve(ctx); err != nil {
 				log.Panic(err)
 				return
 			}
 		}()
 
+		// Start Metric Collector (simplified)
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			log.Println("========== Starting Metric Collector HTTP Server ==========")
 			if err := http.ServeHttpPrometheusMetricCollector(); err != nil {
-				log.Panic(err)
 				return
 			}
 		}()

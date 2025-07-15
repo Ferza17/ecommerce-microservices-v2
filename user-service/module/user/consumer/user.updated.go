@@ -6,136 +6,56 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
-	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
-	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
+	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	pkgMetric "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/metric"
 	"github.com/rabbitmq/amqp091-go"
-	"go.opentelemetry.io/otel/attribute"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
-	"sync"
 )
 
-func (c *userConsumer) UserUpdated(ctx context.Context) error {
-	amqpChannel, err := c.rabbitmqInfrastructure.GetConnection().Channel()
-	if err != nil {
-		c.logger.Error(fmt.Sprintf("Failed to create a channel: %v", err))
-		return err
-	}
+func (c *userConsumer) UserUpdated(ctx context.Context, d *amqp091.Delivery) error {
 
-	if err = amqpChannel.ExchangeDeclare(
-		config.Get().ExchangeUser,
-		amqp091.ExchangeDirect,
-		true,
-		false,
-		false,
-		true,
-		nil,
-	); err != nil {
-		c.logger.Error(fmt.Sprintf("failed to declare exchange : %v", zap.Error(err)))
-		return err
-	}
+	ctx, span := c.telemetryInfrastructure.StartSpanFromContext(ctx, "userConsumer.UserUpdated")
+	defer span.End()
 
-	if err = amqpChannel.QueueBind(
-		config.Get().QueueUserUpdated,
-		config.Get().QueueUserUpdated,
-		config.Get().ExchangeUser,
-		false,
-		nil,
-	); err != nil {
-		c.logger.Error(fmt.Sprintf("failed to bind queue : %v", zap.Error(err)))
-		return err
-	}
-
-	deliveries, err := amqpChannel.Consume(
-		config.Get().QueueUserUpdated,
-		"",
-		true,
-		false,
-		false,
-		false,
-		nil,
+	var (
+		request   pb.UpdateUserByIdRequest
+		requestId string
 	)
 
-	if err != nil {
-		c.logger.Error(fmt.Sprintf("failed to consume : %v", zap.Error(err)))
+	switch d.ContentType {
+	case enum.XProtobuf.String():
+		if err := proto.Unmarshal(d.Body, &request); err != nil {
+			span.RecordError(err)
+			c.logger.Error(fmt.Sprintf("requsetID : %s , failed to unmarshal request : %v", requestId, zap.Error(err)))
+			pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserUpdated, "failed").Inc()
+			return err
+		}
+	case enum.JSON.String():
+		if err := json.Unmarshal(d.Body, &request); err != nil {
+			span.RecordError(err)
+			pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserUpdated, "failed").Inc()
+			c.logger.Error(fmt.Sprintf("failed to unmarshal request : %v", zap.Error(err)))
+			return err
+		}
+	default:
+		err := fmt.Errorf("invalid content type : %s", d.ContentType)
+		span.RecordError(err)
+		pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserUpdated, "failed").Inc()
+		c.logger.Error(fmt.Sprintf("failed to get request id"))
 		return err
 	}
 
-	wg := new(sync.WaitGroup)
-	wg.Add(1)
-	go func(deliveries <-chan amqp091.Delivery) {
-		defer wg.Done()
-	messages:
-		for d := range deliveries {
-			var (
-				request           userRpc.UpdateUserByIdRequest
-				requestId         string
-				newCtx, cancelCtx = context.WithTimeout(ctx, 20)
-			)
-			for key, value := range d.Headers {
-				if key == pkgContext.CtxKeyRequestID {
-					requestId = value.(string)
-					newCtx = pkgContext.SetRequestIDToContext(ctx, requestId)
-				}
+	// TODO: Fix This Handler
+	//if _, err := c.userUseCase.UpdateUserById(ctx, requestId, request); err != nil {
+	//	span.RecordError(err)
+	//	pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserCreated, "failed").Inc()
+	//	c.logger.Error(fmt.Sprintf("failed to create user : %v", zap.Error(err)))
+	//	return err
+	//}
 
-				if key == pkgContext.CtxKeyAuthorization {
-					newCtx = pkgContext.SetTokenAuthorizationToContext(ctx, value.(string))
-				}
-
-			}
-
-			newCtx, span := c.telemetryInfrastructure.StartSpanFromRabbitMQHeader(newCtx, d.Headers, "AuthConsumer.UserUpdated")
-			span.SetAttributes(attribute.String("messaging.destination", config.Get().QueueUserUpdated))
-			span.SetAttributes(attribute.String(pkgContext.CtxKeyRequestID, requestId))
-
-			switch d.ContentType {
-			case enum.XProtobuf.String():
-				if err = proto.Unmarshal(d.Body, &request); err != nil {
-					c.logger.Error(fmt.Sprintf("requsetID : %s , failed to unmarshal request : %v", requestId, zap.Error(err)))
-					pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserUpdated, "failed").Inc()
-					span.RecordError(err)
-					span.End()
-					d.Nack(false, true)
-					cancelCtx()
-					continue messages
-				}
-			case enum.JSON.String():
-				if err = json.Unmarshal(d.Body, &request); err != nil {
-					c.logger.Error(fmt.Sprintf("failed to unmarshal request : %v", zap.Error(err)))
-					pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserUpdated, "failed").Inc()
-					span.RecordError(err)
-					span.End()
-					d.Nack(false, true)
-					cancelCtx()
-					continue messages
-				}
-			default:
-				c.logger.Error(fmt.Sprintf("failed to get request id"))
-				pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserUpdated, "failed").Inc()
-				span.RecordError(err)
-				span.End()
-				d.Nack(false, true)
-				cancelCtx()
-				continue messages
-			}
-
-			c.logger.Info(fmt.Sprintf("received a %s message: %s", d.RoutingKey, d.Body))
-			if _, err = c.userUseCase.UpdateUserById(newCtx, requestId, &request); err != nil {
-				pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserUpdated, "failed").Inc()
-				span.RecordError(err)
-				span.End()
-				d.Nack(false, true)
-				cancelCtx()
-				continue messages
-			}
-
-			pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserUpdated, "success").Inc()
-			span.End()
-			cancelCtx()
-		}
-	}(deliveries)
-
-	wg.Wait()
+	if err := d.Ack(true); err != nil {
+		return err
+	}
 	return nil
 }

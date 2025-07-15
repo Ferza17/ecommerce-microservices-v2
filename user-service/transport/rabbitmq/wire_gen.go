@@ -42,6 +42,6 @@ func ProvideRabbitMQServer() *Server {
 	iAccessControlUseCase := usecase2.NewAccessControlUseCase(iAccessControlPostgresqlRepository, iAccessControlRedisRepository, iTelemetryInfrastructure, iPostgresSQL, iZapLogger)
 	iAuthUseCase := usecase3.NewAuthUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iAuthRedisRepository, iAccessControlUseCase, iRabbitMQInfrastructure, iTelemetryInfrastructure, iPostgresSQL, iZapLogger)
 	iAuthConsumer := consumer2.NewAuthConsumer(iRabbitMQInfrastructure, iTelemetryInfrastructure, iAuthUseCase, iZapLogger)
-	server := NewServer(iRabbitMQInfrastructure, iZapLogger, iUserConsumer, iAuthConsumer)
+	server := NewServer(iRabbitMQInfrastructure, iTelemetryInfrastructure, iZapLogger, iUserConsumer, iAuthConsumer)
 	return server
 }

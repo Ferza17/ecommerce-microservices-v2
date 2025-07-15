@@ -18,13 +18,13 @@ import (
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/response"
+	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/worker"
 	"github.com/google/wire"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
-	"log"
 	"net/http"
 )
 
@@ -32,6 +32,7 @@ type (
 	Server struct {
 		address                 string
 		port                    string
+		workerPool              *pkgWorker.WorkerPool
 		server                  *http.Server
 		logger                  logger.IZapLogger
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
@@ -54,9 +55,14 @@ func NewServer(
 	accessControlUseCase accessControlUseCase.IAccessControlUseCase,
 	authUseCase authUseCase.IAuthUseCase,
 ) *Server {
+	//TODO: Add workers from consul config
 	return &Server{
-		address:                 config.Get().UserServiceHttpHost,
-		port:                    config.Get().UserServiceHttpPort,
+		address: config.Get().UserServiceHttpHost,
+		port:    config.Get().UserServiceHttpPort,
+		workerPool: pkgWorker.NewWorkerPool(
+			fmt.Sprintf("HTTP SERVER ON %s:%s", config.Get().UserServiceHttpHost, config.Get().UserServiceHttpPort),
+			2,
+		),
 		logger:                  logger,
 		telemetryInfrastructure: telemetryInfrastructure,
 		authPresenter:           authPresenter,
@@ -67,6 +73,7 @@ func NewServer(
 }
 
 func (s *Server) Serve(ctx context.Context) error {
+	s.workerPool.Start()
 	// Create Gorilla mux router
 	router := mux.NewRouter()
 
@@ -149,12 +156,12 @@ func (s *Server) Serve(ctx context.Context) error {
 		Handler: router,
 	}
 
-	log.Printf("Starting HTTP server on %s:%s", s.address, s.port)
-
 	// ListenAndServe returns http.ErrServerClosed when gracefully shutdown
 	if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		return fmt.Errorf("HTTP server failed to start: %w", err)
 	}
 
+	<-ctx.Done()
+	s.workerPool.Stop()
 	return nil
 }

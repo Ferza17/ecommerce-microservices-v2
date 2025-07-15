@@ -7,11 +7,12 @@ import (
 	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/google/wire"
+	"github.com/rabbitmq/amqp091-go"
 )
 
 type (
 	IAuthConsumer interface {
-		UserLogin(ctx context.Context) error
+		UserLogin(ctx context.Context, d *amqp091.Delivery) error
 	}
 	authConsumer struct {
 		rabbitmqInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
