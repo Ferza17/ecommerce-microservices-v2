@@ -15,6 +15,7 @@
 - [X] Implement Metrics Collector using **Prometheus**
 - [X] Implement Service Discovery using **Consul**
 - [X] Implement Load Balance And Reverse Proxy using **Traefik**
+- [X] Implement **Worker Pools**
 
 
 ## Author

@@ -4,4 +4,25 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+# CLI
 clap = { version = "4", features = ["derive"] }
+
+# LOG
+log = "0.4.27"
+
+# ASYNC AND MULTITHREAD
+tokio = { version = "1.38", features = ["full"] }
+num_cpus = "1.17.0"
+
+# CONFIG
+config = { version = "0.15.13", features = ["toml"] }
+serde = { version = "1.0.219", features = ["derive"] }
+dotenv = "0.15.0"
+
+# CONSUL
+consul = { version = "0.4.2" }
+url = "2.5.4"
+
+# PROMETHEUS METRIC
+prometheus = "0.14.0"
+once_cell = "1.21.3"
