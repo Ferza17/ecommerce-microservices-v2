@@ -1,6 +1,8 @@
 apiVersion: v1
 data:
   init-smtp-proxy.sh: |
+    #!/bin/sh
+
     echo "Registering Mailhog SMTP as proxy service in Consul ..."
 
     # Wait for Mailhog SMTP to be available
@@ -35,6 +37,8 @@ data:
     "ServiceID": "mailhog-main"
     }'
   init-smtp.sh: |
+    #!/bin/sh
+
     echo "INIT CONFIG SMTP"
 
     ## Local

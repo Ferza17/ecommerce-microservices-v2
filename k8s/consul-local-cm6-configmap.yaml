@@ -1,6 +1,8 @@
 apiVersion: v1
 data:
   init-telemetry-proxy.sh: |
+    #!/bin/sh
+
     echo "Registering Jaeger Telemetry as proxy service in Consul ..."
     # Register Jaeger Telemetry service
     consul services register \
@@ -26,6 +28,8 @@ data:
     # Verify registration
     echo "✅ Jaeger Telemetry proxy registration completed"
   init-telemetry.sh: |
+    #!/bin/sh
+
     echo "INIT CONFIG TELEMETRY"
     # Jaeger Local
     consul kv put local/telemetry/jaeger/JAEGER_TELEMETRY_HOST "localhost"

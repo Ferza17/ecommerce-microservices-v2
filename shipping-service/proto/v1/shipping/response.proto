@@ -1,0 +1,41 @@
+syntax = "proto3";
+package shipping;
+
+import "v1/shipping/model.proto";
+
+
+// SHIPPING PROVIDER PROTO DEFINITION
+message CreateShippingProviderResponse {
+  string message = 1;
+  string status = 2;
+  shipping.ShippingProvider data = 3;
+}
+
+message GetShippingProviderByIdResponse {
+  string message = 1;
+  string status = 2;
+  shipping.ShippingProvider data = 3;
+}
+
+message UpdateShippingProviderResponse {
+  string message = 1;
+  string status = 2;
+  shipping.ShippingProvider data = 3;
+}
+
+message DeleteShippingProviderResponse {
+  string message = 1;
+  string status = 2;
+}
+
+message ListShippingProvidersResponse {
+  string message = 1;
+  string status = 2;
+  message ListShippingProvidersResponseData {
+    repeated shipping.ShippingProvider shipping_providers = 1;
+    uint32 total_count = 2;
+    uint32 page = 3;
+    uint32 limit = 4;
+  }
+  ListShippingProvidersResponseData data = 3;
+}

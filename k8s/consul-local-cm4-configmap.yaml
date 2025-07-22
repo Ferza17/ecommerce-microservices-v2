@@ -1,6 +1,9 @@
 apiVersion: v1
 data:
   init-api-gateway-service.sh: |
+    #!/bin/sh
+
+
     echo "INIT CONFIG API GATEWAY"## Local
     curl --request PUT --data 'local' http://localhost:8500/v1/kv/local/services/api-gateway/ENV
     curl --request PUT --data 'api-gateway-service' http://localhost:8500/v1/kv/local/services/api-gateway/SERVICE_NAME
@@ -17,19 +20,30 @@ data:
     curl --request PUT --data '50000' http://localhost:8500/v1/kv/production/services/api-gateway/RPC_PORT
     echo "DONE INIT CONFIG API GATEWAY"
   init-commerce-service.sh: |
+    #!/bin/sh
+
     echo "INIT CONFIG COMMERCE-SERVICE"
     ## Local
-    curl --request PUT --data 'local' http://localhost:8500/v1/kv/local/services/commerce/ENV
-    curl --request PUT --data 'commerce-service' http://localhost:8500/v1/kv/local/services/commerce/SERVICE_NAME
-    curl --request PUT --data '127.0.0.1' http://localhost:8500/v1/kv/local/services/commerce/RPC_HOST
-    curl --request PUT --data '50051' http://localhost:8500/v1/kv/local/services/commerce/RPC_PORT
+    consul kv put local/services/commerce/ENV 'local'
+    consul kv put local/services/commerce/SERVICE_NAME 'commerce-service'
+    consul kv put local/services/commerce/RPC_HOST '127.0.0.1'
+    consul kv put local/services/commerce/RPC_PORT '50051'
+    consul kv put local/services/commerce/HTTP_HOST '127.0.0.1'
+    consul kv put local/services/commerce/HTTP_PORT '40051'
+    consul kv put local/services/commerce/METRIC_HTTP_PORT '30051'
     ## Production
-    curl --request PUT --data 'production' http://localhost:8500/v1/kv/production/services/commerce/ENV
-    curl --request PUT --data 'commerce-service' http://localhost:8500/v1/kv/production/services/commerce/SERVICE_NAME
-    curl --request PUT --data 'commerce-service' http://localhost:8500/v1/kv/production/services/commerce/RPC_HOST
-    curl --request PUT --data '50051' http://localhost:8500/v1/kv/production/services/commerce/RPC_PORT
+    consul kv put production/services/commerce/ENV 'local'
+    consul kv put production/services/commerce/SERVICE_NAME 'commerce-service'
+    consul kv put production/services/commerce/RPC_HOST 'commerce-service'
+    consul kv put production/services/commerce/RPC_PORT '50051'
+    consul kv put production/services/commerce/HTTP_HOST 'commerce-service'
+    consul kv put production/services/commerce/HTTP_PORT '40051'
+    consul kv put production/services/commerce/METRIC_HTTP_PORT '30051'
     echo "DONE INIT CONFIG COMMERCE-SERVICE"
   init-event-store-service.sh: |
+    #!/bin/sh
+
+
     echo "INIT EVENT-STORE SERVICE"## Local
     curl --request PUT --data 'local' http://localhost:8500/v1/kv/local/services/event-store/ENV
     curl --request PUT --data 'event-store-service' http://localhost:8500/v1/kv/local/services/event-store/SERVICE_NAME
@@ -42,6 +56,9 @@ data:
     curl --request PUT --data '50052' http://localhost:8500/v1/kv/production/services/event-store/RPC_PORT
     echo "DONE INIT EVENT-STORE SERVICE"
   init-notification-service.sh: |
+    #!/bin/sh
+
+
     echo "INIT NOTIFICATION SERVICE"
     ## Local
     consul kv put local/services/notification/ENV 'local'
@@ -61,6 +78,9 @@ data:
     consul kv put production/services/notification/METRIC_HTTP_PORT '30053'
     echo "DONE INIT NOTIFICATION SERVICE"
   init-payment-service.sh: |
+    #!/bin/sh
+
+
     echo "INIT PAYMENT SERVICE"
     ## LOCAL
     consul kv put local/services/payment/ENV 'local'
@@ -82,6 +102,9 @@ data:
     consul kv put production/services/payment/METRIC_HTTP_PORT '30054'
     echo "DONE INIT PAYMENT SERVICE"
   init-product-service.sh: |
+    #!/bin/sh
+
+
     echo "INIT PRODUCT SERVICE"
     ## Local
     consul kv put local/services/product/ENV 'local'
@@ -100,7 +123,40 @@ data:
     consul kv put production/services/product/HTTP_PORT '40055'
     consul kv put production/services/product/METRIC_HTTP_PORT '30055'
     echo "DONE INIT PRODUCT SERVICE"
+  init-shipping-service.sh: |+
+    #!/bin/sh
+
+
+    echo "INIT SHIPPING service"
+
+    ## LOCAL
+    consul kv put local/services/shipping/ENV 'local'
+    consul kv put local/services/shipping/SERVICE_NAME 'shipping-services'
+    consul kv put local/services/shipping/RPC_HOST 'localhost'
+    consul kv put local/services/shipping/RPC_PORT '50057'
+    consul kv put local/services/shipping/HTTP_HOST 'localhost'
+    consul kv put local/services/shipping/HTTP_PORT '40057'
+    consul kv put local/services/shipping/METRIC_HTTP_PORT '30057'
+
+    ## PRODUCTION
+    consul kv put production/services/shipping/ENV 'production'
+    consul kv put production/services/shipping/SERVICE_NAME 'shipping-services'
+    consul kv put production/services/shipping/RPC_HOST 'shipping-services'
+    consul kv put production/services/shipping/RPC_PORT '50057'
+    consul kv put production/services/shipping/HTTP_HOST 'shipping-services'
+    consul kv put production/services/shipping/HTTP_PORT '40057'
+    consul kv put production/services/shipping/METRIC_HTTP_PORT '30057'
+    echo "DONE INIT SHIPPING service"
+
+
+
+
+
+
   init-user-service.sh: |
+    #!/bin/sh
+
+
     echo "INIT USER SERVICE"
     ## Local
     consul kv put local/services/user/ENV 'local'
@@ -116,8 +172,9 @@ data:
     consul kv put local/services/user/JWT_REFRESH_TOKEN_EXPIRATION_TIME '2d'
     consul kv put local/services/user/OTP_EXPIRATION_TIME '10m'
     consul kv put local/services/user/VERIFICATION_USER_LOGIN_URL 'http://localhost:4000?access_token=%s?refresh_token=?'
+
     ## Production
-    consul kv put production/services/user/ENV 'local'
+    consul kv put production/services/user/ENV 'production'
     consul kv put production/services/user/SERVICE_NAME 'user-service'
     consul kv put production/services/user/RPC_HOST 'user-service'
     consul kv put production/services/user/RPC_PORT '50056'

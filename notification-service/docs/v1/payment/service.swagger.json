@@ -1,0 +1,324 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "PAYMENT SERVICE API",
+    "description": "API for PAYMENT",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "PaymentService"
+    },
+    {
+      "name": "PaymentProviderService"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/payment/payment-providers": {
+      "get": {
+        "summary": "get all payment providers",
+        "operationId": "PaymentProviderService_FindPaymentProviders",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/paymentFindPaymentProvidersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PAYMENT"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/v1/payment/payment-providers/{id}": {
+      "get": {
+        "summary": "get payment providers by provided id",
+        "operationId": "PaymentProviderService_FindPaymentProviderById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/paymentProvider"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PAYMENT"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/v1/payment/payments/status": {
+      "post": {
+        "summary": "get a payment by user id and status",
+        "operationId": "PaymentService_FindPaymentByUserIdAndStatus",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/paymentPayment"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paymentFindPaymentByUserIdAndStatusRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PAYMENT"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/v1/payment/payments/{id}": {
+      "get": {
+        "summary": "Create a new payment",
+        "operationId": "PaymentService_FindPaymentById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/paymentPayment"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PAYMENT"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "paymentFindPaymentByUserIdAndStatusRequest": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/paymentPaymentStatus"
+        }
+      }
+    },
+    "paymentFindPaymentProvidersResponse": {
+      "type": "object",
+      "properties": {
+        "providers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/paymentProvider"
+          }
+        }
+      }
+    },
+    "paymentPayment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "totalPrice": {
+          "type": "number",
+          "format": "double"
+        },
+        "status": {
+          "$ref": "#/definitions/paymentPaymentStatus"
+        },
+        "providerId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "discardedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "title": "REFERRED TO DATABASE SCHEMA"
+    },
+    "paymentPaymentStatus": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "PARTIAL",
+        "SUCCESS",
+        "FAILED"
+      ],
+      "default": "PENDING"
+    },
+    "paymentProvider": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "method": {
+          "$ref": "#/definitions/paymentProviderMethod"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "discardedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "title": "REFERRED TO DATABASE SCHEMA"
+    },
+    "paymentProviderMethod": {
+      "type": "string",
+      "enum": [
+        "BANK",
+        "CRYPTO_CURRENCY",
+        "DEBIT",
+        "CREDIT",
+        "CASH_ON_DELIVERY"
+      ],
+      "default": "BANK"
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "description": "Bearer Token (e.g., JWT) for authentication. Format: `Bearer YOUR_TOKEN`",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "Bearer": []
+    }
+  ]
+}

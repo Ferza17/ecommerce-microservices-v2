@@ -50,3 +50,8 @@
     - Mv1/user/service.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/user
     - Mv1/user/option.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/user
 
+    # v1/shipping/*.proto
+    - Mv1/shipping/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/shipping
+    - Mv1/shipping/request.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/shipping
+    - Mv1/shipping/response.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/shipping
+    - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/shipping

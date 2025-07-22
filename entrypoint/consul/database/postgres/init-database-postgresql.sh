@@ -13,6 +13,8 @@ consul kv put local/database/postgres/POSTGRES_PORT "5432"
 consul kv put local/database/postgres/POSTGRES_DATABASE_NAME/PRODUCTS "products"
 consul kv put local/database/postgres/POSTGRES_DATABASE_NAME/USERS "users"
 consul kv put local/database/postgres/POSTGRES_DATABASE_NAME/PAYMENTS "payments"
+consul kv put local/database/postgres/POSTGRES_DATABASE_NAME/SHIPPINGS "shippings"
+
 
 ## Postgres Production
 consul kv put production/database/postgres/POSTGRES_USERNAME "postgres"
@@ -25,5 +27,6 @@ consul kv put production/database/postgres/POSTGRES_PORT "5432"
 consul kv put production/database/postgres/POSTGRES_DATABASE_NAME/PRODUCTS "products"
 consul kv put production/database/postgres/POSTGRES_DATABASE_NAME/USERS "users"
 consul kv put production/database/postgres/POSTGRES_DATABASE_NAME/PAYMENTS "payments"
+consul kv put production/database/postgres/POSTGRES_DATABASE_NAME/SHIPPINGS "shippings"
 
 echo "✅ DONE INIT CONSUL KV DATABASE POSTGRES"

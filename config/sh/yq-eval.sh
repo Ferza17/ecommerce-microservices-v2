@@ -10,7 +10,7 @@ yq eval-all '[.]' config/buf/plugins/notification-service/*.yml | yq eval 'flatt
 yq eval-all '[.]' config/buf/plugins/payment-service/*.yml | yq eval 'flatten' > config/buf/plugins/temp_all/payment_service_plugins.yml
 yq eval-all '[.]' config/buf/plugins/product-service/*.yml | yq eval 'flatten' > config/buf/plugins/temp_all/product_service_plugins.yml
 yq eval-all '[.]' config/buf/plugins/user-service/*.yml | yq eval 'flatten' > config/buf/plugins/temp_all/user_service_plugins.yml
-yq eval-all '[.]' config/buf/plugins/shipping-service/*.yml | yq eval 'flatten' > config/buf/plugins/temp_all/shipping_service_plugins.yml
+#yq eval-all '[.]' config/buf/plugins/shipping-service/*.yml | yq eval 'flatten' > config/buf/plugins/temp_all/shipping_service_plugins.yml
 
 yq eval-all '[.]' config/buf/plugins/temp_all/*.yml | yq eval 'flatten' > config/buf/plugins/all_plugins.yml
 yq eval-all '.plugins = load("config/buf/plugins/all_plugins.yml") | .' config/buf/_base_config.yml > buf.gen.yaml

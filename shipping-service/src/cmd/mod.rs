@@ -1,3 +1,3 @@
-mod migration;
+pub mod migration;
 pub mod root;
-mod run;
+pub mod run;

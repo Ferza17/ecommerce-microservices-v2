@@ -3,7 +3,7 @@ use clap::{Parser, Subcommand};
 
 // Main CLI struct, derive Parser to parse arguments from the command line
 #[derive(Parser, Debug)]
-#[command(author, version, about = "User Service CLI", long_about = None)]
+#[command(author, version, about = "SHIPPING Service CLI", long_about = None)]
 pub struct Cli {
     #[command(subcommand)]
     pub command: Commands,
@@ -18,16 +18,13 @@ pub enum Commands {
     Migration(migration::MigrationArgs),
 }
 
-pub fn execute() {
-    // config::init_config("config/config.toml").await?;
-    // let app_config = config::get_config().await;
-    // info!("Configuration loaded for CLI: {:?}", app_config.env);
-
+pub async fn execute() {
     let cli = Cli::parse();
+    println!("Parsed CLI: {:?}", cli);
 
     match cli.command {
         Commands::Run(args) => {
-            run::handle_run_command(args);
+            run::handle_run_command(args).await;
         }
         Commands::Migration(args) => {
             migration::handle_migration_command(args);

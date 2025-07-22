@@ -1,6 +1,7 @@
 apiVersion: v1
 data:
-  init-rabbitmq-exchange.sh: |2
+  init-rabbitmq-exchange.sh: |
+    #!/bin/sh
 
     echo "INIT CONFIG RABBITMQ EXCHANGE"
 
@@ -24,7 +25,8 @@ data:
     consul kv put production/broker/rabbitmq/EXCHANGE/PAYMENT/DELAYED "payment.delayed.exchange"
 
     echo "DONE INIT CONFIG RABBITMQ EXCHANGE"
-  init-rabbitmq-proxy.sh: |2
+  init-rabbitmq-proxy.sh: |
+    #!/bin/sh
 
     echo "Registering RabbitMQ as proxy service in Consul ..."
 
@@ -64,7 +66,8 @@ data:
 
     # Verify registration
     echo "✅ RabbitMQ proxy registration completed"
-  init-rabbitmq-queue.sh: |2
+  init-rabbitmq-queue.sh: |
+    #!/bin/sh
 
     echo "INIT CONFIG RABBITMQ QUEUE"
 
@@ -124,7 +127,8 @@ data:
     consul kv put production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED "payment.order.delayed.cancelled"
 
     echo "DONE INIT CONFIG RABBITMQ QUEUE"
-  init-rabbitmq.sh: |2
+  init-rabbitmq.sh: |
+    #!/bin/sh
 
     echo "INIT CONFIG RABBITMQ"
     ## Local

@@ -1,0 +1,31 @@
+syntax = "proto3";
+package shipping;
+
+import "external/validate/validate.proto";
+
+
+// SHIPPING PROVIDER PROTO DEFINITION
+message CreateShippingProviderRequest {
+  string name = 1 [(validate.rules).string.ignore_empty = false];
+}
+
+message GetShippingProviderByIdRequest {
+  string id = 1 [(validate.rules).string.ignore_empty = false];
+}
+
+message UpdateShippingProviderRequest {
+  string id = 1 [(validate.rules).string.ignore_empty = false];
+  optional string name = 2 [(validate.rules).string.ignore_empty = false];
+}
+
+message DeleteShippingProviderRequest {
+  string id = 1 [(validate.rules).string.ignore_empty = false];
+}
+
+message ListShippingProvidersRequest {
+  uint32 page = 1 [(validate.rules).uint32.gt = 0];
+  uint32 limit = 2 [(validate.rules).uint32.gt = 0];
+}
+
+
+

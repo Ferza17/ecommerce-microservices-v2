@@ -1,6 +1,7 @@
 apiVersion: v1
 data:
-  init-prometheus-proxy.sh: |2
+  init-prometheus-proxy.sh: |
+    #!/bin/sh
 
     echo "Registering Jaeger Telemetry as proxy service in Consul ..."
 

@@ -1,12 +1,14 @@
-mod cmd;
 mod config;
 mod infrastructure;
+mod interceptor;
 mod model;
 mod module;
-
-mod pkg;
+mod package;
+mod transport;
 mod util;
+mod cmd;
 
-fn main() {
-    cmd::root::execute()
+#[tokio::main]
+async fn main() {
+    cmd::root::execute().await;
 }

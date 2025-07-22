@@ -8,6 +8,7 @@ data:
       CREATE DATABASE products;
       CREATE DATABASE users;
       CREATE DATABASE payments;
+      CREATE DATABASE shippings;
     EOSQL
 kind: ConfigMap
 metadata:
