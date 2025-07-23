@@ -1,9 +1,12 @@
 use config::{Config, ConfigError, Environment, File};
 use consulrs::client::{ConsulClient, ConsulClientSettingsBuilder};
-use consulrs::kv;
+use consulrs::{kv, service};
 
+use consulrs::api::check::common::AgentServiceCheckBuilder;
+use consulrs::api::service::requests::RegisterServiceRequest;
 use serde::Deserialize;
 use std::env;
+use tracing::error;
 
 #[derive(Clone)]
 pub struct AppConfig {
@@ -80,7 +83,12 @@ impl AppConfig {
         app_config.get_config_shipping_service(&client).await;
         app_config.get_config_database_postgres(&client).await;
 
-        // Merge section based on environment, e.g. [local], [production]
+        // Register Consul Config
+        app_config
+            .register_consul_service(&app_config.clone(), &client)
+            .await
+            .expect("TODO: panic message");
+
         Ok(app_config)
     }
 
@@ -171,10 +179,46 @@ impl AppConfig {
         .unwrap_or_else(|_| "".to_string());
     }
 
+    async fn register_consul_service(
+        &mut self,
+        config: &AppConfig,
+        client: &ConsulClient,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        let svc_addr = format!(
+            "{}:{}",
+            config.shipping_service_service_http_host, config.shipping_service_service_http_port
+        )
+        .to_string();
+
+        service::register(
+            client,
+            config.shipping_service_service_name.as_str(),
+            Some(
+                RegisterServiceRequest::builder()
+                    .address(svc_addr.as_str())
+                    .port(
+                        config
+                            .shipping_service_service_http_port
+                            .parse::<u64>()
+                            .unwrap(),
+                    )
+                    .check(
+                        AgentServiceCheckBuilder::default()
+                            .name("health_check")
+                            .interval("30s")
+                            .http(format!("{}/v1/shipping/checks", svc_addr.as_str()).as_str())
+                            .build()
+                            .unwrap(),
+                    ),
+            ),
+        )
+        .await?;
+        Ok(())
+    }
     async fn get_kv(client: &ConsulClient, formatted_key: String) -> String {
         kv::read(client, &*formatted_key, None)
             .await
-            .map_err(|e| eprintln!(" Error Consul GET {} :  {:?}", formatted_key, e))
+            .map_err(|e| error!(" Error Consul GET {} :  {:?}", formatted_key, e))
             .unwrap()
             .response
             .pop()

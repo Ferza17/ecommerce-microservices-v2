@@ -25,6 +25,7 @@
 ///     produces: "application/json";
 ///   };
 ///
+#[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Swagger {
     /// Specifies the OpenAPI Specification version being used. It can be
@@ -122,6 +123,7 @@ pub struct Swagger {
 ///       };
 ///     }
 ///   }
+#[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Operation {
     /// A list of tags for API documentation control. Tags can be used for logical
@@ -194,6 +196,7 @@ pub struct Operation {
 /// allow header parameters to be set here since we do not want users specifying custom non-header
 /// parameters beyond those inferred from the Protobuf schema.
 /// See: <https://swagger.io/specification/v2/#parameter-object>
+#[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Parameters {
     /// `Headers` is one or more HTTP header parameter.
@@ -203,6 +206,7 @@ pub struct Parameters {
 }
 /// `HeaderParameter` a HTTP header parameter.
 /// See: <https://swagger.io/specification/v2/#parameter-object>
+#[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct HeaderParameter {
     /// `Name` is the header name.
@@ -226,6 +230,7 @@ pub struct HeaderParameter {
 pub mod header_parameter {
     /// `Type` is a supported HTTP header type.
     /// See <https://swagger.io/specification/v2/#parameterType.>
+    #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(
         Clone,
         Copy,
@@ -276,6 +281,7 @@ pub mod header_parameter {
 ///
 /// See: <https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#headerObject>
 ///
+#[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Header {
     /// `Description` is a short description of the header.
@@ -300,6 +306,7 @@ pub struct Header {
 ///
 /// See: <https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#responseObject>
 ///
+#[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Response {
     /// `Description` is a short description of the response.
@@ -355,6 +362,7 @@ pub struct Response {
 ///     ...
 ///   };
 ///
+#[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Info {
     /// The title of the application.
@@ -405,6 +413,7 @@ pub struct Info {
 ///     ...
 ///   };
 ///
+#[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Contact {
     /// The identifying name of the contact person/organization.
@@ -437,6 +446,7 @@ pub struct Contact {
 ///     ...
 ///   };
 ///
+#[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct License {
     /// The license name used for the API.
@@ -462,6 +472,7 @@ pub struct License {
 ///     ...
 ///   };
 ///
+#[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ExternalDocumentation {
     /// A short description of the target documentation. GFM syntax can be used for
@@ -477,6 +488,7 @@ pub struct ExternalDocumentation {
 ///
 /// See: <https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#schemaObject>
 ///
+#[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Schema {
     #[prost(message, optional, tag = "1")]
@@ -518,6 +530,7 @@ pub struct Schema {
 ///     ...
 ///   };
 ///
+#[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct EnumSchema {
     /// A short description of the schema.
@@ -582,6 +595,7 @@ pub struct EnumSchema {
 ///         }];
 ///   }
 ///
+#[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct JsonSchema {
     /// Ref is used to define an external reference to include in the message.
@@ -666,6 +680,7 @@ pub struct JsonSchema {
 pub mod json_schema {
     /// 'FieldConfiguration' provides additional field level properties used when generating the OpenAPI v2 file.
     /// These properties are not defined by OpenAPIv2, but they are used to control the generation.
+    #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Clone, PartialEq, ::prost::Message)]
     pub struct FieldConfiguration {
         /// Alternative parameter name when used as path parameter. If set, this will
@@ -675,6 +690,7 @@ pub mod json_schema {
         #[prost(string, tag = "47")]
         pub path_param_name: ::prost::alloc::string::String,
     }
+    #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(
         Clone,
         Copy,
@@ -734,6 +750,7 @@ pub mod json_schema {
 ///
 /// See: <https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#tagObject>
 ///
+#[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Tag {
     /// The name of the tag. Use it to allow override of the name of a
@@ -765,6 +782,7 @@ pub struct Tag {
 /// A declaration of the security schemes available to be used in the
 /// specification. This does not enforce the security schemes on the operations
 /// and only serves to provide the relevant details for each scheme.
+#[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SecurityDefinitions {
     /// A single security scheme definition, mapping a "name" to the scheme it
@@ -784,6 +802,7 @@ pub struct SecurityDefinitions {
 /// operations. Supported schemes are basic authentication, an API key (either as
 /// a header or as a query parameter) and OAuth2's common flows (implicit,
 /// password, application and access code).
+#[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SecurityScheme {
     /// The type of the security scheme. Valid values are "basic",
@@ -834,6 +853,7 @@ pub struct SecurityScheme {
 pub mod security_scheme {
     /// The type of the security scheme. Valid values are "basic",
     /// "apiKey" or "oauth2".
+    #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(
         Clone,
         Copy,
@@ -877,6 +897,7 @@ pub mod security_scheme {
         }
     }
     /// The location of the API key. Valid values are "query" or "header".
+    #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(
         Clone,
         Copy,
@@ -918,6 +939,7 @@ pub mod security_scheme {
     }
     /// The flow used by the OAuth2 security scheme. Valid values are
     /// "implicit", "password", "application" or "accessCode".
+    #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(
         Clone,
         Copy,
@@ -975,6 +997,7 @@ pub mod security_scheme {
 ///
 /// The name used for each property MUST correspond to a security scheme
 /// declared in the Security Definitions.
+#[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SecurityRequirement {
     /// Each name must correspond to a security scheme which is declared in
@@ -992,6 +1015,7 @@ pub mod security_requirement {
     /// If the security scheme is of type "oauth2", then the value is a list of
     /// scope names required for the execution. For other security scheme types,
     /// the array MUST be empty.
+    #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Clone, PartialEq, ::prost::Message)]
     pub struct SecurityRequirementValue {
         #[prost(string, repeated, tag = "1")]
@@ -1003,6 +1027,7 @@ pub mod security_requirement {
 /// See: <https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#scopesObject>
 ///
 /// Lists the available scopes for an OAuth2 security scheme.
+#[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Scopes {
     /// Maps between a name of a scope to a short description of it (as the value
@@ -1015,6 +1040,7 @@ pub struct Scopes {
 }
 /// Scheme describes the schemes supported by the OpenAPI Swagger
 /// and Operation objects.
+#[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum Scheme {

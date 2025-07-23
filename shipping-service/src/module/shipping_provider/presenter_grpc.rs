@@ -6,14 +6,16 @@ use crate::model::rpc::shipping::{
     UpdateShippingProviderRequest, UpdateShippingProviderResponse,
 };
 use crate::module::shipping_provider::usecase::ShippingProviderUseCase;
+use crate::module::shipping_provider::validate::validate_get_shipping_provider_by_id;
 use crate::package::context::request_id::get_request_id_from_metadata;
+use axum::http::StatusCode;
 use tonic::{Request, Response, Status};
 
-pub struct ShippingProviderPresenter {
+pub struct ShippingProviderGrpcPresenter {
     shipping_provider_use_case: ShippingProviderUseCase,
 }
 
-impl ShippingProviderPresenter {
+impl ShippingProviderGrpcPresenter {
     pub fn new(shipping_provider_use_case: ShippingProviderUseCase) -> Self {
         Self {
             shipping_provider_use_case,
@@ -30,7 +32,7 @@ impl ShippingProviderPresenter {
 }
 
 #[tonic::async_trait]
-impl ShippingProviderService for ShippingProviderPresenter {
+impl ShippingProviderService for ShippingProviderGrpcPresenter {
     async fn create_shipping_provider(
         &self,
         request: Request<CreateShippingProviderRequest>,
@@ -45,6 +47,10 @@ impl ShippingProviderService for ShippingProviderPresenter {
         &self,
         request: Request<GetShippingProviderByIdRequest>,
     ) -> Result<Response<GetShippingProviderByIdResponse>, Status> {
+        if let Some(status) = validate_get_shipping_provider_by_id(&request) {
+            return Err(status.into());
+        }
+
         self.shipping_provider_use_case
             .get_shipping_provider_by_id(get_request_id_from_metadata(request.metadata()), request)
             .await
@@ -56,7 +62,7 @@ impl ShippingProviderService for ShippingProviderPresenter {
         request: Request<UpdateShippingProviderRequest>,
     ) -> Result<Response<UpdateShippingProviderResponse>, Status> {
         self.shipping_provider_use_case
-            .update_shipping_provider(get_request_id_from_metadata(request.metadata()), request)
+            .update_shipping_provider(&get_request_id_from_metadata(request.metadata()), request)
             .await
             .map_err(|e| Status::internal(e.to_string()))
     }

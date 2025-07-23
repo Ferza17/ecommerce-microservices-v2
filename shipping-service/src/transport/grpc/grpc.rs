@@ -1,12 +1,13 @@
 use crate::config::config::AppConfig;
-use crate::infrastructure::database::postgres::PostgresInfrastructure;
+use crate::infrastructure::database::postgres::create_postgres_pool;
 use crate::interceptor::request_id::grpc_interceptor::GrpcRequestIdInterceptor;
 use crate::model::rpc::shipping::shipping_provider_service_server::ShippingProviderServiceServer;
-use crate::module::shipping_provider::presenter::ShippingProviderPresenter;
+use crate::module::shipping_provider::presenter_grpc::ShippingProviderGrpcPresenter;
 use crate::module::shipping_provider::repository_postgres::ShippingProviderPostgresRepository;
 use crate::module::shipping_provider::usecase::ShippingProviderUseCase;
 use tonic::service::interceptor;
 use tonic::transport::Server;
+use tracing::info;
 
 pub struct GrpcTransport {
     config: AppConfig,
@@ -17,9 +18,7 @@ impl GrpcTransport {
         GrpcTransport { config: cfg }
     }
 
-    pub async fn serve(&self) -> Result<(), Box<dyn std::error::Error>> {
-        // tracing_subscriber::init();
-
+    pub async fn serve(&self) -> std::result::Result<(), Box<dyn std::error::Error>> {
         let addr = format!(
             "{}:{}",
             self.config.shipping_service_service_rpc_host,
@@ -27,27 +26,35 @@ impl GrpcTransport {
         )
         .to_string();
 
-        eprintln!("Starting gRPC server on {}", addr);
+        info!("GRPC Server is running on {}", addr);
 
         // Infrastructure Layer
-        let postgres_infrastructure = PostgresInfrastructure::new(self.config.clone())
+        let postgres_pool = create_postgres_pool(&self.config.clone())
             .await
-            .unwrap();
+            .expect("Failed to create postgres pool");
 
         // Repository Layer
-        let shipping_provider_repository =
-            ShippingProviderPostgresRepository::new(postgres_infrastructure);
+        let shipping_provider_repository = ShippingProviderPostgresRepository::new(postgres_pool);
 
-        Server::builder()
+        // REFLECTION
+        let reflection_service = tonic_reflection::server::Builder::configure()
+            .register_encoded_file_descriptor_set(include_bytes!("../../../descriptor.bin"))
+            .build_v1alpha()
+            .unwrap();
+
+        let mut server = Server::builder()
             .layer(interceptor(GrpcRequestIdInterceptor))
             .add_service(ShippingProviderServiceServer::new(
-                ShippingProviderPresenter::new(ShippingProviderUseCase::new(
-                    shipping_provider_repository.clone(),
+                ShippingProviderGrpcPresenter::new(ShippingProviderUseCase::new(
+                    shipping_provider_repository,
                 )),
-            ))
-            .serve(addr.parse()?)
-            .await?;
+            ));
 
+        if self.config.env != "production" {
+            server = server.add_service(reflection_service);
+        }
+
+        server.serve(addr.parse()?).await?;
         Ok(())
     }
 }

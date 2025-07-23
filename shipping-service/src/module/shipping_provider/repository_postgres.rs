@@ -1,12 +1,11 @@
-use crate::infrastructure::database::postgres::PostgresInfrastructure;
+use crate::infrastructure::database::postgres::PostgresPool;
 
-#[derive(Clone)]
 pub struct ShippingProviderPostgresRepository {
-    pg: PostgresInfrastructure,
+    pg: PostgresPool,
 }
 
 impl ShippingProviderPostgresRepository {
-    pub fn new(pg: PostgresInfrastructure) -> Self {
+    pub fn new(pg: PostgresPool) -> Self {
         Self { pg }
     }
 }

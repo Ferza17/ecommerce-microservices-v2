@@ -1,3 +1,4 @@
+mod cmd;
 mod config;
 mod infrastructure;
 mod interceptor;
@@ -6,9 +7,11 @@ mod module;
 mod package;
 mod transport;
 mod util;
-mod cmd;
+use tracing_subscriber;
 
 #[tokio::main]
 async fn main() {
+    tracing_subscriber::fmt::init();
+
     cmd::root::execute().await;
 }

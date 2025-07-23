@@ -1,4 +1,5 @@
 use crate::config::config::AppConfig;
+use tracing::info;
 
 pub struct RabbitMQTransport {
     config: AppConfig,
@@ -10,12 +11,6 @@ impl RabbitMQTransport {
     }
 
     pub async fn serve(&self) {
-        eprintln!(
-            "RABBITMQ {} : {} : {} : {}",
-            self.config.shipping_service_service_name,
-            self.config.env,
-            self.config.consul_host,
-            self.config.consul_port
-        );
+        info!("RABBITMQ {} ", self.config.shipping_service_service_name,);
     }
 }

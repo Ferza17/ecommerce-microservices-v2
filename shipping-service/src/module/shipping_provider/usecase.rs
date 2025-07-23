@@ -6,6 +6,7 @@ use crate::model::rpc::shipping::{
 };
 use crate::module::shipping_provider::repository_postgres::ShippingProviderPostgresRepository;
 use tonic::{Request, Response, Status};
+use tracing::info;
 
 pub struct ShippingProviderUseCase {
     shipping_provider_repository: ShippingProviderPostgresRepository,
@@ -37,22 +38,20 @@ impl ShippingProviderUseCase {
     pub async fn get_shipping_provider_by_id(
         &self,
         request_id: String,
-        request: Request<GetShippingProviderByIdRequest>,
+        _request: Request<GetShippingProviderByIdRequest>,
     ) -> Result<Response<GetShippingProviderByIdResponse>, Status> {
-        eprintln!("{:?}", request);
-        eprintln!("{:?}", request_id);
+        info!("ShippingProviderUseCase.get_shipping_provider_by_id : {} ", request_id);
 
-        // TODO: Get shipping provider by id
         Ok(Response::new(GetShippingProviderByIdResponse {
-            message: "".to_string(),
-            status: "".to_string(),
+            message: "Get Shipping Provider By Id ".to_string(),
+            status: "success".to_string(),
             data: None,
         }))
     }
 
     pub async fn update_shipping_provider(
         &self,
-        request_id: String,
+        request_id: &String,
         request: Request<UpdateShippingProviderRequest>,
     ) -> Result<Response<UpdateShippingProviderResponse>, Status> {
         eprintln!("{:?}", request);
@@ -73,7 +72,7 @@ impl ShippingProviderUseCase {
     ) -> Result<Response<DeleteShippingProviderResponse>, Status> {
         eprintln!("{:?}", request);
         eprintln!("{:?}", request_id);
-
+        
         // TODO: Get shipping provider by id
         Ok(Response::new(DeleteShippingProviderResponse {
             message: "".to_string(),

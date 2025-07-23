@@ -1,38 +1,36 @@
 use crate::config::config::AppConfig;
-use std::sync::Arc;
-use tokio_postgres::{Client, Error, NoTls};
+use anyhow::Result;
+use diesel::prelude::*;
+use diesel::r2d2::{ConnectionManager, Pool as R2D2Pool};
+use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
 
-#[derive(Clone)]
-pub struct PostgresInfrastructure {
-    pub client: Arc<Client>,
-}
+pub type PostgresPool = R2D2Pool<ConnectionManager<PgConnection>>;
 
-impl PostgresInfrastructure {
-    pub async fn new(config: AppConfig) -> Result<Self, Error> {
-        // Create connection string
-        let conn_str = format!(
-            "host={} user={} password={} port={} dbname={}",
-            config.database_postgres_host,
+pub async fn create_postgres_pool(config: &AppConfig) -> Result<PostgresPool> {
+    let manager = ConnectionManager::<PgConnection>::new(
+        format!(
+            "postgres://{}:{}@{}:{}/{}",
             config.database_postgres_username,
             config.database_postgres_password,
+            config.database_postgres_host,
             config.database_postgres_port,
             config.database_postgres_database,
-        );
+        )
+        .as_str(),
+    );
+    let pool = R2D2Pool::builder()
+        .max_size(5)
+        .connection_timeout(std::time::Duration::from_secs(5))
+        .test_on_check_out(true)
+        .build(manager)?;
 
-        // Connect to PostgreSQL (async)
-        let (client, connection) = tokio_postgres::connect(&conn_str, NoTls).await?;
+    Ok(pool)
+}
 
-        // Spawn the connection task (it drives the connection)
-        tokio::spawn(async move {
-            if let Err(e) = connection.await {
-                eprintln!("PostgresSQL connection error: {}", e);
-            }
-        });
-
-        println!("Successfully connected to PostgresSQL (async).");
-
-        Ok(Self {
-            client: Arc::new(client),
-        })
-    }
+pub fn run_migrations(connection: &mut PgConnection) -> Result<()> {
+    const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
+    connection
+        .run_pending_migrations(MIGRATIONS)
+        .expect("Error running migrations");
+    Ok(())
 }
