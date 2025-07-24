@@ -6,9 +6,12 @@ use crate::transport::{
 };
 use std::sync::Arc;
 
+use crate::infrastructure::telemetry::jaeger::init_tracer;
 use crate::package::worker_pool::typed_worker_pool::TypedWorkerPool;
 use clap::Args;
-use tracing::{error, info};
+use tracing_opentelemetry::layer;
+use tracing_subscriber::Registry;
+use tracing_subscriber::layer::SubscriberExt;
 
 #[derive(Args, Debug)]
 pub struct RunArgs {
@@ -16,24 +19,31 @@ pub struct RunArgs {
     pub direction: String,
 }
 pub async fn handle_run_command(args: RunArgs) {
-    // Create specialized worker pools
-    let pools = Arc::new(TypedWorkerPool::new(5, 5, 10, 1));
-
+    // Init config
     let cfg = AppConfig::new(&*args.direction)
         .await
         .map_err(|e| {
-            error!("Failed to load configuration: {}", e);
+            eprintln!("Failed to load configuration: {}", e);
             std::process::exit(1);
         })
         .unwrap();
 
-    let cfg = Arc::new(cfg);
-    let mut handles = Vec::new();
+    // INIT TRACER
+    let tracer = init_tracer(cfg.clone()).unwrap();
 
+    // create an opentelemetry layer
+    let telemetry = layer::<Registry>().with_tracer(tracer);
+    let subscriber = Registry::default().with(telemetry);
+    tracing::subscriber::set_global_default(subscriber).unwrap();
+
+    // ======= WORKER POOLS ===========
+    // Create specialized worker pools
+    let pools = Arc::new(TypedWorkerPool::new(5, 5, 10, 1));
+    let mut handles = Vec::new();
     // HTTP with dedicated pool
     {
         let pool = Arc::clone(&pools);
-        let cfg_clone = Arc::clone(&cfg);
+        let cfg_clone = Arc::clone(&Arc::new(cfg.clone()));
         let handle: tokio::task::JoinHandle<Result<(), anyhow::Error>> = pool
             .http_pool
             .spawn(move || async move {
@@ -43,11 +53,10 @@ pub async fn handle_run_command(args: RunArgs) {
             .await;
         handles.push(handle);
     }
-
     // GRPC with dedicated pool
     {
         let pool = Arc::clone(&pools);
-        let cfg_clone = Arc::clone(&cfg);
+        let cfg_clone = Arc::clone(&Arc::new(cfg.clone()));
         let handle: tokio::task::JoinHandle<Result<(), anyhow::Error>> = pool
             .grpc_pool
             .spawn(move || async move {
@@ -57,11 +66,10 @@ pub async fn handle_run_command(args: RunArgs) {
             .await;
         handles.push(handle);
     }
-
     // RabbitMQ with messaging pool
     {
         let pool = Arc::clone(&pools);
-        let cfg_clone = Arc::clone(&cfg);
+        let cfg_clone = Arc::clone(&Arc::new(cfg.clone()));
         let handle: tokio::task::JoinHandle<Result<(), anyhow::Error>> = pool
             .messaging_pool
             .spawn(move || async move {
@@ -71,11 +79,10 @@ pub async fn handle_run_command(args: RunArgs) {
             .await;
         handles.push(handle);
     }
-
     // Metrics with dedicated pool
     {
         let pool = Arc::clone(&pools);
-        let cfg_clone = Arc::clone(&cfg);
+        let cfg_clone = Arc::clone(&Arc::new(cfg.clone()));
         let handle: tokio::task::JoinHandle<Result<(), anyhow::Error>> = pool
             .metrics_pool
             .spawn(
@@ -85,12 +92,11 @@ pub async fn handle_run_command(args: RunArgs) {
         handles.push(handle);
     }
 
-    info!("All services started with typed worker pools");
-
+    eprintln!("All services started with typed worker pools");
     // Wait for all services
     for handle in handles {
         if let Err(e) = handle.await {
-            error!("Service task failed: {}", e);
+            eprintln!("Service task failed: {}", e);
         }
     }
 }

@@ -1,9 +1,10 @@
 use crate::package::context::request_id::X_REQUEST_ID_HEADER;
 use axum::http::{HeaderName, HeaderValue};
 use axum::{extract::Request, middleware::Next, response::Response};
-use tracing::info;
+use tracing::{info, instrument};
 use uuid::Uuid;
 
+#[instrument(skip(request, next))]
 pub async fn x_request_id_middleware(mut request: Request, next: Next) -> Response {
     let header_name = HeaderName::from_static(X_REQUEST_ID_HEADER);
 

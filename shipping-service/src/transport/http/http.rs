@@ -14,8 +14,8 @@ use axum::{
     middleware::{self, Next},
     response::Json,
 };
+use axum_tracing_opentelemetry::middleware::OtelAxumLayer;
 use std::sync::Arc;
-use tracing::info;
 
 pub struct HttpTransport {
     config: AppConfig,
@@ -74,10 +74,11 @@ impl HttpTransport {
                 get(get_shipping_provider_by_id),
             )
             .layer(middleware::from_fn(x_request_id_middleware))
+            .layer(OtelAxumLayer::default())
             .with_state(app_state);
 
         let listener = tokio::net::TcpListener::bind(addr.as_str()).await?;
-        info!("Starting HTTP server on {}", addr.as_str());
+        eprintln!("Starting HTTP server on {}", addr.as_str());
 
         axum::serve(listener, app).await?;
         Ok(())
@@ -85,7 +86,7 @@ impl HttpTransport {
 }
 
 async fn health_check_handler() -> (StatusCode, Json<serde_json::Value>) {
-    info!("Health check requested: Liveness probe.");
+    eprintln!("Health check requested: Liveness probe.");
     (
         StatusCode::OK,
         Json(serde_json::json!({

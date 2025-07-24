@@ -7,7 +7,6 @@ use crate::module::shipping_provider::repository_postgres::ShippingProviderPostg
 use crate::module::shipping_provider::usecase::ShippingProviderUseCase;
 use tonic::service::interceptor;
 use tonic::transport::Server;
-use tracing::info;
 
 pub struct GrpcTransport {
     config: AppConfig,
@@ -26,7 +25,7 @@ impl GrpcTransport {
         )
         .to_string();
 
-        info!("GRPC Server is running on {}", addr);
+        eprintln!("GRPC Server is running on {}", addr);
 
         // Infrastructure Layer
         let postgres_pool = create_postgres_pool(&self.config.clone())

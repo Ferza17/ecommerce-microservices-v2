@@ -18,9 +18,12 @@ use axum::{
     http::StatusCode,
     response::Json,
 };
+
 use std::sync::Arc;
 use tonic::Request;
+use tracing::{error, instrument};
 
+#[instrument(skip(state))]
 pub async fn get_shipping_provider_by_id(
     State(state): State<Arc<AppState>>,
     headers: HeaderMap,
@@ -28,6 +31,7 @@ pub async fn get_shipping_provider_by_id(
 ) -> Result<Json<GetShippingProviderByIdResponse>, StatusCode> {
     let request = Request::new(GetShippingProviderByIdRequest { id });
     if let Some(_status) = validate_get_shipping_provider_by_id(&request) {
+        error!("Invalid request parameters");
         return Err(StatusCode::BAD_REQUEST);
     }
 
@@ -35,11 +39,13 @@ pub async fn get_shipping_provider_by_id(
         .shipping_provider_use_case
         .get_shipping_provider_by_id(get_request_id_from_header(&headers), request)
         .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
+        .expect("Shipping provider not found");
 
     Ok(Json(result.into_inner()))
 }
 
+#[instrument(skip(state))]
 pub async fn create_shipping_provider(
     State(state): State<Arc<AppState>>,
     headers: HeaderMap,
@@ -47,6 +53,7 @@ pub async fn create_shipping_provider(
 ) -> Result<Json<CreateShippingProviderResponse>, StatusCode> {
     let request = Request::new(payload);
     if let Some(_status) = validate_create_shipping_provider(&request) {
+        error!("Invalid request parameters");
         return Err(StatusCode::BAD_REQUEST);
     }
 
@@ -59,6 +66,7 @@ pub async fn create_shipping_provider(
     Ok(Json(result.into_inner()))
 }
 
+#[instrument(skip(state))]
 pub async fn update_shipping_provider(
     State(state): State<Arc<AppState>>,
     headers: HeaderMap,
@@ -70,6 +78,7 @@ pub async fn update_shipping_provider(
         name: payload.name,
     });
     if let Some(_status) = validate_update_shipping_provider(&request) {
+        error!("Invalid request parameters");
         return Err(StatusCode::BAD_REQUEST);
     }
 
@@ -82,6 +91,7 @@ pub async fn update_shipping_provider(
     Ok(Json(result.into_inner()))
 }
 
+#[instrument(skip(state))]
 pub async fn delete_shipping_provider(
     State(state): State<Arc<AppState>>,
     headers: HeaderMap,
@@ -90,6 +100,7 @@ pub async fn delete_shipping_provider(
     let request = Request::new(DeleteShippingProviderRequest { id });
 
     if let Some(_status) = validate_delete_shipping_provider(&request) {
+        error!("Invalid request parameters");
         return Err(StatusCode::BAD_REQUEST);
     }
 
@@ -102,6 +113,7 @@ pub async fn delete_shipping_provider(
     Ok(Json(result.into_inner()))
 }
 
+#[instrument(skip(state))]
 pub async fn list_shipping_providers(
     State(state): State<Arc<AppState>>,
     headers: HeaderMap,
@@ -110,6 +122,7 @@ pub async fn list_shipping_providers(
     let request = Request::new(query);
 
     if let Some(_status) = validate_list_shipping_providers(&request) {
+        error!("Invalid request parameters");
         return Err(StatusCode::BAD_REQUEST);
     }
 

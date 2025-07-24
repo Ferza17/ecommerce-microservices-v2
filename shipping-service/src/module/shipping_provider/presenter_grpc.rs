@@ -10,7 +10,9 @@ use crate::module::shipping_provider::validate::validate_get_shipping_provider_b
 use crate::package::context::request_id::get_request_id_from_metadata;
 use axum::http::StatusCode;
 use tonic::{Request, Response, Status};
+use tracing::instrument;
 
+#[derive(Debug)]
 pub struct ShippingProviderGrpcPresenter {
     shipping_provider_use_case: ShippingProviderUseCase,
 }
@@ -33,6 +35,7 @@ impl ShippingProviderGrpcPresenter {
 
 #[tonic::async_trait]
 impl ShippingProviderService for ShippingProviderGrpcPresenter {
+    #[instrument]
     async fn create_shipping_provider(
         &self,
         request: Request<CreateShippingProviderRequest>,
@@ -42,7 +45,8 @@ impl ShippingProviderService for ShippingProviderGrpcPresenter {
             .await
             .map_err(|e| Status::internal(e.to_string()))
     }
-
+    
+    #[instrument]
     async fn get_shipping_provider_by_id(
         &self,
         request: Request<GetShippingProviderByIdRequest>,
@@ -57,6 +61,7 @@ impl ShippingProviderService for ShippingProviderGrpcPresenter {
             .map_err(|e| Status::internal(e.to_string()))
     }
 
+    #[instrument]
     async fn update_shipping_provider(
         &self,
         request: Request<UpdateShippingProviderRequest>,
@@ -67,6 +72,7 @@ impl ShippingProviderService for ShippingProviderGrpcPresenter {
             .map_err(|e| Status::internal(e.to_string()))
     }
 
+    #[instrument]
     async fn delete_shipping_provider(
         &self,
         request: Request<DeleteShippingProviderRequest>,
@@ -77,6 +83,7 @@ impl ShippingProviderService for ShippingProviderGrpcPresenter {
             .map_err(|e| Status::internal(e.to_string()))
     }
 
+    #[instrument]
     async fn list_shipping_providers(
         &self,
         request: Request<ListShippingProvidersRequest>,

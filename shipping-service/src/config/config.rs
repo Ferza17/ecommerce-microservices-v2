@@ -29,6 +29,10 @@ pub struct AppConfig {
     pub shipping_service_service_http_host: String,
     pub shipping_service_service_http_port: String,
     pub shipping_service_service_metric_http_port: String,
+
+    // FROM CONSUL JAEGER TELEMETRY
+    pub jaeger_telemetry_host: String,
+    pub jaeger_telemetry_rpc_port: String,
 }
 
 #[derive(Deserialize)]
@@ -64,6 +68,8 @@ impl AppConfig {
             shipping_service_service_http_host: "".to_string(),
             shipping_service_service_http_port: "".to_string(),
             shipping_service_service_metric_http_port: "".to_string(),
+            jaeger_telemetry_host: "".to_string(),
+            jaeger_telemetry_rpc_port: "".to_string(),
         };
 
         // Create a Consul Client
@@ -82,12 +88,18 @@ impl AppConfig {
         // GET CONSUL CONFIG
         app_config.get_config_shipping_service(&client).await;
         app_config.get_config_database_postgres(&client).await;
+        app_config.get_config_jaeger_telemetry(&client).await;
 
         // Register Consul Config
         app_config
             .register_consul_service(&app_config.clone(), &client)
             .await
             .expect("TODO: panic message");
+
+        eprintln!(
+            "Done Loading Config {} From Consul {} : {} ",
+            app_config.env, app_config.consul_host, app_config.consul_port
+        );
 
         Ok(app_config)
     }
@@ -177,6 +189,20 @@ impl AppConfig {
         .await
         .parse()
         .unwrap_or_else(|_| "".to_string());
+    }
+
+    async fn get_config_jaeger_telemetry(&mut self, client: &ConsulClient) {
+        self.jaeger_telemetry_host = Self::get_kv(
+            client,
+            format!("{}/telemetry/jaeger/JAEGER_TELEMETRY_HOST", self.env),
+        )
+        .await;
+
+        self.jaeger_telemetry_rpc_port = Self::get_kv(
+            client,
+            format!("{}/telemetry/jaeger/JAEGER_TELEMETRY_RPC_PORT", self.env),
+        )
+        .await;
     }
 
     async fn register_consul_service(
