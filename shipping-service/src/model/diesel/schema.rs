@@ -3,9 +3,9 @@
 diesel::table! {
     shipping_providers (id) {
         id -> Varchar,
-        name -> Nullable<Varchar>,
-        created_at -> Nullable<Timestamp>,
-        updated_at -> Nullable<Timestamp>,
+        name -> Varchar,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
         discarded_at -> Nullable<Timestamp>,
     }
 }
@@ -16,7 +16,7 @@ diesel::table! {
         created_by_id -> Varchar,
         order_id -> Varchar,
         #[max_length = 15]
-        status -> Varchar,
+        _status -> Varchar,
         shipping_provider_id -> Nullable<Varchar>,
         created_at -> Nullable<Timestamp>,
         updated_at -> Nullable<Timestamp>,

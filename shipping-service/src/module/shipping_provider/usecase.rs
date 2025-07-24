@@ -1,3 +1,7 @@
+use crate::model::diesel::orm::shipping_provider::{
+    shipping_provider_to_proto, shipping_providers_to_proto,
+};
+use crate::model::rpc::shipping::list_shipping_providers_response::ListShippingProvidersResponseData;
 use crate::model::rpc::shipping::{
     CreateShippingProviderRequest, CreateShippingProviderResponse, DeleteShippingProviderRequest,
     DeleteShippingProviderResponse, GetShippingProviderByIdRequest,
@@ -20,6 +24,7 @@ impl ShippingProviderUseCase {
         }
     }
 
+    #[instrument("ShippingProviderUseCase.create_shipping_provider")]
     pub async fn create_shipping_provider(
         &self,
         request_id: String,
@@ -42,13 +47,37 @@ impl ShippingProviderUseCase {
         request_id: String,
         request: Request<GetShippingProviderByIdRequest>,
     ) -> Result<Response<GetShippingProviderByIdResponse>, Status> {
-        Ok(Response::new(GetShippingProviderByIdResponse {
-            message: "Get Shipping Provider By Id ".to_string(),
-            status: "success".to_string(),
-            data: None,
-        }))
+        event!(name: "ShippingProviderUseCase.get_shipping_provider_by_id", Level::INFO, request_id = request_id, request = ?request);
+
+        let shipping_provider = self
+            .shipping_provider_repository
+            .get_shipping_provider_by_id(request_id.as_str(), request.into_inner().id.as_str())
+            .await;
+
+        match shipping_provider {
+            Ok(shipping_provider) => Ok(Response::new(GetShippingProviderByIdResponse {
+                message: "Get Shipping Provider By Id".to_string(),
+                status: "success".to_string(),
+                data: Option::from(shipping_provider_to_proto(shipping_provider)),
+            })),
+
+            Err(err) => {
+                event!(
+                    Level::ERROR,
+                    request_id = request_id,
+                    error = %err,
+                    "Failed to get shipping provider by ID"
+                );
+
+                Err(Status::internal(format!(
+                    "Failed to get shipping provider: {}",
+                    err
+                )))
+            }
+        }
     }
 
+    #[instrument("ShippingProviderUseCase.update_shipping_provider")]
     pub async fn update_shipping_provider(
         &self,
         request_id: &String,
@@ -65,6 +94,7 @@ impl ShippingProviderUseCase {
         }))
     }
 
+    #[instrument("ShippingProviderUseCase.delete_shipping_provider")]
     pub async fn delete_shipping_provider(
         &self,
         request_id: String,
@@ -80,19 +110,37 @@ impl ShippingProviderUseCase {
         }))
     }
 
+    #[instrument("ShippingProviderUseCase.list_shipping_providers")]
     pub async fn list_shipping_providers(
         &self,
         request_id: String,
         request: Request<ListShippingProvidersRequest>,
     ) -> Result<Response<ListShippingProvidersResponse>, Status> {
-        eprintln!("{:?}", request);
-        eprintln!("{:?}", request_id);
+        let request_inner = request.into_inner();
+        let shipping_providers = self
+            .shipping_provider_repository
+            .list_shipping_providers(
+                request_id.as_str(),
+                &request_inner.page,
+                &request_inner.limit,
+            )
+            .await;
 
-        // TODO: Get shipping provider by id
-        Ok(Response::new(ListShippingProvidersResponse {
-            message: "".to_string(),
-            status: "".to_string(),
-            data: None,
-        }))
+        match shipping_providers {
+            Ok(providers) => Ok(Response::new(ListShippingProvidersResponse {
+                message: "List Shipping Providers".to_string(),
+                status: "success".to_string(),
+                data: Option::from(ListShippingProvidersResponseData {
+                    shipping_providers: shipping_providers_to_proto(providers),
+                    total_count: 0, // TODO: Get total count
+                    page: request_inner.page,
+                    limit: request_inner.limit,
+                }),
+            })),
+            Err(err) => Err(Status::internal(format!(
+                "Failed to list shipping providers: {}",
+                err
+            ))),
+        }
     }
 }

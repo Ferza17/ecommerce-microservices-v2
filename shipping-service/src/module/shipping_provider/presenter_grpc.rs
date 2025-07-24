@@ -8,7 +8,6 @@ use crate::model::rpc::shipping::{
 use crate::module::shipping_provider::usecase::ShippingProviderUseCase;
 use crate::module::shipping_provider::validate::validate_get_shipping_provider_by_id;
 use crate::package::context::request_id::get_request_id_from_metadata;
-use axum::http::StatusCode;
 use tonic::{Request, Response, Status};
 use tracing::instrument;
 

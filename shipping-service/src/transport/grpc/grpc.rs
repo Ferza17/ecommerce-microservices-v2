@@ -1,5 +1,5 @@
 use crate::config::config::AppConfig;
-use crate::infrastructure::database::postgres::create_postgres_pool;
+use crate::infrastructure::database::async_postgres::get_connection;
 use crate::interceptor::request_id::grpc_interceptor::GrpcRequestIdInterceptor;
 use crate::model::rpc::shipping::shipping_provider_service_server::ShippingProviderServiceServer;
 use crate::module::shipping_provider::presenter_grpc::ShippingProviderGrpcPresenter;
@@ -28,9 +28,7 @@ impl GrpcTransport {
         eprintln!("GRPC Server is running on {}", addr);
 
         // Infrastructure Layer
-        let postgres_pool = create_postgres_pool(&self.config.clone())
-            .await
-            .expect("Failed to create postgres pool");
+        let postgres_pool = get_connection(&self.config.clone()).await;
 
         // Repository Layer
         let shipping_provider_repository = ShippingProviderPostgresRepository::new(postgres_pool);

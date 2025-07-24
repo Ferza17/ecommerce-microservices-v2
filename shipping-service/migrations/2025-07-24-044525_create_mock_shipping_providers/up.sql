@@ -1,0 +1,22 @@
+-- Your SQL goes here
+INSERT INTO shipping_providers (id, name, created_at, updated_at, discarded_at)
+VALUES (gen_random_uuid(), 'JNE Express', NOW(), NOW(), NULL),
+       (gen_random_uuid(), 'TIKI', NOW(), NOW(), NULL),
+       (gen_random_uuid(), 'POS Indonesia', NOW(), NOW(), NULL),
+       (gen_random_uuid(), 'SiCepat Ekspres', NOW(), NOW(), NULL),
+       (gen_random_uuid(), 'J&T Express', NOW(), NOW(), NULL),
+       (gen_random_uuid(), 'Ninja Xpress', NOW(), NOW(), NULL),
+       (gen_random_uuid(), 'Wahana Express', NOW(), NOW(), NULL),
+       (gen_random_uuid(), 'Lion Parcel', NOW(), NOW(), NULL),
+       (gen_random_uuid(), 'AnterAja', NOW(), NOW(), NULL),
+       (gen_random_uuid(), 'Grab Express', NOW(), NOW(), NULL),
+       (gen_random_uuid(), 'GoSend', NOW(), NOW(), NULL),
+       (gen_random_uuid(), 'Shopee Xpress', NOW(), NOW(), NULL),
+       (gen_random_uuid(), 'ID Express', NOW(), NOW(), NULL),
+       (gen_random_uuid(), 'REX Express', NOW(), NOW(), NULL),
+       (gen_random_uuid(), 'SAP Express', NOW(), NOW(), NULL),
+       (gen_random_uuid(), 'First Logistics', NOW(), NOW(), NULL),
+       (gen_random_uuid(), 'Sentral Cargo', NOW(), NOW(), NULL),
+       (gen_random_uuid(), 'Pahala Kencana Express', NOW(), NOW(), NULL),
+       (gen_random_uuid(), 'Indah Cargo', NOW(), NOW(), NULL),
+       (gen_random_uuid(), 'ZTO Express', NOW(), NOW(), NULL);

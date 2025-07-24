@@ -1,5 +1,5 @@
 pub mod database {
-    pub mod postgres;
+    pub mod async_postgres;
     pub mod redis;
 }
 

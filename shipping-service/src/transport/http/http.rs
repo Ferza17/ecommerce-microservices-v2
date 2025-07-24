@@ -1,5 +1,5 @@
 use crate::config::config::AppConfig;
-use crate::infrastructure::database::postgres::create_postgres_pool;
+use crate::infrastructure::database::async_postgres::get_connection;
 use crate::interceptor::request_id::http_interceptor::x_request_id_middleware;
 use crate::module::shipping_provider::presenter_http::{
     create_shipping_provider, delete_shipping_provider, get_shipping_provider_by_id,
@@ -11,7 +11,7 @@ use axum::http::StatusCode;
 use axum::routing::{delete, get, post, put};
 use axum::{
     Router,
-    middleware::{self, Next},
+    middleware::{self},
     response::Json,
 };
 use axum_tracing_opentelemetry::middleware::OtelAxumLayer;
@@ -39,9 +39,7 @@ impl HttpTransport {
         .to_string();
 
         // Infrastructure Layer
-        let postgres_pool = create_postgres_pool(&self.config.clone())
-            .await
-            .expect("Failed to create postgres pool");
+        let postgres_pool = get_connection(&self.config.clone()).await;
 
         // Repository Layer
         let shipping_provider_repository = ShippingProviderPostgresRepository::new(postgres_pool);

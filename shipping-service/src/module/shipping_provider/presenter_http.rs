@@ -18,6 +18,7 @@ use axum::{
     http::StatusCode,
     response::Json,
 };
+use std::convert::Infallible;
 
 use std::sync::Arc;
 use tonic::Request;
@@ -28,21 +29,39 @@ pub async fn get_shipping_provider_by_id(
     State(state): State<Arc<AppState>>,
     headers: HeaderMap,
     Path(id): Path<String>,
-) -> Result<Json<GetShippingProviderByIdResponse>, StatusCode> {
+) -> Result<(StatusCode, Json<GetShippingProviderByIdResponse>), Infallible> {
     let request = Request::new(GetShippingProviderByIdRequest { id });
     if let Some(_status) = validate_get_shipping_provider_by_id(&request) {
         error!("Invalid request parameters");
-        return Err(StatusCode::BAD_REQUEST);
+        return Ok((
+            StatusCode::BAD_REQUEST,
+            Json(GetShippingProviderByIdResponse {
+                message: "bad request".to_string(),
+                status: "error".to_string(),
+                data: None,
+            }),
+        ));
     }
 
     let result = state
         .shipping_provider_use_case
         .get_shipping_provider_by_id(get_request_id_from_header(&headers), request)
-        .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
-        .expect("Shipping provider not found");
+        .await;
 
-    Ok(Json(result.into_inner()))
+    match result {
+        Ok(response) => Ok((StatusCode::OK, Json(response.into_inner()))),
+        Err(err) => {
+            error!("GetShippingProviderById failed: {}", err.message());
+            Ok((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(GetShippingProviderByIdResponse {
+                    message: err.message().to_string(),
+                    status: "error".to_string(),
+                    data: None,
+                }),
+            ))
+        }
+    }
 }
 
 #[instrument(skip(state))]
@@ -118,19 +137,38 @@ pub async fn list_shipping_providers(
     State(state): State<Arc<AppState>>,
     headers: HeaderMap,
     Query(query): Query<ListShippingProvidersRequest>,
-) -> Result<Json<ListShippingProvidersResponse>, StatusCode> {
+) -> Result<(StatusCode, Json<ListShippingProvidersResponse>), Infallible> {
     let request = Request::new(query);
 
     if let Some(_status) = validate_list_shipping_providers(&request) {
         error!("Invalid request parameters");
-        return Err(StatusCode::BAD_REQUEST);
+        return Ok((
+            StatusCode::BAD_REQUEST,
+            Json(ListShippingProvidersResponse {
+                message: "bad request".to_string(),
+                status: "error".to_string(),
+                data: None,
+            }),
+        ));
     }
 
     let result = state
         .shipping_provider_use_case
         .list_shipping_providers(get_request_id_from_header(&headers), request)
-        .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        .await;
 
-    Ok(Json(result.into_inner()))
+    match result {
+        Ok(response) => Ok((StatusCode::OK, Json(response.into_inner()))),
+        Err(err) => {
+            error!("ListShippingProviders failed: {}", err.message());
+            Ok((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(ListShippingProvidersResponse {
+                    message: err.message().to_string(),
+                    status: "error".to_string(),
+                    data: None,
+                })
+            ))
+        }
+    }
 }
