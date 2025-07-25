@@ -1,3 +1,4 @@
+use crate::infrastructure::services::user::UserServiceGrpcClient;
 use crate::model::rpc::shipping::shipping_provider_service_server::ShippingProviderService;
 use crate::model::rpc::shipping::{
     CreateShippingProviderRequest, CreateShippingProviderResponse, DeleteShippingProviderRequest,
@@ -5,35 +6,40 @@ use crate::model::rpc::shipping::{
     GetShippingProviderByIdResponse, ListShippingProvidersRequest, ListShippingProvidersResponse,
     UpdateShippingProviderRequest, UpdateShippingProviderResponse,
 };
-use crate::module::shipping_provider::usecase::ShippingProviderUseCase;
-use crate::module::shipping_provider::validate::validate_get_shipping_provider_by_id;
+use crate::model::rpc::user::AuthUserVerifyAccessControlRequest;
+use crate::module::shipping_provider::usecase::{
+    ShippingProviderUseCase, ShippingProviderUseCaseImpl,
+};
+use crate::module::shipping_provider::validate::{
+    validate_get_shipping_provider_by_id, validate_list_shipping_providers,
+};
+use crate::package::context::auth::get_request_authorization_token_from_metadata;
 use crate::package::context::request_id::get_request_id_from_metadata;
+use crate::package::context::url_path::get_url_path_from_metadata;
 use tonic::{Request, Response, Status};
 use tracing::instrument;
 
 #[derive(Debug)]
 pub struct ShippingProviderGrpcPresenter {
-    shipping_provider_use_case: ShippingProviderUseCase,
+    shipping_provider_use_case: ShippingProviderUseCaseImpl,
+    user_service: UserServiceGrpcClient,
 }
 
 impl ShippingProviderGrpcPresenter {
-    pub fn new(shipping_provider_use_case: ShippingProviderUseCase) -> Self {
+    pub fn new(
+        shipping_provider_use_case: ShippingProviderUseCaseImpl,
+        user_service: UserServiceGrpcClient,
+    ) -> Self {
         Self {
             shipping_provider_use_case,
+            user_service,
         }
     }
-
-    // fn create_timestamp() -> Option<Timestamp> {
-    //     let now = Utc::now();
-    //     Some(Timestamp {
-    //         seconds: now.timestamp(),
-    //         nanos: now.timestamp_subsec_nanos() as i32,
-    //     })
-    // }
 }
 
 #[tonic::async_trait]
 impl ShippingProviderService for ShippingProviderGrpcPresenter {
+    #[allow(unused_variables)]
     #[instrument]
     async fn create_shipping_provider(
         &self,
@@ -44,7 +50,7 @@ impl ShippingProviderService for ShippingProviderGrpcPresenter {
             .await
             .map_err(|e| Status::internal(e.to_string()))
     }
-    
+
     #[instrument]
     async fn get_shipping_provider_by_id(
         &self,
@@ -87,6 +93,24 @@ impl ShippingProviderService for ShippingProviderGrpcPresenter {
         &self,
         request: Request<ListShippingProvidersRequest>,
     ) -> Result<Response<ListShippingProvidersResponse>, Status> {
+        if let Some(status) = validate_list_shipping_providers(&request) {
+            return Err(status);
+        }
+
+        self.user_service
+            .clone()
+            .auth_user_verify_access_control(
+                get_request_id_from_metadata(request.metadata()),
+                AuthUserVerifyAccessControlRequest {
+                    token: get_request_authorization_token_from_metadata(request.metadata()),
+                    full_method_name: Some(get_url_path_from_metadata(request.metadata())),
+                    http_url: None,
+                    http_method: None,
+                },
+            )
+            .await
+            .map_err(|e| Status::from_error(Box::new(e)))?;
+
         self.shipping_provider_use_case
             .list_shipping_providers(get_request_id_from_metadata(request.metadata()), request)
             .await

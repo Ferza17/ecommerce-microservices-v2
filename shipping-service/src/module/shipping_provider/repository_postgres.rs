@@ -14,11 +14,26 @@ use crate::infrastructure::database::async_postgres::AsyncPgDeadPool;
 use std::fmt;
 use tracing::{Level, event, instrument};
 
-pub struct ShippingProviderPostgresRepository {
+pub trait ShippingProviderPostgresRepository {
+    async fn get_shipping_provider_by_id(
+        &self,
+        request_id: &str,
+        provider_id: &str,
+    ) -> Result<ShippingProvider>;
+
+    async fn list_shipping_providers(
+        &self,
+        request_id: &str,
+        page: &u32,
+        limit: &u32,
+    ) -> Result<Vec<ShippingProvider>>;
+}
+
+pub struct ShippingProviderPostgresRepositoryImpl {
     pg: AsyncPgDeadPool,
 }
 
-impl fmt::Debug for ShippingProviderPostgresRepository {
+impl fmt::Debug for ShippingProviderPostgresRepositoryImpl {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("ShippingProviderPostgresRepository")
             .field("pg", &"AsyncPgDeadPool")
@@ -26,7 +41,7 @@ impl fmt::Debug for ShippingProviderPostgresRepository {
     }
 }
 
-impl ShippingProviderPostgresRepository {
+impl ShippingProviderPostgresRepositoryImpl {
     pub fn new(
         pg: deadpool::managed::Pool<
             AsyncDieselConnectionManager<AsyncPgConnection>,
@@ -35,9 +50,11 @@ impl ShippingProviderPostgresRepository {
     ) -> Self {
         Self { pg }
     }
+}
 
+impl ShippingProviderPostgresRepository for ShippingProviderPostgresRepositoryImpl {
     #[instrument("ShippingProviderPostgresRepository.get_shipping_provider_by_id")]
-    pub async fn get_shipping_provider_by_id(
+    async fn get_shipping_provider_by_id(
         &self,
         request_id: &str,
         provider_id: &str,
@@ -58,7 +75,7 @@ impl ShippingProviderPostgresRepository {
     }
 
     #[instrument(name = "ShippingProviderPostgresRepository.list_shipping_providers")]
-    pub async fn list_shipping_providers(
+    async fn list_shipping_providers(
         &self,
         request_id: &str,
         page: &u32,

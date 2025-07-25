@@ -8,7 +8,7 @@ use serde::Deserialize;
 use std::env;
 use tracing::error;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct AppConfig {
     // FROM CONFIG/CONFIG.TOML
     pub env: String,
@@ -29,6 +29,16 @@ pub struct AppConfig {
     pub shipping_service_service_http_host: String,
     pub shipping_service_service_http_port: String,
     pub shipping_service_service_metric_http_port: String,
+
+    // FROM CONSUL KV SERVICE/USER
+    pub user_service_service_name: String,
+    pub user_service_service_rpc_host: String,
+    pub user_service_service_rpc_port: String,
+
+    // FROM CONSUL KV SERVICE/USER
+    pub payment_service_service_name: String,
+    pub payment_service_service_rpc_host: String,
+    pub payment_service_service_rpc_port: String,
 
     // FROM CONSUL JAEGER TELEMETRY
     pub jaeger_telemetry_host: String,
@@ -68,6 +78,12 @@ impl AppConfig {
             shipping_service_service_http_host: "".to_string(),
             shipping_service_service_http_port: "".to_string(),
             shipping_service_service_metric_http_port: "".to_string(),
+            user_service_service_name: "".to_string(),
+            user_service_service_rpc_host: "".to_string(),
+            user_service_service_rpc_port: "".to_string(),
+            payment_service_service_name: "".to_string(),
+            payment_service_service_rpc_host: "".to_string(),
+            payment_service_service_rpc_port: "".to_string(),
             jaeger_telemetry_host: "".to_string(),
             jaeger_telemetry_rpc_port: "".to_string(),
         };
@@ -87,6 +103,8 @@ impl AppConfig {
 
         // GET CONSUL CONFIG
         app_config.get_config_shipping_service(&client).await;
+        app_config.get_config_user_service(&client).await;
+        app_config.get_config_payment_service(&client).await;
         app_config.get_config_database_postgres(&client).await;
         app_config.get_config_jaeger_telemetry(&client).await;
 
@@ -144,6 +162,48 @@ impl AppConfig {
         .await
         .parse()
         .unwrap_or_else(|_| "".to_string());
+    }
+
+    async fn get_config_user_service(&mut self, client: &ConsulClient) {
+        self.user_service_service_name =
+            Self::get_kv(client, format!("{}/services/user/SERVICE_NAME", self.env))
+                .await
+                .parse()
+                .unwrap_or_else(|_| "".to_string());
+
+        self.user_service_service_rpc_host =
+            Self::get_kv(client, format!("{}/services/user/RPC_HOST", self.env))
+                .await
+                .parse()
+                .unwrap_or_else(|_| "".to_string());
+
+        self.user_service_service_rpc_port =
+            Self::get_kv(client, format!("{}/services/user/RPC_PORT", self.env))
+                .await
+                .parse()
+                .unwrap_or_else(|_| "".to_string());
+    }
+
+    async fn get_config_payment_service(&mut self, client: &ConsulClient) {
+        self.payment_service_service_name = Self::get_kv(
+            client,
+            format!("{}/services/payment/SERVICE_NAME", self.env),
+        )
+        .await
+        .parse()
+        .unwrap_or_else(|_| "".to_string());
+
+        self.payment_service_service_rpc_host =
+            Self::get_kv(client, format!("{}/services/payment/RPC_HOST", self.env))
+                .await
+                .parse()
+                .unwrap_or_else(|_| "".to_string());
+
+        self.payment_service_service_rpc_port =
+            Self::get_kv(client, format!("{}/services/payment/RPC_PORT", self.env))
+                .await
+                .parse()
+                .unwrap_or_else(|_| "".to_string());
     }
 
     async fn get_config_database_postgres(&mut self, client: &ConsulClient) {

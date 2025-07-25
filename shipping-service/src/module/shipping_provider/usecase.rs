@@ -8,24 +8,56 @@ use crate::model::rpc::shipping::{
     GetShippingProviderByIdResponse, ListShippingProvidersRequest, ListShippingProvidersResponse,
     UpdateShippingProviderRequest, UpdateShippingProviderResponse,
 };
-use crate::module::shipping_provider::repository_postgres::ShippingProviderPostgresRepository;
+use crate::module::shipping_provider::repository_postgres::{
+    ShippingProviderPostgresRepository, ShippingProviderPostgresRepositoryImpl,
+};
 use tonic::{Request, Response, Status};
 use tracing::{Level, event, instrument};
 
-#[derive(Debug)]
-pub struct ShippingProviderUseCase {
-    shipping_provider_repository: ShippingProviderPostgresRepository,
+pub trait ShippingProviderUseCase {
+    async fn create_shipping_provider(
+        &self,
+        request_id: String,
+        request: Request<CreateShippingProviderRequest>,
+    ) -> Result<Response<CreateShippingProviderResponse>, Status>;
+    async fn get_shipping_provider_by_id(
+        &self,
+        request_id: String,
+        request: Request<GetShippingProviderByIdRequest>,
+    ) -> Result<Response<GetShippingProviderByIdResponse>, Status>;
+    async fn update_shipping_provider(
+        &self,
+        request_id: &String,
+        request: Request<UpdateShippingProviderRequest>,
+    ) -> Result<Response<UpdateShippingProviderResponse>, Status>;
+    async fn delete_shipping_provider(
+        &self,
+        request_id: String,
+        request: Request<DeleteShippingProviderRequest>,
+    ) -> Result<Response<DeleteShippingProviderResponse>, Status>;
+    async fn list_shipping_providers(
+        &self,
+        request_id: String,
+        request: Request<ListShippingProvidersRequest>,
+    ) -> Result<Response<ListShippingProvidersResponse>, Status>;
 }
 
-impl ShippingProviderUseCase {
-    pub fn new(shipping_provider_repository: ShippingProviderPostgresRepository) -> Self {
+#[derive(Debug)]
+pub struct ShippingProviderUseCaseImpl {
+    shipping_provider_repository: ShippingProviderPostgresRepositoryImpl,
+}
+
+impl ShippingProviderUseCaseImpl {
+    pub fn new(shipping_provider_repository: ShippingProviderPostgresRepositoryImpl) -> Self {
         Self {
             shipping_provider_repository,
         }
     }
+}
 
+impl ShippingProviderUseCase for ShippingProviderUseCaseImpl {
     #[instrument("ShippingProviderUseCase.create_shipping_provider")]
-    pub async fn create_shipping_provider(
+    async fn create_shipping_provider(
         &self,
         request_id: String,
         request: Request<CreateShippingProviderRequest>,
@@ -42,7 +74,7 @@ impl ShippingProviderUseCase {
     }
 
     #[instrument("ShippingProviderUseCase.get_shipping_provider_by_id")]
-    pub async fn get_shipping_provider_by_id(
+    async fn get_shipping_provider_by_id(
         &self,
         request_id: String,
         request: Request<GetShippingProviderByIdRequest>,
@@ -78,7 +110,7 @@ impl ShippingProviderUseCase {
     }
 
     #[instrument("ShippingProviderUseCase.update_shipping_provider")]
-    pub async fn update_shipping_provider(
+    async fn update_shipping_provider(
         &self,
         request_id: &String,
         request: Request<UpdateShippingProviderRequest>,
@@ -95,7 +127,7 @@ impl ShippingProviderUseCase {
     }
 
     #[instrument("ShippingProviderUseCase.delete_shipping_provider")]
-    pub async fn delete_shipping_provider(
+    async fn delete_shipping_provider(
         &self,
         request_id: String,
         request: Request<DeleteShippingProviderRequest>,
@@ -111,7 +143,7 @@ impl ShippingProviderUseCase {
     }
 
     #[instrument("ShippingProviderUseCase.list_shipping_providers")]
-    pub async fn list_shipping_providers(
+    async fn list_shipping_providers(
         &self,
         request_id: String,
         request: Request<ListShippingProvidersRequest>,

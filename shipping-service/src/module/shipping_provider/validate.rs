@@ -47,10 +47,10 @@ pub fn validate_list_shipping_providers(
     request: &Request<ListShippingProvidersRequest>,
 ) -> Option<Status> {
     if request.get_ref().page <= 0 {
-        return Some(Status::invalid_argument("page"));
+        return Some(Status::invalid_argument("invalid argument page"));
     }
     if request.get_ref().limit <= 0 {
-        return Some(Status::invalid_argument("limit"));
+        return Some(Status::invalid_argument("invalid argument limit"));
     }
     None
 }

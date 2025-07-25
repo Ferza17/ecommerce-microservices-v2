@@ -4,6 +4,7 @@ use crate::model::rpc::shipping::{
     GetShippingProviderByIdResponse, ListShippingProvidersRequest, ListShippingProvidersResponse,
     UpdateShippingProviderRequest, UpdateShippingProviderResponse,
 };
+use crate::module::shipping_provider::usecase::ShippingProviderUseCase;
 use crate::module::shipping_provider::validate::{
     validate_create_shipping_provider, validate_delete_shipping_provider,
     validate_get_shipping_provider_by_id, validate_list_shipping_providers,
@@ -19,9 +20,8 @@ use axum::{
     response::Json,
 };
 use std::convert::Infallible;
-
 use std::sync::Arc;
-use tonic::Request;
+use tonic::{GrpcMethod, Request};
 use tracing::{error, instrument};
 
 #[instrument(skip(state))]
@@ -71,6 +71,7 @@ pub async fn create_shipping_provider(
     Json(payload): Json<CreateShippingProviderRequest>,
 ) -> Result<Json<CreateShippingProviderResponse>, StatusCode> {
     let request = Request::new(payload);
+
     if let Some(_status) = validate_create_shipping_provider(&request) {
         error!("Invalid request parameters");
         return Err(StatusCode::BAD_REQUEST);
@@ -138,7 +139,11 @@ pub async fn list_shipping_providers(
     headers: HeaderMap,
     Query(query): Query<ListShippingProvidersRequest>,
 ) -> Result<(StatusCode, Json<ListShippingProvidersResponse>), Infallible> {
-    let request = Request::new(query);
+    let mut request = Request::new(query);
+    request.extensions_mut().insert(GrpcMethod::new(
+        "shipping.ShippingProviderService",
+        "ListShippingProviders",
+    ));
 
     if let Some(_status) = validate_list_shipping_providers(&request) {
         error!("Invalid request parameters");
@@ -167,7 +172,7 @@ pub async fn list_shipping_providers(
                     message: err.message().to_string(),
                     status: "error".to_string(),
                     data: None,
-                })
+                }),
             ))
         }
     }

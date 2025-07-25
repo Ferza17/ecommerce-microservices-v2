@@ -29,12 +29,13 @@ pub async fn handle_run_command(args: RunArgs) {
         .unwrap();
 
     // INIT TRACER
-    let tracer = init_tracer(cfg.clone()).unwrap();
 
     // create an opentelemetry layer
-    let telemetry = layer::<Registry>().with_tracer(tracer);
-    let subscriber = Registry::default().with(telemetry);
-    tracing::subscriber::set_global_default(subscriber).unwrap();
+    tracing::subscriber::set_global_default(
+        Registry::default()
+            .with(layer::<Registry>().with_tracer(init_tracer(cfg.clone()).unwrap())),
+    )
+    .unwrap();
 
     // ======= WORKER POOLS ===========
     // Create specialized worker pools

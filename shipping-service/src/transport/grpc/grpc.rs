@@ -1,12 +1,15 @@
 use crate::config::config::AppConfig;
 use crate::infrastructure::database::async_postgres::get_connection;
-use crate::interceptor::request_id::grpc_interceptor::GrpcRequestIdInterceptor;
+use crate::infrastructure::services::user::UserServiceGrpcClient;
+use crate::interceptor::auth::AuthLayer;
+use crate::interceptor::logger::LoggerLayer;
+use crate::interceptor::request_id::RequestIdLayer;
 use crate::model::rpc::shipping::shipping_provider_service_server::ShippingProviderServiceServer;
 use crate::module::shipping_provider::presenter_grpc::ShippingProviderGrpcPresenter;
-use crate::module::shipping_provider::repository_postgres::ShippingProviderPostgresRepository;
-use crate::module::shipping_provider::usecase::ShippingProviderUseCase;
-use tonic::service::interceptor;
+use crate::module::shipping_provider::repository_postgres::ShippingProviderPostgresRepositoryImpl;
+use crate::module::shipping_provider::usecase::ShippingProviderUseCaseImpl;
 use tonic::transport::Server;
+use tower::ServiceBuilder;
 
 pub struct GrpcTransport {
     config: AppConfig,
@@ -29,9 +32,11 @@ impl GrpcTransport {
 
         // Infrastructure Layer
         let postgres_pool = get_connection(&self.config.clone()).await;
+        let user_service = UserServiceGrpcClient::new(self.config.clone()).await;
 
         // Repository Layer
-        let shipping_provider_repository = ShippingProviderPostgresRepository::new(postgres_pool);
+        let shipping_provider_repository =
+            ShippingProviderPostgresRepositoryImpl::new(postgres_pool);
 
         // REFLECTION
         let reflection_service = tonic_reflection::server::Builder::configure()
@@ -39,13 +44,17 @@ impl GrpcTransport {
             .build_v1alpha()
             .unwrap();
 
-        let mut server = Server::builder()
-            .layer(interceptor(GrpcRequestIdInterceptor))
-            .add_service(ShippingProviderServiceServer::new(
-                ShippingProviderGrpcPresenter::new(ShippingProviderUseCase::new(
-                    shipping_provider_repository,
-                )),
-            ));
+        let middleware_stack = ServiceBuilder::new()
+            .layer(LoggerLayer)
+            .layer(RequestIdLayer)
+            .layer(AuthLayer::new(user_service.clone()));
+
+        let mut server = Server::builder().layer(middleware_stack).add_service(
+            ShippingProviderServiceServer::new(ShippingProviderGrpcPresenter::new(
+                ShippingProviderUseCaseImpl::new(shipping_provider_repository),
+                user_service.clone(),
+            )),
+        );
 
         if self.config.env != "production" {
             server = server.add_service(reflection_service);
