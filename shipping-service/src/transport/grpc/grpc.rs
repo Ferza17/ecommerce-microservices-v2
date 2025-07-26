@@ -44,17 +44,19 @@ impl GrpcTransport {
             .build_v1alpha()
             .unwrap();
 
-        let middleware_stack = ServiceBuilder::new()
-            .layer(LoggerLayer)
-            .layer(RequestIdLayer)
-            .layer(AuthLayer::new(user_service.clone()));
-
-        let mut server = Server::builder().layer(middleware_stack).add_service(
-            ShippingProviderServiceServer::new(ShippingProviderGrpcPresenter::new(
-                ShippingProviderUseCaseImpl::new(shipping_provider_repository),
-                user_service.clone(),
-            )),
-        );
+        let mut server = Server::builder()
+            .layer(
+                ServiceBuilder::new()
+                    .layer(LoggerLayer)
+                    .layer(RequestIdLayer)
+                    .layer(AuthLayer::new(user_service.clone())),
+            )
+            .add_service(ShippingProviderServiceServer::new(
+                ShippingProviderGrpcPresenter::new(
+                    ShippingProviderUseCaseImpl::new(shipping_provider_repository),
+                    user_service.clone(),
+                ),
+            ));
 
         if self.config.env != "production" {
             server = server.add_service(reflection_service);

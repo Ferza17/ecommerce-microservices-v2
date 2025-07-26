@@ -61,7 +61,8 @@ chrono = "0.4.41"
 # HTTP
 http = "0.2.12"
 axum = "0.8.4"
-axum-tracing-opentelemetry = "0.29.0"
+utoipa = "5"
+utoipa-axum = "0.2"
 
 # RABBIQ MQ
 rabbitmq-stream-client = "0.9.0"

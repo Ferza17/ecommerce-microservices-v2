@@ -5,8 +5,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .build_client(true)
         .build_transport(true)
         .out_dir("src/model/rpc")
+        // .type_attribute(".", "#[derive(utoipa::OpenApi)]")
         .type_attribute(".", "#[derive(serde::Serialize, serde::Deserialize)]")
         .extern_path(".google.protobuf.Timestamp", "::prost_wkt_types::Timestamp")
+        .extern_path(".google.protobuf.Struct", "::prost_wkt_types::Struct")
         .compile_protos(
             &[
                 // SHIPPING
@@ -27,6 +29,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "proto/v1/payment/response.proto",
                 "proto/v1/payment/model.proto",
                 "proto/v1/payment/enum.proto",
+                // COMMON
+                "proto/v1/common/response/response.proto",
             ],
             &["proto/"],
         )?;

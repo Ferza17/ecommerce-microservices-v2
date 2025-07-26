@@ -6,12 +6,9 @@ use crate::transport::{
 };
 use std::sync::Arc;
 
-use crate::infrastructure::telemetry::jaeger::init_tracer;
+use crate::infrastructure::telemetry::jaeger::init_tracing;
 use crate::package::worker_pool::typed_worker_pool::TypedWorkerPool;
 use clap::Args;
-use tracing_opentelemetry::layer;
-use tracing_subscriber::Registry;
-use tracing_subscriber::layer::SubscriberExt;
 
 #[derive(Args, Debug)]
 pub struct RunArgs {
@@ -28,14 +25,8 @@ pub async fn handle_run_command(args: RunArgs) {
         })
         .unwrap();
 
-    // INIT TRACER
-
-    // create an opentelemetry layer
-    tracing::subscriber::set_global_default(
-        Registry::default()
-            .with(layer::<Registry>().with_tracer(init_tracer(cfg.clone()).unwrap())),
-    )
-    .unwrap();
+    // init telemetry
+    // init_tracing(cfg.clone()).expect("error set tracing");
 
     // ======= WORKER POOLS ===========
     // Create specialized worker pools

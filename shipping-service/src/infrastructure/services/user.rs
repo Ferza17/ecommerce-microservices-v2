@@ -6,9 +6,8 @@ use crate::model::rpc::user::{
 };
 use crate::package::context::auth::AUTHORIZATION_HEADER;
 use crate::package::context::request_id::X_REQUEST_ID_HEADER;
-use crate::util::metadata::{MetadataInjector, grpc_inject_trace_context};
+use crate::util::metadata::MetadataInjector;
 use opentelemetry::global;
-use opentelemetry::propagation::Injector;
 use tonic::metadata::{MetadataKey, MetadataValue};
 use tonic::transport::Channel;
 use tonic::{Request, Status};
@@ -70,11 +69,11 @@ impl UserServiceGrpcClient {
             .insert(X_REQUEST_ID_HEADER, request_id.parse().unwrap());
 
         // SEND TRACER PARENT
-        req = grpc_inject_trace_context(req);
-
-
-        req.metadata_mut().iter_mut().for_each(|m| {
-            eprintln!("{:?}", m);
+        global::get_text_map_propagator(|propagator| {
+            propagator.inject_context(
+                &Span::current().context(),
+                &mut MetadataInjector(req.metadata_mut()),
+            )
         });
 
         let response = self
@@ -103,6 +102,7 @@ impl UserServiceGrpcClient {
         }
     }
 
+    #[instrument]
     pub async fn auth_service_verify_is_excluded(
         &mut self,
         request_id: String,

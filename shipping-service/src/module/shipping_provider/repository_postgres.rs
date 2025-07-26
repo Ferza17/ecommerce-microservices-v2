@@ -29,6 +29,7 @@ pub trait ShippingProviderPostgresRepository {
     ) -> Result<Vec<ShippingProvider>>;
 }
 
+#[derive(Clone)]
 pub struct ShippingProviderPostgresRepositoryImpl {
     pg: AsyncPgDeadPool,
 }

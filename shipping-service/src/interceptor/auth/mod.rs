@@ -1,5 +1,5 @@
+use crate::infrastructure::services::user::UserServiceGrpcClient;
 use std::sync::Arc;
-use crate::infrastructure::services::user::{UserServiceGrpcClient};
 use tower::Layer;
 
 pub mod grpc_interceptor;
@@ -13,12 +13,12 @@ pub struct AuthLayer {
 impl AuthLayer {
     pub fn new(user_service: UserServiceGrpcClient) -> Self {
         Self {
-            user_service: Arc::new(user_service)
+            user_service: Arc::new(user_service),
         }
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct AuthService<S> {
     pub inner: S,
     pub user_service: UserServiceGrpcClient,

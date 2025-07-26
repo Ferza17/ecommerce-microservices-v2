@@ -1,36 +1,20 @@
-use opentelemetry::global;
 use opentelemetry::propagation::Injector;
-use opentelemetry::trace::TraceContextExt;
-use tonic::{
-    Request,
-    metadata::{MetadataKey, MetadataMap, MetadataValue},
-};
+use tonic::metadata::{MetadataKey, MetadataMap, MetadataValue};
+use tracing::warn;
 
-pub struct MetadataInjector<'a> {
-    metadata: &'a mut MetadataMap,
-}
+pub struct MetadataInjector<'a>(pub &'a mut MetadataMap);
 
-impl<'a> Injector for MetadataInjector<'a> {
+impl Injector for MetadataInjector<'_> {
     fn set(&mut self, key: &str, value: String) {
-        if let Ok(val) = MetadataValue::try_from(value) {
-            if let Ok(key) = MetadataKey::from_bytes(key.as_bytes()) {
-                let _ = self.metadata.insert(key, val);
-            }
+        match MetadataKey::from_bytes(key.as_bytes()) {
+            Ok(key) => match MetadataValue::try_from(&value) {
+                Ok(value) => {
+                    self.0.insert(key, value);
+                }
+                Err(error) => warn!(value, error = format!("{error:#}"), "parse metadata value"),
+            },
+
+            Err(error) => warn!(key, error = format!("{error:#}"), "parse metadata key"),
         }
     }
-}
-
-pub fn grpc_inject_trace_context<T>(mut request: Request<T>) -> Request<T> {
-    let context = opentelemetry::Context::current(); // get current trace context
-
-    global::get_text_map_propagator(|propagator| {
-        println!("Current span context: {:?}", context.span().span_context());
-
-        let mut injector = MetadataInjector {
-            metadata: request.metadata_mut(),
-        };
-        propagator.inject_context(&context, &mut injector);
-    });
-
-    request
 }

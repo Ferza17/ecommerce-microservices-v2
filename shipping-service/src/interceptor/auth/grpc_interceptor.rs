@@ -9,7 +9,6 @@ use tokio::runtime::Handle;
 use tonic::Status;
 use tonic::body::BoxBody;
 use tower::Service;
-use uuid::Uuid;
 
 impl<S> Service<Request<BoxBody>> for AuthService<S>
 where
@@ -27,14 +26,11 @@ where
 
     fn call(&mut self, mut req: Request<BoxBody>) -> Self::Future {
         let request_id = get_request_id_from_header(req.headers());
-        let mut user_service = self.user_service.clone();
-
-        let uri = req.uri().to_string();
-
         // VERIFY ACL ON METHOD
         let verify_result = tokio::task::block_in_place(|| {
             Handle::current().block_on(async {
-                user_service
+                self.user_service
+                    .clone()
                     .auth_service_verify_is_excluded(
                         request_id.clone(),
                         AuthServiceVerifyIsExcludedRequest {
@@ -95,7 +91,8 @@ where
             .into_http())));
         }
 
-        req.headers_mut().insert(AUTHORIZATION_HEADER, token.parse().unwrap());
+        req.headers_mut()
+            .insert(AUTHORIZATION_HEADER, token.parse().unwrap());
         req.extensions_mut().insert(token.to_string());
         // Proceed to inner service if passed
         futures::future::Either::Left(self.inner.call(req))
