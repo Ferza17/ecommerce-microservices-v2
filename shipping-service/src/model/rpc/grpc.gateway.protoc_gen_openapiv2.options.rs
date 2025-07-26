@@ -25,6 +25,7 @@
 ///     produces: "application/json";
 ///   };
 ///
+#[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Swagger {
@@ -123,6 +124,7 @@ pub struct Swagger {
 ///       };
 ///     }
 ///   }
+#[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Operation {
@@ -196,6 +198,7 @@ pub struct Operation {
 /// allow header parameters to be set here since we do not want users specifying custom non-header
 /// parameters beyond those inferred from the Protobuf schema.
 /// See: <https://swagger.io/specification/v2/#parameter-object>
+#[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Parameters {
@@ -206,6 +209,7 @@ pub struct Parameters {
 }
 /// `HeaderParameter` a HTTP header parameter.
 /// See: <https://swagger.io/specification/v2/#parameter-object>
+#[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct HeaderParameter {
@@ -230,6 +234,7 @@ pub struct HeaderParameter {
 pub mod header_parameter {
     /// `Type` is a supported HTTP header type.
     /// See <https://swagger.io/specification/v2/#parameterType.>
+    #[derive(utoipa::ToSchema)]
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(
         Clone,
@@ -281,6 +286,7 @@ pub mod header_parameter {
 ///
 /// See: <https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#headerObject>
 ///
+#[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Header {
@@ -306,6 +312,7 @@ pub struct Header {
 ///
 /// See: <https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#responseObject>
 ///
+#[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Response {
@@ -362,6 +369,7 @@ pub struct Response {
 ///     ...
 ///   };
 ///
+#[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Info {
@@ -413,6 +421,7 @@ pub struct Info {
 ///     ...
 ///   };
 ///
+#[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Contact {
@@ -446,6 +455,7 @@ pub struct Contact {
 ///     ...
 ///   };
 ///
+#[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct License {
@@ -472,6 +482,7 @@ pub struct License {
 ///     ...
 ///   };
 ///
+#[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ExternalDocumentation {
@@ -488,6 +499,7 @@ pub struct ExternalDocumentation {
 ///
 /// See: <https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#schemaObject>
 ///
+#[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Schema {
@@ -530,6 +542,7 @@ pub struct Schema {
 ///     ...
 ///   };
 ///
+#[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct EnumSchema {
@@ -595,6 +608,7 @@ pub struct EnumSchema {
 ///         }];
 ///   }
 ///
+#[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct JsonSchema {
@@ -680,6 +694,7 @@ pub struct JsonSchema {
 pub mod json_schema {
     /// 'FieldConfiguration' provides additional field level properties used when generating the OpenAPI v2 file.
     /// These properties are not defined by OpenAPIv2, but they are used to control the generation.
+    #[derive(utoipa::ToSchema)]
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Clone, PartialEq, ::prost::Message)]
     pub struct FieldConfiguration {
@@ -690,6 +705,7 @@ pub mod json_schema {
         #[prost(string, tag = "47")]
         pub path_param_name: ::prost::alloc::string::String,
     }
+    #[derive(utoipa::ToSchema)]
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(
         Clone,
@@ -750,6 +766,7 @@ pub mod json_schema {
 ///
 /// See: <https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#tagObject>
 ///
+#[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Tag {
@@ -782,6 +799,7 @@ pub struct Tag {
 /// A declaration of the security schemes available to be used in the
 /// specification. This does not enforce the security schemes on the operations
 /// and only serves to provide the relevant details for each scheme.
+#[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SecurityDefinitions {
@@ -802,6 +820,7 @@ pub struct SecurityDefinitions {
 /// operations. Supported schemes are basic authentication, an API key (either as
 /// a header or as a query parameter) and OAuth2's common flows (implicit,
 /// password, application and access code).
+#[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SecurityScheme {
@@ -853,6 +872,7 @@ pub struct SecurityScheme {
 pub mod security_scheme {
     /// The type of the security scheme. Valid values are "basic",
     /// "apiKey" or "oauth2".
+    #[derive(utoipa::ToSchema)]
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(
         Clone,
@@ -897,6 +917,7 @@ pub mod security_scheme {
         }
     }
     /// The location of the API key. Valid values are "query" or "header".
+    #[derive(utoipa::ToSchema)]
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(
         Clone,
@@ -939,6 +960,7 @@ pub mod security_scheme {
     }
     /// The flow used by the OAuth2 security scheme. Valid values are
     /// "implicit", "password", "application" or "accessCode".
+    #[derive(utoipa::ToSchema)]
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(
         Clone,
@@ -997,6 +1019,7 @@ pub mod security_scheme {
 ///
 /// The name used for each property MUST correspond to a security scheme
 /// declared in the Security Definitions.
+#[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SecurityRequirement {
@@ -1015,6 +1038,7 @@ pub mod security_requirement {
     /// If the security scheme is of type "oauth2", then the value is a list of
     /// scope names required for the execution. For other security scheme types,
     /// the array MUST be empty.
+    #[derive(utoipa::ToSchema)]
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Clone, PartialEq, ::prost::Message)]
     pub struct SecurityRequirementValue {
@@ -1027,6 +1051,7 @@ pub mod security_requirement {
 /// See: <https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#scopesObject>
 ///
 /// Lists the available scopes for an OAuth2 security scheme.
+#[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Scopes {
@@ -1040,6 +1065,7 @@ pub struct Scopes {
 }
 /// Scheme describes the schemes supported by the OpenAPI Swagger
 /// and Operation objects.
+#[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]

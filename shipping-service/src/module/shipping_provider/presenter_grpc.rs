@@ -11,7 +11,8 @@ use crate::module::shipping_provider::usecase::{
     ShippingProviderUseCase, ShippingProviderUseCaseImpl,
 };
 use crate::module::shipping_provider::validate::{
-    validate_get_shipping_provider_by_id, validate_list_shipping_providers,
+    validate_delete_shipping_provider, validate_get_shipping_provider_by_id,
+    validate_list_shipping_providers, validate_update_shipping_provider,
 };
 use crate::package::context::auth::get_request_authorization_token_from_metadata;
 use crate::package::context::request_id::get_request_id_from_metadata;
@@ -39,7 +40,6 @@ impl ShippingProviderGrpcPresenter {
 
 #[tonic::async_trait]
 impl ShippingProviderService for ShippingProviderGrpcPresenter {
-    #[allow(unused_variables)]
     #[instrument]
     async fn create_shipping_provider(
         &self,
@@ -71,6 +71,9 @@ impl ShippingProviderService for ShippingProviderGrpcPresenter {
         &self,
         request: Request<UpdateShippingProviderRequest>,
     ) -> Result<Response<UpdateShippingProviderResponse>, Status> {
+        if let Some(status) = validate_update_shipping_provider(&request) {
+            return Err(status.into());
+        }
         self.shipping_provider_use_case
             .update_shipping_provider(&get_request_id_from_metadata(request.metadata()), request)
             .await
@@ -82,6 +85,9 @@ impl ShippingProviderService for ShippingProviderGrpcPresenter {
         &self,
         request: Request<DeleteShippingProviderRequest>,
     ) -> Result<Response<DeleteShippingProviderResponse>, Status> {
+        if let Some(status) = validate_delete_shipping_provider(&request) {
+            return Err(status.into());
+        }
         self.shipping_provider_use_case
             .delete_shipping_provider(get_request_id_from_metadata(request.metadata()), request)
             .await
@@ -93,10 +99,12 @@ impl ShippingProviderService for ShippingProviderGrpcPresenter {
         &self,
         request: Request<ListShippingProvidersRequest>,
     ) -> Result<Response<ListShippingProvidersResponse>, Status> {
+        // Validate request
         if let Some(status) = validate_list_shipping_providers(&request) {
             return Err(status);
         }
-
+        
+        // Validate access control
         self.user_service
             .clone()
             .auth_user_verify_access_control(
@@ -111,6 +119,7 @@ impl ShippingProviderService for ShippingProviderGrpcPresenter {
             .await
             .map_err(|e| Status::from_error(Box::new(e)))?;
 
+        // Execute a use case
         self.shipping_provider_use_case
             .list_shipping_providers(get_request_id_from_metadata(request.metadata()), request)
             .await

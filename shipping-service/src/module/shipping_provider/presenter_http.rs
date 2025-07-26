@@ -75,7 +75,7 @@ async fn create_shipping_provider(
     Ok(Json(result.into_inner()))
 }
 
-#[utoipa::path(get, path = "/v1/api/shipping/shippings", responses((status = OK, body = str)))] // TODO: Fix Later
+// #[utoipa::path(get, path = "/v1/api/shipping/shippings", responses((status = OK, body = ListShippingProvidersResponse)))]
 #[instrument(skip(state))]
 async fn list_shipping_providers(
     State(state): State<Arc<ShippingProviderHttpPresenter>>,

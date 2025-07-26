@@ -3,17 +3,14 @@ package user;
 
 
 import "protoc-gen-openapiv2/options/annotations.proto";
-import "google/api/http.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 
 
 // LOCAL IMPORT
-import "v1/user/model.proto";
 import "v1/user/request.proto";
 import "v1/user/response.proto";
 import "v1/user/option.proto";
-import "v1/user/enum.proto";
 
 
 

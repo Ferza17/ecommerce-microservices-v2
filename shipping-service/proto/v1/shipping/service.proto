@@ -2,7 +2,6 @@ syntax = "proto3";
 package shipping;
 
 import "protoc-gen-openapiv2/options/annotations.proto";
-import "google/api/http.proto";
 import "google/api/annotations.proto";
 
 import "v1/shipping/request.proto";
