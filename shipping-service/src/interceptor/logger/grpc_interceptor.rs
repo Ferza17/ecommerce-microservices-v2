@@ -3,11 +3,9 @@ use crate::package::context::url_path::URL_PATH;
 use axum::http::Request;
 use std::task::{Context, Poll};
 use tonic::body::BoxBody;
-use tower::Service;
-
-impl<S> Service<Request<BoxBody>> for LoggerService<S>
+impl<S> tower::Service<Request<BoxBody>> for LoggerService<S>
 where
-    S: Service<Request<BoxBody>>,
+    S: tower::Service<Request<BoxBody>>,
 {
     type Response = S::Response;
     type Error = S::Error;

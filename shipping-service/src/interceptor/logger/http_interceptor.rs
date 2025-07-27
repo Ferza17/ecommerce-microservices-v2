@@ -3,11 +3,9 @@ use axum::body::Body;
 use axum::http::Request;
 use std::convert::Infallible;
 use std::task::{Context, Poll};
-use tonic::codegen::Service;
-
-impl<S> Service<Request<Body>> for LoggerService<S>
+impl<S> tower::Service<Request<Body>> for LoggerService<S>
 where
-    S: Service<Request<Body>, Error = Infallible>,
+    S: tower::Service<Request<Body>, Error = Infallible>,
 {
     type Response = S::Response;
     type Error = S::Error;

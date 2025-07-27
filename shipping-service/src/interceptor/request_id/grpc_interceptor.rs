@@ -2,14 +2,13 @@ use crate::package::context::request_id::X_REQUEST_ID_HEADER;
 use hyper::{Request, header::HeaderValue};
 use std::task::{Context, Poll};
 use tonic::body::BoxBody;
-use tower::Service;
 use tracing::error;
 use uuid::Uuid;
 use crate::interceptor::request_id::RequestIdService;
 
-impl<S> Service<Request<BoxBody>> for RequestIdService<S>
+impl<S> tower::Service<Request<BoxBody>> for RequestIdService<S>
 where
-    S: Service<Request<BoxBody>>,
+    S: tower::Service<Request<BoxBody>>,
 {
     type Response = S::Response;
     type Error = S::Error;

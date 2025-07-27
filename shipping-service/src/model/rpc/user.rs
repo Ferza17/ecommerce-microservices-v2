@@ -261,7 +261,6 @@ pub struct AuthUserRegisterResponse {
     #[prost(uint32, tag = "3")]
     pub code: u32,
     #[prost(message, optional, tag = "4")]
-    #[schema(value_type = String, format = "object")]
     pub data: ::core::option::Option<
         auth_user_register_response::AuthUserRegisterResponseData,
     >,
@@ -291,7 +290,6 @@ pub struct AuthUserVerifyOtpResponse {
     #[prost(uint32, tag = "3")]
     pub code: u32,
     #[prost(message, optional, tag = "4")]
-    #[schema(value_type = String, format = "object")]
     pub data: ::core::option::Option<
         auth_user_verify_otp_response::AuthUserVerifyOtpResponseData,
     >,
@@ -319,7 +317,6 @@ pub struct AuthUserLogoutByTokenResponse {
     #[prost(uint32, tag = "3")]
     pub code: u32,
     #[prost(message, optional, tag = "5")]
-    #[schema(value_type = String, format = "object")]
     pub data: ::core::option::Option<
         auth_user_logout_by_token_response::AuthUserLogoutByTokenResponseData,
     >,
@@ -345,10 +342,9 @@ pub struct AuthUserVerifyAccessControlResponse {
     #[prost(uint32, tag = "3")]
     pub code: u32,
     #[prost(message, optional, tag = "4")]
-    #[schema(value_type = String, format = "object")]
     pub data: ::core::option::Option<
         auth_user_verify_access_control_response::AuthUserVerifyAccessControlResponseData,
-    >,
+    >
 }
 /// Nested message and enum types in `AuthUserVerifyAccessControlResponse`.
 pub mod auth_user_verify_access_control_response {
@@ -377,7 +373,6 @@ pub struct AuthUserFindUserByTokenResponse {
     #[prost(uint32, tag = "3")]
     pub code: u32,
     #[prost(message, optional, tag = "4")]
-    #[schema(value_type = String, format = "object")]
     pub data: ::core::option::Option<
         auth_user_find_user_by_token_response::AuthUserFindUserByTokenResponseData,
     >,
@@ -403,7 +398,6 @@ pub struct AuthServiceVerifyIsExcludedResponse {
     #[prost(uint32, tag = "3")]
     pub code: u32,
     #[prost(message, optional, tag = "4")]
-    #[schema(value_type = String, format = "object")]
     pub data: ::core::option::Option<
         auth_service_verify_is_excluded_response::AuthServiceVerifyIsExcludedResponseData,
     >,
@@ -430,7 +424,6 @@ pub struct UpdateUserByIdResponse {
     #[prost(uint32, tag = "3")]
     pub code: u32,
     #[prost(message, optional, tag = "4")]
-    #[schema(value_type = String, format = "object")]
     pub data: ::core::option::Option<
         update_user_by_id_response::UpdateUserByIdResponseData,
     >,
@@ -456,7 +449,6 @@ pub struct FindUserByIdResponse {
     #[prost(uint32, tag = "3")]
     pub code: u32,
     #[prost(message, optional, tag = "4")]
-    #[schema(value_type = String, format = "object")]
     pub data: ::core::option::Option<find_user_by_id_response::FindUserByIdResponseData>,
 }
 /// Nested message and enum types in `FindUserByIdResponse`.
@@ -480,7 +472,6 @@ pub struct FindUserByEmailAndPasswordResponse {
     #[prost(uint32, tag = "3")]
     pub code: u32,
     #[prost(message, optional, tag = "4")]
-    #[schema(value_type = String, format = "object")]
     pub data: ::core::option::Option<
         find_user_by_email_and_password_response::FindUserByEmailAndPasswordResponseData,
     >,

@@ -67,7 +67,6 @@ pub struct CreateShippingProviderResponse {
     #[prost(string, tag = "2")]
     pub status: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "3")]
-    #[schema(value_type = String, format = "object")]
     pub data: ::core::option::Option<ShippingProvider>,
 }
 #[derive(utoipa::ToSchema)]
@@ -79,7 +78,6 @@ pub struct GetShippingProviderByIdResponse {
     #[prost(string, tag = "2")]
     pub status: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "3")]
-    #[schema(value_type = String, format = "object")]
     pub data: ::core::option::Option<ShippingProvider>,
 }
 #[derive(utoipa::ToSchema)]
@@ -91,7 +89,6 @@ pub struct UpdateShippingProviderResponse {
     #[prost(string, tag = "2")]
     pub status: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "3")]
-    #[schema(value_type = String, format = "object")]
     pub data: ::core::option::Option<ShippingProvider>,
 }
 #[derive(utoipa::ToSchema)]
@@ -112,7 +109,6 @@ pub struct ListShippingProvidersResponse {
     #[prost(string, tag = "2")]
     pub status: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "3")]
-    #[schema(value_type = String, format = "object")]
     pub data: ::core::option::Option<
         list_shipping_providers_response::ListShippingProvidersResponseData,
     >,

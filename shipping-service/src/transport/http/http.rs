@@ -1,17 +1,16 @@
 use crate::config::config::AppConfig;
 use crate::infrastructure::database::async_postgres::get_connection;
 use crate::infrastructure::services::user::UserServiceGrpcClient;
-use crate::interceptor::auth::AuthLayer;
-use crate::interceptor::logger::LoggerLayer;
-use crate::interceptor::request_id::RequestIdLayer;
 use crate::module::shipping::presenter_http::ShippingHttpPresenter;
-use crate::module::shipping_provider::presenter_http::ShippingProviderHttpPresenter;
-use crate::module::shipping_provider::repository_postgres::ShippingProviderPostgresRepositoryImpl;
-use crate::module::shipping_provider::usecase::ShippingProviderUseCaseImpl;
-use axum::http::StatusCode;
-use axum::routing::get;
-use axum::{Router, response::Json};
-use tower::ServiceBuilder;
+use crate::module::shipping_provider::{
+    presenter_http::ShippingProviderHttpPresenter,
+    repository_postgres::ShippingProviderPostgresRepositoryImpl,
+    usecase::ShippingProviderUseCaseImpl,
+};
+use crate::transport::http::api_docs::ApiDocs;
+use axum::{Router, http::StatusCode, response::Json, routing::get};
+use utoipa::OpenApi;
+use utoipa_swagger_ui::SwaggerUi;
 
 pub struct HttpTransport {
     config: AppConfig,
@@ -39,6 +38,10 @@ impl HttpTransport {
             ShippingProviderPostgresRepositoryImpl::new(postgres_pool);
 
         let app = Router::new()
+            .merge(
+                SwaggerUi::new("/v1/shipping/docs")
+                    .url("/api-docs/openapi.json", ApiDocs::openapi()),
+            )
             .nest(
                 "/v1/shipping/shipping_providers",
                 ShippingProviderHttpPresenter::new(
@@ -51,13 +54,7 @@ impl HttpTransport {
                 "/v1/shipping/shippings",
                 ShippingHttpPresenter::new(user_service.clone()).router(),
             )
-            .route("/v1/shipping/checks", get(health_check_handler))
-            .layer(
-                ServiceBuilder::new()
-                    .layer(AuthLayer::new(user_service.clone()))
-                    .layer(LoggerLayer)
-                    .layer(RequestIdLayer),
-            );
+            .route("/v1/shipping/checks", get(health_check_handler));
 
         let listener = tokio::net::TcpListener::bind(addr.as_str()).await?;
         eprintln!("Starting HTTP server on {}", addr.as_str());

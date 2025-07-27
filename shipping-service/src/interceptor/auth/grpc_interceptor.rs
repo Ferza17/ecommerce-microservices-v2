@@ -1,4 +1,3 @@
-use crate::interceptor::auth::AuthService;
 use crate::model::rpc::user::AuthServiceVerifyIsExcludedRequest;
 use crate::package::context::auth::AUTHORIZATION_HEADER;
 use crate::package::context::request_id::get_request_id_from_header;
@@ -8,11 +7,11 @@ use std::task::{Context, Poll};
 use tokio::runtime::Handle;
 use tonic::Status;
 use tonic::body::BoxBody;
-use tower::Service;
+use crate::interceptor;
 
-impl<S> Service<Request<BoxBody>> for AuthService<S>
+impl<S> tower::Service<Request<BoxBody>> for interceptor::auth::AuthService<S>
 where
-    S: Service<Request<BoxBody>, Response = Response<BoxBody>> + Send + 'static,
+    S: tower::Service<Request<BoxBody>, Response = Response<BoxBody>> + Send + 'static,
     S::Future: Send + 'static,
     S::Error: Into<Box<dyn std::error::Error + Send + Sync>>,
 {

@@ -6,12 +6,11 @@ use axum::{
 };
 use std::convert::Infallible;
 use std::task::{Context, Poll};
-use tonic::codegen::Service;
 use uuid::Uuid;
 
-impl<S> Service<Request<Body>> for RequestIdService<S>
+impl<S> tower::Service<Request<Body>> for RequestIdService<S>
 where
-    S: Service<Request<Body>, Error = Infallible>,
+    S: tower::Service<Request<Body>, Error = Infallible>,
 {
     type Response = S::Response;
     type Error = S::Error;

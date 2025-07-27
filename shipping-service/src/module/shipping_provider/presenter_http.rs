@@ -1,10 +1,14 @@
 use crate::infrastructure::services::user::UserServiceGrpcClient;
+use crate::interceptor::auth::AuthLayer;
+use crate::interceptor::logger::LoggerLayer;
+use crate::interceptor::request_id::RequestIdLayer;
 use crate::model::rpc::shipping::{
     CreateShippingProviderRequest, CreateShippingProviderResponse, DeleteShippingProviderRequest,
     DeleteShippingProviderResponse, GetShippingProviderByIdRequest,
     GetShippingProviderByIdResponse, ListShippingProvidersRequest, ListShippingProvidersResponse,
     UpdateShippingProviderRequest, UpdateShippingProviderResponse,
 };
+use crate::model::rpc::user::AuthUserVerifyAccessControlRequest;
 use crate::module::shipping_provider::usecase::{
     ShippingProviderUseCase, ShippingProviderUseCaseImpl,
 };
@@ -13,6 +17,7 @@ use crate::module::shipping_provider::validate::{
     validate_get_shipping_provider_by_id, validate_list_shipping_providers,
     validate_update_shipping_provider,
 };
+use crate::package::context::auth::get_request_authorization_token_from_header;
 use crate::package::context::request_id::get_request_id_from_header;
 use axum::extract::State;
 use axum::http::HeaderMap;
@@ -24,7 +29,8 @@ use axum::{
 };
 use std::convert::Infallible;
 use std::sync::Arc;
-use tonic::{GrpcMethod, Request};
+use tonic::Request;
+use tower::ServiceBuilder;
 use tracing::{error, instrument};
 
 #[derive(Debug, Clone)]
@@ -51,13 +57,27 @@ impl ShippingProviderHttpPresenter {
             .route("/{id}", get(get_shipping_provider_by_id))
             .route("/{id}", put(update_shipping_provider))
             .route("/{id}", delete(delete_shipping_provider))
+            .layer(
+                ServiceBuilder::new()
+                    .layer(RequestIdLayer)
+                    .layer(LoggerLayer)
+                    .layer(AuthLayer::new(self.user_service.clone())),
+            )
             .with_state(Arc::from(self.clone()))
     }
 }
 
-#[utoipa::path(post, path = "/v1/api/shipping/shippings", responses((status = OK, body = str)))] // TODO: Fix Later
+#[utoipa::path(
+    post,
+    tag="Shipping Provider",
+    path = "/v1/shipping/shipping_providers",
+    request_body = CreateShippingProviderRequest,
+    responses(
+        (status = OK, body = CreateShippingProviderResponse, content_type = "application/json")
+    )
+)]
 #[instrument(skip(state))]
-async fn create_shipping_provider(
+pub async fn create_shipping_provider(
     State(state): State<Arc<ShippingProviderHttpPresenter>>,
     headers: HeaderMap,
     Json(payload): Json<CreateShippingProviderRequest>,
@@ -75,18 +95,71 @@ async fn create_shipping_provider(
     Ok(Json(result.into_inner()))
 }
 
-// #[utoipa::path(get, path = "/v1/api/shipping/shippings", responses((status = OK, body = ListShippingProvidersResponse)))]
+#[utoipa::path(
+    get,
+    tag = "Shipping Provider",
+    params(
+        ("page" = u32, Query, description = "shipping provider page $gt 0"),
+        ("limit" = u32, Query, description = "shipping provider limit $gt 0")
+    ),
+    security(
+       ("authorization" = [])
+    ),
+    path = "/v1/shipping/shipping_providers",
+    responses(
+        (status = OK, body = ListShippingProvidersResponse, content_type = "application/json")
+    )
+)]
 #[instrument(skip(state))]
-async fn list_shipping_providers(
+pub async fn list_shipping_providers(
     State(state): State<Arc<ShippingProviderHttpPresenter>>,
     headers: HeaderMap,
     Query(query): Query<ListShippingProvidersRequest>,
-) -> Result<(StatusCode, Json<ListShippingProvidersResponse>), Infallible> {
-    let mut request = Request::new(query);
-    request.extensions_mut().insert(GrpcMethod::new(
-        "shipping.ShippingProviderService",
-        "ListShippingProviders",
-    ));
+) -> Result<(StatusCode, Json<ListShippingProvidersResponse>), StatusCode> {
+    let request = Request::new(query);
+
+    // Validate access control
+    let validate_acl = state
+        .user_service
+        .clone()
+        .auth_user_verify_access_control(
+            get_request_id_from_header(&headers),
+            AuthUserVerifyAccessControlRequest {
+                token: get_request_authorization_token_from_header(&headers),
+                full_method_name: Some(
+                    "/shipping.ShippingProviderService/ListShippingProviders".to_string(),
+                ),
+                http_url: None,
+                http_method: None,
+            },
+        )
+        .await;
+
+    match validate_acl {
+        Ok(response) => {
+            if !response.data.unwrap().is_valid {
+                return Ok((
+                    StatusCode::FORBIDDEN,
+                    Json(ListShippingProvidersResponse {
+                        message: "forbidden".to_string(),
+                        status: "error".to_string(),
+                        data: None,
+                    }),
+                ));
+            }
+        }
+        Err(err) => {
+            error!("AuthUserVerifyAccessControl failed: {}", err.message());
+            return Ok((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(ListShippingProvidersResponse {
+                    message: err.message().to_string(),
+                    status: "error".to_string(),
+                    data: None,
+                }),
+            ));
+        }
+    }
 
     if let Some(_status) = validate_list_shipping_providers(&request) {
         error!("Invalid request parameters");
@@ -121,9 +194,19 @@ async fn list_shipping_providers(
     }
 }
 
-#[utoipa::path(get, path = "/v1/api/shipping/shippings/{id}", responses((status = OK, body = str)))] // TODO: Fix Later
+#[utoipa::path(
+    get,
+    path = "/v1/shipping/shipping_providers/{id}",
+    tag = "Shipping Provider",
+    params(
+        ("id" = String, Path, description = "shipping provider id"),
+    ),
+    responses(
+        (status = OK, body = GetShippingProviderByIdResponse, content_type = "application/json" )
+    )
+)]
 #[instrument(skip(state))]
-async fn get_shipping_provider_by_id(
+pub async fn get_shipping_provider_by_id(
     State(state): State<Arc<ShippingProviderHttpPresenter>>,
     headers: HeaderMap,
     Path(id): Path<String>,
@@ -162,9 +245,16 @@ async fn get_shipping_provider_by_id(
     }
 }
 
-#[utoipa::path(put, path = "/v1/api/shipping/shippings/{id}", responses((status = OK, body = str)))] // TODO: Fix Later
+#[utoipa::path(
+    put,
+    tag = "Shipping Provider",
+    path = "/v1/shipping/shipping_providers/{id}",
+    responses(
+        (status = OK, body = UpdateShippingProviderResponse)
+    )
+)]
 #[instrument(skip(state))]
-async fn update_shipping_provider(
+pub async fn update_shipping_provider(
     State(state): State<Arc<ShippingProviderHttpPresenter>>,
     headers: HeaderMap,
     Path(id): Path<String>,
@@ -188,9 +278,16 @@ async fn update_shipping_provider(
     Ok(Json(result.into_inner()))
 }
 
-#[utoipa::path(delete, path = "/v1/api/shipping/shippings/{id}", responses((status = OK, body = str)))] // TODO: Fix Later
+#[utoipa::path(
+    delete,
+    tag = "Shipping Provider",
+    path = "/v1/shipping/shipping_providers/{id}",
+    responses(
+        (status = OK, body = DeleteShippingProviderResponse, content_type = "application/json")
+    )
+)]
 #[instrument(skip(state))]
-async fn delete_shipping_provider(
+pub async fn delete_shipping_provider(
     State(state): State<Arc<ShippingProviderHttpPresenter>>,
     headers: HeaderMap,
     Path(id): Path<String>,

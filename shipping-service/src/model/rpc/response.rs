@@ -10,6 +10,6 @@ pub struct Response {
     #[prost(int32, tag = "3")]
     pub code: i32,
     #[prost(message, optional, tag = "4")]
-    #[schema(value_type = String, format = "object")]
+    #[schema(value_type = serde_json::Value)]
     pub data: ::core::option::Option<::prost_wkt_types::Struct>,
 }

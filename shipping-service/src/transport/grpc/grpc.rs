@@ -47,8 +47,8 @@ impl GrpcTransport {
         let mut server = Server::builder()
             .layer(
                 ServiceBuilder::new()
-                    .layer(LoggerLayer)
                     .layer(RequestIdLayer)
+                    .layer(LoggerLayer)
                     .layer(AuthLayer::new(user_service.clone())),
             )
             .add_service(ShippingProviderServiceServer::new(
