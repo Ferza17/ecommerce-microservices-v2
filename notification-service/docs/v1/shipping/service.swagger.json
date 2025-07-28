@@ -7,6 +7,9 @@
   },
   "tags": [
     {
+      "name": "ShippingService"
+    },
+    {
       "name": "ShippingProviderService"
     }
   ],
@@ -63,42 +66,6 @@
             "Bearer": []
           }
         ]
-      },
-      "post": {
-        "summary": "create a new shipping provider",
-        "operationId": "ShippingProviderService_CreateShippingProvider",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/shippingCreateShippingProviderResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shippingCreateShippingProviderRequest"
-            }
-          }
-        ],
-        "tags": [
-          "ShippingProviderService"
-        ],
-        "security": [
-          {
-            "Bearer": []
-          }
-        ]
       }
     },
     "/v1/shipping/shipping_providers/{id}": {
@@ -135,15 +102,107 @@
             "Bearer": []
           }
         ]
-      },
-      "delete": {
-        "summary": "delete shipping provider by provided id",
-        "operationId": "ShippingProviderService_DeleteShippingProvider",
+      }
+    },
+    "/v1/shipping/shippings": {
+      "get": {
+        "summary": "get list of a shipping",
+        "operationId": "ShippingService_ListShipping",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/shippingDeleteShippingProviderResponse"
+              "$ref": "#/definitions/shippingListShippingResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ShippingService"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "create a new shipping",
+        "operationId": "ShippingService_CreateShipping",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shippingCreateShippingResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "paymentId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "shippingProviderId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ShippingService"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/v1/shipping/shippings/{id}": {
+      "get": {
+        "summary": "get a new shipping by provided id",
+        "operationId": "ShippingService_GetShippingById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shippingGetShippingByIdResponse"
             }
           },
           "default": {
@@ -162,7 +221,41 @@
           }
         ],
         "tags": [
-          "ShippingProviderService"
+          "ShippingService"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "delete a shipping by provided id",
+        "operationId": "ShippingService_DeleteShipping",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shippingDeleteShippingResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ShippingService"
         ],
         "security": [
           {
@@ -171,13 +264,13 @@
         ]
       },
       "put": {
-        "summary": "update a shipping provider by provided id",
-        "operationId": "ShippingProviderService_UpdateShippingProvider",
+        "summary": "update a shipping by provided id and body",
+        "operationId": "ShippingService_UpdateShipping",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/shippingUpdateShippingProviderResponse"
+              "$ref": "#/definitions/shippingUpdateShippingResponse"
             }
           },
           "default": {
@@ -195,14 +288,26 @@
             "type": "string"
           },
           {
-            "name": "name",
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "paymentId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "shippingProviderId",
             "in": "query",
             "required": false,
             "type": "string"
           }
         ],
         "tags": [
-          "ShippingProviderService"
+          "ShippingService"
         ],
         "security": [
           {
@@ -213,6 +318,22 @@
     }
   },
   "definitions": {
+    "CreateShippingResponseCreateShippingResponseData": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "DeleteShippingResponseDeleteShippingResponseData": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
     "ListShippingProvidersResponseListShippingProvidersResponseData": {
       "type": "object",
       "properties": {
@@ -236,6 +357,61 @@
           "format": "int64"
         }
       }
+    },
+    "UpdateShippingResponseUpdateShippingResponseData": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "paymentPayment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "totalPrice": {
+          "type": "number",
+          "format": "double"
+        },
+        "status": {
+          "$ref": "#/definitions/paymentPaymentStatus"
+        },
+        "providerId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "discardedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "title": "REFERRED TO DATABASE SCHEMA"
+    },
+    "paymentPaymentStatus": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "PARTIAL",
+        "SUCCESS",
+        "FAILED"
+      ],
+      "default": "PENDING"
     },
     "protobufAny": {
       "type": "object",
@@ -265,16 +441,7 @@
         }
       }
     },
-    "shippingCreateShippingProviderRequest": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        }
-      },
-      "title": "SHIPPING PROVIDER PROTO DEFINITION"
-    },
-    "shippingCreateShippingProviderResponse": {
+    "shippingCreateShippingResponse": {
       "type": "object",
       "properties": {
         "message": {
@@ -284,12 +451,11 @@
           "type": "string"
         },
         "data": {
-          "$ref": "#/definitions/shippingShippingProvider"
+          "$ref": "#/definitions/CreateShippingResponseCreateShippingResponseData"
         }
-      },
-      "title": "SHIPPING PROVIDER PROTO DEFINITION"
+      }
     },
-    "shippingDeleteShippingProviderResponse": {
+    "shippingDeleteShippingResponse": {
       "type": "object",
       "properties": {
         "message": {
@@ -297,6 +463,23 @@
         },
         "status": {
           "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/DeleteShippingResponseDeleteShippingResponseData"
+        }
+      }
+    },
+    "shippingGetShippingByIdResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/shippingShippingFullResponse"
         }
       }
     },
@@ -312,7 +495,8 @@
         "data": {
           "$ref": "#/definitions/shippingShippingProvider"
         }
-      }
+      },
+      "title": "SHIPPING PROVIDER PROTO DEFINITION"
     },
     "shippingListShippingProvidersResponse": {
       "type": "object",
@@ -325,6 +509,82 @@
         },
         "data": {
           "$ref": "#/definitions/ListShippingProvidersResponseListShippingProvidersResponseData"
+        }
+      }
+    },
+    "shippingListShippingResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/shippingShipping"
+          }
+        }
+      }
+    },
+    "shippingShipping": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "paymentId": {
+          "type": "string"
+        },
+        "shippingProviderId": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "discardedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "shippingShippingFullResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/userUser"
+        },
+        "payment": {
+          "$ref": "#/definitions/paymentPayment"
+        },
+        "shippingProvider": {
+          "$ref": "#/definitions/shippingShippingProvider"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "discardedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -351,7 +611,7 @@
         }
       }
     },
-    "shippingUpdateShippingProviderResponse": {
+    "shippingUpdateShippingResponse": {
       "type": "object",
       "properties": {
         "message": {
@@ -361,7 +621,109 @@
           "type": "string"
         },
         "data": {
-          "$ref": "#/definitions/shippingShippingProvider"
+          "$ref": "#/definitions/UpdateShippingResponseUpdateShippingResponseData"
+        }
+      }
+    },
+    "userAccessControl": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "fullMethodName": {
+          "type": "string"
+        },
+        "httpUrl": {
+          "type": "string"
+        },
+        "httpMethod": {
+          "type": "string"
+        },
+        "eventType": {
+          "type": "string"
+        },
+        "roleId": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "userEnumRole": {
+      "type": "string",
+      "enum": [
+        "CUSTOMER",
+        "CUSTOMER_MEMBERSHIP",
+        "ADMIN",
+        "SUPER_ADMIN"
+      ],
+      "default": "CUSTOMER"
+    },
+    "userRole": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/definitions/userEnumRole"
+        },
+        "accessControls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/userAccessControl"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "userUser": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "isVerified": {
+          "type": "boolean"
+        },
+        "role": {
+          "$ref": "#/definitions/userRole"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "discardedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     }

@@ -3,10 +3,8 @@ use crate::model::diesel::orm::shipping_provider::{
 };
 use crate::model::rpc::shipping::list_shipping_providers_response::ListShippingProvidersResponseData;
 use crate::model::rpc::shipping::{
-    CreateShippingProviderRequest, CreateShippingProviderResponse, DeleteShippingProviderRequest,
-    DeleteShippingProviderResponse, GetShippingProviderByIdRequest,
-    GetShippingProviderByIdResponse, ListShippingProvidersRequest, ListShippingProvidersResponse,
-    UpdateShippingProviderRequest, UpdateShippingProviderResponse,
+    GetShippingProviderByIdRequest, GetShippingProviderByIdResponse, ListShippingProvidersRequest,
+    ListShippingProvidersResponse,
 };
 use crate::module::shipping_provider::repository_postgres::{
     ShippingProviderPostgresRepository, ShippingProviderPostgresRepositoryImpl,
@@ -15,26 +13,11 @@ use tonic::{Request, Response, Status};
 use tracing::{Level, event, instrument};
 
 pub trait ShippingProviderUseCase {
-    async fn create_shipping_provider(
-        &self,
-        request_id: String,
-        request: Request<CreateShippingProviderRequest>,
-    ) -> Result<Response<CreateShippingProviderResponse>, Status>;
     async fn get_shipping_provider_by_id(
         &self,
         request_id: String,
         request: Request<GetShippingProviderByIdRequest>,
     ) -> Result<Response<GetShippingProviderByIdResponse>, Status>;
-    async fn update_shipping_provider(
-        &self,
-        request_id: &String,
-        request: Request<UpdateShippingProviderRequest>,
-    ) -> Result<Response<UpdateShippingProviderResponse>, Status>;
-    async fn delete_shipping_provider(
-        &self,
-        request_id: String,
-        request: Request<DeleteShippingProviderRequest>,
-    ) -> Result<Response<DeleteShippingProviderResponse>, Status>;
     async fn list_shipping_providers(
         &self,
         request_id: String,
@@ -56,23 +39,6 @@ impl ShippingProviderUseCaseImpl {
 }
 
 impl ShippingProviderUseCase for ShippingProviderUseCaseImpl {
-    #[instrument("ShippingProviderUseCase.create_shipping_provider")]
-    async fn create_shipping_provider(
-        &self,
-        request_id: String,
-        request: Request<CreateShippingProviderRequest>,
-    ) -> Result<Response<CreateShippingProviderResponse>, Status> {
-        eprintln!("{:?}", request);
-        eprintln!("{:?}", request_id);
-
-        // TODO: Get shipping provider by id
-        Ok(Response::new(CreateShippingProviderResponse {
-            message: "".to_string(),
-            status: "".to_string(),
-            data: None,
-        }))
-    }
-
     #[instrument("ShippingProviderUseCase.get_shipping_provider_by_id")]
     async fn get_shipping_provider_by_id(
         &self,
@@ -107,39 +73,6 @@ impl ShippingProviderUseCase for ShippingProviderUseCaseImpl {
                 )))
             }
         }
-    }
-
-    #[instrument("ShippingProviderUseCase.update_shipping_provider")]
-    async fn update_shipping_provider(
-        &self,
-        request_id: &String,
-        request: Request<UpdateShippingProviderRequest>,
-    ) -> Result<Response<UpdateShippingProviderResponse>, Status> {
-        eprintln!("{:?}", request);
-        eprintln!("{:?}", request_id);
-
-        // TODO: Get shipping provider by id
-        Ok(Response::new(UpdateShippingProviderResponse {
-            message: "".to_string(),
-            status: "".to_string(),
-            data: None,
-        }))
-    }
-
-    #[instrument("ShippingProviderUseCase.delete_shipping_provider")]
-    async fn delete_shipping_provider(
-        &self,
-        request_id: String,
-        request: Request<DeleteShippingProviderRequest>,
-    ) -> Result<Response<DeleteShippingProviderResponse>, Status> {
-        eprintln!("{:?}", request);
-        eprintln!("{:?}", request_id);
-
-        // TODO: Get shipping provider by id
-        Ok(Response::new(DeleteShippingProviderResponse {
-            message: "".to_string(),
-            status: "".to_string(),
-        }))
     }
 
     #[instrument("ShippingProviderUseCase.list_shipping_providers")]

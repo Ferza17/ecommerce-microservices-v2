@@ -38,24 +38,22 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   };
 };
 
-
-service ShippingProviderService {
-  rpc CreateShippingProvider(shipping.CreateShippingProviderRequest) returns (shipping.CreateShippingProviderResponse){
+service ShippingService{
+  rpc CreateShipping(shipping.CreateShippingRequest) returns (shipping.CreateShippingResponse){
     option (user.acl) = {
-      roles: [SUPER_ADMIN, ADMIN],
+      roles: [CUSTOMER, CUSTOMER_MEMBERSHIP],
       is_public: false,
       http: {
         method: "post",
-        url: "/v1/shipping/shipping_providers"
+        url: "/v1/shipping/shippings"
       }
     };
     option (google.api.http) = {
-      post: "/v1/shipping/shipping_providers"
-      body: "*",
+      post: "/v1/shipping/shippings",
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      summary: "create a new shipping provider";
-      tags: ["ShippingProviderService"];
+      summary: "create a new shipping";
+      tags: ["ShippingService"];
       security: {
         security_requirement: {
           key: "Bearer";
@@ -64,6 +62,101 @@ service ShippingProviderService {
       };
     };
   };
+  rpc GetShippingById(shipping.GetShippingByIdRequest) returns (shipping.GetShippingByIdResponse){
+    option (user.acl) = {
+      roles: [CUSTOMER, CUSTOMER_MEMBERSHIP],
+      is_public: false,
+      http: {
+        method: "get",
+        url: "/v1/shipping/shippings/{id}"
+      }
+    };
+    option (google.api.http) = {
+      get: "/v1/shipping/shippings/{id}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "get a new shipping by provided id";
+      tags: ["ShippingService"];
+      security: {
+        security_requirement: {
+          key: "Bearer";
+          value: {}
+        }
+      };
+    };
+  };
+  rpc ListShipping(shipping.ListShippingRequest) returns (shipping.ListShippingResponse){
+    option (user.acl) = {
+      roles: [CUSTOMER, CUSTOMER_MEMBERSHIP],
+      is_public: false,
+      http: {
+        method: "get",
+        url: "/v1/shipping/shippings"
+      }
+    };
+    option (google.api.http) = {
+      get: "/v1/shipping/shippings"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "get list of a shipping";
+      tags: ["ShippingService"];
+      security: {
+        security_requirement: {
+          key: "Bearer";
+          value: {}
+        }
+      };
+    };
+  };
+  rpc UpdateShipping(shipping.UpdateShippingRequest) returns (shipping.UpdateShippingResponse){
+    option (user.acl) = {
+      roles: [CUSTOMER, CUSTOMER_MEMBERSHIP],
+      is_public: false,
+      http: {
+        method: "put",
+        url: "/v1/shipping/shippings/{id}"
+      }
+    };
+    option (google.api.http) = {
+      put: "/v1/shipping/shippings/{id}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "update a shipping by provided id and body";
+      tags: ["ShippingService"];
+      security: {
+        security_requirement: {
+          key: "Bearer";
+          value: {}
+        }
+      };
+    };
+  };
+  rpc DeleteShipping(shipping.DeleteShippingRequest) returns (shipping.DeleteShippingResponse){
+    option (user.acl) = {
+      roles: [CUSTOMER, CUSTOMER_MEMBERSHIP],
+      is_public: false,
+      http: {
+        method: "delete",
+        url: "/v1/shipping/shippings/{id}"
+      }
+    };
+    option (google.api.http) = {
+      delete: "/v1/shipping/shippings/{id}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "delete a shipping by provided id";
+      tags: ["ShippingService"];
+      security: {
+        security_requirement: {
+          key: "Bearer";
+          value: {}
+        }
+      };
+    };
+  };
+}
+
+service ShippingProviderService {
   rpc GetShippingProviderById(shipping.GetShippingProviderByIdRequest) returns (shipping.GetShippingProviderByIdResponse){
     option (user.acl) = {
       roles: [SUPER_ADMIN, ADMIN, CUSTOMER, CUSTOMER_MEMBERSHIP],
@@ -78,52 +171,6 @@ service ShippingProviderService {
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       summary: "get a new shipping provider by provided id";
-      tags: ["ShippingProviderService"];
-      security: {
-        security_requirement: {
-          key: "Bearer";
-          value: {}
-        }
-      };
-    };
-  };
-  rpc UpdateShippingProvider(shipping.UpdateShippingProviderRequest) returns (shipping.UpdateShippingProviderResponse) {
-    option (user.acl) = {
-      roles: [SUPER_ADMIN, ADMIN],
-      is_public: false,
-      http: {
-        method: "put",
-        url: "/v1/shipping/shipping_providers/{id}"
-      }
-    };
-    option (google.api.http) = {
-      put: "/v1/shipping/shipping_providers/{id}"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      summary: "update a shipping provider by provided id";
-      tags: ["ShippingProviderService"];
-      security: {
-        security_requirement: {
-          key: "Bearer";
-          value: {}
-        }
-      };
-    };
-  };
-  rpc DeleteShippingProvider(shipping.DeleteShippingProviderRequest) returns (shipping.DeleteShippingProviderResponse){
-    option (user.acl) = {
-      roles: [SUPER_ADMIN, ADMIN],
-      is_public: false,
-      http: {
-        method: "delete",
-        url: "/v1/shipping/shipping_providers/{id}"
-      }
-    };
-    option (google.api.http) = {
-      delete: "/v1/shipping/shipping_providers/{id}"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      summary: "delete shipping provider by provided id";
       tags: ["ShippingProviderService"];
       security: {
         security_requirement: {

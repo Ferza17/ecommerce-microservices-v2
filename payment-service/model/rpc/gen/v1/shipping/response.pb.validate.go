@@ -35,22 +35,304 @@ var (
 	_ = sort.Sort
 )
 
-// Validate checks the field values on CreateShippingProviderResponse with the
-// rules defined in the proto definition for this message. If any rules are
+// Validate checks the field values on ShippingFullResponse with the rules
+// defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *CreateShippingProviderResponse) Validate() error {
+func (m *ShippingFullResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on CreateShippingProviderResponse with
-// the rules defined in the proto definition for this message. If any rules
-// are violated, the result is a list of violation errors wrapped in
-// CreateShippingProviderResponseMultiError, or nil if none found.
-func (m *CreateShippingProviderResponse) ValidateAll() error {
+// ValidateAll checks the field values on ShippingFullResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ShippingFullResponseMultiError, or nil if none found.
+func (m *ShippingFullResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *CreateShippingProviderResponse) validate(all bool) error {
+func (m *ShippingFullResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if all {
+		switch v := interface{}(m.GetUser()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ShippingFullResponseValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ShippingFullResponseValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ShippingFullResponseValidationError{
+				field:  "User",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetPayment()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ShippingFullResponseValidationError{
+					field:  "Payment",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ShippingFullResponseValidationError{
+					field:  "Payment",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetPayment()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ShippingFullResponseValidationError{
+				field:  "Payment",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetShippingProvider()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ShippingFullResponseValidationError{
+					field:  "ShippingProvider",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ShippingFullResponseValidationError{
+					field:  "ShippingProvider",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetShippingProvider()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ShippingFullResponseValidationError{
+				field:  "ShippingProvider",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ShippingFullResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ShippingFullResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ShippingFullResponseValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetUpdatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ShippingFullResponseValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ShippingFullResponseValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ShippingFullResponseValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if m.DiscardedAt != nil {
+
+		if all {
+			switch v := interface{}(m.GetDiscardedAt()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ShippingFullResponseValidationError{
+						field:  "DiscardedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ShippingFullResponseValidationError{
+						field:  "DiscardedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetDiscardedAt()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ShippingFullResponseValidationError{
+					field:  "DiscardedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return ShippingFullResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ShippingFullResponseMultiError is an error wrapping multiple validation
+// errors returned by ShippingFullResponse.ValidateAll() if the designated
+// constraints aren't met.
+type ShippingFullResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ShippingFullResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ShippingFullResponseMultiError) AllErrors() []error { return m }
+
+// ShippingFullResponseValidationError is the validation error returned by
+// ShippingFullResponse.Validate if the designated constraints aren't met.
+type ShippingFullResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ShippingFullResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ShippingFullResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ShippingFullResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ShippingFullResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ShippingFullResponseValidationError) ErrorName() string {
+	return "ShippingFullResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ShippingFullResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sShippingFullResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ShippingFullResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ShippingFullResponseValidationError{}
+
+// Validate checks the field values on CreateShippingResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CreateShippingResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CreateShippingResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CreateShippingResponseMultiError, or nil if none found.
+func (m *CreateShippingResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreateShippingResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -65,7 +347,7 @@ func (m *CreateShippingProviderResponse) validate(all bool) error {
 		switch v := interface{}(m.GetData()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, CreateShippingProviderResponseValidationError{
+				errors = append(errors, CreateShippingResponseValidationError{
 					field:  "Data",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -73,7 +355,7 @@ func (m *CreateShippingProviderResponse) validate(all bool) error {
 			}
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
-				errors = append(errors, CreateShippingProviderResponseValidationError{
+				errors = append(errors, CreateShippingResponseValidationError{
 					field:  "Data",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -82,7 +364,7 @@ func (m *CreateShippingProviderResponse) validate(all bool) error {
 		}
 	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
-			return CreateShippingProviderResponseValidationError{
+			return CreateShippingResponseValidationError{
 				field:  "Data",
 				reason: "embedded message failed validation",
 				cause:  err,
@@ -91,19 +373,19 @@ func (m *CreateShippingProviderResponse) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return CreateShippingProviderResponseMultiError(errors)
+		return CreateShippingResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// CreateShippingProviderResponseMultiError is an error wrapping multiple
-// validation errors returned by CreateShippingProviderResponse.ValidateAll()
-// if the designated constraints aren't met.
-type CreateShippingProviderResponseMultiError []error
+// CreateShippingResponseMultiError is an error wrapping multiple validation
+// errors returned by CreateShippingResponse.ValidateAll() if the designated
+// constraints aren't met.
+type CreateShippingResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m CreateShippingProviderResponseMultiError) Error() string {
+func (m CreateShippingResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -112,12 +394,11 @@ func (m CreateShippingProviderResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m CreateShippingProviderResponseMultiError) AllErrors() []error { return m }
+func (m CreateShippingResponseMultiError) AllErrors() []error { return m }
 
-// CreateShippingProviderResponseValidationError is the validation error
-// returned by CreateShippingProviderResponse.Validate if the designated
-// constraints aren't met.
-type CreateShippingProviderResponseValidationError struct {
+// CreateShippingResponseValidationError is the validation error returned by
+// CreateShippingResponse.Validate if the designated constraints aren't met.
+type CreateShippingResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -125,24 +406,24 @@ type CreateShippingProviderResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e CreateShippingProviderResponseValidationError) Field() string { return e.field }
+func (e CreateShippingResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e CreateShippingProviderResponseValidationError) Reason() string { return e.reason }
+func (e CreateShippingResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e CreateShippingProviderResponseValidationError) Cause() error { return e.cause }
+func (e CreateShippingResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e CreateShippingProviderResponseValidationError) Key() bool { return e.key }
+func (e CreateShippingResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e CreateShippingProviderResponseValidationError) ErrorName() string {
-	return "CreateShippingProviderResponseValidationError"
+func (e CreateShippingResponseValidationError) ErrorName() string {
+	return "CreateShippingResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e CreateShippingProviderResponseValidationError) Error() string {
+func (e CreateShippingResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -154,14 +435,14 @@ func (e CreateShippingProviderResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sCreateShippingProviderResponse.%s: %s%s",
+		"invalid %sCreateShippingResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = CreateShippingProviderResponseValidationError{}
+var _ error = CreateShippingResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -169,7 +450,552 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = CreateShippingProviderResponseValidationError{}
+} = CreateShippingResponseValidationError{}
+
+// Validate checks the field values on GetShippingByIdResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetShippingByIdResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetShippingByIdResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetShippingByIdResponseMultiError, or nil if none found.
+func (m *GetShippingByIdResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetShippingByIdResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Message
+
+	// no validation rules for Status
+
+	if all {
+		switch v := interface{}(m.GetData()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetShippingByIdResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetShippingByIdResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetShippingByIdResponseValidationError{
+				field:  "Data",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return GetShippingByIdResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetShippingByIdResponseMultiError is an error wrapping multiple validation
+// errors returned by GetShippingByIdResponse.ValidateAll() if the designated
+// constraints aren't met.
+type GetShippingByIdResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetShippingByIdResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetShippingByIdResponseMultiError) AllErrors() []error { return m }
+
+// GetShippingByIdResponseValidationError is the validation error returned by
+// GetShippingByIdResponse.Validate if the designated constraints aren't met.
+type GetShippingByIdResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetShippingByIdResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetShippingByIdResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetShippingByIdResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetShippingByIdResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetShippingByIdResponseValidationError) ErrorName() string {
+	return "GetShippingByIdResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetShippingByIdResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetShippingByIdResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetShippingByIdResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetShippingByIdResponseValidationError{}
+
+// Validate checks the field values on ListShippingResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListShippingResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListShippingResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListShippingResponseMultiError, or nil if none found.
+func (m *ListShippingResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListShippingResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Message
+
+	// no validation rules for Status
+
+	for idx, item := range m.GetData() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListShippingResponseValidationError{
+						field:  fmt.Sprintf("Data[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListShippingResponseValidationError{
+						field:  fmt.Sprintf("Data[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListShippingResponseValidationError{
+					field:  fmt.Sprintf("Data[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return ListShippingResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListShippingResponseMultiError is an error wrapping multiple validation
+// errors returned by ListShippingResponse.ValidateAll() if the designated
+// constraints aren't met.
+type ListShippingResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListShippingResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListShippingResponseMultiError) AllErrors() []error { return m }
+
+// ListShippingResponseValidationError is the validation error returned by
+// ListShippingResponse.Validate if the designated constraints aren't met.
+type ListShippingResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListShippingResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListShippingResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListShippingResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListShippingResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListShippingResponseValidationError) ErrorName() string {
+	return "ListShippingResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListShippingResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListShippingResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListShippingResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListShippingResponseValidationError{}
+
+// Validate checks the field values on UpdateShippingResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdateShippingResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateShippingResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UpdateShippingResponseMultiError, or nil if none found.
+func (m *UpdateShippingResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateShippingResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Message
+
+	// no validation rules for Status
+
+	if all {
+		switch v := interface{}(m.GetData()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, UpdateShippingResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, UpdateShippingResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateShippingResponseValidationError{
+				field:  "Data",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return UpdateShippingResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdateShippingResponseMultiError is an error wrapping multiple validation
+// errors returned by UpdateShippingResponse.ValidateAll() if the designated
+// constraints aren't met.
+type UpdateShippingResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateShippingResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateShippingResponseMultiError) AllErrors() []error { return m }
+
+// UpdateShippingResponseValidationError is the validation error returned by
+// UpdateShippingResponse.Validate if the designated constraints aren't met.
+type UpdateShippingResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateShippingResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateShippingResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateShippingResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateShippingResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateShippingResponseValidationError) ErrorName() string {
+	return "UpdateShippingResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateShippingResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateShippingResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateShippingResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateShippingResponseValidationError{}
+
+// Validate checks the field values on DeleteShippingResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DeleteShippingResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeleteShippingResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DeleteShippingResponseMultiError, or nil if none found.
+func (m *DeleteShippingResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteShippingResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Message
+
+	// no validation rules for Status
+
+	if all {
+		switch v := interface{}(m.GetData()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, DeleteShippingResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, DeleteShippingResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return DeleteShippingResponseValidationError{
+				field:  "Data",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return DeleteShippingResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeleteShippingResponseMultiError is an error wrapping multiple validation
+// errors returned by DeleteShippingResponse.ValidateAll() if the designated
+// constraints aren't met.
+type DeleteShippingResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteShippingResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteShippingResponseMultiError) AllErrors() []error { return m }
+
+// DeleteShippingResponseValidationError is the validation error returned by
+// DeleteShippingResponse.Validate if the designated constraints aren't met.
+type DeleteShippingResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteShippingResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteShippingResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteShippingResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteShippingResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteShippingResponseValidationError) ErrorName() string {
+	return "DeleteShippingResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteShippingResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteShippingResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteShippingResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteShippingResponseValidationError{}
 
 // Validate checks the field values on GetShippingProviderByIdResponse with the
 // rules defined in the proto definition for this message. If any rules are
@@ -307,249 +1133,6 @@ var _ interface {
 	ErrorName() string
 } = GetShippingProviderByIdResponseValidationError{}
 
-// Validate checks the field values on UpdateShippingProviderResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *UpdateShippingProviderResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on UpdateShippingProviderResponse with
-// the rules defined in the proto definition for this message. If any rules
-// are violated, the result is a list of violation errors wrapped in
-// UpdateShippingProviderResponseMultiError, or nil if none found.
-func (m *UpdateShippingProviderResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *UpdateShippingProviderResponse) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Message
-
-	// no validation rules for Status
-
-	if all {
-		switch v := interface{}(m.GetData()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, UpdateShippingProviderResponseValidationError{
-					field:  "Data",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, UpdateShippingProviderResponseValidationError{
-					field:  "Data",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return UpdateShippingProviderResponseValidationError{
-				field:  "Data",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if len(errors) > 0 {
-		return UpdateShippingProviderResponseMultiError(errors)
-	}
-
-	return nil
-}
-
-// UpdateShippingProviderResponseMultiError is an error wrapping multiple
-// validation errors returned by UpdateShippingProviderResponse.ValidateAll()
-// if the designated constraints aren't met.
-type UpdateShippingProviderResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m UpdateShippingProviderResponseMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m UpdateShippingProviderResponseMultiError) AllErrors() []error { return m }
-
-// UpdateShippingProviderResponseValidationError is the validation error
-// returned by UpdateShippingProviderResponse.Validate if the designated
-// constraints aren't met.
-type UpdateShippingProviderResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e UpdateShippingProviderResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e UpdateShippingProviderResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e UpdateShippingProviderResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e UpdateShippingProviderResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e UpdateShippingProviderResponseValidationError) ErrorName() string {
-	return "UpdateShippingProviderResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e UpdateShippingProviderResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sUpdateShippingProviderResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = UpdateShippingProviderResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = UpdateShippingProviderResponseValidationError{}
-
-// Validate checks the field values on DeleteShippingProviderResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *DeleteShippingProviderResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on DeleteShippingProviderResponse with
-// the rules defined in the proto definition for this message. If any rules
-// are violated, the result is a list of violation errors wrapped in
-// DeleteShippingProviderResponseMultiError, or nil if none found.
-func (m *DeleteShippingProviderResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *DeleteShippingProviderResponse) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Message
-
-	// no validation rules for Status
-
-	if len(errors) > 0 {
-		return DeleteShippingProviderResponseMultiError(errors)
-	}
-
-	return nil
-}
-
-// DeleteShippingProviderResponseMultiError is an error wrapping multiple
-// validation errors returned by DeleteShippingProviderResponse.ValidateAll()
-// if the designated constraints aren't met.
-type DeleteShippingProviderResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m DeleteShippingProviderResponseMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m DeleteShippingProviderResponseMultiError) AllErrors() []error { return m }
-
-// DeleteShippingProviderResponseValidationError is the validation error
-// returned by DeleteShippingProviderResponse.Validate if the designated
-// constraints aren't met.
-type DeleteShippingProviderResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e DeleteShippingProviderResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e DeleteShippingProviderResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e DeleteShippingProviderResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e DeleteShippingProviderResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e DeleteShippingProviderResponseValidationError) ErrorName() string {
-	return "DeleteShippingProviderResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e DeleteShippingProviderResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sDeleteShippingProviderResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = DeleteShippingProviderResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = DeleteShippingProviderResponseValidationError{}
-
 // Validate checks the field values on ListShippingProvidersResponse with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -685,6 +1268,351 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ListShippingProvidersResponseValidationError{}
+
+// Validate checks the field values on
+// CreateShippingResponse_CreateShippingResponseData with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *CreateShippingResponse_CreateShippingResponseData) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// CreateShippingResponse_CreateShippingResponseData with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in
+// CreateShippingResponse_CreateShippingResponseDataMultiError, or nil if none found.
+func (m *CreateShippingResponse_CreateShippingResponseData) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreateShippingResponse_CreateShippingResponseData) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return CreateShippingResponse_CreateShippingResponseDataMultiError(errors)
+	}
+
+	return nil
+}
+
+// CreateShippingResponse_CreateShippingResponseDataMultiError is an error
+// wrapping multiple validation errors returned by
+// CreateShippingResponse_CreateShippingResponseData.ValidateAll() if the
+// designated constraints aren't met.
+type CreateShippingResponse_CreateShippingResponseDataMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateShippingResponse_CreateShippingResponseDataMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateShippingResponse_CreateShippingResponseDataMultiError) AllErrors() []error { return m }
+
+// CreateShippingResponse_CreateShippingResponseDataValidationError is the
+// validation error returned by
+// CreateShippingResponse_CreateShippingResponseData.Validate if the
+// designated constraints aren't met.
+type CreateShippingResponse_CreateShippingResponseDataValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateShippingResponse_CreateShippingResponseDataValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e CreateShippingResponse_CreateShippingResponseDataValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e CreateShippingResponse_CreateShippingResponseDataValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e CreateShippingResponse_CreateShippingResponseDataValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateShippingResponse_CreateShippingResponseDataValidationError) ErrorName() string {
+	return "CreateShippingResponse_CreateShippingResponseDataValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreateShippingResponse_CreateShippingResponseDataValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateShippingResponse_CreateShippingResponseData.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateShippingResponse_CreateShippingResponseDataValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateShippingResponse_CreateShippingResponseDataValidationError{}
+
+// Validate checks the field values on
+// UpdateShippingResponse_UpdateShippingResponseData with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *UpdateShippingResponse_UpdateShippingResponseData) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// UpdateShippingResponse_UpdateShippingResponseData with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in
+// UpdateShippingResponse_UpdateShippingResponseDataMultiError, or nil if none found.
+func (m *UpdateShippingResponse_UpdateShippingResponseData) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateShippingResponse_UpdateShippingResponseData) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return UpdateShippingResponse_UpdateShippingResponseDataMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdateShippingResponse_UpdateShippingResponseDataMultiError is an error
+// wrapping multiple validation errors returned by
+// UpdateShippingResponse_UpdateShippingResponseData.ValidateAll() if the
+// designated constraints aren't met.
+type UpdateShippingResponse_UpdateShippingResponseDataMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateShippingResponse_UpdateShippingResponseDataMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateShippingResponse_UpdateShippingResponseDataMultiError) AllErrors() []error { return m }
+
+// UpdateShippingResponse_UpdateShippingResponseDataValidationError is the
+// validation error returned by
+// UpdateShippingResponse_UpdateShippingResponseData.Validate if the
+// designated constraints aren't met.
+type UpdateShippingResponse_UpdateShippingResponseDataValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateShippingResponse_UpdateShippingResponseDataValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e UpdateShippingResponse_UpdateShippingResponseDataValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e UpdateShippingResponse_UpdateShippingResponseDataValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e UpdateShippingResponse_UpdateShippingResponseDataValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateShippingResponse_UpdateShippingResponseDataValidationError) ErrorName() string {
+	return "UpdateShippingResponse_UpdateShippingResponseDataValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateShippingResponse_UpdateShippingResponseDataValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateShippingResponse_UpdateShippingResponseData.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateShippingResponse_UpdateShippingResponseDataValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateShippingResponse_UpdateShippingResponseDataValidationError{}
+
+// Validate checks the field values on
+// DeleteShippingResponse_DeleteShippingResponseData with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *DeleteShippingResponse_DeleteShippingResponseData) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// DeleteShippingResponse_DeleteShippingResponseData with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in
+// DeleteShippingResponse_DeleteShippingResponseDataMultiError, or nil if none found.
+func (m *DeleteShippingResponse_DeleteShippingResponseData) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteShippingResponse_DeleteShippingResponseData) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return DeleteShippingResponse_DeleteShippingResponseDataMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeleteShippingResponse_DeleteShippingResponseDataMultiError is an error
+// wrapping multiple validation errors returned by
+// DeleteShippingResponse_DeleteShippingResponseData.ValidateAll() if the
+// designated constraints aren't met.
+type DeleteShippingResponse_DeleteShippingResponseDataMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteShippingResponse_DeleteShippingResponseDataMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteShippingResponse_DeleteShippingResponseDataMultiError) AllErrors() []error { return m }
+
+// DeleteShippingResponse_DeleteShippingResponseDataValidationError is the
+// validation error returned by
+// DeleteShippingResponse_DeleteShippingResponseData.Validate if the
+// designated constraints aren't met.
+type DeleteShippingResponse_DeleteShippingResponseDataValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteShippingResponse_DeleteShippingResponseDataValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e DeleteShippingResponse_DeleteShippingResponseDataValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e DeleteShippingResponse_DeleteShippingResponseDataValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e DeleteShippingResponse_DeleteShippingResponseDataValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteShippingResponse_DeleteShippingResponseDataValidationError) ErrorName() string {
+	return "DeleteShippingResponse_DeleteShippingResponseDataValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteShippingResponse_DeleteShippingResponseDataValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteShippingResponse_DeleteShippingResponseData.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteShippingResponse_DeleteShippingResponseDataValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteShippingResponse_DeleteShippingResponseDataValidationError{}
 
 // Validate checks the field values on
 // ListShippingProvidersResponse_ListShippingProvidersResponseData with the

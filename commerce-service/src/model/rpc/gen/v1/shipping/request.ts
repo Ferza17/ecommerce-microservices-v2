@@ -9,21 +9,35 @@ import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 
 export const protobufPackage = "shipping";
 
+/** SHIPPING PROTO DEFINITION */
+export interface CreateShippingRequest {
+  userId: string;
+  paymentId: string;
+  shippingProviderId: string;
+}
+
+export interface GetShippingByIdRequest {
+  id: string;
+}
+
+export interface ListShippingRequest {
+  page: number;
+  limit: number;
+}
+
+export interface UpdateShippingRequest {
+  id: string;
+  userId: string;
+  paymentId: string;
+  shippingProviderId: string;
+}
+
+export interface DeleteShippingRequest {
+  id: string;
+}
+
 /** SHIPPING PROVIDER PROTO DEFINITION */
-export interface CreateShippingProviderRequest {
-  name: string;
-}
-
 export interface GetShippingProviderByIdRequest {
-  id: string;
-}
-
-export interface UpdateShippingProviderRequest {
-  id: string;
-  name?: string | undefined;
-}
-
-export interface DeleteShippingProviderRequest {
   id: string;
 }
 
@@ -32,22 +46,28 @@ export interface ListShippingProvidersRequest {
   limit: number;
 }
 
-function createBaseCreateShippingProviderRequest(): CreateShippingProviderRequest {
-  return { name: "" };
+function createBaseCreateShippingRequest(): CreateShippingRequest {
+  return { userId: "", paymentId: "", shippingProviderId: "" };
 }
 
-export const CreateShippingProviderRequest: MessageFns<CreateShippingProviderRequest> = {
-  encode(message: CreateShippingProviderRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.name !== "") {
-      writer.uint32(10).string(message.name);
+export const CreateShippingRequest: MessageFns<CreateShippingRequest> = {
+  encode(message: CreateShippingRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.userId !== "") {
+      writer.uint32(10).string(message.userId);
+    }
+    if (message.paymentId !== "") {
+      writer.uint32(18).string(message.paymentId);
+    }
+    if (message.shippingProviderId !== "") {
+      writer.uint32(26).string(message.shippingProviderId);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): CreateShippingProviderRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number): CreateShippingRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseCreateShippingProviderRequest();
+    const message = createBaseCreateShippingRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -56,7 +76,23 @@ export const CreateShippingProviderRequest: MessageFns<CreateShippingProviderReq
             break;
           }
 
-          message.name = reader.string();
+          message.userId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.paymentId = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.shippingProviderId = reader.string();
           continue;
         }
       }
@@ -68,24 +104,336 @@ export const CreateShippingProviderRequest: MessageFns<CreateShippingProviderReq
     return message;
   },
 
-  fromJSON(object: any): CreateShippingProviderRequest {
-    return { name: isSet(object.name) ? globalThis.String(object.name) : "" };
+  fromJSON(object: any): CreateShippingRequest {
+    return {
+      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
+      paymentId: isSet(object.paymentId) ? globalThis.String(object.paymentId) : "",
+      shippingProviderId: isSet(object.shippingProviderId) ? globalThis.String(object.shippingProviderId) : "",
+    };
   },
 
-  toJSON(message: CreateShippingProviderRequest): unknown {
+  toJSON(message: CreateShippingRequest): unknown {
     const obj: any = {};
-    if (message.name !== "") {
-      obj.name = message.name;
+    if (message.userId !== "") {
+      obj.userId = message.userId;
+    }
+    if (message.paymentId !== "") {
+      obj.paymentId = message.paymentId;
+    }
+    if (message.shippingProviderId !== "") {
+      obj.shippingProviderId = message.shippingProviderId;
     }
     return obj;
   },
 
-  create(base?: DeepPartial<CreateShippingProviderRequest>): CreateShippingProviderRequest {
-    return CreateShippingProviderRequest.fromPartial(base ?? {});
+  create(base?: DeepPartial<CreateShippingRequest>): CreateShippingRequest {
+    return CreateShippingRequest.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<CreateShippingProviderRequest>): CreateShippingProviderRequest {
-    const message = createBaseCreateShippingProviderRequest();
-    message.name = object.name ?? "";
+  fromPartial(object: DeepPartial<CreateShippingRequest>): CreateShippingRequest {
+    const message = createBaseCreateShippingRequest();
+    message.userId = object.userId ?? "";
+    message.paymentId = object.paymentId ?? "";
+    message.shippingProviderId = object.shippingProviderId ?? "";
+    return message;
+  },
+};
+
+function createBaseGetShippingByIdRequest(): GetShippingByIdRequest {
+  return { id: "" };
+}
+
+export const GetShippingByIdRequest: MessageFns<GetShippingByIdRequest> = {
+  encode(message: GetShippingByIdRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetShippingByIdRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetShippingByIdRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetShippingByIdRequest {
+    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+  },
+
+  toJSON(message: GetShippingByIdRequest): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<GetShippingByIdRequest>): GetShippingByIdRequest {
+    return GetShippingByIdRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<GetShippingByIdRequest>): GetShippingByIdRequest {
+    const message = createBaseGetShippingByIdRequest();
+    message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseListShippingRequest(): ListShippingRequest {
+  return { page: 0, limit: 0 };
+}
+
+export const ListShippingRequest: MessageFns<ListShippingRequest> = {
+  encode(message: ListShippingRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.page !== 0) {
+      writer.uint32(8).uint32(message.page);
+    }
+    if (message.limit !== 0) {
+      writer.uint32(16).uint32(message.limit);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ListShippingRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseListShippingRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.page = reader.uint32();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.limit = reader.uint32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ListShippingRequest {
+    return {
+      page: isSet(object.page) ? globalThis.Number(object.page) : 0,
+      limit: isSet(object.limit) ? globalThis.Number(object.limit) : 0,
+    };
+  },
+
+  toJSON(message: ListShippingRequest): unknown {
+    const obj: any = {};
+    if (message.page !== 0) {
+      obj.page = Math.round(message.page);
+    }
+    if (message.limit !== 0) {
+      obj.limit = Math.round(message.limit);
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<ListShippingRequest>): ListShippingRequest {
+    return ListShippingRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<ListShippingRequest>): ListShippingRequest {
+    const message = createBaseListShippingRequest();
+    message.page = object.page ?? 0;
+    message.limit = object.limit ?? 0;
+    return message;
+  },
+};
+
+function createBaseUpdateShippingRequest(): UpdateShippingRequest {
+  return { id: "", userId: "", paymentId: "", shippingProviderId: "" };
+}
+
+export const UpdateShippingRequest: MessageFns<UpdateShippingRequest> = {
+  encode(message: UpdateShippingRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.userId !== "") {
+      writer.uint32(18).string(message.userId);
+    }
+    if (message.paymentId !== "") {
+      writer.uint32(26).string(message.paymentId);
+    }
+    if (message.shippingProviderId !== "") {
+      writer.uint32(34).string(message.shippingProviderId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): UpdateShippingRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateShippingRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.paymentId = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.shippingProviderId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateShippingRequest {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
+      paymentId: isSet(object.paymentId) ? globalThis.String(object.paymentId) : "",
+      shippingProviderId: isSet(object.shippingProviderId) ? globalThis.String(object.shippingProviderId) : "",
+    };
+  },
+
+  toJSON(message: UpdateShippingRequest): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.userId !== "") {
+      obj.userId = message.userId;
+    }
+    if (message.paymentId !== "") {
+      obj.paymentId = message.paymentId;
+    }
+    if (message.shippingProviderId !== "") {
+      obj.shippingProviderId = message.shippingProviderId;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<UpdateShippingRequest>): UpdateShippingRequest {
+    return UpdateShippingRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<UpdateShippingRequest>): UpdateShippingRequest {
+    const message = createBaseUpdateShippingRequest();
+    message.id = object.id ?? "";
+    message.userId = object.userId ?? "";
+    message.paymentId = object.paymentId ?? "";
+    message.shippingProviderId = object.shippingProviderId ?? "";
+    return message;
+  },
+};
+
+function createBaseDeleteShippingRequest(): DeleteShippingRequest {
+  return { id: "" };
+}
+
+export const DeleteShippingRequest: MessageFns<DeleteShippingRequest> = {
+  encode(message: DeleteShippingRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): DeleteShippingRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeleteShippingRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DeleteShippingRequest {
+    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+  },
+
+  toJSON(message: DeleteShippingRequest): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<DeleteShippingRequest>): DeleteShippingRequest {
+    return DeleteShippingRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<DeleteShippingRequest>): DeleteShippingRequest {
+    const message = createBaseDeleteShippingRequest();
+    message.id = object.id ?? "";
     return message;
   },
 };
@@ -143,140 +491,6 @@ export const GetShippingProviderByIdRequest: MessageFns<GetShippingProviderByIdR
   },
   fromPartial(object: DeepPartial<GetShippingProviderByIdRequest>): GetShippingProviderByIdRequest {
     const message = createBaseGetShippingProviderByIdRequest();
-    message.id = object.id ?? "";
-    return message;
-  },
-};
-
-function createBaseUpdateShippingProviderRequest(): UpdateShippingProviderRequest {
-  return { id: "", name: undefined };
-}
-
-export const UpdateShippingProviderRequest: MessageFns<UpdateShippingProviderRequest> = {
-  encode(message: UpdateShippingProviderRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
-    }
-    if (message.name !== undefined) {
-      writer.uint32(18).string(message.name);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): UpdateShippingProviderRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUpdateShippingProviderRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.id = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.name = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): UpdateShippingProviderRequest {
-    return {
-      id: isSet(object.id) ? globalThis.String(object.id) : "",
-      name: isSet(object.name) ? globalThis.String(object.name) : undefined,
-    };
-  },
-
-  toJSON(message: UpdateShippingProviderRequest): unknown {
-    const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
-    }
-    if (message.name !== undefined) {
-      obj.name = message.name;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<UpdateShippingProviderRequest>): UpdateShippingProviderRequest {
-    return UpdateShippingProviderRequest.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<UpdateShippingProviderRequest>): UpdateShippingProviderRequest {
-    const message = createBaseUpdateShippingProviderRequest();
-    message.id = object.id ?? "";
-    message.name = object.name ?? undefined;
-    return message;
-  },
-};
-
-function createBaseDeleteShippingProviderRequest(): DeleteShippingProviderRequest {
-  return { id: "" };
-}
-
-export const DeleteShippingProviderRequest: MessageFns<DeleteShippingProviderRequest> = {
-  encode(message: DeleteShippingProviderRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): DeleteShippingProviderRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseDeleteShippingProviderRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.id = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): DeleteShippingProviderRequest {
-    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
-  },
-
-  toJSON(message: DeleteShippingProviderRequest): unknown {
-    const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<DeleteShippingProviderRequest>): DeleteShippingProviderRequest {
-    return DeleteShippingProviderRequest.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<DeleteShippingProviderRequest>): DeleteShippingProviderRequest {
-    const message = createBaseDeleteShippingProviderRequest();
     message.id = object.id ?? "";
     return message;
   },

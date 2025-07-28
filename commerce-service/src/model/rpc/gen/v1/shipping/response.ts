@@ -6,32 +6,70 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { ShippingProvider } from "./model";
+import { Timestamp } from "../../google/protobuf/timestamp";
+import { Payment } from "../payment/model";
+import { User } from "../user/model";
+import { Shipping, ShippingProvider } from "./model";
 
 export const protobufPackage = "shipping";
 
-/** SHIPPING PROVIDER PROTO DEFINITION */
-export interface CreateShippingProviderResponse {
-  message: string;
-  status: string;
-  data: ShippingProvider | undefined;
+export interface ShippingFullResponse {
+  id: string;
+  user: User | undefined;
+  payment: Payment | undefined;
+  shippingProvider: ShippingProvider | undefined;
+  createdAt: Date | undefined;
+  updatedAt: Date | undefined;
+  discardedAt?: Date | undefined;
 }
 
+export interface CreateShippingResponse {
+  message: string;
+  status: string;
+  data: CreateShippingResponse_CreateShippingResponseData | undefined;
+}
+
+export interface CreateShippingResponse_CreateShippingResponseData {
+  id: string;
+}
+
+export interface GetShippingByIdResponse {
+  message: string;
+  status: string;
+  data: ShippingFullResponse | undefined;
+}
+
+export interface ListShippingResponse {
+  message: string;
+  status: string;
+  data: Shipping[];
+}
+
+export interface UpdateShippingResponse {
+  message: string;
+  status: string;
+  data: UpdateShippingResponse_UpdateShippingResponseData | undefined;
+}
+
+export interface UpdateShippingResponse_UpdateShippingResponseData {
+  id: string;
+}
+
+export interface DeleteShippingResponse {
+  message: string;
+  status: string;
+  data: DeleteShippingResponse_DeleteShippingResponseData | undefined;
+}
+
+export interface DeleteShippingResponse_DeleteShippingResponseData {
+  id: string;
+}
+
+/** SHIPPING PROVIDER PROTO DEFINITION */
 export interface GetShippingProviderByIdResponse {
   message: string;
   status: string;
   data: ShippingProvider | undefined;
-}
-
-export interface UpdateShippingProviderResponse {
-  message: string;
-  status: string;
-  data: ShippingProvider | undefined;
-}
-
-export interface DeleteShippingProviderResponse {
-  message: string;
-  status: string;
 }
 
 export interface ListShippingProvidersResponse {
@@ -47,12 +85,180 @@ export interface ListShippingProvidersResponse_ListShippingProvidersResponseData
   limit: number;
 }
 
-function createBaseCreateShippingProviderResponse(): CreateShippingProviderResponse {
+function createBaseShippingFullResponse(): ShippingFullResponse {
+  return {
+    id: "",
+    user: undefined,
+    payment: undefined,
+    shippingProvider: undefined,
+    createdAt: undefined,
+    updatedAt: undefined,
+    discardedAt: undefined,
+  };
+}
+
+export const ShippingFullResponse: MessageFns<ShippingFullResponse> = {
+  encode(message: ShippingFullResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.user !== undefined) {
+      User.encode(message.user, writer.uint32(18).fork()).join();
+    }
+    if (message.payment !== undefined) {
+      Payment.encode(message.payment, writer.uint32(26).fork()).join();
+    }
+    if (message.shippingProvider !== undefined) {
+      ShippingProvider.encode(message.shippingProvider, writer.uint32(34).fork()).join();
+    }
+    if (message.createdAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(802).fork()).join();
+    }
+    if (message.updatedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.updatedAt), writer.uint32(8018).fork()).join();
+    }
+    if (message.discardedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.discardedAt), writer.uint32(8026).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ShippingFullResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseShippingFullResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.user = User.decode(reader, reader.uint32());
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.payment = Payment.decode(reader, reader.uint32());
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.shippingProvider = ShippingProvider.decode(reader, reader.uint32());
+          continue;
+        }
+        case 100: {
+          if (tag !== 802) {
+            break;
+          }
+
+          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 1002: {
+          if (tag !== 8018) {
+            break;
+          }
+
+          message.updatedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 1003: {
+          if (tag !== 8026) {
+            break;
+          }
+
+          message.discardedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ShippingFullResponse {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
+      payment: isSet(object.payment) ? Payment.fromJSON(object.payment) : undefined,
+      shippingProvider: isSet(object.shippingProvider) ? ShippingProvider.fromJSON(object.shippingProvider) : undefined,
+      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
+      updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
+      discardedAt: isSet(object.discardedAt) ? fromJsonTimestamp(object.discardedAt) : undefined,
+    };
+  },
+
+  toJSON(message: ShippingFullResponse): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.user !== undefined) {
+      obj.user = User.toJSON(message.user);
+    }
+    if (message.payment !== undefined) {
+      obj.payment = Payment.toJSON(message.payment);
+    }
+    if (message.shippingProvider !== undefined) {
+      obj.shippingProvider = ShippingProvider.toJSON(message.shippingProvider);
+    }
+    if (message.createdAt !== undefined) {
+      obj.createdAt = message.createdAt.toISOString();
+    }
+    if (message.updatedAt !== undefined) {
+      obj.updatedAt = message.updatedAt.toISOString();
+    }
+    if (message.discardedAt !== undefined) {
+      obj.discardedAt = message.discardedAt.toISOString();
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<ShippingFullResponse>): ShippingFullResponse {
+    return ShippingFullResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<ShippingFullResponse>): ShippingFullResponse {
+    const message = createBaseShippingFullResponse();
+    message.id = object.id ?? "";
+    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    message.payment = (object.payment !== undefined && object.payment !== null)
+      ? Payment.fromPartial(object.payment)
+      : undefined;
+    message.shippingProvider = (object.shippingProvider !== undefined && object.shippingProvider !== null)
+      ? ShippingProvider.fromPartial(object.shippingProvider)
+      : undefined;
+    message.createdAt = object.createdAt ?? undefined;
+    message.updatedAt = object.updatedAt ?? undefined;
+    message.discardedAt = object.discardedAt ?? undefined;
+    return message;
+  },
+};
+
+function createBaseCreateShippingResponse(): CreateShippingResponse {
   return { message: "", status: "", data: undefined };
 }
 
-export const CreateShippingProviderResponse: MessageFns<CreateShippingProviderResponse> = {
-  encode(message: CreateShippingProviderResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const CreateShippingResponse: MessageFns<CreateShippingResponse> = {
+  encode(message: CreateShippingResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.message !== "") {
       writer.uint32(10).string(message.message);
     }
@@ -60,15 +266,15 @@ export const CreateShippingProviderResponse: MessageFns<CreateShippingProviderRe
       writer.uint32(18).string(message.status);
     }
     if (message.data !== undefined) {
-      ShippingProvider.encode(message.data, writer.uint32(26).fork()).join();
+      CreateShippingResponse_CreateShippingResponseData.encode(message.data, writer.uint32(26).fork()).join();
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): CreateShippingProviderResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number): CreateShippingResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseCreateShippingProviderResponse();
+    const message = createBaseCreateShippingResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -93,7 +299,7 @@ export const CreateShippingProviderResponse: MessageFns<CreateShippingProviderRe
             break;
           }
 
-          message.data = ShippingProvider.decode(reader, reader.uint32());
+          message.data = CreateShippingResponse_CreateShippingResponseData.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -105,15 +311,15 @@ export const CreateShippingProviderResponse: MessageFns<CreateShippingProviderRe
     return message;
   },
 
-  fromJSON(object: any): CreateShippingProviderResponse {
+  fromJSON(object: any): CreateShippingResponse {
     return {
       message: isSet(object.message) ? globalThis.String(object.message) : "",
       status: isSet(object.status) ? globalThis.String(object.status) : "",
-      data: isSet(object.data) ? ShippingProvider.fromJSON(object.data) : undefined,
+      data: isSet(object.data) ? CreateShippingResponse_CreateShippingResponseData.fromJSON(object.data) : undefined,
     };
   },
 
-  toJSON(message: CreateShippingProviderResponse): unknown {
+  toJSON(message: CreateShippingResponse): unknown {
     const obj: any = {};
     if (message.message !== "") {
       obj.message = message.message;
@@ -122,21 +328,596 @@ export const CreateShippingProviderResponse: MessageFns<CreateShippingProviderRe
       obj.status = message.status;
     }
     if (message.data !== undefined) {
-      obj.data = ShippingProvider.toJSON(message.data);
+      obj.data = CreateShippingResponse_CreateShippingResponseData.toJSON(message.data);
     }
     return obj;
   },
 
-  create(base?: DeepPartial<CreateShippingProviderResponse>): CreateShippingProviderResponse {
-    return CreateShippingProviderResponse.fromPartial(base ?? {});
+  create(base?: DeepPartial<CreateShippingResponse>): CreateShippingResponse {
+    return CreateShippingResponse.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<CreateShippingProviderResponse>): CreateShippingProviderResponse {
-    const message = createBaseCreateShippingProviderResponse();
+  fromPartial(object: DeepPartial<CreateShippingResponse>): CreateShippingResponse {
+    const message = createBaseCreateShippingResponse();
     message.message = object.message ?? "";
     message.status = object.status ?? "";
     message.data = (object.data !== undefined && object.data !== null)
-      ? ShippingProvider.fromPartial(object.data)
+      ? CreateShippingResponse_CreateShippingResponseData.fromPartial(object.data)
       : undefined;
+    return message;
+  },
+};
+
+function createBaseCreateShippingResponse_CreateShippingResponseData(): CreateShippingResponse_CreateShippingResponseData {
+  return { id: "" };
+}
+
+export const CreateShippingResponse_CreateShippingResponseData: MessageFns<
+  CreateShippingResponse_CreateShippingResponseData
+> = {
+  encode(
+    message: CreateShippingResponse_CreateShippingResponseData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): CreateShippingResponse_CreateShippingResponseData {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateShippingResponse_CreateShippingResponseData();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateShippingResponse_CreateShippingResponseData {
+    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+  },
+
+  toJSON(message: CreateShippingResponse_CreateShippingResponseData): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    return obj;
+  },
+
+  create(
+    base?: DeepPartial<CreateShippingResponse_CreateShippingResponseData>,
+  ): CreateShippingResponse_CreateShippingResponseData {
+    return CreateShippingResponse_CreateShippingResponseData.fromPartial(base ?? {});
+  },
+  fromPartial(
+    object: DeepPartial<CreateShippingResponse_CreateShippingResponseData>,
+  ): CreateShippingResponse_CreateShippingResponseData {
+    const message = createBaseCreateShippingResponse_CreateShippingResponseData();
+    message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseGetShippingByIdResponse(): GetShippingByIdResponse {
+  return { message: "", status: "", data: undefined };
+}
+
+export const GetShippingByIdResponse: MessageFns<GetShippingByIdResponse> = {
+  encode(message: GetShippingByIdResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.message !== "") {
+      writer.uint32(10).string(message.message);
+    }
+    if (message.status !== "") {
+      writer.uint32(18).string(message.status);
+    }
+    if (message.data !== undefined) {
+      ShippingFullResponse.encode(message.data, writer.uint32(26).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetShippingByIdResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetShippingByIdResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.status = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.data = ShippingFullResponse.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetShippingByIdResponse {
+    return {
+      message: isSet(object.message) ? globalThis.String(object.message) : "",
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
+      data: isSet(object.data) ? ShippingFullResponse.fromJSON(object.data) : undefined,
+    };
+  },
+
+  toJSON(message: GetShippingByIdResponse): unknown {
+    const obj: any = {};
+    if (message.message !== "") {
+      obj.message = message.message;
+    }
+    if (message.status !== "") {
+      obj.status = message.status;
+    }
+    if (message.data !== undefined) {
+      obj.data = ShippingFullResponse.toJSON(message.data);
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<GetShippingByIdResponse>): GetShippingByIdResponse {
+    return GetShippingByIdResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<GetShippingByIdResponse>): GetShippingByIdResponse {
+    const message = createBaseGetShippingByIdResponse();
+    message.message = object.message ?? "";
+    message.status = object.status ?? "";
+    message.data = (object.data !== undefined && object.data !== null)
+      ? ShippingFullResponse.fromPartial(object.data)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseListShippingResponse(): ListShippingResponse {
+  return { message: "", status: "", data: [] };
+}
+
+export const ListShippingResponse: MessageFns<ListShippingResponse> = {
+  encode(message: ListShippingResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.message !== "") {
+      writer.uint32(10).string(message.message);
+    }
+    if (message.status !== "") {
+      writer.uint32(18).string(message.status);
+    }
+    for (const v of message.data) {
+      Shipping.encode(v!, writer.uint32(26).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ListShippingResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseListShippingResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.status = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.data.push(Shipping.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ListShippingResponse {
+    return {
+      message: isSet(object.message) ? globalThis.String(object.message) : "",
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
+      data: globalThis.Array.isArray(object?.data) ? object.data.map((e: any) => Shipping.fromJSON(e)) : [],
+    };
+  },
+
+  toJSON(message: ListShippingResponse): unknown {
+    const obj: any = {};
+    if (message.message !== "") {
+      obj.message = message.message;
+    }
+    if (message.status !== "") {
+      obj.status = message.status;
+    }
+    if (message.data?.length) {
+      obj.data = message.data.map((e) => Shipping.toJSON(e));
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<ListShippingResponse>): ListShippingResponse {
+    return ListShippingResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<ListShippingResponse>): ListShippingResponse {
+    const message = createBaseListShippingResponse();
+    message.message = object.message ?? "";
+    message.status = object.status ?? "";
+    message.data = object.data?.map((e) => Shipping.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseUpdateShippingResponse(): UpdateShippingResponse {
+  return { message: "", status: "", data: undefined };
+}
+
+export const UpdateShippingResponse: MessageFns<UpdateShippingResponse> = {
+  encode(message: UpdateShippingResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.message !== "") {
+      writer.uint32(10).string(message.message);
+    }
+    if (message.status !== "") {
+      writer.uint32(18).string(message.status);
+    }
+    if (message.data !== undefined) {
+      UpdateShippingResponse_UpdateShippingResponseData.encode(message.data, writer.uint32(26).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): UpdateShippingResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateShippingResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.status = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.data = UpdateShippingResponse_UpdateShippingResponseData.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateShippingResponse {
+    return {
+      message: isSet(object.message) ? globalThis.String(object.message) : "",
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
+      data: isSet(object.data) ? UpdateShippingResponse_UpdateShippingResponseData.fromJSON(object.data) : undefined,
+    };
+  },
+
+  toJSON(message: UpdateShippingResponse): unknown {
+    const obj: any = {};
+    if (message.message !== "") {
+      obj.message = message.message;
+    }
+    if (message.status !== "") {
+      obj.status = message.status;
+    }
+    if (message.data !== undefined) {
+      obj.data = UpdateShippingResponse_UpdateShippingResponseData.toJSON(message.data);
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<UpdateShippingResponse>): UpdateShippingResponse {
+    return UpdateShippingResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<UpdateShippingResponse>): UpdateShippingResponse {
+    const message = createBaseUpdateShippingResponse();
+    message.message = object.message ?? "";
+    message.status = object.status ?? "";
+    message.data = (object.data !== undefined && object.data !== null)
+      ? UpdateShippingResponse_UpdateShippingResponseData.fromPartial(object.data)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseUpdateShippingResponse_UpdateShippingResponseData(): UpdateShippingResponse_UpdateShippingResponseData {
+  return { id: "" };
+}
+
+export const UpdateShippingResponse_UpdateShippingResponseData: MessageFns<
+  UpdateShippingResponse_UpdateShippingResponseData
+> = {
+  encode(
+    message: UpdateShippingResponse_UpdateShippingResponseData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): UpdateShippingResponse_UpdateShippingResponseData {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateShippingResponse_UpdateShippingResponseData();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateShippingResponse_UpdateShippingResponseData {
+    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+  },
+
+  toJSON(message: UpdateShippingResponse_UpdateShippingResponseData): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    return obj;
+  },
+
+  create(
+    base?: DeepPartial<UpdateShippingResponse_UpdateShippingResponseData>,
+  ): UpdateShippingResponse_UpdateShippingResponseData {
+    return UpdateShippingResponse_UpdateShippingResponseData.fromPartial(base ?? {});
+  },
+  fromPartial(
+    object: DeepPartial<UpdateShippingResponse_UpdateShippingResponseData>,
+  ): UpdateShippingResponse_UpdateShippingResponseData {
+    const message = createBaseUpdateShippingResponse_UpdateShippingResponseData();
+    message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseDeleteShippingResponse(): DeleteShippingResponse {
+  return { message: "", status: "", data: undefined };
+}
+
+export const DeleteShippingResponse: MessageFns<DeleteShippingResponse> = {
+  encode(message: DeleteShippingResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.message !== "") {
+      writer.uint32(10).string(message.message);
+    }
+    if (message.status !== "") {
+      writer.uint32(18).string(message.status);
+    }
+    if (message.data !== undefined) {
+      DeleteShippingResponse_DeleteShippingResponseData.encode(message.data, writer.uint32(26).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): DeleteShippingResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeleteShippingResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.status = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.data = DeleteShippingResponse_DeleteShippingResponseData.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DeleteShippingResponse {
+    return {
+      message: isSet(object.message) ? globalThis.String(object.message) : "",
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
+      data: isSet(object.data) ? DeleteShippingResponse_DeleteShippingResponseData.fromJSON(object.data) : undefined,
+    };
+  },
+
+  toJSON(message: DeleteShippingResponse): unknown {
+    const obj: any = {};
+    if (message.message !== "") {
+      obj.message = message.message;
+    }
+    if (message.status !== "") {
+      obj.status = message.status;
+    }
+    if (message.data !== undefined) {
+      obj.data = DeleteShippingResponse_DeleteShippingResponseData.toJSON(message.data);
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<DeleteShippingResponse>): DeleteShippingResponse {
+    return DeleteShippingResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<DeleteShippingResponse>): DeleteShippingResponse {
+    const message = createBaseDeleteShippingResponse();
+    message.message = object.message ?? "";
+    message.status = object.status ?? "";
+    message.data = (object.data !== undefined && object.data !== null)
+      ? DeleteShippingResponse_DeleteShippingResponseData.fromPartial(object.data)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseDeleteShippingResponse_DeleteShippingResponseData(): DeleteShippingResponse_DeleteShippingResponseData {
+  return { id: "" };
+}
+
+export const DeleteShippingResponse_DeleteShippingResponseData: MessageFns<
+  DeleteShippingResponse_DeleteShippingResponseData
+> = {
+  encode(
+    message: DeleteShippingResponse_DeleteShippingResponseData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): DeleteShippingResponse_DeleteShippingResponseData {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeleteShippingResponse_DeleteShippingResponseData();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DeleteShippingResponse_DeleteShippingResponseData {
+    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+  },
+
+  toJSON(message: DeleteShippingResponse_DeleteShippingResponseData): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    return obj;
+  },
+
+  create(
+    base?: DeepPartial<DeleteShippingResponse_DeleteShippingResponseData>,
+  ): DeleteShippingResponse_DeleteShippingResponseData {
+    return DeleteShippingResponse_DeleteShippingResponseData.fromPartial(base ?? {});
+  },
+  fromPartial(
+    object: DeepPartial<DeleteShippingResponse_DeleteShippingResponseData>,
+  ): DeleteShippingResponse_DeleteShippingResponseData {
+    const message = createBaseDeleteShippingResponse_DeleteShippingResponseData();
+    message.id = object.id ?? "";
     return message;
   },
 };
@@ -231,176 +1012,6 @@ export const GetShippingProviderByIdResponse: MessageFns<GetShippingProviderById
     message.data = (object.data !== undefined && object.data !== null)
       ? ShippingProvider.fromPartial(object.data)
       : undefined;
-    return message;
-  },
-};
-
-function createBaseUpdateShippingProviderResponse(): UpdateShippingProviderResponse {
-  return { message: "", status: "", data: undefined };
-}
-
-export const UpdateShippingProviderResponse: MessageFns<UpdateShippingProviderResponse> = {
-  encode(message: UpdateShippingProviderResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.message !== "") {
-      writer.uint32(10).string(message.message);
-    }
-    if (message.status !== "") {
-      writer.uint32(18).string(message.status);
-    }
-    if (message.data !== undefined) {
-      ShippingProvider.encode(message.data, writer.uint32(26).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): UpdateShippingProviderResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUpdateShippingProviderResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.message = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.status = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.data = ShippingProvider.decode(reader, reader.uint32());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): UpdateShippingProviderResponse {
-    return {
-      message: isSet(object.message) ? globalThis.String(object.message) : "",
-      status: isSet(object.status) ? globalThis.String(object.status) : "",
-      data: isSet(object.data) ? ShippingProvider.fromJSON(object.data) : undefined,
-    };
-  },
-
-  toJSON(message: UpdateShippingProviderResponse): unknown {
-    const obj: any = {};
-    if (message.message !== "") {
-      obj.message = message.message;
-    }
-    if (message.status !== "") {
-      obj.status = message.status;
-    }
-    if (message.data !== undefined) {
-      obj.data = ShippingProvider.toJSON(message.data);
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<UpdateShippingProviderResponse>): UpdateShippingProviderResponse {
-    return UpdateShippingProviderResponse.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<UpdateShippingProviderResponse>): UpdateShippingProviderResponse {
-    const message = createBaseUpdateShippingProviderResponse();
-    message.message = object.message ?? "";
-    message.status = object.status ?? "";
-    message.data = (object.data !== undefined && object.data !== null)
-      ? ShippingProvider.fromPartial(object.data)
-      : undefined;
-    return message;
-  },
-};
-
-function createBaseDeleteShippingProviderResponse(): DeleteShippingProviderResponse {
-  return { message: "", status: "" };
-}
-
-export const DeleteShippingProviderResponse: MessageFns<DeleteShippingProviderResponse> = {
-  encode(message: DeleteShippingProviderResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.message !== "") {
-      writer.uint32(10).string(message.message);
-    }
-    if (message.status !== "") {
-      writer.uint32(18).string(message.status);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): DeleteShippingProviderResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseDeleteShippingProviderResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.message = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.status = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): DeleteShippingProviderResponse {
-    return {
-      message: isSet(object.message) ? globalThis.String(object.message) : "",
-      status: isSet(object.status) ? globalThis.String(object.status) : "",
-    };
-  },
-
-  toJSON(message: DeleteShippingProviderResponse): unknown {
-    const obj: any = {};
-    if (message.message !== "") {
-      obj.message = message.message;
-    }
-    if (message.status !== "") {
-      obj.status = message.status;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<DeleteShippingProviderResponse>): DeleteShippingProviderResponse {
-    return DeleteShippingProviderResponse.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<DeleteShippingProviderResponse>): DeleteShippingProviderResponse {
-    const message = createBaseDeleteShippingProviderResponse();
-    message.message = object.message ?? "";
-    message.status = object.status ?? "";
     return message;
   },
 };
@@ -634,6 +1245,28 @@ export type DeepPartial<T> = T extends Builtin ? T
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
+
+function toTimestamp(date: Date): Timestamp {
+  const seconds = Math.trunc(date.getTime() / 1_000);
+  const nanos = (date.getTime() % 1_000) * 1_000_000;
+  return { seconds, nanos };
+}
+
+function fromTimestamp(t: Timestamp): Date {
+  let millis = (t.seconds || 0) * 1_000;
+  millis += (t.nanos || 0) / 1_000_000;
+  return new globalThis.Date(millis);
+}
+
+function fromJsonTimestamp(o: any): Date {
+  if (o instanceof globalThis.Date) {
+    return o;
+  } else if (typeof o === "string") {
+    return new globalThis.Date(o);
+  } else {
+    return fromTimestamp(Timestamp.fromJSON(o));
+  }
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

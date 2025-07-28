@@ -19,10 +19,259 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ShippingProviderService_CreateShippingProvider_FullMethodName  = "/shipping.ShippingProviderService/CreateShippingProvider"
+	ShippingService_CreateShipping_FullMethodName  = "/shipping.ShippingService/CreateShipping"
+	ShippingService_GetShippingById_FullMethodName = "/shipping.ShippingService/GetShippingById"
+	ShippingService_ListShipping_FullMethodName    = "/shipping.ShippingService/ListShipping"
+	ShippingService_UpdateShipping_FullMethodName  = "/shipping.ShippingService/UpdateShipping"
+	ShippingService_DeleteShipping_FullMethodName  = "/shipping.ShippingService/DeleteShipping"
+)
+
+// ShippingServiceClient is the client API for ShippingService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type ShippingServiceClient interface {
+	CreateShipping(ctx context.Context, in *CreateShippingRequest, opts ...grpc.CallOption) (*CreateShippingResponse, error)
+	GetShippingById(ctx context.Context, in *GetShippingByIdRequest, opts ...grpc.CallOption) (*GetShippingByIdResponse, error)
+	ListShipping(ctx context.Context, in *ListShippingRequest, opts ...grpc.CallOption) (*ListShippingResponse, error)
+	UpdateShipping(ctx context.Context, in *UpdateShippingRequest, opts ...grpc.CallOption) (*UpdateShippingResponse, error)
+	DeleteShipping(ctx context.Context, in *DeleteShippingRequest, opts ...grpc.CallOption) (*DeleteShippingResponse, error)
+}
+
+type shippingServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewShippingServiceClient(cc grpc.ClientConnInterface) ShippingServiceClient {
+	return &shippingServiceClient{cc}
+}
+
+func (c *shippingServiceClient) CreateShipping(ctx context.Context, in *CreateShippingRequest, opts ...grpc.CallOption) (*CreateShippingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateShippingResponse)
+	err := c.cc.Invoke(ctx, ShippingService_CreateShipping_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *shippingServiceClient) GetShippingById(ctx context.Context, in *GetShippingByIdRequest, opts ...grpc.CallOption) (*GetShippingByIdResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetShippingByIdResponse)
+	err := c.cc.Invoke(ctx, ShippingService_GetShippingById_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *shippingServiceClient) ListShipping(ctx context.Context, in *ListShippingRequest, opts ...grpc.CallOption) (*ListShippingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListShippingResponse)
+	err := c.cc.Invoke(ctx, ShippingService_ListShipping_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *shippingServiceClient) UpdateShipping(ctx context.Context, in *UpdateShippingRequest, opts ...grpc.CallOption) (*UpdateShippingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateShippingResponse)
+	err := c.cc.Invoke(ctx, ShippingService_UpdateShipping_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *shippingServiceClient) DeleteShipping(ctx context.Context, in *DeleteShippingRequest, opts ...grpc.CallOption) (*DeleteShippingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteShippingResponse)
+	err := c.cc.Invoke(ctx, ShippingService_DeleteShipping_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ShippingServiceServer is the server API for ShippingService service.
+// All implementations should embed UnimplementedShippingServiceServer
+// for forward compatibility.
+type ShippingServiceServer interface {
+	CreateShipping(context.Context, *CreateShippingRequest) (*CreateShippingResponse, error)
+	GetShippingById(context.Context, *GetShippingByIdRequest) (*GetShippingByIdResponse, error)
+	ListShipping(context.Context, *ListShippingRequest) (*ListShippingResponse, error)
+	UpdateShipping(context.Context, *UpdateShippingRequest) (*UpdateShippingResponse, error)
+	DeleteShipping(context.Context, *DeleteShippingRequest) (*DeleteShippingResponse, error)
+}
+
+// UnimplementedShippingServiceServer should be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedShippingServiceServer struct{}
+
+func (UnimplementedShippingServiceServer) CreateShipping(context.Context, *CreateShippingRequest) (*CreateShippingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateShipping not implemented")
+}
+func (UnimplementedShippingServiceServer) GetShippingById(context.Context, *GetShippingByIdRequest) (*GetShippingByIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetShippingById not implemented")
+}
+func (UnimplementedShippingServiceServer) ListShipping(context.Context, *ListShippingRequest) (*ListShippingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListShipping not implemented")
+}
+func (UnimplementedShippingServiceServer) UpdateShipping(context.Context, *UpdateShippingRequest) (*UpdateShippingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateShipping not implemented")
+}
+func (UnimplementedShippingServiceServer) DeleteShipping(context.Context, *DeleteShippingRequest) (*DeleteShippingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteShipping not implemented")
+}
+func (UnimplementedShippingServiceServer) testEmbeddedByValue() {}
+
+// UnsafeShippingServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ShippingServiceServer will
+// result in compilation errors.
+type UnsafeShippingServiceServer interface {
+	mustEmbedUnimplementedShippingServiceServer()
+}
+
+func RegisterShippingServiceServer(s grpc.ServiceRegistrar, srv ShippingServiceServer) {
+	// If the following call pancis, it indicates UnimplementedShippingServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&ShippingService_ServiceDesc, srv)
+}
+
+func _ShippingService_CreateShipping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateShippingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ShippingServiceServer).CreateShipping(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ShippingService_CreateShipping_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ShippingServiceServer).CreateShipping(ctx, req.(*CreateShippingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ShippingService_GetShippingById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetShippingByIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ShippingServiceServer).GetShippingById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ShippingService_GetShippingById_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ShippingServiceServer).GetShippingById(ctx, req.(*GetShippingByIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ShippingService_ListShipping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListShippingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ShippingServiceServer).ListShipping(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ShippingService_ListShipping_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ShippingServiceServer).ListShipping(ctx, req.(*ListShippingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ShippingService_UpdateShipping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateShippingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ShippingServiceServer).UpdateShipping(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ShippingService_UpdateShipping_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ShippingServiceServer).UpdateShipping(ctx, req.(*UpdateShippingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ShippingService_DeleteShipping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteShippingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ShippingServiceServer).DeleteShipping(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ShippingService_DeleteShipping_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ShippingServiceServer).DeleteShipping(ctx, req.(*DeleteShippingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// ShippingService_ServiceDesc is the grpc.ServiceDesc for ShippingService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var ShippingService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "shipping.ShippingService",
+	HandlerType: (*ShippingServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateShipping",
+			Handler:    _ShippingService_CreateShipping_Handler,
+		},
+		{
+			MethodName: "GetShippingById",
+			Handler:    _ShippingService_GetShippingById_Handler,
+		},
+		{
+			MethodName: "ListShipping",
+			Handler:    _ShippingService_ListShipping_Handler,
+		},
+		{
+			MethodName: "UpdateShipping",
+			Handler:    _ShippingService_UpdateShipping_Handler,
+		},
+		{
+			MethodName: "DeleteShipping",
+			Handler:    _ShippingService_DeleteShipping_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "v1/shipping/service.proto",
+}
+
+const (
 	ShippingProviderService_GetShippingProviderById_FullMethodName = "/shipping.ShippingProviderService/GetShippingProviderById"
-	ShippingProviderService_UpdateShippingProvider_FullMethodName  = "/shipping.ShippingProviderService/UpdateShippingProvider"
-	ShippingProviderService_DeleteShippingProvider_FullMethodName  = "/shipping.ShippingProviderService/DeleteShippingProvider"
 	ShippingProviderService_ListShippingProviders_FullMethodName   = "/shipping.ShippingProviderService/ListShippingProviders"
 )
 
@@ -30,10 +279,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ShippingProviderServiceClient interface {
-	CreateShippingProvider(ctx context.Context, in *CreateShippingProviderRequest, opts ...grpc.CallOption) (*CreateShippingProviderResponse, error)
 	GetShippingProviderById(ctx context.Context, in *GetShippingProviderByIdRequest, opts ...grpc.CallOption) (*GetShippingProviderByIdResponse, error)
-	UpdateShippingProvider(ctx context.Context, in *UpdateShippingProviderRequest, opts ...grpc.CallOption) (*UpdateShippingProviderResponse, error)
-	DeleteShippingProvider(ctx context.Context, in *DeleteShippingProviderRequest, opts ...grpc.CallOption) (*DeleteShippingProviderResponse, error)
 	ListShippingProviders(ctx context.Context, in *ListShippingProvidersRequest, opts ...grpc.CallOption) (*ListShippingProvidersResponse, error)
 }
 
@@ -45,40 +291,10 @@ func NewShippingProviderServiceClient(cc grpc.ClientConnInterface) ShippingProvi
 	return &shippingProviderServiceClient{cc}
 }
 
-func (c *shippingProviderServiceClient) CreateShippingProvider(ctx context.Context, in *CreateShippingProviderRequest, opts ...grpc.CallOption) (*CreateShippingProviderResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateShippingProviderResponse)
-	err := c.cc.Invoke(ctx, ShippingProviderService_CreateShippingProvider_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *shippingProviderServiceClient) GetShippingProviderById(ctx context.Context, in *GetShippingProviderByIdRequest, opts ...grpc.CallOption) (*GetShippingProviderByIdResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetShippingProviderByIdResponse)
 	err := c.cc.Invoke(ctx, ShippingProviderService_GetShippingProviderById_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *shippingProviderServiceClient) UpdateShippingProvider(ctx context.Context, in *UpdateShippingProviderRequest, opts ...grpc.CallOption) (*UpdateShippingProviderResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateShippingProviderResponse)
-	err := c.cc.Invoke(ctx, ShippingProviderService_UpdateShippingProvider_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *shippingProviderServiceClient) DeleteShippingProvider(ctx context.Context, in *DeleteShippingProviderRequest, opts ...grpc.CallOption) (*DeleteShippingProviderResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeleteShippingProviderResponse)
-	err := c.cc.Invoke(ctx, ShippingProviderService_DeleteShippingProvider_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -99,10 +315,7 @@ func (c *shippingProviderServiceClient) ListShippingProviders(ctx context.Contex
 // All implementations should embed UnimplementedShippingProviderServiceServer
 // for forward compatibility.
 type ShippingProviderServiceServer interface {
-	CreateShippingProvider(context.Context, *CreateShippingProviderRequest) (*CreateShippingProviderResponse, error)
 	GetShippingProviderById(context.Context, *GetShippingProviderByIdRequest) (*GetShippingProviderByIdResponse, error)
-	UpdateShippingProvider(context.Context, *UpdateShippingProviderRequest) (*UpdateShippingProviderResponse, error)
-	DeleteShippingProvider(context.Context, *DeleteShippingProviderRequest) (*DeleteShippingProviderResponse, error)
 	ListShippingProviders(context.Context, *ListShippingProvidersRequest) (*ListShippingProvidersResponse, error)
 }
 
@@ -113,17 +326,8 @@ type ShippingProviderServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedShippingProviderServiceServer struct{}
 
-func (UnimplementedShippingProviderServiceServer) CreateShippingProvider(context.Context, *CreateShippingProviderRequest) (*CreateShippingProviderResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateShippingProvider not implemented")
-}
 func (UnimplementedShippingProviderServiceServer) GetShippingProviderById(context.Context, *GetShippingProviderByIdRequest) (*GetShippingProviderByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetShippingProviderById not implemented")
-}
-func (UnimplementedShippingProviderServiceServer) UpdateShippingProvider(context.Context, *UpdateShippingProviderRequest) (*UpdateShippingProviderResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateShippingProvider not implemented")
-}
-func (UnimplementedShippingProviderServiceServer) DeleteShippingProvider(context.Context, *DeleteShippingProviderRequest) (*DeleteShippingProviderResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteShippingProvider not implemented")
 }
 func (UnimplementedShippingProviderServiceServer) ListShippingProviders(context.Context, *ListShippingProvidersRequest) (*ListShippingProvidersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListShippingProviders not implemented")
@@ -148,24 +352,6 @@ func RegisterShippingProviderServiceServer(s grpc.ServiceRegistrar, srv Shipping
 	s.RegisterService(&ShippingProviderService_ServiceDesc, srv)
 }
 
-func _ShippingProviderService_CreateShippingProvider_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateShippingProviderRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ShippingProviderServiceServer).CreateShippingProvider(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ShippingProviderService_CreateShippingProvider_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ShippingProviderServiceServer).CreateShippingProvider(ctx, req.(*CreateShippingProviderRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _ShippingProviderService_GetShippingProviderById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetShippingProviderByIdRequest)
 	if err := dec(in); err != nil {
@@ -180,42 +366,6 @@ func _ShippingProviderService_GetShippingProviderById_Handler(srv interface{}, c
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ShippingProviderServiceServer).GetShippingProviderById(ctx, req.(*GetShippingProviderByIdRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ShippingProviderService_UpdateShippingProvider_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateShippingProviderRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ShippingProviderServiceServer).UpdateShippingProvider(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ShippingProviderService_UpdateShippingProvider_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ShippingProviderServiceServer).UpdateShippingProvider(ctx, req.(*UpdateShippingProviderRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ShippingProviderService_DeleteShippingProvider_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteShippingProviderRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ShippingProviderServiceServer).DeleteShippingProvider(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ShippingProviderService_DeleteShippingProvider_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ShippingProviderServiceServer).DeleteShippingProvider(ctx, req.(*DeleteShippingProviderRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -246,20 +396,8 @@ var ShippingProviderService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ShippingProviderServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateShippingProvider",
-			Handler:    _ShippingProviderService_CreateShippingProvider_Handler,
-		},
-		{
 			MethodName: "GetShippingProviderById",
 			Handler:    _ShippingProviderService_GetShippingProviderById_Handler,
-		},
-		{
-			MethodName: "UpdateShippingProvider",
-			Handler:    _ShippingProviderService_UpdateShippingProvider_Handler,
-		},
-		{
-			MethodName: "DeleteShippingProvider",
-			Handler:    _ShippingProviderService_DeleteShippingProvider_Handler,
 		},
 		{
 			MethodName: "ListShippingProviders",

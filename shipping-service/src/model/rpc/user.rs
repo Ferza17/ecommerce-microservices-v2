@@ -36,6 +36,93 @@ impl EnumRole {
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct User {
+    #[prost(string, tag = "1")]
+    pub id: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub name: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub email: ::prost::alloc::string::String,
+    #[prost(string, tag = "4")]
+    pub password: ::prost::alloc::string::String,
+    #[prost(bool, tag = "5")]
+    pub is_verified: bool,
+    #[prost(message, optional, tag = "6")]
+    pub role: ::core::option::Option<Role>,
+    #[prost(message, optional, tag = "8")]
+    #[schema(value_type = String, format = "date-time")]
+    pub created_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
+    #[prost(message, optional, tag = "9")]
+    #[schema(value_type = String, format = "date-time")]
+    pub updated_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
+    #[prost(message, optional, tag = "10")]
+    #[schema(value_type = String, format = "date-time")]
+    pub discarded_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
+}
+#[derive(utoipa::ToSchema)]
+#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Role {
+    #[prost(string, tag = "1")]
+    pub id: ::prost::alloc::string::String,
+    #[prost(enumeration = "EnumRole", tag = "2")]
+    pub role: i32,
+    #[prost(message, repeated, tag = "4")]
+    pub access_controls: ::prost::alloc::vec::Vec<AccessControl>,
+    #[prost(message, optional, tag = "8")]
+    #[schema(value_type = String, format = "date-time")]
+    pub created_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
+    #[prost(message, optional, tag = "9")]
+    #[schema(value_type = String, format = "date-time")]
+    pub updated_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
+}
+#[derive(utoipa::ToSchema)]
+#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct AccessControl {
+    #[prost(string, tag = "1")]
+    pub id: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub full_method_name: ::prost::alloc::string::String,
+    #[prost(string, tag = "4")]
+    pub http_url: ::prost::alloc::string::String,
+    #[prost(string, tag = "5")]
+    pub http_method: ::prost::alloc::string::String,
+    #[prost(string, tag = "6")]
+    pub event_type: ::prost::alloc::string::String,
+    #[prost(string, tag = "7")]
+    pub role_id: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "8")]
+    #[schema(value_type = String, format = "date-time")]
+    pub created_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
+    #[prost(message, optional, tag = "9")]
+    #[schema(value_type = String, format = "date-time")]
+    pub updated_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
+}
+#[derive(utoipa::ToSchema)]
+#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct AccessControlExcluded {
+    #[prost(string, tag = "1")]
+    pub id: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub full_method_name: ::prost::alloc::string::String,
+    #[prost(string, tag = "4")]
+    pub http_url: ::prost::alloc::string::String,
+    #[prost(string, tag = "5")]
+    pub http_method: ::prost::alloc::string::String,
+    #[prost(string, tag = "6")]
+    pub event_type: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "8")]
+    #[schema(value_type = String, format = "date-time")]
+    pub created_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
+    #[prost(message, optional, tag = "9")]
+    #[schema(value_type = String, format = "date-time")]
+    pub updated_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
+}
+#[derive(utoipa::ToSchema)]
+#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MethodAccessControl {
     #[prost(bool, tag = "1")]
     pub is_public: bool,
@@ -162,93 +249,6 @@ pub struct FindUserByEmailAndPasswordRequest {
     #[prost(string, tag = "2")]
     pub password: ::prost::alloc::string::String,
 }
-#[derive(utoipa::ToSchema)]
-#[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct User {
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub name: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub email: ::prost::alloc::string::String,
-    #[prost(string, tag = "4")]
-    pub password: ::prost::alloc::string::String,
-    #[prost(bool, tag = "5")]
-    pub is_verified: bool,
-    #[prost(message, optional, tag = "6")]
-    pub role: ::core::option::Option<Role>,
-    #[prost(message, optional, tag = "8")]
-    #[schema(value_type = String, format = "date-time")]
-    pub created_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
-    #[prost(message, optional, tag = "9")]
-    #[schema(value_type = String, format = "date-time")]
-    pub updated_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
-    #[prost(message, optional, tag = "10")]
-    #[schema(value_type = String, format = "date-time")]
-    pub discarded_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
-}
-#[derive(utoipa::ToSchema)]
-#[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Role {
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    #[prost(enumeration = "EnumRole", tag = "2")]
-    pub role: i32,
-    #[prost(message, repeated, tag = "4")]
-    pub access_controls: ::prost::alloc::vec::Vec<AccessControl>,
-    #[prost(message, optional, tag = "8")]
-    #[schema(value_type = String, format = "date-time")]
-    pub created_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
-    #[prost(message, optional, tag = "9")]
-    #[schema(value_type = String, format = "date-time")]
-    pub updated_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
-}
-#[derive(utoipa::ToSchema)]
-#[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct AccessControl {
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub full_method_name: ::prost::alloc::string::String,
-    #[prost(string, tag = "4")]
-    pub http_url: ::prost::alloc::string::String,
-    #[prost(string, tag = "5")]
-    pub http_method: ::prost::alloc::string::String,
-    #[prost(string, tag = "6")]
-    pub event_type: ::prost::alloc::string::String,
-    #[prost(string, tag = "7")]
-    pub role_id: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "8")]
-    #[schema(value_type = String, format = "date-time")]
-    pub created_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
-    #[prost(message, optional, tag = "9")]
-    #[schema(value_type = String, format = "date-time")]
-    pub updated_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
-}
-#[derive(utoipa::ToSchema)]
-#[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct AccessControlExcluded {
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub full_method_name: ::prost::alloc::string::String,
-    #[prost(string, tag = "4")]
-    pub http_url: ::prost::alloc::string::String,
-    #[prost(string, tag = "5")]
-    pub http_method: ::prost::alloc::string::String,
-    #[prost(string, tag = "6")]
-    pub event_type: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "8")]
-    #[schema(value_type = String, format = "date-time")]
-    pub created_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
-    #[prost(message, optional, tag = "9")]
-    #[schema(value_type = String, format = "date-time")]
-    pub updated_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
-}
 /// AUTH RESPONSE DEFINITION
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
@@ -344,7 +344,7 @@ pub struct AuthUserVerifyAccessControlResponse {
     #[prost(message, optional, tag = "4")]
     pub data: ::core::option::Option<
         auth_user_verify_access_control_response::AuthUserVerifyAccessControlResponseData,
-    >
+    >,
 }
 /// Nested message and enum types in `AuthUserVerifyAccessControlResponse`.
 pub mod auth_user_verify_access_control_response {

@@ -18,35 +18,172 @@ import {
   type UntypedServiceImplementation,
 } from "@grpc/grpc-js";
 import {
-  CreateShippingProviderRequest,
-  DeleteShippingProviderRequest,
+  CreateShippingRequest,
+  DeleteShippingRequest,
+  GetShippingByIdRequest,
   GetShippingProviderByIdRequest,
   ListShippingProvidersRequest,
-  UpdateShippingProviderRequest,
+  ListShippingRequest,
+  UpdateShippingRequest,
 } from "./request";
 import {
-  CreateShippingProviderResponse,
-  DeleteShippingProviderResponse,
+  CreateShippingResponse,
+  DeleteShippingResponse,
+  GetShippingByIdResponse,
   GetShippingProviderByIdResponse,
   ListShippingProvidersResponse,
-  UpdateShippingProviderResponse,
+  ListShippingResponse,
+  UpdateShippingResponse,
 } from "./response";
 
 export const protobufPackage = "shipping";
 
-export type ShippingProviderServiceService = typeof ShippingProviderServiceService;
-export const ShippingProviderServiceService = {
-  createShippingProvider: {
-    path: "/shipping.ShippingProviderService/CreateShippingProvider",
+export type ShippingServiceService = typeof ShippingServiceService;
+export const ShippingServiceService = {
+  createShipping: {
+    path: "/shipping.ShippingService/CreateShipping",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: CreateShippingProviderRequest) =>
-      Buffer.from(CreateShippingProviderRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => CreateShippingProviderRequest.decode(value),
-    responseSerialize: (value: CreateShippingProviderResponse) =>
-      Buffer.from(CreateShippingProviderResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => CreateShippingProviderResponse.decode(value),
+    requestSerialize: (value: CreateShippingRequest) => Buffer.from(CreateShippingRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => CreateShippingRequest.decode(value),
+    responseSerialize: (value: CreateShippingResponse) => Buffer.from(CreateShippingResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => CreateShippingResponse.decode(value),
   },
+  getShippingById: {
+    path: "/shipping.ShippingService/GetShippingById",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetShippingByIdRequest) => Buffer.from(GetShippingByIdRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetShippingByIdRequest.decode(value),
+    responseSerialize: (value: GetShippingByIdResponse) => Buffer.from(GetShippingByIdResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetShippingByIdResponse.decode(value),
+  },
+  listShipping: {
+    path: "/shipping.ShippingService/ListShipping",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: ListShippingRequest) => Buffer.from(ListShippingRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => ListShippingRequest.decode(value),
+    responseSerialize: (value: ListShippingResponse) => Buffer.from(ListShippingResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => ListShippingResponse.decode(value),
+  },
+  updateShipping: {
+    path: "/shipping.ShippingService/UpdateShipping",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: UpdateShippingRequest) => Buffer.from(UpdateShippingRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => UpdateShippingRequest.decode(value),
+    responseSerialize: (value: UpdateShippingResponse) => Buffer.from(UpdateShippingResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => UpdateShippingResponse.decode(value),
+  },
+  deleteShipping: {
+    path: "/shipping.ShippingService/DeleteShipping",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: DeleteShippingRequest) => Buffer.from(DeleteShippingRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => DeleteShippingRequest.decode(value),
+    responseSerialize: (value: DeleteShippingResponse) => Buffer.from(DeleteShippingResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => DeleteShippingResponse.decode(value),
+  },
+} as const;
+
+export interface ShippingServiceServer extends UntypedServiceImplementation {
+  createShipping: handleUnaryCall<CreateShippingRequest, CreateShippingResponse>;
+  getShippingById: handleUnaryCall<GetShippingByIdRequest, GetShippingByIdResponse>;
+  listShipping: handleUnaryCall<ListShippingRequest, ListShippingResponse>;
+  updateShipping: handleUnaryCall<UpdateShippingRequest, UpdateShippingResponse>;
+  deleteShipping: handleUnaryCall<DeleteShippingRequest, DeleteShippingResponse>;
+}
+
+export interface ShippingServiceClient extends Client {
+  createShipping(
+    request: CreateShippingRequest,
+    callback: (error: ServiceError | null, response: CreateShippingResponse) => void,
+  ): ClientUnaryCall;
+  createShipping(
+    request: CreateShippingRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: CreateShippingResponse) => void,
+  ): ClientUnaryCall;
+  createShipping(
+    request: CreateShippingRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: CreateShippingResponse) => void,
+  ): ClientUnaryCall;
+  getShippingById(
+    request: GetShippingByIdRequest,
+    callback: (error: ServiceError | null, response: GetShippingByIdResponse) => void,
+  ): ClientUnaryCall;
+  getShippingById(
+    request: GetShippingByIdRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetShippingByIdResponse) => void,
+  ): ClientUnaryCall;
+  getShippingById(
+    request: GetShippingByIdRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetShippingByIdResponse) => void,
+  ): ClientUnaryCall;
+  listShipping(
+    request: ListShippingRequest,
+    callback: (error: ServiceError | null, response: ListShippingResponse) => void,
+  ): ClientUnaryCall;
+  listShipping(
+    request: ListShippingRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: ListShippingResponse) => void,
+  ): ClientUnaryCall;
+  listShipping(
+    request: ListShippingRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: ListShippingResponse) => void,
+  ): ClientUnaryCall;
+  updateShipping(
+    request: UpdateShippingRequest,
+    callback: (error: ServiceError | null, response: UpdateShippingResponse) => void,
+  ): ClientUnaryCall;
+  updateShipping(
+    request: UpdateShippingRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: UpdateShippingResponse) => void,
+  ): ClientUnaryCall;
+  updateShipping(
+    request: UpdateShippingRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: UpdateShippingResponse) => void,
+  ): ClientUnaryCall;
+  deleteShipping(
+    request: DeleteShippingRequest,
+    callback: (error: ServiceError | null, response: DeleteShippingResponse) => void,
+  ): ClientUnaryCall;
+  deleteShipping(
+    request: DeleteShippingRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: DeleteShippingResponse) => void,
+  ): ClientUnaryCall;
+  deleteShipping(
+    request: DeleteShippingRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: DeleteShippingResponse) => void,
+  ): ClientUnaryCall;
+}
+
+export const ShippingServiceClient = makeGenericClientConstructor(
+  ShippingServiceService,
+  "shipping.ShippingService",
+) as unknown as {
+  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): ShippingServiceClient;
+  service: typeof ShippingServiceService;
+  serviceName: string;
+};
+
+export type ShippingProviderServiceService = typeof ShippingProviderServiceService;
+export const ShippingProviderServiceService = {
   getShippingProviderById: {
     path: "/shipping.ShippingProviderService/GetShippingProviderById",
     requestStream: false,
@@ -57,28 +194,6 @@ export const ShippingProviderServiceService = {
     responseSerialize: (value: GetShippingProviderByIdResponse) =>
       Buffer.from(GetShippingProviderByIdResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetShippingProviderByIdResponse.decode(value),
-  },
-  updateShippingProvider: {
-    path: "/shipping.ShippingProviderService/UpdateShippingProvider",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: UpdateShippingProviderRequest) =>
-      Buffer.from(UpdateShippingProviderRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => UpdateShippingProviderRequest.decode(value),
-    responseSerialize: (value: UpdateShippingProviderResponse) =>
-      Buffer.from(UpdateShippingProviderResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => UpdateShippingProviderResponse.decode(value),
-  },
-  deleteShippingProvider: {
-    path: "/shipping.ShippingProviderService/DeleteShippingProvider",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: DeleteShippingProviderRequest) =>
-      Buffer.from(DeleteShippingProviderRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => DeleteShippingProviderRequest.decode(value),
-    responseSerialize: (value: DeleteShippingProviderResponse) =>
-      Buffer.from(DeleteShippingProviderResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => DeleteShippingProviderResponse.decode(value),
   },
   listShippingProviders: {
     path: "/shipping.ShippingProviderService/ListShippingProviders",
@@ -94,29 +209,11 @@ export const ShippingProviderServiceService = {
 } as const;
 
 export interface ShippingProviderServiceServer extends UntypedServiceImplementation {
-  createShippingProvider: handleUnaryCall<CreateShippingProviderRequest, CreateShippingProviderResponse>;
   getShippingProviderById: handleUnaryCall<GetShippingProviderByIdRequest, GetShippingProviderByIdResponse>;
-  updateShippingProvider: handleUnaryCall<UpdateShippingProviderRequest, UpdateShippingProviderResponse>;
-  deleteShippingProvider: handleUnaryCall<DeleteShippingProviderRequest, DeleteShippingProviderResponse>;
   listShippingProviders: handleUnaryCall<ListShippingProvidersRequest, ListShippingProvidersResponse>;
 }
 
 export interface ShippingProviderServiceClient extends Client {
-  createShippingProvider(
-    request: CreateShippingProviderRequest,
-    callback: (error: ServiceError | null, response: CreateShippingProviderResponse) => void,
-  ): ClientUnaryCall;
-  createShippingProvider(
-    request: CreateShippingProviderRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: CreateShippingProviderResponse) => void,
-  ): ClientUnaryCall;
-  createShippingProvider(
-    request: CreateShippingProviderRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: CreateShippingProviderResponse) => void,
-  ): ClientUnaryCall;
   getShippingProviderById(
     request: GetShippingProviderByIdRequest,
     callback: (error: ServiceError | null, response: GetShippingProviderByIdResponse) => void,
@@ -131,36 +228,6 @@ export interface ShippingProviderServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetShippingProviderByIdResponse) => void,
-  ): ClientUnaryCall;
-  updateShippingProvider(
-    request: UpdateShippingProviderRequest,
-    callback: (error: ServiceError | null, response: UpdateShippingProviderResponse) => void,
-  ): ClientUnaryCall;
-  updateShippingProvider(
-    request: UpdateShippingProviderRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: UpdateShippingProviderResponse) => void,
-  ): ClientUnaryCall;
-  updateShippingProvider(
-    request: UpdateShippingProviderRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: UpdateShippingProviderResponse) => void,
-  ): ClientUnaryCall;
-  deleteShippingProvider(
-    request: DeleteShippingProviderRequest,
-    callback: (error: ServiceError | null, response: DeleteShippingProviderResponse) => void,
-  ): ClientUnaryCall;
-  deleteShippingProvider(
-    request: DeleteShippingProviderRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: DeleteShippingProviderResponse) => void,
-  ): ClientUnaryCall;
-  deleteShippingProvider(
-    request: DeleteShippingProviderRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: DeleteShippingProviderResponse) => void,
   ): ClientUnaryCall;
   listShippingProviders(
     request: ListShippingProvidersRequest,

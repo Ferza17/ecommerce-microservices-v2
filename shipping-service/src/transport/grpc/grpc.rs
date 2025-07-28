@@ -5,6 +5,10 @@ use crate::interceptor::auth::AuthLayer;
 use crate::interceptor::logger::LoggerLayer;
 use crate::interceptor::request_id::RequestIdLayer;
 use crate::model::rpc::shipping::shipping_provider_service_server::ShippingProviderServiceServer;
+use crate::model::rpc::shipping::shipping_service_server::ShippingServiceServer;
+use crate::module::shipping::presenter_grpc::ShippingGrpcPresenter;
+use crate::module::shipping::repository_postgres::ShippingPostgresRepositoryImpl;
+use crate::module::shipping::usecase::ShippingUseCaseImpl;
 use crate::module::shipping_provider::presenter_grpc::ShippingProviderGrpcPresenter;
 use crate::module::shipping_provider::repository_postgres::ShippingProviderPostgresRepositoryImpl;
 use crate::module::shipping_provider::usecase::ShippingProviderUseCaseImpl;
@@ -34,10 +38,6 @@ impl GrpcTransport {
         let postgres_pool = get_connection(&self.config.clone()).await;
         let user_service = UserServiceGrpcClient::new(self.config.clone()).await;
 
-        // Repository Layer
-        let shipping_provider_repository =
-            ShippingProviderPostgresRepositoryImpl::new(postgres_pool);
-
         // REFLECTION
         let reflection_service = tonic_reflection::server::Builder::configure()
             .register_encoded_file_descriptor_set(include_bytes!("../../../descriptor.bin"))
@@ -53,10 +53,18 @@ impl GrpcTransport {
             )
             .add_service(ShippingProviderServiceServer::new(
                 ShippingProviderGrpcPresenter::new(
-                    ShippingProviderUseCaseImpl::new(shipping_provider_repository),
+                    ShippingProviderUseCaseImpl::new(ShippingProviderPostgresRepositoryImpl::new(
+                        postgres_pool.clone(),
+                    )),
                     user_service.clone(),
                 ),
-            ));
+            ))
+            .add_service(ShippingServiceServer::new(ShippingGrpcPresenter::new(
+                ShippingUseCaseImpl::new(ShippingPostgresRepositoryImpl::new(
+                    postgres_pool.clone(),
+                )),
+                user_service.clone(),
+            )));
 
         if self.config.env != "production" {
             server = server.add_service(reflection_service);

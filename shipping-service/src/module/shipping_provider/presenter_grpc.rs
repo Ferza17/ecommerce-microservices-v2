@@ -1,18 +1,15 @@
 use crate::infrastructure::services::user::UserServiceGrpcClient;
 use crate::model::rpc::shipping::shipping_provider_service_server::ShippingProviderService;
 use crate::model::rpc::shipping::{
-    CreateShippingProviderRequest, CreateShippingProviderResponse, DeleteShippingProviderRequest,
-    DeleteShippingProviderResponse, GetShippingProviderByIdRequest,
-    GetShippingProviderByIdResponse, ListShippingProvidersRequest, ListShippingProvidersResponse,
-    UpdateShippingProviderRequest, UpdateShippingProviderResponse,
+    GetShippingProviderByIdRequest, GetShippingProviderByIdResponse, ListShippingProvidersRequest,
+    ListShippingProvidersResponse,
 };
 use crate::model::rpc::user::AuthUserVerifyAccessControlRequest;
 use crate::module::shipping_provider::usecase::{
     ShippingProviderUseCase, ShippingProviderUseCaseImpl,
 };
 use crate::module::shipping_provider::validate::{
-    validate_delete_shipping_provider, validate_get_shipping_provider_by_id,
-    validate_list_shipping_providers, validate_update_shipping_provider,
+    validate_get_shipping_provider_by_id, validate_list_shipping_providers,
 };
 use crate::package::context::auth::get_request_authorization_token_from_metadata;
 use crate::package::context::request_id::get_request_id_from_metadata;
@@ -41,17 +38,6 @@ impl ShippingProviderGrpcPresenter {
 #[tonic::async_trait]
 impl ShippingProviderService for ShippingProviderGrpcPresenter {
     #[instrument]
-    async fn create_shipping_provider(
-        &self,
-        request: Request<CreateShippingProviderRequest>,
-    ) -> Result<Response<CreateShippingProviderResponse>, Status> {
-        self.shipping_provider_use_case
-            .create_shipping_provider(get_request_id_from_metadata(request.metadata()), request)
-            .await
-            .map_err(|e| Status::internal(e.to_string()))
-    }
-
-    #[instrument]
     async fn get_shipping_provider_by_id(
         &self,
         request: Request<GetShippingProviderByIdRequest>,
@@ -67,34 +53,6 @@ impl ShippingProviderService for ShippingProviderGrpcPresenter {
     }
 
     #[instrument]
-    async fn update_shipping_provider(
-        &self,
-        request: Request<UpdateShippingProviderRequest>,
-    ) -> Result<Response<UpdateShippingProviderResponse>, Status> {
-        if let Some(status) = validate_update_shipping_provider(&request) {
-            return Err(status.into());
-        }
-        self.shipping_provider_use_case
-            .update_shipping_provider(&get_request_id_from_metadata(request.metadata()), request)
-            .await
-            .map_err(|e| Status::internal(e.to_string()))
-    }
-
-    #[instrument]
-    async fn delete_shipping_provider(
-        &self,
-        request: Request<DeleteShippingProviderRequest>,
-    ) -> Result<Response<DeleteShippingProviderResponse>, Status> {
-        if let Some(status) = validate_delete_shipping_provider(&request) {
-            return Err(status.into());
-        }
-        self.shipping_provider_use_case
-            .delete_shipping_provider(get_request_id_from_metadata(request.metadata()), request)
-            .await
-            .map_err(|e| Status::internal(e.to_string()))
-    }
-
-    #[instrument]
     async fn list_shipping_providers(
         &self,
         request: Request<ListShippingProvidersRequest>,
@@ -103,7 +61,7 @@ impl ShippingProviderService for ShippingProviderGrpcPresenter {
         if let Some(status) = validate_list_shipping_providers(&request) {
             return Err(status);
         }
-        
+
         // Validate access control
         self.user_service
             .clone()

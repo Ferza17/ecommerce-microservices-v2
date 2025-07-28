@@ -11,3 +11,12 @@ message ShippingProvider {
   optional google.protobuf.Timestamp discarded_at = 5;
 }
 
+message Shipping {
+  string id = 1;
+  string user_id = 2;
+  string payment_id = 3;
+  string shipping_provider_id = 4;
+  google.protobuf.Timestamp created_at = 100;
+  google.protobuf.Timestamp updated_at = 1002;
+  optional google.protobuf.Timestamp discarded_at = 1003;
+}

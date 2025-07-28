@@ -1,43 +1,53 @@
 use crate::model::rpc::shipping::{
-    CreateShippingProviderRequest, CreateShippingProviderResponse, DeleteShippingProviderResponse,
+    CreateShippingRequest, CreateShippingResponse, DeleteShippingResponse, GetShippingByIdResponse,
     GetShippingProviderByIdResponse, ListShippingProvidersRequest, ListShippingProvidersResponse,
-    UpdateShippingProviderRequest, UpdateShippingProviderResponse,
+    ListShippingRequest, ListShippingResponse, UpdateShippingRequest, UpdateShippingResponse,
 };
 use crate::package::context::auth::AUTHORIZATION_HEADER;
-use crate::package::context::request_id::X_REQUEST_ID_HEADER;
-use HttpAuthScheme::Bearer;
 use utoipa::openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme};
-use utoipa::openapi::{Header, Schema};
 use utoipa::{Modify, OpenApi};
-
-use utoipa::openapi::schema::SchemaType;
 
 #[allow(unused_imports)]
 #[derive(OpenApi)]
 #[openapi(
+    servers(
+        (url = "http://127.0.0.1:40057", description = "HTTP"),
+        (url = "https://127.0.0.1/v1/shipping/", description = "HTTPS"),
+    ),
     paths(
+        // SHIPPING
+        crate::module::shipping::presenter_http::create_shipping,
+        crate::module::shipping::presenter_http::get_shipping_provider_by_id,
+        crate::module::shipping::presenter_http::list_shipping_providers,
+        crate::module::shipping::presenter_http::update_shipping,
+        crate::module::shipping::presenter_http::delete_shipping,
+
         // SHIPPING PROVIDER
-        crate::module::shipping_provider::presenter_http::create_shipping_provider,
         crate::module::shipping_provider::presenter_http::list_shipping_providers,
         crate::module::shipping_provider::presenter_http::get_shipping_provider_by_id,
-        crate::module::shipping_provider::presenter_http::update_shipping_provider,
-        crate::module::shipping_provider::presenter_http::delete_shipping_provider
     ),
     components(
         schemas(
+            // SHIPPING
+            CreateShippingRequest,
+            CreateShippingResponse,
+            GetShippingByIdResponse,
+            ListShippingResponse,
+            ListShippingRequest,
+            UpdateShippingRequest,
+            UpdateShippingResponse,
+            DeleteShippingResponse,
+
             // SHIPPING PROVIDER
-            CreateShippingProviderRequest,
-            CreateShippingProviderResponse,
             ListShippingProvidersRequest,
             ListShippingProvidersResponse,
             GetShippingProviderByIdResponse,
-            UpdateShippingProviderRequest,
-            UpdateShippingProviderResponse,
-            DeleteShippingProviderResponse
         ),
     ),
     tags(
-        (name = "Shipping Provider", description = "Shipping Provider API")
+        (name = "Shipping Provider", description = "Shipping Provider API"),
+        (name = "Shipping", description = "Shipping API")
+
     ),
     modifiers(&SecurityAddon)
 )]
@@ -51,7 +61,7 @@ impl Modify for SecurityAddon {
             AUTHORIZATION_HEADER.to_string(),
             SecurityScheme::Http(
                 HttpBuilder::new()
-                    .scheme(Bearer)
+                    .scheme(HttpAuthScheme::Bearer)
                     .description(Some(
                         "Bearer Token (e.g., JWT) for authentication. Format: Bearer <token>",
                     ))

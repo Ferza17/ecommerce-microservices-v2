@@ -2,6 +2,8 @@ use crate::config::config::AppConfig;
 use crate::infrastructure::database::async_postgres::get_connection;
 use crate::infrastructure::services::user::UserServiceGrpcClient;
 use crate::module::shipping::presenter_http::ShippingHttpPresenter;
+use crate::module::shipping::repository_postgres::ShippingPostgresRepositoryImpl;
+use crate::module::shipping::usecase::ShippingUseCaseImpl;
 use crate::module::shipping_provider::{
     presenter_http::ShippingProviderHttpPresenter,
     repository_postgres::ShippingProviderPostgresRepositoryImpl,
@@ -33,10 +35,6 @@ impl HttpTransport {
         let postgres_pool = get_connection(&self.config.clone()).await;
         let user_service = UserServiceGrpcClient::new(self.config.clone()).await;
 
-        // Repository Layer
-        let shipping_provider_repository =
-            ShippingProviderPostgresRepositoryImpl::new(postgres_pool);
-
         let app = Router::new()
             .merge(
                 SwaggerUi::new("/v1/shipping/docs")
@@ -45,14 +43,23 @@ impl HttpTransport {
             .nest(
                 "/v1/shipping/shipping_providers",
                 ShippingProviderHttpPresenter::new(
-                    ShippingProviderUseCaseImpl::new(shipping_provider_repository),
+                    ShippingProviderUseCaseImpl::new(ShippingProviderPostgresRepositoryImpl::new(
+                        postgres_pool.clone(),
+                    )),
                     user_service.clone(),
                 )
                 .router(),
             )
             .nest(
                 "/v1/shipping/shippings",
-                ShippingHttpPresenter::new(user_service.clone()).router(),
+                ShippingHttpPresenter::new(
+                    ShippingUseCaseImpl::new(
+                        ShippingPostgresRepositoryImpl::new(
+                        postgres_pool.clone(),
+                    )),
+                    user_service.clone(),
+                )
+                .router(),
             )
             .route("/v1/shipping/checks", get(health_check_handler));
 

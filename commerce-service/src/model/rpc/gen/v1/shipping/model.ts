@@ -18,6 +18,16 @@ export interface ShippingProvider {
   discardedAt?: Date | undefined;
 }
 
+export interface Shipping {
+  id: string;
+  userId: string;
+  paymentId: string;
+  shippingProviderId: string;
+  createdAt: Date | undefined;
+  updatedAt: Date | undefined;
+  discardedAt?: Date | undefined;
+}
+
 function createBaseShippingProvider(): ShippingProvider {
   return { id: "", name: "", createdAt: undefined, updatedAt: undefined, discardedAt: undefined };
 }
@@ -135,6 +145,170 @@ export const ShippingProvider: MessageFns<ShippingProvider> = {
     const message = createBaseShippingProvider();
     message.id = object.id ?? "";
     message.name = object.name ?? "";
+    message.createdAt = object.createdAt ?? undefined;
+    message.updatedAt = object.updatedAt ?? undefined;
+    message.discardedAt = object.discardedAt ?? undefined;
+    return message;
+  },
+};
+
+function createBaseShipping(): Shipping {
+  return {
+    id: "",
+    userId: "",
+    paymentId: "",
+    shippingProviderId: "",
+    createdAt: undefined,
+    updatedAt: undefined,
+    discardedAt: undefined,
+  };
+}
+
+export const Shipping: MessageFns<Shipping> = {
+  encode(message: Shipping, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.userId !== "") {
+      writer.uint32(18).string(message.userId);
+    }
+    if (message.paymentId !== "") {
+      writer.uint32(26).string(message.paymentId);
+    }
+    if (message.shippingProviderId !== "") {
+      writer.uint32(34).string(message.shippingProviderId);
+    }
+    if (message.createdAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(802).fork()).join();
+    }
+    if (message.updatedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.updatedAt), writer.uint32(8018).fork()).join();
+    }
+    if (message.discardedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.discardedAt), writer.uint32(8026).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): Shipping {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseShipping();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.paymentId = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.shippingProviderId = reader.string();
+          continue;
+        }
+        case 100: {
+          if (tag !== 802) {
+            break;
+          }
+
+          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 1002: {
+          if (tag !== 8018) {
+            break;
+          }
+
+          message.updatedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 1003: {
+          if (tag !== 8026) {
+            break;
+          }
+
+          message.discardedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Shipping {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
+      paymentId: isSet(object.paymentId) ? globalThis.String(object.paymentId) : "",
+      shippingProviderId: isSet(object.shippingProviderId) ? globalThis.String(object.shippingProviderId) : "",
+      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
+      updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
+      discardedAt: isSet(object.discardedAt) ? fromJsonTimestamp(object.discardedAt) : undefined,
+    };
+  },
+
+  toJSON(message: Shipping): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.userId !== "") {
+      obj.userId = message.userId;
+    }
+    if (message.paymentId !== "") {
+      obj.paymentId = message.paymentId;
+    }
+    if (message.shippingProviderId !== "") {
+      obj.shippingProviderId = message.shippingProviderId;
+    }
+    if (message.createdAt !== undefined) {
+      obj.createdAt = message.createdAt.toISOString();
+    }
+    if (message.updatedAt !== undefined) {
+      obj.updatedAt = message.updatedAt.toISOString();
+    }
+    if (message.discardedAt !== undefined) {
+      obj.discardedAt = message.discardedAt.toISOString();
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<Shipping>): Shipping {
+    return Shipping.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<Shipping>): Shipping {
+    const message = createBaseShipping();
+    message.id = object.id ?? "";
+    message.userId = object.userId ?? "";
+    message.paymentId = object.paymentId ?? "";
+    message.shippingProviderId = object.shippingProviderId ?? "";
     message.createdAt = object.createdAt ?? undefined;
     message.updatedAt = object.updatedAt ?? undefined;
     message.discardedAt = object.discardedAt ?? undefined;

@@ -3,22 +3,36 @@ package shipping;
 
 import "external/validate/validate.proto";
 
+// SHIPPING PROTO DEFINITION
+message CreateShippingRequest{
+  string user_id = 1;
+  string payment_id = 2;
+  string shipping_provider_id = 3;
+};
+
+message GetShippingByIdRequest{
+  string id = 1;
+};
+
+message ListShippingRequest{
+  uint32 page = 1;
+  uint32 limit = 2;
+};
+
+message UpdateShippingRequest{
+  string id = 1;
+  string user_id = 2;
+  string payment_id = 3;
+  string shipping_provider_id = 4;
+};
+
+message DeleteShippingRequest{
+  string id = 1;
+};
+
 
 // SHIPPING PROVIDER PROTO DEFINITION
-message CreateShippingProviderRequest {
-  string name = 1 [(validate.rules).string.ignore_empty = false];
-}
-
 message GetShippingProviderByIdRequest {
-  string id = 1 [(validate.rules).string.ignore_empty = false];
-}
-
-message UpdateShippingProviderRequest {
-  string id = 1 [(validate.rules).string.ignore_empty = false];
-  optional string name = 2 [(validate.rules).string.ignore_empty = false];
-}
-
-message DeleteShippingProviderRequest {
   string id = 1 [(validate.rules).string.ignore_empty = false];
 }
 
