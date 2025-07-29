@@ -15,9 +15,10 @@ use crate::module::shipping_provider::validate::{
 };
 use crate::package::context::auth::get_request_authorization_token_from_header;
 use crate::package::context::request_id::get_request_id_from_header;
+use crate::util;
 use axum::extract::State;
 use axum::http::HeaderMap;
-use axum::routing::{delete, get, post, put};
+use axum::routing::get;
 use axum::{
     extract::{Path, Query},
     http::StatusCode,
@@ -25,7 +26,7 @@ use axum::{
 };
 use std::convert::Infallible;
 use std::sync::Arc;
-use tonic::Request;
+use tonic::{Code, Request};
 use tower::ServiceBuilder;
 use tracing::{error, instrument};
 
@@ -104,7 +105,7 @@ pub async fn list_shipping_providers(
         Ok(response) => {
             if !response.data.unwrap().is_valid {
                 return Ok((
-                    StatusCode::FORBIDDEN,
+                    util::convert_status::tonic_to_http_status(Code::PermissionDenied),
                     Json(ListShippingProvidersResponse {
                         message: "forbidden".to_string(),
                         status: "error".to_string(),
@@ -116,7 +117,7 @@ pub async fn list_shipping_providers(
         Err(err) => {
             error!("AuthUserVerifyAccessControl failed: {}", err.message());
             return Ok((
-                StatusCode::INTERNAL_SERVER_ERROR,
+                util::convert_status::tonic_to_http_status(err.code()),
                 Json(ListShippingProvidersResponse {
                     message: err.message().to_string(),
                     status: "error".to_string(),
@@ -129,7 +130,7 @@ pub async fn list_shipping_providers(
     if let Some(_status) = validate_list_shipping_providers(&request) {
         error!("Invalid request parameters");
         return Ok((
-            StatusCode::BAD_REQUEST,
+            util::convert_status::tonic_to_http_status(Code::InvalidArgument),
             Json(ListShippingProvidersResponse {
                 message: "bad request".to_string(),
                 status: "error".to_string(),
@@ -144,11 +145,14 @@ pub async fn list_shipping_providers(
         .await;
 
     match result {
-        Ok(response) => Ok((StatusCode::OK, Json(response.into_inner()))),
+        Ok(response) => Ok((
+            util::convert_status::tonic_to_http_status(Code::Ok),
+            Json(response.into_inner()),
+        )),
         Err(err) => {
             error!("ListShippingProviders failed: {}", err.message());
             Ok((
-                StatusCode::INTERNAL_SERVER_ERROR,
+                util::convert_status::tonic_to_http_status(err.code()),
                 Json(ListShippingProvidersResponse {
                     message: err.message().to_string(),
                     status: "error".to_string(),
@@ -180,7 +184,7 @@ pub async fn get_shipping_provider_by_id(
     if let Some(_status) = validate_get_shipping_provider_by_id(&request) {
         error!("Invalid request parameters");
         return Ok((
-            StatusCode::BAD_REQUEST,
+            util::convert_status::tonic_to_http_status(Code::InvalidArgument),
             Json(GetShippingProviderByIdResponse {
                 message: "bad request".to_string(),
                 status: "error".to_string(),
@@ -195,11 +199,14 @@ pub async fn get_shipping_provider_by_id(
         .await;
 
     match result {
-        Ok(response) => Ok((StatusCode::OK, Json(response.into_inner()))),
+        Ok(response) => Ok((
+            util::convert_status::tonic_to_http_status(Code::Ok),
+            Json(response.into_inner()),
+        )),
         Err(err) => {
             error!("GetShippingProviderById failed: {}", err.message());
             Ok((
-                StatusCode::INTERNAL_SERVER_ERROR,
+                util::convert_status::tonic_to_http_status(err.code()),
                 Json(GetShippingProviderByIdResponse {
                     message: err.message().to_string(),
                     status: "error".to_string(),

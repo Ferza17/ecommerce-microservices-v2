@@ -6,7 +6,7 @@ use crate::model::rpc::shipping::{
     UpdateShippingRequest, UpdateShippingResponse,
 };
 use crate::model::rpc::user::AuthUserVerifyAccessControlRequest;
-use crate::module::shipping::usecase::ShippingUseCaseImpl;
+use crate::module::shipping::usecase::{ShippingUseCase, ShippingUseCaseImpl};
 use crate::package::context::auth::get_request_authorization_token_from_metadata;
 use crate::package::context::request_id::get_request_id_from_metadata;
 use crate::package::context::url_path::get_url_path_from_metadata;
@@ -52,7 +52,11 @@ impl ShippingService for ShippingGrpcPresenter {
             )
             .await
             .map_err(|e| Status::from_error(Box::new(e)))?;
-        todo!()
+
+        self.shipping_use_case
+            .create_shipping(get_request_id_from_metadata(request.metadata()), request)
+            .await
+            .map_err(|e| Status::new(e.code(), e.message()))
     }
 
     #[instrument]
@@ -74,7 +78,11 @@ impl ShippingService for ShippingGrpcPresenter {
             )
             .await
             .map_err(|e| Status::from_error(Box::new(e)))?;
-        todo!()
+
+        self.shipping_use_case
+            .get_shipping_by_id(get_request_id_from_metadata(request.metadata()), request)
+            .await
+            .map_err(|e| Status::new(e.code(), e.message()))
     }
 
     #[instrument]
@@ -96,7 +104,11 @@ impl ShippingService for ShippingGrpcPresenter {
             )
             .await
             .map_err(|e| Status::from_error(Box::new(e)))?;
-        todo!()
+
+        self.shipping_use_case
+            .list_shipping(get_request_id_from_metadata(request.metadata()), request)
+            .await
+            .map_err(|e| Status::new(e.code(), e.message()))
     }
 
     #[instrument]
@@ -118,7 +130,11 @@ impl ShippingService for ShippingGrpcPresenter {
             )
             .await
             .map_err(|e| Status::from_error(Box::new(e)))?;
-        todo!()
+
+        self.shipping_use_case
+            .update_shipping(get_request_id_from_metadata(request.metadata()), request)
+            .await
+            .map_err(|e| Status::new(e.code(), e.message()))
     }
 
     #[instrument]
@@ -140,6 +156,10 @@ impl ShippingService for ShippingGrpcPresenter {
             )
             .await
             .map_err(|e| Status::from_error(Box::new(e)))?;
-        todo!()
+
+        self.shipping_use_case
+            .delete_shipping(get_request_id_from_metadata(request.metadata()), request)
+            .await
+            .map_err(|e| Status::new(e.code(), e.message()))
     }
 }

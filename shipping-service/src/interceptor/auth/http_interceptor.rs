@@ -3,6 +3,7 @@ use crate::model::rpc::response::Response as CommonResponse;
 use crate::model::rpc::user::AuthServiceVerifyIsExcludedRequest;
 use crate::package::context::auth::AUTHORIZATION_HEADER;
 use crate::package::context::request_id::get_request_id_from_header;
+use crate::util;
 use axum::body::Body;
 use axum::http::{Request, Response};
 use axum::response::Json;
@@ -53,14 +54,17 @@ where
         match verify_result {
             Ok(res) => {
                 let Some(data) = res.data else {
-                    return Either::Right(ready(unauthorize_response("no data in response")));
+                    return Either::Right(ready(unauthorize_response(
+                        Code::Unauthenticated,
+                        "no data in response",
+                    )));
                 };
                 if data.is_excluded {
                     return Either::Left(self.inner.call(req));
                 }
             }
-            Err(_err) => {
-                return Either::Right(ready(unauthorize_response("failed to verify exclusion")));
+            Err(err) => {
+                return Either::Right(ready(unauthorize_response(err.code(), err.message())));
             }
         }
 
@@ -71,6 +75,7 @@ where
                     Ok(s) => s,
                     Err(_) => {
                         return Either::Right(ready(unauthorize_response(
+                            Code::Unauthenticated,
                             "invalid authorization header",
                         )));
                     }
@@ -80,6 +85,7 @@ where
                     || token_str.trim_start_matches("Bearer ").trim().is_empty()
                 {
                     return Either::Right(ready(unauthorize_response(
+                        Code::Unauthenticated,
                         "invalid bearer token format",
                     )));
                 }
@@ -87,7 +93,10 @@ where
                 token_str.trim_start_matches("Bearer ").trim().to_string()
             }
             None => {
-                return Either::Right(ready(unauthorize_response("missing authorization header")));
+                return Either::Right(ready(unauthorize_response(
+                    Code::Unauthenticated,
+                    "missing authorization header",
+                )));
             }
         };
 
@@ -98,17 +107,17 @@ where
     }
 }
 
-fn unauthorize_response(message: &str) -> Result<Response<Body>, Infallible> {
+fn unauthorize_response(status: Code, message: &str) -> Result<Response<Body>, Infallible> {
     let json_response = Json(CommonResponse {
         error: "unauthorized".to_string(),
         message: message.to_string(),
-        code: Code::Unauthenticated as i32,
+        code: util::convert_status::tonic_to_http_status(status).as_u16() as i32,
         data: None,
     });
 
     // Convert Json to Response<Body>
     let response = Response::builder()
-        .status(401)
+        .status(util::convert_status::tonic_to_http_status(status))
         .header("content-type", "application/json")
         .body(Body::from(
             serde_json::to_vec(&json_response.0).unwrap_or_default(),

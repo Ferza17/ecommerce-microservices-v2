@@ -4,18 +4,20 @@ use crate::interceptor::logger::LoggerLayer;
 use crate::interceptor::request_id::RequestIdLayer;
 use crate::model::rpc::shipping::{
     CreateShippingRequest, CreateShippingResponse, DeleteShippingRequest, DeleteShippingResponse,
-    GetShippingByIdRequest, GetShippingByIdResponse, ListShippingProvidersResponse,
-    ListShippingRequest, ListShippingResponse, UpdateShippingRequest, UpdateShippingResponse,
+    GetShippingByIdRequest, GetShippingByIdResponse, ListShippingRequest, ListShippingResponse,
+    UpdateShippingRequest, UpdateShippingResponse,
 };
 use crate::model::rpc::user::AuthUserVerifyAccessControlRequest;
-use crate::module::shipping::usecase::ShippingUseCaseImpl;
+use crate::module::shipping::usecase::{ShippingUseCase, ShippingUseCaseImpl};
 use crate::package::context::auth::get_request_authorization_token_from_header;
 use crate::package::context::request_id::get_request_id_from_header;
+use crate::util;
 use axum::Json;
 use axum::extract::{Path, Query, State};
 use axum::http::{HeaderMap, StatusCode};
 use axum::routing::{delete, get, post, put};
 use std::sync::Arc;
+use tonic::Code;
 use tower::ServiceBuilder;
 use tracing::{error, instrument};
 
@@ -91,7 +93,7 @@ pub async fn create_shipping(
         Ok(response) => {
             if !response.data.unwrap().is_valid {
                 return Ok((
-                    StatusCode::FORBIDDEN,
+                    util::convert_status::tonic_to_http_status(Code::PermissionDenied),
                     Json(CreateShippingResponse {
                         message: "forbidden".to_string(),
                         status: "error".to_string(),
@@ -103,7 +105,7 @@ pub async fn create_shipping(
         Err(err) => {
             error!("AuthUserVerifyAccessControl failed: {}", err.message());
             return Ok((
-                StatusCode::FORBIDDEN,
+                util::convert_status::tonic_to_http_status(err.code()),
                 Json(CreateShippingResponse {
                     message: err.message().to_string(),
                     status: "error".to_string(),
@@ -112,7 +114,29 @@ pub async fn create_shipping(
             ));
         }
     }
-    todo!()
+
+    let result = state
+        .shipping_use_case
+        .create_shipping(get_request_id_from_header(&headers), request)
+        .await;
+
+    match result {
+        Ok(response) => Ok((
+            util::convert_status::tonic_to_http_status(Code::Ok),
+            Json(response.into_inner()),
+        )),
+        Err(err) => {
+            error!("GetShippingProviderById failed: {}", err.message());
+            Ok((
+                util::convert_status::tonic_to_http_status(err.code()),
+                Json(CreateShippingResponse {
+                    message: err.message().to_string(),
+                    status: "error".to_string(),
+                    data: None,
+                }),
+            ))
+        }
+    }
 }
 
 #[utoipa::path(
@@ -155,7 +179,7 @@ pub async fn get_shipping_provider_by_id(
         Ok(response) => {
             if !response.data.unwrap().is_valid {
                 return Ok((
-                    StatusCode::FORBIDDEN,
+                    util::convert_status::tonic_to_http_status(Code::PermissionDenied),
                     Json(GetShippingByIdResponse {
                         message: "forbidden".to_string(),
                         status: "error".to_string(),
@@ -167,7 +191,7 @@ pub async fn get_shipping_provider_by_id(
         Err(err) => {
             error!("AuthUserVerifyAccessControl failed: {}", err.message());
             return Ok((
-                StatusCode::FORBIDDEN,
+                util::convert_status::tonic_to_http_status(err.code()),
                 Json(GetShippingByIdResponse {
                     message: err.message().to_string(),
                     status: "error".to_string(),
@@ -177,14 +201,28 @@ pub async fn get_shipping_provider_by_id(
         }
     }
 
-    Ok((
-        StatusCode::FORBIDDEN,
-        Json(GetShippingByIdResponse {
-            message: "forbidden".to_string(),
-            status: "error".to_string(),
-            data: None,
-        }),
-    ))
+    let result = state
+        .shipping_use_case
+        .get_shipping_by_id(get_request_id_from_header(&headers), request)
+        .await;
+
+    match result {
+        Ok(response) => Ok((
+            util::convert_status::tonic_to_http_status(Code::Ok),
+            Json(response.into_inner()),
+        )),
+        Err(err) => {
+            error!("get_shipping_by_id failed: {}", err.message());
+            Ok((
+                util::convert_status::tonic_to_http_status(err.code()),
+                Json(GetShippingByIdResponse {
+                    message: err.message().to_string(),
+                    status: "error".to_string(),
+                    data: None,
+                }),
+            ))
+        }
+    }
 }
 
 #[utoipa::path(
@@ -229,7 +267,7 @@ pub async fn list_shipping_providers(
         Ok(response) => {
             if !response.data.unwrap().is_valid {
                 return Ok((
-                    StatusCode::FORBIDDEN,
+                    util::convert_status::tonic_to_http_status(Code::PermissionDenied),
                     Json(ListShippingResponse {
                         message: "forbidden".to_string(),
                         status: "error".to_string(),
@@ -241,7 +279,7 @@ pub async fn list_shipping_providers(
         Err(err) => {
             error!("AuthUserVerifyAccessControl failed: {}", err.message());
             return Ok((
-                StatusCode::FORBIDDEN,
+                util::convert_status::tonic_to_http_status(err.code()),
                 Json(ListShippingResponse {
                     message: err.message().to_string(),
                     status: "error".to_string(),
@@ -251,14 +289,27 @@ pub async fn list_shipping_providers(
         }
     }
 
-    Ok((
-        StatusCode::INTERNAL_SERVER_ERROR,
-        Json(ListShippingResponse {
-            message: "".to_string(),
-            status: "error".to_string(),
-            data: vec![],
-        }),
-    ))
+    let result = state
+        .shipping_use_case
+        .list_shipping(get_request_id_from_header(&headers), request)
+        .await;
+
+    match result {
+        Ok(response) => Ok((
+            util::convert_status::tonic_to_http_status(Code::Ok),
+            Json(response.into_inner()))),
+        Err(err) => {
+            error!("list_shipping failed: {}", err.message());
+            Ok((
+                util::convert_status::tonic_to_http_status(err.code()),
+                Json(ListShippingResponse {
+                    message: err.message().to_string(),
+                    status: "error".to_string(),
+                    data: vec![],
+                }),
+            ))
+        }
+    }
 }
 
 #[utoipa::path(
@@ -308,7 +359,7 @@ pub async fn update_shipping(
         Ok(response) => {
             if !response.data.unwrap().is_valid {
                 return Ok((
-                    StatusCode::FORBIDDEN,
+                    util::convert_status::tonic_to_http_status(Code::PermissionDenied),
                     Json(UpdateShippingResponse {
                         message: "forbidden".to_string(),
                         status: "error".to_string(),
@@ -320,7 +371,7 @@ pub async fn update_shipping(
         Err(err) => {
             error!("AuthUserVerifyAccessControl failed: {}", err.message());
             return Ok((
-                StatusCode::FORBIDDEN,
+                util::convert_status::tonic_to_http_status(err.code()),
                 Json(UpdateShippingResponse {
                     message: err.message().to_string(),
                     status: "error".to_string(),
@@ -329,14 +380,28 @@ pub async fn update_shipping(
             ));
         }
     }
-    Ok((
-        StatusCode::FORBIDDEN,
-        Json(UpdateShippingResponse {
-            message: "forbidden".to_string(),
-            status: "error".to_string(),
-            data: None,
-        }),
-    ))
+    let result = state
+        .shipping_use_case
+        .update_shipping(get_request_id_from_header(&headers), request)
+        .await;
+
+    match result {
+        Ok(response) => Ok((
+            util::convert_status::tonic_to_http_status(Code::Ok),
+            Json(response.into_inner()),
+        )),
+        Err(err) => {
+            error!("update_shipping failed: {}", err.message());
+            Ok((
+                util::convert_status::tonic_to_http_status(err.code()),
+                Json(UpdateShippingResponse {
+                    message: err.message().to_string(),
+                    status: "error".to_string(),
+                    data: None,
+                }),
+            ))
+        }
+    }
 }
 
 #[utoipa::path(
@@ -379,7 +444,7 @@ pub async fn delete_shipping(
         Ok(response) => {
             if !response.data.unwrap().is_valid {
                 return Ok((
-                    StatusCode::FORBIDDEN,
+                    util::convert_status::tonic_to_http_status(Code::PermissionDenied),
                     Json(DeleteShippingResponse {
                         message: "forbidden".to_string(),
                         status: "error".to_string(),
@@ -391,7 +456,7 @@ pub async fn delete_shipping(
         Err(err) => {
             error!("AuthUserVerifyAccessControl failed: {}", err.message());
             return Ok((
-                StatusCode::FORBIDDEN,
+                util::convert_status::tonic_to_http_status(err.code()),
                 Json(DeleteShippingResponse {
                     message: err.message().to_string(),
                     status: "error".to_string(),
@@ -400,12 +465,26 @@ pub async fn delete_shipping(
             ));
         }
     }
-    Ok((
-        StatusCode::FORBIDDEN,
-        Json(DeleteShippingResponse {
-            message: "forbidden".to_string(),
-            status: "error".to_string(),
-            data: None,
-        }),
-    ))
+    let result = state
+        .shipping_use_case
+        .delete_shipping(get_request_id_from_header(&headers), request)
+        .await;
+
+    match result {
+        Ok(response) => Ok((
+            util::convert_status::tonic_to_http_status(Code::Ok),
+            Json(response.into_inner()),
+        )),
+        Err(err) => {
+            error!("delete_shipping failed: {}", err.message());
+            Ok((
+                util::convert_status::tonic_to_http_status(err.code()),
+                Json(DeleteShippingResponse {
+                    message: err.message().to_string(),
+                    status: "error".to_string(),
+                    data: None,
+                }),
+            ))
+        }
+    }
 }

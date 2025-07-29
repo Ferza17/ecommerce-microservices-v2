@@ -81,6 +81,6 @@ impl ShippingProviderService for ShippingProviderGrpcPresenter {
         self.shipping_provider_use_case
             .list_shipping_providers(get_request_id_from_metadata(request.metadata()), request)
             .await
-            .map_err(|e| Status::internal(e.to_string()))
+            .map_err(|e| Status::new(e.code(), e.to_string()))
     }
 }
