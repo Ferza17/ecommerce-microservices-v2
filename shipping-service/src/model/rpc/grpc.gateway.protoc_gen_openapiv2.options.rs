@@ -25,6 +25,7 @@
 ///     produces: "application/json";
 ///   };
 ///
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -33,16 +34,19 @@ pub struct Swagger {
     /// used by the OpenAPI UI and other clients to interpret the API listing. The
     /// value MUST be "2.0".
     #[prost(string, tag = "1")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Swagger.swagger")]
     pub swagger: ::prost::alloc::string::String,
     /// Provides metadata about the API. The metadata can be used by the
     /// clients if needed.
     #[prost(message, optional, tag = "2")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Swagger.info")]
     pub info: ::core::option::Option<Info>,
     /// The host (name or ip) serving the API. This MUST be the host only and does
     /// not include the scheme nor sub-paths. It MAY include a port. If the host is
     /// not included, the host serving the documentation is to be used (including
     /// the port). The host does not support path templating.
     #[prost(string, tag = "3")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Swagger.host")]
     pub host: ::prost::alloc::string::String,
     /// The base path on which the API is served, which is relative to the host. If
     /// it is not included, the API is served directly under the host. The value
@@ -54,46 +58,58 @@ pub struct Swagger {
     /// manually removed from your `google.api.http` paths and your code changed to
     /// serve the API from the `base_path`.
     #[prost(string, tag = "4")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Swagger.base_path")]
     pub base_path: ::prost::alloc::string::String,
     /// The transfer protocol of the API. Values MUST be from the list: "http",
     /// "https", "ws", "wss". If the schemes is not included, the default scheme to
     /// be used is the one used to access the OpenAPI definition itself.
     #[prost(enumeration = "Scheme", repeated, tag = "5")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Swagger.schemes")]
     pub schemes: ::prost::alloc::vec::Vec<i32>,
     /// A list of MIME types the APIs can consume. This is global to all APIs but
     /// can be overridden on specific API calls. Value MUST be as described under
     /// Mime Types.
     #[prost(string, repeated, tag = "6")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Swagger.consumes")]
     pub consumes: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     /// A list of MIME types the APIs can produce. This is global to all APIs but
     /// can be overridden on specific API calls. Value MUST be as described under
     /// Mime Types.
     #[prost(string, repeated, tag = "7")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Swagger.produces")]
     pub produces: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     /// An object to hold responses that can be used across operations. This
     /// property does not define global responses for all operations.
     #[prost(map = "string, message", tag = "10")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Swagger.responses")]
     pub responses: ::std::collections::HashMap<::prost::alloc::string::String, Response>,
     /// Security scheme definitions that can be used across the specification.
     #[prost(message, optional, tag = "11")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.Swagger.security_definitions"
+    )]
     pub security_definitions: ::core::option::Option<SecurityDefinitions>,
     /// A declaration of which security schemes are applied for the API as a whole.
     /// The list of values describes alternative security schemes that can be used
     /// (that is, there is a logical OR between the security requirements).
     /// Individual operations can override this definition.
     #[prost(message, repeated, tag = "12")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Swagger.security")]
     pub security: ::prost::alloc::vec::Vec<SecurityRequirement>,
     /// A list of tags for API documentation control. Tags can be used for logical
     /// grouping of operations by resources or any other qualifier.
     #[prost(message, repeated, tag = "13")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Swagger.tags")]
     pub tags: ::prost::alloc::vec::Vec<Tag>,
     /// Additional external documentation.
     #[prost(message, optional, tag = "14")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Swagger.external_docs")]
     pub external_docs: ::core::option::Option<ExternalDocumentation>,
     /// Custom properties that start with "x-" such as "x-foo" used to describe
     /// extra functionality that is not covered by the standard OpenAPI Specification.
     /// See: <https://swagger.io/docs/specification/2-0/swagger-extensions/>
     #[prost(map = "string, message", tag = "15")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Swagger.extensions")]
     pub extensions: ::std::collections::HashMap<
         ::prost::alloc::string::String,
         ::prost_types::Value,
@@ -124,6 +140,7 @@ pub struct Swagger {
 ///       };
 ///     }
 ///   }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -131,46 +148,60 @@ pub struct Operation {
     /// A list of tags for API documentation control. Tags can be used for logical
     /// grouping of operations by resources or any other qualifier.
     #[prost(string, repeated, tag = "1")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Operation.tags")]
     pub tags: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     /// A short summary of what the operation does. For maximum readability in the
     /// swagger-ui, this field SHOULD be less than 120 characters.
     #[prost(string, tag = "2")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Operation.summary")]
     pub summary: ::prost::alloc::string::String,
     /// A verbose explanation of the operation behavior. GFM syntax can be used for
     /// rich text representation.
     #[prost(string, tag = "3")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Operation.description")]
     pub description: ::prost::alloc::string::String,
     /// Additional external documentation for this operation.
     #[prost(message, optional, tag = "4")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.Operation.external_docs"
+    )]
     pub external_docs: ::core::option::Option<ExternalDocumentation>,
     /// Unique string used to identify the operation. The id MUST be unique among
     /// all operations described in the API. Tools and libraries MAY use the
     /// operationId to uniquely identify an operation, therefore, it is recommended
     /// to follow common programming naming conventions.
     #[prost(string, tag = "5")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.Operation.operation_id"
+    )]
     pub operation_id: ::prost::alloc::string::String,
     /// A list of MIME types the operation can consume. This overrides the consumes
     /// definition at the OpenAPI Object. An empty value MAY be used to clear the
     /// global definition. Value MUST be as described under Mime Types.
     #[prost(string, repeated, tag = "6")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Operation.consumes")]
     pub consumes: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     /// A list of MIME types the operation can produce. This overrides the produces
     /// definition at the OpenAPI Object. An empty value MAY be used to clear the
     /// global definition. Value MUST be as described under Mime Types.
     #[prost(string, repeated, tag = "7")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Operation.produces")]
     pub produces: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     /// The list of possible responses as they are returned from executing this
     /// operation.
     #[prost(map = "string, message", tag = "9")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Operation.responses")]
     pub responses: ::std::collections::HashMap<::prost::alloc::string::String, Response>,
     /// The transfer protocol for the operation. Values MUST be from the list:
     /// "http", "https", "ws", "wss". The value overrides the OpenAPI Object
     /// schemes definition.
     #[prost(enumeration = "Scheme", repeated, tag = "10")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Operation.schemes")]
     pub schemes: ::prost::alloc::vec::Vec<i32>,
     /// Declares this operation to be deprecated. Usage of the declared operation
     /// should be refrained. Default value is false.
     #[prost(bool, tag = "11")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Operation.deprecated")]
     pub deprecated: bool,
     /// A declaration of which security schemes are applied for this operation. The
     /// list of values describes alternative security schemes that can be used
@@ -178,11 +209,13 @@ pub struct Operation {
     /// definition overrides any declared top-level security. To remove a top-level
     /// security declaration, an empty array can be used.
     #[prost(message, repeated, tag = "12")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Operation.security")]
     pub security: ::prost::alloc::vec::Vec<SecurityRequirement>,
     /// Custom properties that start with "x-" such as "x-foo" used to describe
     /// extra functionality that is not covered by the standard OpenAPI Specification.
     /// See: <https://swagger.io/docs/specification/2-0/swagger-extensions/>
     #[prost(map = "string, message", tag = "13")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Operation.extensions")]
     pub extensions: ::std::collections::HashMap<
         ::prost::alloc::string::String,
         ::prost_types::Value,
@@ -191,6 +224,7 @@ pub struct Operation {
     /// See: <https://swagger.io/docs/specification/2-0/describing-parameters/>
     /// and <https://swagger.io/specification/v2/#parameter-object.>
     #[prost(message, optional, tag = "14")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Operation.parameters")]
     pub parameters: ::core::option::Option<Parameters>,
 }
 /// `Parameters` is a representation of OpenAPI v2 specification's parameters object.
@@ -198,6 +232,7 @@ pub struct Operation {
 /// allow header parameters to be set here since we do not want users specifying custom non-header
 /// parameters beyond those inferred from the Protobuf schema.
 /// See: <https://swagger.io/specification/v2/#parameter-object>
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -205,29 +240,42 @@ pub struct Parameters {
     /// `Headers` is one or more HTTP header parameter.
     /// See: <https://swagger.io/docs/specification/2-0/describing-parameters/#header-parameters>
     #[prost(message, repeated, tag = "1")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Parameters.headers")]
     pub headers: ::prost::alloc::vec::Vec<HeaderParameter>,
 }
 /// `HeaderParameter` a HTTP header parameter.
 /// See: <https://swagger.io/specification/v2/#parameter-object>
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct HeaderParameter {
     /// `Name` is the header name.
     #[prost(string, tag = "1")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.HeaderParameter.name")]
     pub name: ::prost::alloc::string::String,
     /// `Description` is a short description of the header.
     #[prost(string, tag = "2")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.HeaderParameter.description"
+    )]
     pub description: ::prost::alloc::string::String,
     /// `Type` is the type of the object. The value MUST be one of "string", "number", "integer", or "boolean". The "array" type is not supported.
     /// See: <https://swagger.io/specification/v2/#parameterType.>
     #[prost(enumeration = "header_parameter::Type", tag = "3")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.HeaderParameter.type")]
     pub r#type: i32,
     /// `Format` The extending format for the previously mentioned type.
     #[prost(string, tag = "4")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.HeaderParameter.format"
+    )]
     pub format: ::prost::alloc::string::String,
     /// `Required` indicates if the header is optional
     #[prost(bool, tag = "5")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.HeaderParameter.required"
+    )]
     pub required: bool,
 }
 /// Nested message and enum types in `HeaderParameter`.
@@ -286,32 +334,39 @@ pub mod header_parameter {
 ///
 /// See: <https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#headerObject>
 ///
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Header {
     /// `Description` is a short description of the header.
     #[prost(string, tag = "1")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Header.description")]
     pub description: ::prost::alloc::string::String,
     /// The type of the object. The value MUST be one of "string", "number", "integer", or "boolean". The "array" type is not supported.
     #[prost(string, tag = "2")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Header.type")]
     pub r#type: ::prost::alloc::string::String,
     /// `Format` The extending format for the previously mentioned type.
     #[prost(string, tag = "3")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Header.format")]
     pub format: ::prost::alloc::string::String,
     /// `Default` Declares the value of the header that the server will use if none is provided.
     /// See: <https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-6.2.>
     /// Unlike JSON Schema this value MUST conform to the defined type for the header.
     #[prost(string, tag = "6")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Header.default")]
     pub default: ::prost::alloc::string::String,
     /// 'Pattern' See <https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-5.2.3.>
     #[prost(string, tag = "13")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Header.pattern")]
     pub pattern: ::prost::alloc::string::String,
 }
 /// `Response` is a representation of OpenAPI v2 specification's Response object.
 ///
 /// See: <https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#responseObject>
 ///
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -319,19 +374,23 @@ pub struct Response {
     /// `Description` is a short description of the response.
     /// GFM syntax can be used for rich text representation.
     #[prost(string, tag = "1")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Response.description")]
     pub description: ::prost::alloc::string::String,
     /// `Schema` optionally defines the structure of the response.
     /// If `Schema` is not provided, it means there is no content to the response.
     #[prost(message, optional, tag = "2")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Response.schema")]
     pub schema: ::core::option::Option<Schema>,
     /// `Headers` A list of headers that are sent with the response.
     /// `Header` name is expected to be a string in the canonical format of the MIME header key
     /// See: <https://golang.org/pkg/net/textproto/#CanonicalMIMEHeaderKey>
     #[prost(map = "string, message", tag = "3")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Response.headers")]
     pub headers: ::std::collections::HashMap<::prost::alloc::string::String, Header>,
     /// `Examples` gives per-mimetype response examples.
     /// See: <https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#example-object>
     #[prost(map = "string, string", tag = "4")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Response.examples")]
     pub examples: ::std::collections::HashMap<
         ::prost::alloc::string::String,
         ::prost::alloc::string::String,
@@ -340,6 +399,7 @@ pub struct Response {
     /// extra functionality that is not covered by the standard OpenAPI Specification.
     /// See: <https://swagger.io/docs/specification/2-0/swagger-extensions/>
     #[prost(map = "string, message", tag = "5")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Response.extensions")]
     pub extensions: ::std::collections::HashMap<
         ::prost::alloc::string::String,
         ::prost_types::Value,
@@ -369,34 +429,42 @@ pub struct Response {
 ///     ...
 ///   };
 ///
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Info {
     /// The title of the application.
     #[prost(string, tag = "1")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Info.title")]
     pub title: ::prost::alloc::string::String,
     /// A short description of the application. GFM syntax can be used for rich
     /// text representation.
     #[prost(string, tag = "2")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Info.description")]
     pub description: ::prost::alloc::string::String,
     /// The Terms of Service for the API.
     #[prost(string, tag = "3")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Info.terms_of_service")]
     pub terms_of_service: ::prost::alloc::string::String,
     /// The contact information for the exposed API.
     #[prost(message, optional, tag = "4")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Info.contact")]
     pub contact: ::core::option::Option<Contact>,
     /// The license information for the exposed API.
     #[prost(message, optional, tag = "5")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Info.license")]
     pub license: ::core::option::Option<License>,
     /// Provides the version of the application API (not to be confused
     /// with the specification version).
     #[prost(string, tag = "6")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Info.version")]
     pub version: ::prost::alloc::string::String,
     /// Custom properties that start with "x-" such as "x-foo" used to describe
     /// extra functionality that is not covered by the standard OpenAPI Specification.
     /// See: <https://swagger.io/docs/specification/2-0/swagger-extensions/>
     #[prost(map = "string, message", tag = "7")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Info.extensions")]
     pub extensions: ::std::collections::HashMap<
         ::prost::alloc::string::String,
         ::prost_types::Value,
@@ -421,20 +489,24 @@ pub struct Info {
 ///     ...
 ///   };
 ///
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Contact {
     /// The identifying name of the contact person/organization.
     #[prost(string, tag = "1")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Contact.name")]
     pub name: ::prost::alloc::string::String,
     /// The URL pointing to the contact information. MUST be in the format of a
     /// URL.
     #[prost(string, tag = "2")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Contact.url")]
     pub url: ::prost::alloc::string::String,
     /// The email address of the contact person/organization. MUST be in the format
     /// of an email address.
     #[prost(string, tag = "3")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Contact.email")]
     pub email: ::prost::alloc::string::String,
 }
 /// `License` is a representation of OpenAPI v2 specification's License object.
@@ -455,15 +527,18 @@ pub struct Contact {
 ///     ...
 ///   };
 ///
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct License {
     /// The license name used for the API.
     #[prost(string, tag = "1")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.License.name")]
     pub name: ::prost::alloc::string::String,
     /// A URL to the license used for the API. MUST be in the format of a URL.
     #[prost(string, tag = "2")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.License.url")]
     pub url: ::prost::alloc::string::String,
 }
 /// `ExternalDocumentation` is a representation of OpenAPI v2 specification's
@@ -482,6 +557,7 @@ pub struct License {
 ///     ...
 ///   };
 ///
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -489,21 +565,29 @@ pub struct ExternalDocumentation {
     /// A short description of the target documentation. GFM syntax can be used for
     /// rich text representation.
     #[prost(string, tag = "1")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.ExternalDocumentation.description"
+    )]
     pub description: ::prost::alloc::string::String,
     /// The URL for the target documentation. Value MUST be in the format
     /// of a URL.
     #[prost(string, tag = "2")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.ExternalDocumentation.url"
+    )]
     pub url: ::prost::alloc::string::String,
 }
 /// `Schema` is a representation of OpenAPI v2 specification's Schema object.
 ///
 /// See: <https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#schemaObject>
 ///
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Schema {
     #[prost(message, optional, tag = "1")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Schema.json_schema")]
     pub json_schema: ::core::option::Option<JsonSchema>,
     /// Adds support for polymorphism. The discriminator is the schema property
     /// name that is used to differentiate between other schema that inherit this
@@ -511,6 +595,7 @@ pub struct Schema {
     /// be in the required property list. When used, the value MUST be the name of
     /// this schema or any schema that inherits it.
     #[prost(string, tag = "2")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Schema.discriminator")]
     pub discriminator: ::prost::alloc::string::String,
     /// Relevant only for Schema "properties" definitions. Declares the property as
     /// "read only". This means that it MAY be sent as part of a response but MUST
@@ -518,13 +603,16 @@ pub struct Schema {
     /// true SHOULD NOT be in the required list of the defined schema. Default
     /// value is false.
     #[prost(bool, tag = "3")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Schema.read_only")]
     pub read_only: bool,
     /// Additional external documentation for this schema.
     #[prost(message, optional, tag = "5")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Schema.external_docs")]
     pub external_docs: ::core::option::Option<ExternalDocumentation>,
     /// A free-form property to include an example of an instance for this schema in JSON.
     /// This is copied verbatim to the output.
     #[prost(string, tag = "6")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Schema.example")]
     pub example: ::prost::alloc::string::String,
 }
 /// `EnumSchema` is subset of fields from the OpenAPI v2 specification's Schema object.
@@ -542,26 +630,38 @@ pub struct Schema {
 ///     ...
 ///   };
 ///
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct EnumSchema {
     /// A short description of the schema.
     #[prost(string, tag = "1")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.EnumSchema.description"
+    )]
     pub description: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.EnumSchema.default")]
     pub default: ::prost::alloc::string::String,
     /// The title of the schema.
     #[prost(string, tag = "3")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.EnumSchema.title")]
     pub title: ::prost::alloc::string::String,
     #[prost(bool, tag = "4")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.EnumSchema.required")]
     pub required: bool,
     #[prost(bool, tag = "5")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.EnumSchema.read_only")]
     pub read_only: bool,
     /// Additional external documentation for this schema.
     #[prost(message, optional, tag = "6")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.EnumSchema.external_docs"
+    )]
     pub external_docs: ::core::option::Option<ExternalDocumentation>,
     #[prost(string, tag = "7")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.EnumSchema.example")]
     pub example: ::prost::alloc::string::String,
     /// Ref is used to define an external reference to include in the message.
     /// This could be a fully qualified proto message reference, and that type must
@@ -570,11 +670,13 @@ pub struct EnumSchema {
     /// For example:
     ///   `ref: ".google.protobuf.Timestamp"`.
     #[prost(string, tag = "8")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.EnumSchema.ref")]
     pub r#ref: ::prost::alloc::string::String,
     /// Custom properties that start with "x-" such as "x-foo" used to describe
     /// extra functionality that is not covered by the standard OpenAPI Specification.
     /// See: <https://swagger.io/docs/specification/2-0/swagger-extensions/>
     #[prost(map = "string, message", tag = "9")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.EnumSchema.extensions")]
     pub extensions: ::std::collections::HashMap<
         ::prost::alloc::string::String,
         ::prost_types::Value,
@@ -608,6 +710,7 @@ pub struct EnumSchema {
 ///         }];
 ///   }
 ///
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -619,72 +722,114 @@ pub struct JsonSchema {
     /// For example:
     ///   `ref: ".google.protobuf.Timestamp"`.
     #[prost(string, tag = "3")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.ref")]
     pub r#ref: ::prost::alloc::string::String,
     /// The title of the schema.
     #[prost(string, tag = "5")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.title")]
     pub title: ::prost::alloc::string::String,
     /// A short description of the schema.
     #[prost(string, tag = "6")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.description"
+    )]
     pub description: ::prost::alloc::string::String,
     #[prost(string, tag = "7")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.default")]
     pub default: ::prost::alloc::string::String,
     #[prost(bool, tag = "8")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.read_only")]
     pub read_only: bool,
     /// A free-form property to include a JSON example of this field. This is copied
     /// verbatim to the output swagger.json. Quotes must be escaped.
     /// This property is the same for 2.0 and 3.0.0 <https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/3.0.0.md#schemaObject>  <https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#schemaObject>
     #[prost(string, tag = "9")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.example")]
     pub example: ::prost::alloc::string::String,
     #[prost(double, tag = "10")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.multiple_of"
+    )]
     pub multiple_of: f64,
     /// Maximum represents an inclusive upper limit for a numeric instance. The
     /// value of MUST be a number,
     #[prost(double, tag = "11")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.maximum")]
     pub maximum: f64,
     #[prost(bool, tag = "12")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.exclusive_maximum"
+    )]
     pub exclusive_maximum: bool,
     /// minimum represents an inclusive lower limit for a numeric instance. The
     /// value of MUST be a number,
     #[prost(double, tag = "13")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.minimum")]
     pub minimum: f64,
     #[prost(bool, tag = "14")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.exclusive_minimum"
+    )]
     pub exclusive_minimum: bool,
     #[prost(uint64, tag = "15")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.max_length")]
     pub max_length: u64,
     #[prost(uint64, tag = "16")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.min_length")]
     pub min_length: u64,
     #[prost(string, tag = "17")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.pattern")]
     pub pattern: ::prost::alloc::string::String,
     #[prost(uint64, tag = "20")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.max_items")]
     pub max_items: u64,
     #[prost(uint64, tag = "21")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.min_items")]
     pub min_items: u64,
     #[prost(bool, tag = "22")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.unique_items"
+    )]
     pub unique_items: bool,
     #[prost(uint64, tag = "24")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.max_properties"
+    )]
     pub max_properties: u64,
     #[prost(uint64, tag = "25")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.min_properties"
+    )]
     pub min_properties: u64,
     #[prost(string, repeated, tag = "26")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.required")]
     pub required: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     /// Items in 'array' must be unique.
     #[prost(string, repeated, tag = "34")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.array")]
     pub array: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     #[prost(enumeration = "json_schema::JsonSchemaSimpleTypes", repeated, tag = "35")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.type")]
     pub r#type: ::prost::alloc::vec::Vec<i32>,
     /// `Format`
     #[prost(string, tag = "36")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.format")]
     pub format: ::prost::alloc::string::String,
     /// Items in `enum` must be unique <https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-5.5.1>
     #[prost(string, repeated, tag = "46")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.enum")]
     pub r#enum: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     /// Additional field level properties used when generating the OpenAPI v2 file.
     #[prost(message, optional, tag = "1001")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.field_configuration"
+    )]
     pub field_configuration: ::core::option::Option<json_schema::FieldConfiguration>,
     /// Custom properties that start with "x-" such as "x-foo" used to describe
     /// extra functionality that is not covered by the standard OpenAPI Specification.
     /// See: <https://swagger.io/docs/specification/2-0/swagger-extensions/>
     #[prost(map = "string, message", tag = "48")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.extensions")]
     pub extensions: ::std::collections::HashMap<
         ::prost::alloc::string::String,
         ::prost_types::Value,
@@ -694,6 +839,7 @@ pub struct JsonSchema {
 pub mod json_schema {
     /// 'FieldConfiguration' provides additional field level properties used when generating the OpenAPI v2 file.
     /// These properties are not defined by OpenAPIv2, but they are used to control the generation.
+    #[derive(::prost_validate::Validator)]
     #[derive(utoipa::ToSchema)]
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Clone, PartialEq, ::prost::Message)]
@@ -703,6 +849,9 @@ pub mod json_schema {
         /// parameter. Use this to avoid having auto generated path parameter names
         /// for overlapping paths.
         #[prost(string, tag = "47")]
+        #[validate(
+            name = "grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.FieldConfiguration.path_param_name"
+        )]
         pub path_param_name: ::prost::alloc::string::String,
     }
     #[derive(utoipa::ToSchema)]
@@ -766,6 +915,7 @@ pub mod json_schema {
 ///
 /// See: <https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#tagObject>
 ///
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -774,18 +924,22 @@ pub struct Tag {
     /// global Tag object, then use that name to reference the tag throughout the
     /// OpenAPI file.
     #[prost(string, tag = "1")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Tag.name")]
     pub name: ::prost::alloc::string::String,
     /// A short description for the tag. GFM syntax can be used for rich text
     /// representation.
     #[prost(string, tag = "2")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Tag.description")]
     pub description: ::prost::alloc::string::String,
     /// Additional external documentation for this tag.
     #[prost(message, optional, tag = "3")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Tag.external_docs")]
     pub external_docs: ::core::option::Option<ExternalDocumentation>,
     /// Custom properties that start with "x-" such as "x-foo" used to describe
     /// extra functionality that is not covered by the standard OpenAPI Specification.
     /// See: <https://swagger.io/docs/specification/2-0/swagger-extensions/>
     #[prost(map = "string, message", tag = "4")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Tag.extensions")]
     pub extensions: ::std::collections::HashMap<
         ::prost::alloc::string::String,
         ::prost_types::Value,
@@ -799,6 +953,7 @@ pub struct Tag {
 /// A declaration of the security schemes available to be used in the
 /// specification. This does not enforce the security schemes on the operations
 /// and only serves to provide the relevant details for each scheme.
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -806,6 +961,9 @@ pub struct SecurityDefinitions {
     /// A single security scheme definition, mapping a "name" to the scheme it
     /// defines.
     #[prost(map = "string, message", tag = "1")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.SecurityDefinitions.security"
+    )]
     pub security: ::std::collections::HashMap<
         ::prost::alloc::string::String,
         SecurityScheme,
@@ -820,6 +978,7 @@ pub struct SecurityDefinitions {
 /// operations. Supported schemes are basic authentication, an API key (either as
 /// a header or as a query parameter) and OAuth2's common flows (implicit,
 /// password, application and access code).
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -827,42 +986,59 @@ pub struct SecurityScheme {
     /// The type of the security scheme. Valid values are "basic",
     /// "apiKey" or "oauth2".
     #[prost(enumeration = "security_scheme::Type", tag = "1")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.SecurityScheme.type")]
     pub r#type: i32,
     /// A short description for security scheme.
     #[prost(string, tag = "2")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.SecurityScheme.description"
+    )]
     pub description: ::prost::alloc::string::String,
     /// The name of the header or query parameter to be used.
     /// Valid for apiKey.
     #[prost(string, tag = "3")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.SecurityScheme.name")]
     pub name: ::prost::alloc::string::String,
     /// The location of the API key. Valid values are "query" or
     /// "header".
     /// Valid for apiKey.
     #[prost(enumeration = "security_scheme::In", tag = "4")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.SecurityScheme.in")]
     pub r#in: i32,
     /// The flow used by the OAuth2 security scheme. Valid values are
     /// "implicit", "password", "application" or "accessCode".
     /// Valid for oauth2.
     #[prost(enumeration = "security_scheme::Flow", tag = "5")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.SecurityScheme.flow")]
     pub flow: i32,
     /// The authorization URL to be used for this flow. This SHOULD be in
     /// the form of a URL.
     /// Valid for oauth2/implicit and oauth2/accessCode.
     #[prost(string, tag = "6")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.SecurityScheme.authorization_url"
+    )]
     pub authorization_url: ::prost::alloc::string::String,
     /// The token URL to be used for this flow. This SHOULD be in the
     /// form of a URL.
     /// Valid for oauth2/password, oauth2/application and oauth2/accessCode.
     #[prost(string, tag = "7")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.SecurityScheme.token_url"
+    )]
     pub token_url: ::prost::alloc::string::String,
     /// The available scopes for the OAuth2 security scheme.
     /// Valid for oauth2.
     #[prost(message, optional, tag = "8")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.SecurityScheme.scopes")]
     pub scopes: ::core::option::Option<Scopes>,
     /// Custom properties that start with "x-" such as "x-foo" used to describe
     /// extra functionality that is not covered by the standard OpenAPI Specification.
     /// See: <https://swagger.io/docs/specification/2-0/swagger-extensions/>
     #[prost(map = "string, message", tag = "9")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.SecurityScheme.extensions"
+    )]
     pub extensions: ::std::collections::HashMap<
         ::prost::alloc::string::String,
         ::prost_types::Value,
@@ -1019,6 +1195,7 @@ pub mod security_scheme {
 ///
 /// The name used for each property MUST correspond to a security scheme
 /// declared in the Security Definitions.
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -1028,6 +1205,9 @@ pub struct SecurityRequirement {
     /// then the value is a list of scope names required for the execution.
     /// For other security scheme types, the array MUST be empty.
     #[prost(map = "string, message", tag = "1")]
+    #[validate(
+        name = "grpc.gateway.protoc_gen_openapiv2.options.SecurityRequirement.security_requirement"
+    )]
     pub security_requirement: ::std::collections::HashMap<
         ::prost::alloc::string::String,
         security_requirement::SecurityRequirementValue,
@@ -1038,11 +1218,15 @@ pub mod security_requirement {
     /// If the security scheme is of type "oauth2", then the value is a list of
     /// scope names required for the execution. For other security scheme types,
     /// the array MUST be empty.
+    #[derive(::prost_validate::Validator)]
     #[derive(utoipa::ToSchema)]
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Clone, PartialEq, ::prost::Message)]
     pub struct SecurityRequirementValue {
         #[prost(string, repeated, tag = "1")]
+        #[validate(
+            name = "grpc.gateway.protoc_gen_openapiv2.options.SecurityRequirement.SecurityRequirementValue.scope"
+        )]
         pub scope: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     }
 }
@@ -1051,6 +1235,7 @@ pub mod security_requirement {
 /// See: <https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#scopesObject>
 ///
 /// Lists the available scopes for an OAuth2 security scheme.
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -1058,6 +1243,7 @@ pub struct Scopes {
     /// Maps between a name of a scope to a short description of it (as the value
     /// of the property).
     #[prost(map = "string, string", tag = "1")]
+    #[validate(name = "grpc.gateway.protoc_gen_openapiv2.options.Scopes.scope")]
     pub scope: ::std::collections::HashMap<
         ::prost::alloc::string::String,
         ::prost::alloc::string::String,

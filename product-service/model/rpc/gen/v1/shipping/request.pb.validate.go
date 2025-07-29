@@ -57,12 +57,6 @@ func (m *CreateShippingRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for UserId
-
-	// no validation rules for PaymentId
-
-	// no validation rules for ShippingProviderId
-
 	if len(errors) > 0 {
 		return CreateShippingRequestMultiError(errors)
 	}
@@ -164,8 +158,6 @@ func (m *GetShippingByIdRequest) validate(all bool) error {
 	}
 
 	var errors []error
-
-	// no validation rules for Id
 
 	if len(errors) > 0 {
 		return GetShippingByIdRequestMultiError(errors)
@@ -269,9 +261,27 @@ func (m *ListShippingRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Page
+	if m.GetPage() <= 0 {
+		err := ListShippingRequestValidationError{
+			field:  "Page",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for Limit
+	if m.GetLimit() <= 0 {
+		err := ListShippingRequestValidationError{
+			field:  "Limit",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return ListShippingRequestMultiError(errors)
@@ -375,14 +385,6 @@ func (m *UpdateShippingRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
-
-	// no validation rules for UserId
-
-	// no validation rules for PaymentId
-
-	// no validation rules for ShippingProviderId
-
 	if len(errors) > 0 {
 		return UpdateShippingRequestMultiError(errors)
 	}
@@ -484,8 +486,6 @@ func (m *DeleteShippingRequest) validate(all bool) error {
 	}
 
 	var errors []error
-
-	// no validation rules for Id
 
 	if len(errors) > 0 {
 		return DeleteShippingRequestMultiError(errors)

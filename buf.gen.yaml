@@ -9,7 +9,6 @@ plugins:
       - paths=source_relative
       - require_unimplemented_servers=false
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/commerce
@@ -56,7 +55,6 @@ plugins:
     opt:
       - paths=source_relative
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/commerce
@@ -102,7 +100,6 @@ plugins:
     opt:
       - paths=source_relative
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/commerce
@@ -148,7 +145,6 @@ plugins:
     opt:
       - generate_unbound_methods=true
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/commerce
@@ -194,7 +190,6 @@ plugins:
     opt:
       - paths=source_relative
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/v1/commerce
@@ -249,7 +244,6 @@ plugins:
       - paths=source_relative
       - require_unimplemented_servers=false
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/commerce
@@ -296,7 +290,6 @@ plugins:
     opt:
       - paths=source_relative
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/commerce
@@ -342,7 +335,6 @@ plugins:
     opt:
       - paths=source_relative
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/commerce
@@ -388,7 +380,6 @@ plugins:
     opt:
       - generate_unbound_methods=true
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/commerce
@@ -434,7 +425,6 @@ plugins:
     opt:
       - paths=source_relative
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/commerce
@@ -481,7 +471,6 @@ plugins:
       - paths=source_relative
       - require_unimplemented_servers=false
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/commerce
@@ -528,7 +517,6 @@ plugins:
     opt:
       - paths=source_relative
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/commerce
@@ -574,7 +562,6 @@ plugins:
     opt:
       - paths=source_relative
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/commerce
@@ -620,7 +607,6 @@ plugins:
     opt:
       - generate_unbound_methods=true
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/commerce
@@ -666,7 +652,6 @@ plugins:
     opt:
       - paths=source_relative
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/commerce
@@ -713,7 +698,6 @@ plugins:
       - paths=source_relative
       - require_unimplemented_servers=false
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/commerce
@@ -760,7 +744,6 @@ plugins:
     opt:
       - paths=source_relative
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/commerce
@@ -806,7 +789,6 @@ plugins:
     opt:
       - paths=source_relative
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/commerce
@@ -852,7 +834,6 @@ plugins:
     opt:
       - generate_unbound_methods=true
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/commerce
@@ -898,7 +879,6 @@ plugins:
     opt:
       - paths=source_relative
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/commerce
@@ -945,7 +925,6 @@ plugins:
       - paths=source_relative
       - require_unimplemented_servers=false
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/commerce
@@ -992,7 +971,6 @@ plugins:
     opt:
       - paths=source_relative
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/commerce
@@ -1038,7 +1016,6 @@ plugins:
     opt:
       - paths=source_relative
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/commerce
@@ -1084,7 +1061,6 @@ plugins:
     opt:
       - generate_unbound_methods=true
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/commerce
@@ -1130,7 +1106,6 @@ plugins:
     opt:
       - paths=source_relative
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/commerce
@@ -1177,7 +1152,6 @@ plugins:
       - paths=source_relative
       - require_unimplemented_servers=false
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/commerce
@@ -1224,7 +1198,6 @@ plugins:
     opt:
       - paths=source_relative
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/commerce
@@ -1270,7 +1243,6 @@ plugins:
     opt:
       - paths=source_relative
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/commerce
@@ -1316,7 +1288,6 @@ plugins:
     opt:
       - generate_unbound_methods=true
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/commerce
@@ -1362,7 +1333,6 @@ plugins:
     opt:
       - paths=source_relative
       # EXTERNAL
-      - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/external/gorm
       - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/external/validate
       # v1/commerce/*.proto
       - Mv1/commerce/model.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/commerce

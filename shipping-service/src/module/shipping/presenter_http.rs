@@ -16,8 +16,9 @@ use axum::Json;
 use axum::extract::{Path, Query, State};
 use axum::http::{HeaderMap, StatusCode};
 use axum::routing::{delete, get, post, put};
+use prost_validate::NoopValidator;
 use std::sync::Arc;
-use tonic::Code;
+use tonic::{Code, Status};
 use tower::ServiceBuilder;
 use tracing::{error, instrument};
 
@@ -71,6 +72,19 @@ pub async fn create_shipping(
     Json(payload): Json<CreateShippingRequest>,
 ) -> Result<(StatusCode, Json<CreateShippingResponse>), StatusCode> {
     let request = tonic::Request::new(payload);
+    match request.validate() {
+        Ok(_) => {}
+        Err(e) => {
+            return Ok((
+                util::convert_status::tonic_to_http_status(Code::InvalidArgument),
+                Json(CreateShippingResponse {
+                    message: format!("Invalid argument: {}", e.field),
+                    status: "error".to_string(),
+                    data: None,
+                }),
+            ));
+        }
+    }
     let validate_acl = state
         .user_service
         .clone()
@@ -156,8 +170,24 @@ pub async fn get_shipping_provider_by_id(
     headers: HeaderMap,
     Path(id): Path<String>,
 ) -> Result<(StatusCode, Json<GetShippingByIdResponse>), StatusCode> {
+    // VALIDATE REQUEST
     let request = tonic::Request::new(GetShippingByIdRequest { id: id.clone() });
-    let validate_acl = state
+    match request.validate() {
+        Ok(_) => {}
+        Err(e) => {
+            return Ok((
+                util::convert_status::tonic_to_http_status(Code::InvalidArgument),
+                Json(GetShippingByIdResponse {
+                    message: format!("Invalid argument: {}", e.field),
+                    status: "error".to_string(),
+                    data: None,
+                }),
+            ));
+        }
+    }
+
+    // VALIDATE ACL
+    match state
         .user_service
         .clone()
         .auth_user_verify_access_control(
@@ -174,8 +204,8 @@ pub async fn get_shipping_provider_by_id(
                 http_method: None,
             },
         )
-        .await;
-    match validate_acl {
+        .await
+    {
         Ok(response) => {
             if !response.data.unwrap().is_valid {
                 return Ok((
@@ -247,7 +277,21 @@ pub async fn list_shipping_providers(
     Query(query): Query<ListShippingRequest>,
 ) -> Result<(StatusCode, Json<ListShippingResponse>), StatusCode> {
     let request = tonic::Request::new(query);
-    let validate_acl = state
+    match request.validate() {
+        Ok(_) => {}
+        Err(e) => {
+            return Ok((
+                util::convert_status::tonic_to_http_status(Code::InvalidArgument),
+                Json(ListShippingResponse {
+                    message: format!("Invalid argument: {}", e.field),
+                    status: "error".to_string(),
+                    data: vec![],
+                }),
+            ));
+        }
+    }
+    // VALIDATE ACL
+    match state
         .user_service
         .clone()
         .auth_user_verify_access_control(
@@ -262,8 +306,8 @@ pub async fn list_shipping_providers(
                 http_method: None,
             },
         )
-        .await;
-    match validate_acl {
+        .await
+    {
         Ok(response) => {
             if !response.data.unwrap().is_valid {
                 return Ok((
@@ -338,7 +382,21 @@ pub async fn update_shipping(
         payment_id: payload.payment_id,
         shipping_provider_id: payload.shipping_provider_id,
     });
-    let validate_acl = state
+    match request.validate() {
+        Ok(_) => {}
+        Err(e) => {
+            return Ok((
+                util::convert_status::tonic_to_http_status(Code::InvalidArgument),
+                Json(UpdateShippingResponse {
+                    message: format!("Invalid argument: {}", e.field),
+                    status: "error".to_string(),
+                    data: None,
+                }),
+            ));
+        }
+    }
+    // VALIDATE ACL
+    match state
         .user_service
         .clone()
         .auth_user_verify_access_control(
@@ -355,8 +413,8 @@ pub async fn update_shipping(
                 http_method: None,
             },
         )
-        .await;
-    match validate_acl {
+        .await
+    {
         Ok(response) => {
             if !response.data.unwrap().is_valid {
                 return Ok((
@@ -423,7 +481,21 @@ pub async fn delete_shipping(
     Path(id): Path<String>,
 ) -> Result<(StatusCode, Json<DeleteShippingResponse>), StatusCode> {
     let request = tonic::Request::new(DeleteShippingRequest { id });
-    let validate_acl = state
+    match request.validate() {
+        Ok(_) => {}
+        Err(e) => {
+            return Ok((
+                util::convert_status::tonic_to_http_status(Code::InvalidArgument),
+                Json(DeleteShippingResponse {
+                    message: format!("Invalid argument: {}", e.field),
+                    status: "error".to_string(),
+                    data: None,
+                }),
+            ));
+        }
+    }
+
+    match state
         .user_service
         .clone()
         .auth_user_verify_access_control(
@@ -440,8 +512,8 @@ pub async fn delete_shipping(
                 http_method: None,
             },
         )
-        .await;
-    match validate_acl {
+        .await
+    {
         Ok(response) => {
             if !response.data.unwrap().is_valid {
                 return Ok((

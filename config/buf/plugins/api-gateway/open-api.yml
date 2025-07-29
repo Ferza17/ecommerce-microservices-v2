@@ -4,7 +4,7 @@
     - generate_unbound_methods=true
 
     # EXTERNAL
-    - Mexternal/gorm/gorm.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/external/gorm
+    
     - Mexternal/validate/validate.proto=github.com/ferza17/ecommerce-microservices-v2/api-gateway/model/rpc/gen/external/validate
 
 

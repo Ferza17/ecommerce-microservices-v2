@@ -20,6 +20,5 @@ pub fn tonic_to_http_status(status: Code) -> StatusCode {
         Code::Internal => StatusCode::INTERNAL_SERVER_ERROR,
         Code::Unavailable => StatusCode::SERVICE_UNAVAILABLE,
         Code::DataLoss => StatusCode::INTERNAL_SERVER_ERROR,
-        _ => StatusCode::INTERNAL_SERVER_ERROR,
     }
 }

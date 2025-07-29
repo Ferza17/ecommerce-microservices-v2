@@ -2,6 +2,7 @@
 /// Defines the HTTP configuration for an API service. It contains a list of
 /// [HttpRule][google.api.HttpRule], each specifying the mapping of an RPC method
 /// to one or more HTTP REST API methods.
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -10,6 +11,7 @@ pub struct Http {
     ///
     /// **NOTE:** All service configuration rules follow "last one wins" order.
     #[prost(message, repeated, tag = "1")]
+    #[validate(name = "google.api.Http.rules")]
     pub rules: ::prost::alloc::vec::Vec<HttpRule>,
     /// When set to true, URL path parmeters will be fully URI-decoded except in
     /// cases of single segment matches in reserved expansion, where "%2F" will be
@@ -18,6 +20,7 @@ pub struct Http {
     /// The default behavior is to not decode RFC 6570 reserved characters in multi
     /// segment matches.
     #[prost(bool, tag = "2")]
+    #[validate(name = "google.api.Http.fully_decode_reserved_expansion")]
     pub fully_decode_reserved_expansion: bool,
 }
 /// `HttpRule` defines the mapping of an RPC method to one or more HTTP
@@ -237,6 +240,7 @@ pub struct Http {
 ///
 /// NOTE: the field paths in variables and in the `body` must not refer to
 /// repeated fields or map fields.
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -245,27 +249,32 @@ pub struct HttpRule {
     ///
     /// Refer to [selector][google.api.DocumentationRule.selector] for syntax details.
     #[prost(string, tag = "1")]
+    #[validate(name = "google.api.HttpRule.selector")]
     pub selector: ::prost::alloc::string::String,
     /// The name of the request field whose value is mapped to the HTTP body, or
     /// `*` for mapping all fields not captured by the path pattern to the HTTP
     /// body. NOTE: the referred field must not be a repeated field and must be
     /// present at the top-level of request message type.
     #[prost(string, tag = "7")]
+    #[validate(name = "google.api.HttpRule.body")]
     pub body: ::prost::alloc::string::String,
     /// Optional. The name of the response field whose value is mapped to the HTTP
     /// body of response. Other response fields are ignored. When
     /// not set, the response message will be used as HTTP body of response.
     #[prost(string, tag = "12")]
+    #[validate(name = "google.api.HttpRule.response_body")]
     pub response_body: ::prost::alloc::string::String,
     /// Additional HTTP bindings for the selector. Nested bindings must
     /// not contain an `additional_bindings` field themselves (that is,
     /// the nesting may only be one level deep).
     #[prost(message, repeated, tag = "11")]
+    #[validate(name = "google.api.HttpRule.additional_bindings")]
     pub additional_bindings: ::prost::alloc::vec::Vec<HttpRule>,
     /// Determines the URL pattern is matched by this rules. This pattern can be
     /// used with any of the {get|put|post|delete|patch} methods. A custom method
     /// can be defined using the 'custom' field.
     #[prost(oneof = "http_rule::Pattern", tags = "2, 3, 4, 5, 6, 8")]
+    #[validate(name = "google.api.HttpRule.pattern")]
     pub pattern: ::core::option::Option<http_rule::Pattern>,
 }
 /// Nested message and enum types in `HttpRule`.
@@ -273,42 +282,52 @@ pub mod http_rule {
     /// Determines the URL pattern is matched by this rules. This pattern can be
     /// used with any of the {get|put|post|delete|patch} methods. A custom method
     /// can be defined using the 'custom' field.
+    #[derive(::prost_validate::Validator)]
     #[derive(utoipa::ToSchema)]
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Pattern {
         /// Used for listing and getting information about resources.
         #[prost(string, tag = "2")]
+        #[validate(name = "google.api.HttpRule.get")]
         Get(::prost::alloc::string::String),
         /// Used for updating a resource.
         #[prost(string, tag = "3")]
+        #[validate(name = "google.api.HttpRule.put")]
         Put(::prost::alloc::string::String),
         /// Used for creating a resource.
         #[prost(string, tag = "4")]
+        #[validate(name = "google.api.HttpRule.post")]
         Post(::prost::alloc::string::String),
         /// Used for deleting a resource.
         #[prost(string, tag = "5")]
+        #[validate(name = "google.api.HttpRule.delete")]
         Delete(::prost::alloc::string::String),
         /// Used for updating a resource.
         #[prost(string, tag = "6")]
+        #[validate(name = "google.api.HttpRule.patch")]
         Patch(::prost::alloc::string::String),
         /// The custom pattern is used for specifying an HTTP method that is not
         /// included in the `pattern` field, such as HEAD, or "*" to leave the
         /// HTTP method unspecified for this rule. The wild-card rule is useful
         /// for services that provide content to Web (HTML) clients.
         #[prost(message, tag = "8")]
+        #[validate(name = "google.api.HttpRule.custom")]
         Custom(super::CustomHttpPattern),
     }
 }
 /// A custom pattern is used for defining custom HTTP verb.
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CustomHttpPattern {
     /// The name of this custom HTTP verb.
     #[prost(string, tag = "1")]
+    #[validate(name = "google.api.CustomHttpPattern.kind")]
     pub kind: ::prost::alloc::string::String,
     /// The path matched by this custom verb.
     #[prost(string, tag = "2")]
+    #[validate(name = "google.api.CustomHttpPattern.path")]
     pub path: ::prost::alloc::string::String,
 }

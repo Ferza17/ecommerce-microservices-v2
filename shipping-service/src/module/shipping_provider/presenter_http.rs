@@ -10,9 +10,6 @@ use crate::model::rpc::user::AuthUserVerifyAccessControlRequest;
 use crate::module::shipping_provider::usecase::{
     ShippingProviderUseCase, ShippingProviderUseCaseImpl,
 };
-use crate::module::shipping_provider::validate::{
-    validate_get_shipping_provider_by_id, validate_list_shipping_providers,
-};
 use crate::package::context::auth::get_request_authorization_token_from_header;
 use crate::package::context::request_id::get_request_id_from_header;
 use crate::util;
@@ -24,6 +21,7 @@ use axum::{
     http::StatusCode,
     response::Json,
 };
+use prost_validate::NoopValidator;
 use std::convert::Infallible;
 use std::sync::Arc;
 use tonic::{Code, Request};
@@ -82,10 +80,23 @@ pub async fn list_shipping_providers(
     headers: HeaderMap,
     Query(query): Query<ListShippingProvidersRequest>,
 ) -> Result<(StatusCode, Json<ListShippingProvidersResponse>), StatusCode> {
+    // VALIDATE REQUEST
     let request = Request::new(query);
-
-    // Validate access control
-    let validate_acl = state
+    match request.validate() {
+        Ok(_) => {}
+        Err(e) => {
+            return Ok((
+                util::convert_status::tonic_to_http_status(Code::InvalidArgument),
+                Json(ListShippingProvidersResponse {
+                    message: format!("Invalid argument: {}", e.field),
+                    status: "error".to_string(),
+                    data: None,
+                }),
+            ));
+        }
+    }
+    // Validate ACL
+    match state
         .user_service
         .clone()
         .auth_user_verify_access_control(
@@ -99,9 +110,8 @@ pub async fn list_shipping_providers(
                 http_method: None,
             },
         )
-        .await;
-
-    match validate_acl {
+        .await
+    {
         Ok(response) => {
             if !response.data.unwrap().is_valid {
                 return Ok((
@@ -125,18 +135,6 @@ pub async fn list_shipping_providers(
                 }),
             ));
         }
-    }
-
-    if let Some(_status) = validate_list_shipping_providers(&request) {
-        error!("Invalid request parameters");
-        return Ok((
-            util::convert_status::tonic_to_http_status(Code::InvalidArgument),
-            Json(ListShippingProvidersResponse {
-                message: "bad request".to_string(),
-                status: "error".to_string(),
-                data: None,
-            }),
-        ));
     }
 
     let result = state
@@ -180,17 +178,62 @@ pub async fn get_shipping_provider_by_id(
     headers: HeaderMap,
     Path(id): Path<String>,
 ) -> Result<(StatusCode, Json<GetShippingProviderByIdResponse>), Infallible> {
+    // VALIDATE REQUEST
     let request = Request::new(GetShippingProviderByIdRequest { id });
-    if let Some(_status) = validate_get_shipping_provider_by_id(&request) {
-        error!("Invalid request parameters");
-        return Ok((
-            util::convert_status::tonic_to_http_status(Code::InvalidArgument),
-            Json(GetShippingProviderByIdResponse {
-                message: "bad request".to_string(),
-                status: "error".to_string(),
-                data: None,
-            }),
-        ));
+    match request.validate() {
+        Ok(_) => {}
+        Err(e) => {
+            return Ok((
+                util::convert_status::tonic_to_http_status(Code::InvalidArgument),
+                Json(GetShippingProviderByIdResponse {
+                    message: format!("Invalid argument: {}", e.field),
+                    status: "error".to_string(),
+                    data: None,
+                }),
+            ));
+        }
+    }
+
+    // Validate ACL
+    match state
+        .user_service
+        .clone()
+        .auth_user_verify_access_control(
+            get_request_id_from_header(&headers),
+            AuthUserVerifyAccessControlRequest {
+                token: get_request_authorization_token_from_header(&headers),
+                full_method_name: Some(
+                    "/shipping.ShippingProviderService/GetShippingProviderById".to_string(),
+                ),
+                http_url: None,
+                http_method: None,
+            },
+        )
+        .await
+    {
+        Ok(response) => {
+            if !response.data.unwrap().is_valid {
+                return Ok((
+                    util::convert_status::tonic_to_http_status(Code::PermissionDenied),
+                    Json(GetShippingProviderByIdResponse {
+                        message: "forbidden".to_string(),
+                        status: "error".to_string(),
+                        data: None,
+                    }),
+                ));
+            }
+        }
+        Err(err) => {
+            error!("AuthUserVerifyAccessControl failed: {}", err.message());
+            return Ok((
+                util::convert_status::tonic_to_http_status(err.code()),
+                Json(GetShippingProviderByIdResponse {
+                    message: err.message().to_string(),
+                    status: "error".to_string(),
+                    data: None,
+                }),
+            ));
+        }
     }
 
     let result = state

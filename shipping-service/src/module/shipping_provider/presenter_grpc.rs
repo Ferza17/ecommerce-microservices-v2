@@ -8,12 +8,10 @@ use crate::model::rpc::user::AuthUserVerifyAccessControlRequest;
 use crate::module::shipping_provider::usecase::{
     ShippingProviderUseCase, ShippingProviderUseCaseImpl,
 };
-use crate::module::shipping_provider::validate::{
-    validate_get_shipping_provider_by_id, validate_list_shipping_providers,
-};
 use crate::package::context::auth::get_request_authorization_token_from_metadata;
 use crate::package::context::request_id::get_request_id_from_metadata;
 use crate::package::context::url_path::get_url_path_from_metadata;
+use prost_validate::NoopValidator;
 use tonic::{Request, Response, Status};
 use tracing::instrument;
 
@@ -42,8 +40,14 @@ impl ShippingProviderService for ShippingProviderGrpcPresenter {
         &self,
         request: Request<GetShippingProviderByIdRequest>,
     ) -> Result<Response<GetShippingProviderByIdResponse>, Status> {
-        if let Some(status) = validate_get_shipping_provider_by_id(&request) {
-            return Err(status.into());
+        match request.validate() {
+            Ok(_) => {}
+            Err(e) => {
+                return Err(Status::new(
+                    tonic::Code::InvalidArgument,
+                    format!("Invalid request: {}", e.field),
+                ));
+            }
         }
 
         self.shipping_provider_use_case
@@ -58,8 +62,14 @@ impl ShippingProviderService for ShippingProviderGrpcPresenter {
         request: Request<ListShippingProvidersRequest>,
     ) -> Result<Response<ListShippingProvidersResponse>, Status> {
         // Validate request
-        if let Some(status) = validate_list_shipping_providers(&request) {
-            return Err(status);
+        match request.validate() {
+            Ok(_) => {}
+            Err(e) => {
+                return Err(Status::new(
+                    tonic::Code::InvalidArgument,
+                    format!("Invalid request: {}", e.field),
+                ));
+            }
         }
 
         // Validate access control

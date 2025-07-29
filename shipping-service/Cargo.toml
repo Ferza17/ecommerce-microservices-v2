@@ -4,9 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [build-dependencies]
-prost-build = "0.14.1"
-prost-validate-build = "0.2.7"
 tonic-build = "0.12"
+prost-build = "0.12"
+prost-validate-build = "0.2.5"
 
 
 
@@ -50,6 +50,7 @@ tonic = "0.12.3"
 tonic-reflection = "0.12.0"
 prost = "0.13.5"
 prost-wkt-types = "0.6.1"
+prost-validate = { version = "0.2.5", features = ["derive"] }
 tower = "0.5.2"
 
 # UUID
@@ -73,6 +74,5 @@ rabbitmq-stream-client = "0.9.0"
 hyper = "1.6.0"
 async-trait = "0.1.88"
 futures = "0.3.31"
-prost-validate = { version = "0.2.7", features = ["derive"] }
 
 

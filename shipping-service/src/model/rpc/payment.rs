@@ -71,144 +71,203 @@ impl ProviderMethod {
     }
 }
 /// REFERRED TO DATABASE SCHEMA
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PaymentItem {
     #[prost(string, tag = "1")]
+    #[validate(name = "payment.PaymentItem.id")]
     pub id: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
+    #[validate(name = "payment.PaymentItem.productId")]
     pub product_id: ::prost::alloc::string::String,
     #[prost(double, tag = "3")]
+    #[validate(name = "payment.PaymentItem.amount")]
     pub amount: f64,
     #[prost(int32, tag = "4")]
+    #[validate(name = "payment.PaymentItem.qty")]
     pub qty: i32,
     #[prost(string, tag = "5")]
+    #[validate(name = "payment.PaymentItem.payment_id")]
     pub payment_id: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "8")]
+    #[validate(name = "payment.PaymentItem.created_at")]
     #[schema(value_type = String, format = "date-time")]
     pub created_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
     #[prost(message, optional, tag = "9")]
+    #[validate(name = "payment.PaymentItem.updated_at")]
     #[schema(value_type = String, format = "date-time")]
     pub updated_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
     #[prost(message, optional, tag = "10")]
+    #[validate(name = "payment.PaymentItem.discarded_at")]
     #[schema(value_type = String, format = "date-time")]
     pub discarded_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
 }
 /// REFERRED TO DATABASE SCHEMA
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Provider {
     #[prost(string, tag = "1")]
+    #[validate(name = "payment.Provider.id")]
     pub id: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
+    #[validate(name = "payment.Provider.name")]
     pub name: ::prost::alloc::string::String,
     #[prost(enumeration = "ProviderMethod", tag = "3")]
+    #[validate(name = "payment.Provider.method")]
     pub method: i32,
     #[prost(message, optional, tag = "8")]
+    #[validate(name = "payment.Provider.created_at")]
     #[schema(value_type = String, format = "date-time")]
     pub created_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
     #[prost(message, optional, tag = "9")]
+    #[validate(name = "payment.Provider.updated_at")]
     #[schema(value_type = String, format = "date-time")]
     pub updated_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
     #[prost(message, optional, tag = "10")]
+    #[validate(name = "payment.Provider.discarded_at")]
     #[schema(value_type = String, format = "date-time")]
     pub discarded_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
 }
 /// REFERRED TO DATABASE SCHEMA
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Payment {
     #[prost(string, tag = "1")]
+    #[validate(name = "payment.Payment.id")]
     pub id: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
+    #[validate(name = "payment.Payment.code")]
     pub code: ::prost::alloc::string::String,
     #[prost(double, tag = "4")]
+    #[validate(name = "payment.Payment.total_price")]
     pub total_price: f64,
     #[prost(enumeration = "PaymentStatus", tag = "5")]
+    #[validate(name = "payment.Payment.status")]
     pub status: i32,
     #[prost(string, tag = "6")]
+    #[validate(name = "payment.Payment.provider_id")]
     pub provider_id: ::prost::alloc::string::String,
     #[prost(string, tag = "7")]
+    #[validate(name = "payment.Payment.user_id")]
     pub user_id: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "8")]
+    #[validate(name = "payment.Payment.created_at")]
     #[schema(value_type = String, format = "date-time")]
     pub created_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
     #[prost(message, optional, tag = "9")]
+    #[validate(name = "payment.Payment.updated_at")]
     #[schema(value_type = String, format = "date-time")]
     pub updated_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
     #[prost(message, optional, tag = "10")]
+    #[validate(name = "payment.Payment.discarded_at")]
     #[schema(value_type = String, format = "date-time")]
     pub discarded_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
 }
 /// PAYMENT REQUEST DEFINITION
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreatePaymentRequest {
     #[prost(message, repeated, tag = "1")]
+    #[validate(name = "payment.CreatePaymentRequest.items")]
+    #[validate(r#type(repeated(ignore_empty = true)))]
     pub items: ::prost::alloc::vec::Vec<PaymentItem>,
     #[prost(string, tag = "2")]
+    #[validate(name = "payment.CreatePaymentRequest.user_id")]
+    #[validate(r#type(string(min_len = 1)))]
     pub user_id: ::prost::alloc::string::String,
     #[prost(double, tag = "3")]
+    #[validate(name = "payment.CreatePaymentRequest.amount")]
+    #[validate(r#type(double(gt = 0.0)))]
     pub amount: f64,
     #[prost(string, tag = "4")]
+    #[validate(name = "payment.CreatePaymentRequest.provider_id")]
+    #[validate(r#type(string(min_len = 1)))]
     pub provider_id: ::prost::alloc::string::String,
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PaymentOrderDelayedCancelledRequest {
     #[prost(string, tag = "1")]
+    #[validate(name = "payment.PaymentOrderDelayedCancelledRequest.id")]
+    #[validate(r#type(string(min_len = 1)))]
     pub id: ::prost::alloc::string::String,
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CallBackPaymentRequest {
     #[prost(string, tag = "1")]
+    #[validate(name = "payment.CallBackPaymentRequest.payment_id")]
+    #[validate(r#type(string(min_len = 1)))]
     pub payment_id: ::prost::alloc::string::String,
     #[prost(double, tag = "2")]
+    #[validate(name = "payment.CallBackPaymentRequest.amount")]
+    #[validate(r#type(double(gt = 0.0)))]
     pub amount: f64,
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FindPaymentByIdRequest {
     #[prost(string, tag = "1")]
+    #[validate(name = "payment.FindPaymentByIdRequest.id")]
+    #[validate(r#type(string(min_len = 1)))]
     pub id: ::prost::alloc::string::String,
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FindPaymentByUserIdAndStatusRequest {
     #[prost(string, tag = "1")]
+    #[validate(name = "payment.FindPaymentByUserIdAndStatusRequest.user_id")]
+    #[validate(r#type(string(min_len = 1)))]
     pub user_id: ::prost::alloc::string::String,
     #[prost(enumeration = "PaymentStatus", tag = "2")]
+    #[validate(name = "payment.FindPaymentByUserIdAndStatusRequest.status")]
+    #[validate(r#type(r#enum(defined_only = true)))]
     pub status: i32,
 }
 /// PAYMENT PROVIDER REQUEST DEFINITION
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FindPaymentProvidersRequest {
     #[prost(string, tag = "1")]
+    #[validate(name = "payment.FindPaymentProvidersRequest.name")]
+    #[validate(r#type(string(min_len = 1)))]
     pub name: ::prost::alloc::string::String,
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FindPaymentProviderByIdRequest {
     #[prost(string, tag = "1")]
+    #[validate(name = "payment.FindPaymentProviderByIdRequest.id")]
+    #[validate(r#type(string(min_len = 1)))]
     pub id: ::prost::alloc::string::String,
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FindPaymentProvidersResponse {
     #[prost(message, repeated, tag = "1")]
+    #[validate(name = "payment.FindPaymentProvidersResponse.providers")]
     pub providers: ::prost::alloc::vec::Vec<Provider>,
 }
 /// Generated client implementations.

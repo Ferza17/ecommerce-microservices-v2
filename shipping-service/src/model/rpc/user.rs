@@ -33,456 +33,642 @@ impl EnumRole {
         }
     }
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct User {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.User.id")]
     pub id: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
+    #[validate(name = "user.User.name")]
     pub name: ::prost::alloc::string::String,
     #[prost(string, tag = "3")]
+    #[validate(name = "user.User.email")]
     pub email: ::prost::alloc::string::String,
     #[prost(string, tag = "4")]
+    #[validate(name = "user.User.password")]
     pub password: ::prost::alloc::string::String,
     #[prost(bool, tag = "5")]
+    #[validate(name = "user.User.is_verified")]
     pub is_verified: bool,
     #[prost(message, optional, tag = "6")]
+    #[validate(name = "user.User.role")]
     pub role: ::core::option::Option<Role>,
     #[prost(message, optional, tag = "8")]
+    #[validate(name = "user.User.created_at")]
     #[schema(value_type = String, format = "date-time")]
     pub created_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
     #[prost(message, optional, tag = "9")]
+    #[validate(name = "user.User.updated_at")]
     #[schema(value_type = String, format = "date-time")]
     pub updated_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
     #[prost(message, optional, tag = "10")]
+    #[validate(name = "user.User.discarded_at")]
     #[schema(value_type = String, format = "date-time")]
     pub discarded_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Role {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.Role.id")]
     pub id: ::prost::alloc::string::String,
     #[prost(enumeration = "EnumRole", tag = "2")]
+    #[validate(name = "user.Role.role")]
     pub role: i32,
     #[prost(message, repeated, tag = "4")]
+    #[validate(name = "user.Role.access_controls")]
     pub access_controls: ::prost::alloc::vec::Vec<AccessControl>,
     #[prost(message, optional, tag = "8")]
+    #[validate(name = "user.Role.created_at")]
     #[schema(value_type = String, format = "date-time")]
     pub created_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
     #[prost(message, optional, tag = "9")]
+    #[validate(name = "user.Role.updated_at")]
     #[schema(value_type = String, format = "date-time")]
     pub updated_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AccessControl {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.AccessControl.id")]
     pub id: ::prost::alloc::string::String,
     #[prost(string, tag = "3")]
+    #[validate(name = "user.AccessControl.fullMethodName")]
     pub full_method_name: ::prost::alloc::string::String,
     #[prost(string, tag = "4")]
+    #[validate(name = "user.AccessControl.http_url")]
     pub http_url: ::prost::alloc::string::String,
     #[prost(string, tag = "5")]
+    #[validate(name = "user.AccessControl.http_method")]
     pub http_method: ::prost::alloc::string::String,
     #[prost(string, tag = "6")]
+    #[validate(name = "user.AccessControl.event_type")]
     pub event_type: ::prost::alloc::string::String,
     #[prost(string, tag = "7")]
+    #[validate(name = "user.AccessControl.role_id")]
     pub role_id: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "8")]
+    #[validate(name = "user.AccessControl.created_at")]
     #[schema(value_type = String, format = "date-time")]
     pub created_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
     #[prost(message, optional, tag = "9")]
+    #[validate(name = "user.AccessControl.updated_at")]
     #[schema(value_type = String, format = "date-time")]
     pub updated_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AccessControlExcluded {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.AccessControlExcluded.id")]
     pub id: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
+    #[validate(name = "user.AccessControlExcluded.fullMethodName")]
     pub full_method_name: ::prost::alloc::string::String,
     #[prost(string, tag = "4")]
+    #[validate(name = "user.AccessControlExcluded.http_url")]
     pub http_url: ::prost::alloc::string::String,
     #[prost(string, tag = "5")]
+    #[validate(name = "user.AccessControlExcluded.http_method")]
     pub http_method: ::prost::alloc::string::String,
     #[prost(string, tag = "6")]
+    #[validate(name = "user.AccessControlExcluded.event_type")]
     pub event_type: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "8")]
+    #[validate(name = "user.AccessControlExcluded.created_at")]
     #[schema(value_type = String, format = "date-time")]
     pub created_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
     #[prost(message, optional, tag = "9")]
+    #[validate(name = "user.AccessControlExcluded.updated_at")]
     #[schema(value_type = String, format = "date-time")]
     pub updated_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MethodAccessControl {
     #[prost(bool, tag = "1")]
+    #[validate(name = "user.MethodAccessControl.is_public")]
     pub is_public: bool,
     #[prost(enumeration = "EnumRole", repeated, tag = "2")]
+    #[validate(name = "user.MethodAccessControl.roles")]
     pub roles: ::prost::alloc::vec::Vec<i32>,
     #[prost(message, optional, tag = "3")]
+    #[validate(name = "user.MethodAccessControl.http")]
     pub http: ::core::option::Option<Http>,
     #[prost(message, optional, tag = "5")]
+    #[validate(name = "user.MethodAccessControl.broker")]
     pub broker: ::core::option::Option<Broker>,
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Http {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.HTTP.url")]
     pub url: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
+    #[validate(name = "user.HTTP.method")]
     pub method: ::prost::alloc::string::String,
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Broker {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.Broker.event_type")]
     pub event_type: ::prost::alloc::string::String,
 }
 /// NEW
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthUserRegisterRequest {
     #[prost(string, tag = "2")]
+    #[validate(name = "user.AuthUserRegisterRequest.name")]
+    #[validate(r#type(string(min_len = 0)))]
     pub name: ::prost::alloc::string::String,
     #[prost(string, tag = "3")]
+    #[validate(name = "user.AuthUserRegisterRequest.email")]
+    #[validate(r#type(string(well_known(email = true))))]
     pub email: ::prost::alloc::string::String,
     #[prost(string, tag = "4")]
+    #[validate(name = "user.AuthUserRegisterRequest.password")]
+    #[validate(r#type(string(min_len = 8)))]
     pub password: ::prost::alloc::string::String,
     #[prost(enumeration = "EnumRole", tag = "5")]
+    #[validate(name = "user.AuthUserRegisterRequest.Role")]
+    #[validate(r#type(r#enum(defined_only = true)))]
     pub role: i32,
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthUserLoginByEmailAndPasswordRequest {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.AuthUserLoginByEmailAndPasswordRequest.email")]
+    #[validate(r#type(string(well_known(email = true))))]
     pub email: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
+    #[validate(name = "user.AuthUserLoginByEmailAndPasswordRequest.password")]
+    #[validate(r#type(string(min_len = 8)))]
     pub password: ::prost::alloc::string::String,
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthUserVerifyOtpRequest {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.AuthUserVerifyOtpRequest.otp")]
+    #[validate(r#type(string(min_len = 4)))]
     pub otp: ::prost::alloc::string::String,
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthUserLogoutByTokenRequest {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.AuthUserLogoutByTokenRequest.token")]
+    #[validate(r#type(string(min_len = 8)))]
     pub token: ::prost::alloc::string::String,
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthUserVerifyAccessControlRequest {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.AuthUserVerifyAccessControlRequest.token")]
+    #[validate(r#type(string(min_len = 0)))]
     pub token: ::prost::alloc::string::String,
     #[prost(string, optional, tag = "2")]
+    #[validate(name = "user.AuthUserVerifyAccessControlRequest.fullMethodName")]
     pub full_method_name: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag = "3")]
+    #[validate(name = "user.AuthUserVerifyAccessControlRequest.http_url")]
     pub http_url: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag = "4")]
+    #[validate(name = "user.AuthUserVerifyAccessControlRequest.http_method")]
     pub http_method: ::core::option::Option<::prost::alloc::string::String>,
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthUserFindUserByTokenRequest {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.AuthUserFindUserByTokenRequest.token")]
+    #[validate(r#type(string(min_len = 0)))]
     pub token: ::prost::alloc::string::String,
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthServiceVerifyIsExcludedRequest {
     #[prost(string, optional, tag = "2")]
+    #[validate(name = "user.AuthServiceVerifyIsExcludedRequest.fullMethodName")]
     pub full_method_name: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag = "3")]
+    #[validate(name = "user.AuthServiceVerifyIsExcludedRequest.http_url")]
     pub http_url: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag = "4")]
+    #[validate(name = "user.AuthServiceVerifyIsExcludedRequest.http_method")]
     pub http_method: ::core::option::Option<::prost::alloc::string::String>,
 }
 /// USER REQUEST DEFINITION
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FindUserByIdRequest {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.FindUserByIdRequest.id")]
+    #[validate(r#type(string(min_len = 1)))]
     pub id: ::prost::alloc::string::String,
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdateUserByIdRequest {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.UpdateUserByIdRequest.id")]
+    #[validate(r#type(string(min_len = 0)))]
     pub id: ::prost::alloc::string::String,
     #[prost(string, optional, tag = "2")]
+    #[validate(name = "user.UpdateUserByIdRequest.name")]
     pub name: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag = "3")]
+    #[validate(name = "user.UpdateUserByIdRequest.email")]
     pub email: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag = "4")]
+    #[validate(name = "user.UpdateUserByIdRequest.password")]
     pub password: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(bool, optional, tag = "5")]
+    #[validate(name = "user.UpdateUserByIdRequest.is_verified")]
     pub is_verified: ::core::option::Option<bool>,
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FindUserByEmailAndPasswordRequest {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.FindUserByEmailAndPasswordRequest.email")]
+    #[validate(r#type(string(well_known(email = true))))]
     pub email: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
+    #[validate(name = "user.FindUserByEmailAndPasswordRequest.password")]
+    #[validate(r#type(string(min_len = 8)))]
     pub password: ::prost::alloc::string::String,
 }
 /// AUTH RESPONSE DEFINITION
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthUserRegisterResponse {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.AuthUserRegisterResponse.error")]
     pub error: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
+    #[validate(name = "user.AuthUserRegisterResponse.message")]
     pub message: ::prost::alloc::string::String,
     #[prost(uint32, tag = "3")]
+    #[validate(name = "user.AuthUserRegisterResponse.code")]
     pub code: u32,
     #[prost(message, optional, tag = "4")]
+    #[validate(name = "user.AuthUserRegisterResponse.data")]
     pub data: ::core::option::Option<
         auth_user_register_response::AuthUserRegisterResponseData,
     >,
 }
 /// Nested message and enum types in `AuthUserRegisterResponse`.
 pub mod auth_user_register_response {
+    #[derive(::prost_validate::Validator)]
     #[derive(utoipa::ToSchema)]
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Clone, PartialEq, ::prost::Message)]
     pub struct AuthUserRegisterResponseData {
         #[prost(message, optional, tag = "1")]
+        #[validate(
+            name = "user.AuthUserRegisterResponse.AuthUserRegisterResponseData.user"
+        )]
         pub user: ::core::option::Option<super::User>,
         #[prost(message, optional, tag = "2")]
+        #[validate(
+            name = "user.AuthUserRegisterResponse.AuthUserRegisterResponseData.role"
+        )]
         pub role: ::core::option::Option<super::Role>,
         #[prost(message, repeated, tag = "3")]
+        #[validate(
+            name = "user.AuthUserRegisterResponse.AuthUserRegisterResponseData.access_control"
+        )]
         pub access_control: ::prost::alloc::vec::Vec<super::AccessControl>,
     }
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthUserVerifyOtpResponse {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.AuthUserVerifyOtpResponse.error")]
     pub error: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
+    #[validate(name = "user.AuthUserVerifyOtpResponse.message")]
     pub message: ::prost::alloc::string::String,
     #[prost(uint32, tag = "3")]
+    #[validate(name = "user.AuthUserVerifyOtpResponse.code")]
     pub code: u32,
     #[prost(message, optional, tag = "4")]
+    #[validate(name = "user.AuthUserVerifyOtpResponse.data")]
     pub data: ::core::option::Option<
         auth_user_verify_otp_response::AuthUserVerifyOtpResponseData,
     >,
 }
 /// Nested message and enum types in `AuthUserVerifyOtpResponse`.
 pub mod auth_user_verify_otp_response {
+    #[derive(::prost_validate::Validator)]
     #[derive(utoipa::ToSchema)]
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Clone, PartialEq, ::prost::Message)]
     pub struct AuthUserVerifyOtpResponseData {
         #[prost(string, tag = "1")]
+        #[validate(
+            name = "user.AuthUserVerifyOtpResponse.AuthUserVerifyOtpResponseData.accessToken"
+        )]
         pub access_token: ::prost::alloc::string::String,
         #[prost(string, tag = "2")]
+        #[validate(
+            name = "user.AuthUserVerifyOtpResponse.AuthUserVerifyOtpResponseData.refreshToken"
+        )]
         pub refresh_token: ::prost::alloc::string::String,
     }
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthUserLogoutByTokenResponse {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.AuthUserLogoutByTokenResponse.error")]
     pub error: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
+    #[validate(name = "user.AuthUserLogoutByTokenResponse.message")]
     pub message: ::prost::alloc::string::String,
     #[prost(uint32, tag = "3")]
+    #[validate(name = "user.AuthUserLogoutByTokenResponse.code")]
     pub code: u32,
     #[prost(message, optional, tag = "5")]
+    #[validate(name = "user.AuthUserLogoutByTokenResponse.data")]
     pub data: ::core::option::Option<
         auth_user_logout_by_token_response::AuthUserLogoutByTokenResponseData,
     >,
 }
 /// Nested message and enum types in `AuthUserLogoutByTokenResponse`.
 pub mod auth_user_logout_by_token_response {
+    #[derive(::prost_validate::Validator)]
     #[derive(utoipa::ToSchema)]
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Clone, Copy, PartialEq, ::prost::Message)]
     pub struct AuthUserLogoutByTokenResponseData {
         #[prost(bool, tag = "1")]
+        #[validate(
+            name = "user.AuthUserLogoutByTokenResponse.AuthUserLogoutByTokenResponseData.is_valid"
+        )]
         pub is_valid: bool,
     }
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthUserVerifyAccessControlResponse {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.AuthUserVerifyAccessControlResponse.error")]
     pub error: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
+    #[validate(name = "user.AuthUserVerifyAccessControlResponse.message")]
     pub message: ::prost::alloc::string::String,
     #[prost(uint32, tag = "3")]
+    #[validate(name = "user.AuthUserVerifyAccessControlResponse.code")]
     pub code: u32,
     #[prost(message, optional, tag = "4")]
+    #[validate(name = "user.AuthUserVerifyAccessControlResponse.data")]
     pub data: ::core::option::Option<
         auth_user_verify_access_control_response::AuthUserVerifyAccessControlResponseData,
     >,
 }
 /// Nested message and enum types in `AuthUserVerifyAccessControlResponse`.
 pub mod auth_user_verify_access_control_response {
+    #[derive(::prost_validate::Validator)]
     #[derive(utoipa::ToSchema)]
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Clone, PartialEq, ::prost::Message)]
     pub struct AuthUserVerifyAccessControlResponseData {
         #[prost(bool, tag = "1")]
+        #[validate(
+            name = "user.AuthUserVerifyAccessControlResponse.AuthUserVerifyAccessControlResponseData.isValid"
+        )]
         pub is_valid: bool,
         #[prost(message, optional, tag = "2")]
+        #[validate(
+            name = "user.AuthUserVerifyAccessControlResponse.AuthUserVerifyAccessControlResponseData.user"
+        )]
         pub user: ::core::option::Option<super::User>,
         #[prost(message, optional, tag = "3")]
+        #[validate(
+            name = "user.AuthUserVerifyAccessControlResponse.AuthUserVerifyAccessControlResponseData.role"
+        )]
         pub role: ::core::option::Option<super::Role>,
         #[prost(message, repeated, tag = "4")]
+        #[validate(
+            name = "user.AuthUserVerifyAccessControlResponse.AuthUserVerifyAccessControlResponseData.access_controls"
+        )]
         pub access_controls: ::prost::alloc::vec::Vec<super::AccessControl>,
     }
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthUserFindUserByTokenResponse {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.AuthUserFindUserByTokenResponse.error")]
     pub error: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
+    #[validate(name = "user.AuthUserFindUserByTokenResponse.message")]
     pub message: ::prost::alloc::string::String,
     #[prost(uint32, tag = "3")]
+    #[validate(name = "user.AuthUserFindUserByTokenResponse.code")]
     pub code: u32,
     #[prost(message, optional, tag = "4")]
+    #[validate(name = "user.AuthUserFindUserByTokenResponse.data")]
     pub data: ::core::option::Option<
         auth_user_find_user_by_token_response::AuthUserFindUserByTokenResponseData,
     >,
 }
 /// Nested message and enum types in `AuthUserFindUserByTokenResponse`.
 pub mod auth_user_find_user_by_token_response {
+    #[derive(::prost_validate::Validator)]
     #[derive(utoipa::ToSchema)]
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Clone, PartialEq, ::prost::Message)]
     pub struct AuthUserFindUserByTokenResponseData {
         #[prost(message, optional, tag = "1")]
+        #[validate(
+            name = "user.AuthUserFindUserByTokenResponse.AuthUserFindUserByTokenResponseData.user"
+        )]
         pub user: ::core::option::Option<super::User>,
     }
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthServiceVerifyIsExcludedResponse {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.AuthServiceVerifyIsExcludedResponse.error")]
     pub error: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
+    #[validate(name = "user.AuthServiceVerifyIsExcludedResponse.message")]
     pub message: ::prost::alloc::string::String,
     #[prost(uint32, tag = "3")]
+    #[validate(name = "user.AuthServiceVerifyIsExcludedResponse.code")]
     pub code: u32,
     #[prost(message, optional, tag = "4")]
+    #[validate(name = "user.AuthServiceVerifyIsExcludedResponse.data")]
     pub data: ::core::option::Option<
         auth_service_verify_is_excluded_response::AuthServiceVerifyIsExcludedResponseData,
     >,
 }
 /// Nested message and enum types in `AuthServiceVerifyIsExcludedResponse`.
 pub mod auth_service_verify_is_excluded_response {
+    #[derive(::prost_validate::Validator)]
     #[derive(utoipa::ToSchema)]
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Clone, Copy, PartialEq, ::prost::Message)]
     pub struct AuthServiceVerifyIsExcludedResponseData {
         #[prost(bool, tag = "1")]
+        #[validate(
+            name = "user.AuthServiceVerifyIsExcludedResponse.AuthServiceVerifyIsExcludedResponseData.IsExcluded"
+        )]
         pub is_excluded: bool,
     }
 }
 /// USER RESPONSE DEFINITION
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdateUserByIdResponse {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.UpdateUserByIdResponse.error")]
     pub error: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
+    #[validate(name = "user.UpdateUserByIdResponse.message")]
     pub message: ::prost::alloc::string::String,
     #[prost(uint32, tag = "3")]
+    #[validate(name = "user.UpdateUserByIdResponse.code")]
     pub code: u32,
     #[prost(message, optional, tag = "4")]
+    #[validate(name = "user.UpdateUserByIdResponse.data")]
     pub data: ::core::option::Option<
         update_user_by_id_response::UpdateUserByIdResponseData,
     >,
 }
 /// Nested message and enum types in `UpdateUserByIdResponse`.
 pub mod update_user_by_id_response {
+    #[derive(::prost_validate::Validator)]
     #[derive(utoipa::ToSchema)]
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Clone, PartialEq, ::prost::Message)]
     pub struct UpdateUserByIdResponseData {
         #[prost(string, tag = "1")]
+        #[validate(name = "user.UpdateUserByIdResponse.UpdateUserByIdResponseData.id")]
         pub id: ::prost::alloc::string::String,
     }
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FindUserByIdResponse {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.FindUserByIdResponse.error")]
     pub error: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
+    #[validate(name = "user.FindUserByIdResponse.message")]
     pub message: ::prost::alloc::string::String,
     #[prost(uint32, tag = "3")]
+    #[validate(name = "user.FindUserByIdResponse.code")]
     pub code: u32,
     #[prost(message, optional, tag = "4")]
+    #[validate(name = "user.FindUserByIdResponse.data")]
     pub data: ::core::option::Option<find_user_by_id_response::FindUserByIdResponseData>,
 }
 /// Nested message and enum types in `FindUserByIdResponse`.
 pub mod find_user_by_id_response {
+    #[derive(::prost_validate::Validator)]
     #[derive(utoipa::ToSchema)]
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Clone, PartialEq, ::prost::Message)]
     pub struct FindUserByIdResponseData {
         #[prost(message, optional, tag = "1")]
+        #[validate(name = "user.FindUserByIdResponse.FindUserByIdResponseData.user")]
         pub user: ::core::option::Option<super::User>,
     }
 }
+#[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FindUserByEmailAndPasswordResponse {
     #[prost(string, tag = "1")]
+    #[validate(name = "user.FindUserByEmailAndPasswordResponse.error")]
     pub error: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
+    #[validate(name = "user.FindUserByEmailAndPasswordResponse.message")]
     pub message: ::prost::alloc::string::String,
     #[prost(uint32, tag = "3")]
+    #[validate(name = "user.FindUserByEmailAndPasswordResponse.code")]
     pub code: u32,
     #[prost(message, optional, tag = "4")]
+    #[validate(name = "user.FindUserByEmailAndPasswordResponse.data")]
     pub data: ::core::option::Option<
         find_user_by_email_and_password_response::FindUserByEmailAndPasswordResponseData,
     >,
 }
 /// Nested message and enum types in `FindUserByEmailAndPasswordResponse`.
 pub mod find_user_by_email_and_password_response {
+    #[derive(::prost_validate::Validator)]
     #[derive(utoipa::ToSchema)]
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Clone, PartialEq, ::prost::Message)]
     pub struct FindUserByEmailAndPasswordResponseData {
         #[prost(message, optional, tag = "1")]
+        #[validate(
+            name = "user.FindUserByEmailAndPasswordResponse.FindUserByEmailAndPasswordResponseData.user"
+        )]
         pub user: ::core::option::Option<super::User>,
     }
 }
