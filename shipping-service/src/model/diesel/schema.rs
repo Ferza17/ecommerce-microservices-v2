@@ -12,14 +12,15 @@ diesel::table! {
 
 diesel::table! {
     shippings (id) {
+        #[max_length = 255]
         id -> Varchar,
-        created_by_id -> Varchar,
-        order_id -> Varchar,
-        #[max_length = 15]
-        _status -> Varchar,
-        shipping_provider_id -> Nullable<Varchar>,
-        created_at -> Nullable<Timestamp>,
-        updated_at -> Nullable<Timestamp>,
+        #[max_length = 255]
+        user_id -> Varchar,
+        #[max_length = 255]
+        payment_id -> Varchar,
+        shipping_provider_id -> Varchar,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
         discarded_at -> Nullable<Timestamp>,
     }
 }

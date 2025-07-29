@@ -2,7 +2,7 @@ use diesel_async::{AsyncPgConnection, RunQueryDsl};
 
 use diesel::prelude::*;
 
-use crate::model::diesel::orm::shipping_provider::ShippingProvider;
+use crate::model::diesel::shipping_providers::ShippingProviders;
 use crate::model::diesel::schema::shipping_providers::dsl::*;
 use anyhow::{Context, Result};
 use deadpool::managed::Object;
@@ -19,14 +19,14 @@ pub trait ShippingProviderPostgresRepository {
         &self,
         request_id: &str,
         provider_id: &str,
-    ) -> Result<ShippingProvider>;
+    ) -> Result<ShippingProviders>;
 
     async fn list_shipping_providers(
         &self,
         request_id: &str,
         page: &u32,
         limit: &u32,
-    ) -> Result<Vec<ShippingProvider>>;
+    ) -> Result<Vec<ShippingProviders>>;
 }
 
 #[derive(Clone)]
@@ -59,11 +59,11 @@ impl ShippingProviderPostgresRepository for ShippingProviderPostgresRepositoryIm
         &self,
         request_id: &str,
         provider_id: &str,
-    ) -> Result<ShippingProvider> {
+    ) -> Result<ShippingProviders> {
         event!(name: "ShippingProviderPostgresRepository.get_shipping_provider_by_id", Level::INFO, request_id = request_id, provider_id = provider_id);
         let mut conn = self.pg.get().await?;
         let result = shipping_providers
-            .select(ShippingProvider::as_select())
+            .select(ShippingProviders::as_select())
             .filter(id.eq(provider_id))
             .first(&mut conn)
             .await
@@ -81,7 +81,7 @@ impl ShippingProviderPostgresRepository for ShippingProviderPostgresRepositoryIm
         request_id: &str,
         page: &u32,
         limit: &u32,
-    ) -> Result<Vec<ShippingProvider>> {
+    ) -> Result<Vec<ShippingProviders>> {
         event!(
             Level::INFO,
             name = "ShippingProviderPostgresRepository.list_shipping_providers",
@@ -90,11 +90,11 @@ impl ShippingProviderPostgresRepository for ShippingProviderPostgresRepositoryIm
 
         let mut conn = self.pg.get().await?;
         let result = shipping_providers
-            .select(ShippingProvider::as_select())
+            .select(ShippingProviders::as_select())
             .filter(discarded_at.is_null())
             .limit(*limit as i64)
             .offset((*page - 1) as i64 * *limit as i64)
-            .load::<ShippingProvider>(&mut conn)
+            .load::<ShippingProviders>(&mut conn)
             .await;
 
         match result {
