@@ -5,29 +5,29 @@ import "external/validate/validate.proto";
 
 // SHIPPING PROTO DEFINITION
 message CreateShippingRequest{
-  string user_id = 1;
-  string payment_id = 2;
-  string shipping_provider_id = 3;
+  string user_id = 1 [(validate.rules).string.ignore_empty = false];
+  string payment_id = 2 [(validate.rules).string.ignore_empty = false];
+  string shipping_provider_id = 3 [(validate.rules).string.ignore_empty = false];
 };
 
 message GetShippingByIdRequest{
-  string id = 1;
+  string id = 1 [(validate.rules).string.ignore_empty = false];
 };
 
 message ListShippingRequest{
-  uint32 page = 1;
-  uint32 limit = 2;
+  uint32 page = 1 [(validate.rules).uint32.gt = 0];
+  uint32 limit = 2 [(validate.rules).uint32.gt = 0];
 };
 
 message UpdateShippingRequest{
-  string id = 1;
-  string user_id = 2;
-  string payment_id = 3;
-  string shipping_provider_id = 4;
+  string id = 1 [(validate.rules).string.ignore_empty = false];
+  string user_id = 2 [(validate.rules).string.ignore_empty = false];
+  string payment_id = 3 [(validate.rules).string.ignore_empty = false];
+  string shipping_provider_id = 4 [(validate.rules).string.ignore_empty = false];
 };
 
 message DeleteShippingRequest{
-  string id = 1;
+  string id = 1 [(validate.rules).string.ignore_empty = false];
 };
 
 

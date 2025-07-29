@@ -297,7 +297,8 @@ pub async fn list_shipping_providers(
     match result {
         Ok(response) => Ok((
             util::convert_status::tonic_to_http_status(Code::Ok),
-            Json(response.into_inner()))),
+            Json(response.into_inner()),
+        )),
         Err(err) => {
             error!("list_shipping failed: {}", err.message());
             Ok((
