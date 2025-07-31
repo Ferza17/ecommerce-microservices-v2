@@ -95,32 +95,10 @@ func (m *CreatePaymentRequest) validate(all bool) error {
 
 	}
 
-	if utf8.RuneCountInString(m.GetUserId()) < 1 {
-		err := CreatePaymentRequestValidationError{
-			field:  "UserId",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	if m.GetAmount() <= 0 {
 		err := CreatePaymentRequestValidationError{
 			field:  "Amount",
 			reason: "value must be greater than 0",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if utf8.RuneCountInString(m.GetProviderId()) < 1 {
-		err := CreatePaymentRequestValidationError{
-			field:  "ProviderId",
-			reason: "value length must be at least 1 runes",
 		}
 		if !all {
 			return err
@@ -230,17 +208,6 @@ func (m *PaymentOrderDelayedCancelledRequest) validate(all bool) error {
 	}
 
 	var errors []error
-
-	if utf8.RuneCountInString(m.GetId()) < 1 {
-		err := PaymentOrderDelayedCancelledRequestValidationError{
-			field:  "Id",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
 
 	if len(errors) > 0 {
 		return PaymentOrderDelayedCancelledRequestMultiError(errors)

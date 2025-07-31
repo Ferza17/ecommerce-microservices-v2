@@ -85,6 +85,15 @@
       "arguments": {
         "x-delayed-type": "direct"
       }
+    },
+    {
+      "name": "shipping.direct.exchange",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
     }
   ],
   "queues": [
@@ -160,6 +169,11 @@
     },
     {
       "name": "payment.order.delayed.cancelled",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "shipping.created",
       "vhost": "/",
       "durable": true
     }

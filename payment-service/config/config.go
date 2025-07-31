@@ -96,6 +96,14 @@ type Config struct {
 	PaymentServiceHttpHost       string
 	PaymentServiceHttpPort       string
 	PaymentServiceMetricHttpPort string
+
+	// Shipping Service Config
+	ShippingServiceServiceName    string
+	ShippingServiceRpcHost        string
+	ShippingServiceRpcPort        string
+	ShippingServiceHttpHost       string
+	ShippingServiceHttpPort       string
+	ShippingServiceMetricHttpPort string
 }
 
 func SetConfig(path string) {
@@ -192,6 +200,7 @@ func SetConfig(path string) {
 		c.initPaymentService(client.KV())
 		c.initUserService(client.KV())
 		c.initProductService(client.KV())
+		c.initShippingService(client.KV())
 	}()
 
 	wg.Wait()

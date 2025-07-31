@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func (p *paymentProviderPresenter) FindPaymentProviderById(ctx context.Context, req *paymentRpc.FindPaymentProviderByIdRequest) (*paymentRpc.Provider, error) {
+func (p *paymentProviderPresenter) FindPaymentProviderById(ctx context.Context, req *paymentRpc.FindPaymentProviderByIdRequest) (*paymentRpc.FindPaymentProviderByIdResponse, error) {
 	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "PaymentPresenter.FindPaymentProviderById")
 	defer span.End()
 	requestId := pkgContext.GetRequestIDFromContext(ctx)

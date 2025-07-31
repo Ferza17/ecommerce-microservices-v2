@@ -11,7 +11,7 @@ use crate::package::context::auth::get_request_authorization_token_from_metadata
 use crate::package::context::request_id::get_request_id_from_metadata;
 use crate::package::context::url_path::get_url_path_from_metadata;
 use prost_validate::NoopValidator;
-use tonic::{Request, Response, Status};
+use tonic::{Code, Request, Response, Status};
 use tracing::instrument;
 
 #[derive(Debug)]
@@ -39,33 +39,30 @@ impl ShippingService for ShippingGrpcPresenter {
         &self,
         request: Request<CreateShippingRequest>,
     ) -> Result<Response<CreateShippingResponse>, Status> {
-        match request.validate() {
-            Ok(_) => {}
-            Err(e) => {
-                return Err(Status::new(
-                    tonic::Code::InvalidArgument,
-                    format!("Invalid request: {}", e.field),
-                ));
-            }
-        }
-
+        request
+            .validate()
+            .map_err(|e| Status::new(Code::InvalidArgument, e.field.to_string()))?;
         // Validate access control
         self.user_service
             .clone()
             .auth_user_verify_access_control(
                 get_request_id_from_metadata(request.metadata()),
-                AuthUserVerifyAccessControlRequest {
+                tonic::Request::new(AuthUserVerifyAccessControlRequest {
                     token: get_request_authorization_token_from_metadata(request.metadata()),
                     full_method_name: Some(get_url_path_from_metadata(request.metadata())),
                     http_url: None,
                     http_method: None,
-                },
+                }),
             )
             .await
             .map_err(|e| Status::from_error(Box::new(e)))?;
 
         self.shipping_use_case
-            .create_shipping(get_request_id_from_metadata(request.metadata()), request)
+            .create_shipping(
+                get_request_id_from_metadata(request.metadata()),
+                get_request_authorization_token_from_metadata(request.metadata()),
+                request,
+            )
             .await
             .map_err(|e| Status::new(e.code(), e.message()))
     }
@@ -75,32 +72,30 @@ impl ShippingService for ShippingGrpcPresenter {
         &self,
         request: Request<GetShippingByIdRequest>,
     ) -> Result<Response<GetShippingByIdResponse>, Status> {
-        match request.validate() {
-            Ok(_) => {}
-            Err(e) => {
-                return Err(Status::new(
-                    tonic::Code::InvalidArgument,
-                    format!("Invalid request: {}", e.field),
-                ));
-            }
-        }
+        request
+            .validate()
+            .map_err(|e| Status::new(Code::InvalidArgument, e.field.to_string()))?;
         // Validate access control
         self.user_service
             .clone()
             .auth_user_verify_access_control(
                 get_request_id_from_metadata(request.metadata()),
-                AuthUserVerifyAccessControlRequest {
+                tonic::Request::new(AuthUserVerifyAccessControlRequest {
                     token: get_request_authorization_token_from_metadata(request.metadata()),
                     full_method_name: Some(get_url_path_from_metadata(request.metadata())),
                     http_url: None,
                     http_method: None,
-                },
+                }),
             )
             .await
             .map_err(|e| Status::from_error(Box::new(e)))?;
 
         self.shipping_use_case
-            .get_shipping_by_id(get_request_id_from_metadata(request.metadata()), request)
+            .get_shipping_by_id(
+                get_request_id_from_metadata(request.metadata()),
+                get_request_authorization_token_from_metadata(request.metadata()),
+                request,
+            )
             .await
             .map_err(|e| Status::new(e.code(), e.message()))
     }
@@ -110,26 +105,20 @@ impl ShippingService for ShippingGrpcPresenter {
         &self,
         request: Request<ListShippingRequest>,
     ) -> Result<Response<ListShippingResponse>, Status> {
-        match request.validate() {
-            Ok(_) => {}
-            Err(e) => {
-                return Err(Status::new(
-                    tonic::Code::InvalidArgument,
-                    format!("Invalid request: {}", e.field),
-                ));
-            }
-        }
+        request
+            .validate()
+            .map_err(|e| Status::new(Code::InvalidArgument, e.field.to_string()))?;
         // Validate access control
         self.user_service
             .clone()
             .auth_user_verify_access_control(
                 get_request_id_from_metadata(request.metadata()),
-                AuthUserVerifyAccessControlRequest {
+                tonic::Request::new(AuthUserVerifyAccessControlRequest {
                     token: get_request_authorization_token_from_metadata(request.metadata()),
                     full_method_name: Some(get_url_path_from_metadata(request.metadata())),
                     http_url: None,
                     http_method: None,
-                },
+                }),
             )
             .await
             .map_err(|e| Status::from_error(Box::new(e)))?;
@@ -145,26 +134,20 @@ impl ShippingService for ShippingGrpcPresenter {
         &self,
         request: Request<UpdateShippingRequest>,
     ) -> Result<Response<UpdateShippingResponse>, Status> {
-        match request.validate() {
-            Ok(_) => {}
-            Err(e) => {
-                return Err(Status::new(
-                    tonic::Code::InvalidArgument,
-                    format!("Invalid request: {}", e.field),
-                ));
-            }
-        }
+        request
+            .validate()
+            .map_err(|e| Status::new(Code::InvalidArgument, e.field.to_string()))?;
         // Validate access control
         self.user_service
             .clone()
             .auth_user_verify_access_control(
                 get_request_id_from_metadata(request.metadata()),
-                AuthUserVerifyAccessControlRequest {
+                tonic::Request::new(AuthUserVerifyAccessControlRequest {
                     token: get_request_authorization_token_from_metadata(request.metadata()),
                     full_method_name: Some(get_url_path_from_metadata(request.metadata())),
                     http_url: None,
                     http_method: None,
-                },
+                }),
             )
             .await
             .map_err(|e| Status::from_error(Box::new(e)))?;
@@ -180,26 +163,20 @@ impl ShippingService for ShippingGrpcPresenter {
         &self,
         request: Request<DeleteShippingRequest>,
     ) -> Result<Response<DeleteShippingResponse>, Status> {
-        match request.validate() {
-            Ok(_) => {}
-            Err(e) => {
-                return Err(Status::new(
-                    tonic::Code::InvalidArgument,
-                    format!("Invalid request: {}", e.field),
-                ));
-            }
-        }
+        request
+            .validate()
+            .map_err(|e| Status::new(Code::InvalidArgument, e.field.to_string()))?;
         // Validate access control
         self.user_service
             .clone()
             .auth_user_verify_access_control(
                 get_request_id_from_metadata(request.metadata()),
-                AuthUserVerifyAccessControlRequest {
+                tonic::Request::new(AuthUserVerifyAccessControlRequest {
                     token: get_request_authorization_token_from_metadata(request.metadata()),
                     full_method_name: Some(get_url_path_from_metadata(request.metadata())),
                     http_url: None,
                     http_method: None,
-                },
+                }),
             )
             .await
             .map_err(|e| Status::from_error(Box::new(e)))?;

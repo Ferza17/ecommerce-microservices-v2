@@ -9,10 +9,13 @@ package rabbitmq
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/postgresql"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/shipping"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/user"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/consumer"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/repository"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/usecase"
+	repository2 "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/provider/repository"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
 )
 
@@ -25,7 +28,10 @@ func ProvideGrpcServer() IRabbitMQServer {
 	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iTelemetryInfrastructure, iZapLogger)
 	postgresSQL := postgresql.NewPostgresqlInfrastructure(iZapLogger)
 	iPaymentRepository := repository.NewPaymentRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
-	iPaymentUseCase := usecase.NewPaymentUseCase(iPaymentRepository, iRabbitMQInfrastructure, iTelemetryInfrastructure, iZapLogger, postgresSQL)
+	iPaymentProviderRepository := repository2.NewPaymentProviderRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
+	iShippingService := shipping.NewShippingService(iZapLogger)
+	iUserService := user.NewUserService(iZapLogger)
+	iPaymentUseCase := usecase.NewPaymentUseCase(iPaymentRepository, iPaymentProviderRepository, iRabbitMQInfrastructure, iTelemetryInfrastructure, iZapLogger, postgresSQL, iShippingService, iUserService)
 	iPaymentConsumer := consumer.NewPaymentConsumer(iRabbitMQInfrastructure, iTelemetryInfrastructure, iPaymentUseCase, iZapLogger)
 	iRabbitMQServer := NewRabbitMQServer(iRabbitMQInfrastructure, iPaymentConsumer, iTelemetryInfrastructure, iZapLogger)
 	return iRabbitMQServer

@@ -41,11 +41,11 @@ where
                 cloned_user_service
                     .auth_service_verify_is_excluded(
                         request_id.clone(),
-                        AuthServiceVerifyIsExcludedRequest {
+                        tonic::Request::new(AuthServiceVerifyIsExcludedRequest {
                             full_method_name: Some(path.clone()),
                             http_url: None,
                             http_method: None,
-                        },
+                        }),
                     )
                     .await
             })

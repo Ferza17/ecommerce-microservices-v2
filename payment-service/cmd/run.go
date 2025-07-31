@@ -88,7 +88,7 @@ var runCommand = &cobra.Command{
 		log.Println("Received quit signal, cleaning up...")
 
 		// Graceful shutdown for gRPC
-		grpcServer.GracefulStop()
+		//grpcServer.GracefulStop()
 
 		// Wait for other servers to clean up
 		wg.Wait()

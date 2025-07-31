@@ -1,11 +1,21 @@
 /* @generated and managed by dsync */
 
+use crate::model::diesel::schema::*;
 #[allow(unused)]
 use crate::model::diesel::shipping_providers::ShippingProviders;
-use crate::model::diesel::schema::*;
 
 /// Struct representing a row in table `shippings`
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, diesel::Queryable, diesel::Selectable, diesel::QueryableByName, diesel::Associations, diesel::Identifiable)]
+#[derive(
+    Debug,
+    Clone,
+    serde::Serialize,
+    serde::Deserialize,
+    diesel::Queryable,
+    diesel::Selectable,
+    diesel::QueryableByName,
+    diesel::Associations,
+    diesel::Identifiable,
+)]
 #[diesel(table_name=shippings, primary_key(id), belongs_to(ShippingProviders, foreign_key=shipping_provider_id))]
 pub struct Shippings {
     /// Field representing column `id`
@@ -45,7 +55,9 @@ pub struct CreateShippings {
 }
 
 /// Update Struct for a row in table `shippings` for [`Shippings`]
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, diesel::AsChangeset, PartialEq, Default)]
+#[derive(
+    Debug, Clone, serde::Serialize, serde::Deserialize, diesel::AsChangeset, PartialEq, Default,
+)]
 #[diesel(table_name=shippings)]
 pub struct UpdateShippings {
     /// Field representing column `user_id`

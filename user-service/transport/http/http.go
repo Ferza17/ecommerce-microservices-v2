@@ -149,6 +149,8 @@ func (s *Server) Serve(ctx context.Context) error {
 	router.Use(authInterceptor.AuthHTTPMiddleware(s.logger, s.accessControlUseCase, s.authUseCase))
 
 	router.PathPrefix("/v1/user").Handler(gwMux)
+	router.PathPrefix("/v1/user").
+		Subrouter()
 
 	// Create an HTTP server instance
 	s.server = &http.Server{

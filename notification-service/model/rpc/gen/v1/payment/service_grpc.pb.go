@@ -19,6 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	PaymentService_CreatePayment_FullMethodName                = "/payment.PaymentService/CreatePayment"
 	PaymentService_FindPaymentById_FullMethodName              = "/payment.PaymentService/FindPaymentById"
 	PaymentService_FindPaymentByUserIdAndStatus_FullMethodName = "/payment.PaymentService/FindPaymentByUserIdAndStatus"
 )
@@ -27,6 +28,8 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PaymentServiceClient interface {
+	// COMMAND
+	CreatePayment(ctx context.Context, in *CreatePaymentRequest, opts ...grpc.CallOption) (*CreatePaymentResponse, error)
 	// QUERY
 	FindPaymentById(ctx context.Context, in *FindPaymentByIdRequest, opts ...grpc.CallOption) (*Payment, error)
 	FindPaymentByUserIdAndStatus(ctx context.Context, in *FindPaymentByUserIdAndStatusRequest, opts ...grpc.CallOption) (*Payment, error)
@@ -38,6 +41,16 @@ type paymentServiceClient struct {
 
 func NewPaymentServiceClient(cc grpc.ClientConnInterface) PaymentServiceClient {
 	return &paymentServiceClient{cc}
+}
+
+func (c *paymentServiceClient) CreatePayment(ctx context.Context, in *CreatePaymentRequest, opts ...grpc.CallOption) (*CreatePaymentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreatePaymentResponse)
+	err := c.cc.Invoke(ctx, PaymentService_CreatePayment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *paymentServiceClient) FindPaymentById(ctx context.Context, in *FindPaymentByIdRequest, opts ...grpc.CallOption) (*Payment, error) {
@@ -64,6 +77,8 @@ func (c *paymentServiceClient) FindPaymentByUserIdAndStatus(ctx context.Context,
 // All implementations should embed UnimplementedPaymentServiceServer
 // for forward compatibility.
 type PaymentServiceServer interface {
+	// COMMAND
+	CreatePayment(context.Context, *CreatePaymentRequest) (*CreatePaymentResponse, error)
 	// QUERY
 	FindPaymentById(context.Context, *FindPaymentByIdRequest) (*Payment, error)
 	FindPaymentByUserIdAndStatus(context.Context, *FindPaymentByUserIdAndStatusRequest) (*Payment, error)
@@ -76,6 +91,9 @@ type PaymentServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedPaymentServiceServer struct{}
 
+func (UnimplementedPaymentServiceServer) CreatePayment(context.Context, *CreatePaymentRequest) (*CreatePaymentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreatePayment not implemented")
+}
 func (UnimplementedPaymentServiceServer) FindPaymentById(context.Context, *FindPaymentByIdRequest) (*Payment, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindPaymentById not implemented")
 }
@@ -100,6 +118,24 @@ func RegisterPaymentServiceServer(s grpc.ServiceRegistrar, srv PaymentServiceSer
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&PaymentService_ServiceDesc, srv)
+}
+
+func _PaymentService_CreatePayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreatePaymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServiceServer).CreatePayment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PaymentService_CreatePayment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServiceServer).CreatePayment(ctx, req.(*CreatePaymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _PaymentService_FindPaymentById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -146,6 +182,10 @@ var PaymentService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*PaymentServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "CreatePayment",
+			Handler:    _PaymentService_CreatePayment_Handler,
+		},
+		{
 			MethodName: "FindPaymentById",
 			Handler:    _PaymentService_FindPaymentById_Handler,
 		},
@@ -169,7 +209,7 @@ const (
 type PaymentProviderServiceClient interface {
 	// QUERY
 	FindPaymentProviders(ctx context.Context, in *FindPaymentProvidersRequest, opts ...grpc.CallOption) (*FindPaymentProvidersResponse, error)
-	FindPaymentProviderById(ctx context.Context, in *FindPaymentProviderByIdRequest, opts ...grpc.CallOption) (*Provider, error)
+	FindPaymentProviderById(ctx context.Context, in *FindPaymentProviderByIdRequest, opts ...grpc.CallOption) (*FindPaymentProviderByIdResponse, error)
 }
 
 type paymentProviderServiceClient struct {
@@ -190,9 +230,9 @@ func (c *paymentProviderServiceClient) FindPaymentProviders(ctx context.Context,
 	return out, nil
 }
 
-func (c *paymentProviderServiceClient) FindPaymentProviderById(ctx context.Context, in *FindPaymentProviderByIdRequest, opts ...grpc.CallOption) (*Provider, error) {
+func (c *paymentProviderServiceClient) FindPaymentProviderById(ctx context.Context, in *FindPaymentProviderByIdRequest, opts ...grpc.CallOption) (*FindPaymentProviderByIdResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Provider)
+	out := new(FindPaymentProviderByIdResponse)
 	err := c.cc.Invoke(ctx, PaymentProviderService_FindPaymentProviderById_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -206,7 +246,7 @@ func (c *paymentProviderServiceClient) FindPaymentProviderById(ctx context.Conte
 type PaymentProviderServiceServer interface {
 	// QUERY
 	FindPaymentProviders(context.Context, *FindPaymentProvidersRequest) (*FindPaymentProvidersResponse, error)
-	FindPaymentProviderById(context.Context, *FindPaymentProviderByIdRequest) (*Provider, error)
+	FindPaymentProviderById(context.Context, *FindPaymentProviderByIdRequest) (*FindPaymentProviderByIdResponse, error)
 }
 
 // UnimplementedPaymentProviderServiceServer should be embedded to have
@@ -219,7 +259,7 @@ type UnimplementedPaymentProviderServiceServer struct{}
 func (UnimplementedPaymentProviderServiceServer) FindPaymentProviders(context.Context, *FindPaymentProvidersRequest) (*FindPaymentProvidersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindPaymentProviders not implemented")
 }
-func (UnimplementedPaymentProviderServiceServer) FindPaymentProviderById(context.Context, *FindPaymentProviderByIdRequest) (*Provider, error) {
+func (UnimplementedPaymentProviderServiceServer) FindPaymentProviderById(context.Context, *FindPaymentProviderByIdRequest) (*FindPaymentProviderByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindPaymentProviderById not implemented")
 }
 func (UnimplementedPaymentProviderServiceServer) testEmbeddedByValue() {}

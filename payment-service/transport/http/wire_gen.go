@@ -9,6 +9,7 @@ package http
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/postgresql"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/shipping"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/user"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/presenter"
@@ -28,11 +29,12 @@ func ProvideHttpServer() *HttpServer {
 	postgresSQL := postgresql.NewPostgresqlInfrastructure(iZapLogger)
 	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
 	iPaymentRepository := repository.NewPaymentRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
-	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iTelemetryInfrastructure, iZapLogger)
-	iPaymentUseCase := usecase.NewPaymentUseCase(iPaymentRepository, iRabbitMQInfrastructure, iTelemetryInfrastructure, iZapLogger, postgresSQL)
-	iUserService := user.NewUserService(iZapLogger)
-	iPaymentPresenter := presenter.NewPaymentPresenter(iPaymentUseCase, iTelemetryInfrastructure, iUserService, iZapLogger)
 	iPaymentProviderRepository := repository2.NewPaymentProviderRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
+	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iTelemetryInfrastructure, iZapLogger)
+	iShippingService := shipping.NewShippingService(iZapLogger)
+	iUserService := user.NewUserService(iZapLogger)
+	iPaymentUseCase := usecase.NewPaymentUseCase(iPaymentRepository, iPaymentProviderRepository, iRabbitMQInfrastructure, iTelemetryInfrastructure, iZapLogger, postgresSQL, iShippingService, iUserService)
+	iPaymentPresenter := presenter.NewPaymentPresenter(iPaymentUseCase, iTelemetryInfrastructure, iUserService, iZapLogger)
 	iPaymentProviderUseCase := usecase2.NewPaymentProviderUseCase(iPaymentProviderRepository, iRabbitMQInfrastructure, iTelemetryInfrastructure, postgresSQL, iZapLogger)
 	iPaymentProviderPresenter := presenter2.NewPaymentProviderPresenter(iPaymentProviderUseCase, iTelemetryInfrastructure, iUserService, iZapLogger)
 	httpServer := NewHttpServer(iZapLogger, iPaymentPresenter, iPaymentProviderPresenter, iTelemetryInfrastructure, iUserService)

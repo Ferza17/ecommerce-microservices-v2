@@ -32,10 +32,10 @@ prometheus = "0.14.0"
 nject = "0.4"
 
 # POSTGRESQL
-diesel_migrations = "2.2.0"
 diesel = { version = "2.2.0", features = ["postgres", "chrono"] }
 diesel-async = { version = "0.6.1", features = ["deadpool", "postgres"] }
 deadpool = "0.12.2"
+diesel_logger="0.4.0"
 
 # TRACING & LOGGING
 tracing-subscriber = { version = "0.3.19", features = ["json"] }

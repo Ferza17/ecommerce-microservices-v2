@@ -6,6 +6,7 @@ package http
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/postgresql"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
+	shippingService "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/shipping"
 	userService "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/user"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
 	paymentPresenter "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/presenter"
@@ -27,6 +28,7 @@ func ProvideHttpServer() *HttpServer {
 		telemetry.Set,
 		rabbitmq.Set,
 		userService.Set,
+		shippingService.Set,
 
 		// Repository layer
 		paymentRepository.Set,

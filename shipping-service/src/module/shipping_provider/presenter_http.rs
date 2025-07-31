@@ -24,7 +24,7 @@ use axum::{
 use prost_validate::NoopValidator;
 use std::convert::Infallible;
 use std::sync::Arc;
-use tonic::{Code, Request};
+use tonic::Code;
 use tower::ServiceBuilder;
 use tracing::{error, instrument};
 
@@ -81,7 +81,7 @@ pub async fn list_shipping_providers(
     Query(query): Query<ListShippingProvidersRequest>,
 ) -> Result<(StatusCode, Json<ListShippingProvidersResponse>), StatusCode> {
     // VALIDATE REQUEST
-    let request = Request::new(query);
+    let request = tonic::Request::new(query);
     match request.validate() {
         Ok(_) => {}
         Err(e) => {
@@ -101,14 +101,14 @@ pub async fn list_shipping_providers(
         .clone()
         .auth_user_verify_access_control(
             get_request_id_from_header(&headers),
-            AuthUserVerifyAccessControlRequest {
+            tonic::Request::new(AuthUserVerifyAccessControlRequest {
                 token: get_request_authorization_token_from_header(&headers),
                 full_method_name: Some(
                     "/shipping.ShippingProviderService/ListShippingProviders".to_string(),
                 ),
                 http_url: None,
                 http_method: None,
-            },
+            }),
         )
         .await
     {
@@ -179,7 +179,7 @@ pub async fn get_shipping_provider_by_id(
     Path(id): Path<String>,
 ) -> Result<(StatusCode, Json<GetShippingProviderByIdResponse>), Infallible> {
     // VALIDATE REQUEST
-    let request = Request::new(GetShippingProviderByIdRequest { id });
+    let request = tonic::Request::new(GetShippingProviderByIdRequest { id });
     match request.validate() {
         Ok(_) => {}
         Err(e) => {
@@ -200,14 +200,14 @@ pub async fn get_shipping_provider_by_id(
         .clone()
         .auth_user_verify_access_control(
             get_request_id_from_header(&headers),
-            AuthUserVerifyAccessControlRequest {
+            tonic::Request::new(AuthUserVerifyAccessControlRequest {
                 token: get_request_authorization_token_from_header(&headers),
                 full_method_name: Some(
                     "/shipping.ShippingProviderService/GetShippingProviderById".to_string(),
                 ),
                 http_url: None,
                 http_method: None,
-            },
+            }),
         )
         .await
     {

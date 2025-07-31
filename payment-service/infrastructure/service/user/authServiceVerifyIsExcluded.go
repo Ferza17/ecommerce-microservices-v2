@@ -18,9 +18,7 @@ func (s *userService) AuthServiceVerifyIsExcluded(ctx context.Context, requestId
 	for key, value := range carrier {
 		md.Set(key, value)
 	}
-	ctx = metadata.NewOutgoingContext(ctx, md)
-
-	resp, err := s.authSvc.AuthServiceVerifyIsExcluded(ctx, in, grpc.Header(&md))
+	resp, err := s.authSvc.AuthServiceVerifyIsExcluded(metadata.NewOutgoingContext(ctx, md), in, grpc.Header(&md))
 	if err != nil {
 		s.logger.Error("UserService.AuthServiceVerifyIsExcluded", zap.String("requestId", requestId), zap.Error(err))
 		return nil, err

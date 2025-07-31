@@ -13,6 +13,7 @@ import (
 
 type (
 	IPaymentPresenter interface {
+		CreatePayment(ctx context.Context, request *paymentRpc.CreatePaymentRequest) (*paymentRpc.CreatePaymentResponse, error)
 		FindPaymentById(ctx context.Context, request *paymentRpc.FindPaymentByIdRequest) (*paymentRpc.Payment, error)
 		FindPaymentByUserIdAndStatus(ctx context.Context, request *paymentRpc.FindPaymentByUserIdAndStatusRequest) (*paymentRpc.Payment, error)
 	}

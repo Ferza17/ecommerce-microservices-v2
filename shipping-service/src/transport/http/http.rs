@@ -1,5 +1,6 @@
 use crate::config::config::AppConfig;
 use crate::infrastructure::database::async_postgres::get_connection;
+use crate::infrastructure::services::payment::PaymentServiceGrpcClient;
 use crate::infrastructure::services::user::UserServiceGrpcClient;
 use crate::module::shipping::presenter_http::ShippingHttpPresenter;
 use crate::module::shipping::repository_postgres::ShippingPostgresRepositoryImpl;
@@ -34,6 +35,29 @@ impl HttpTransport {
         // Infrastructure Layer
         let postgres_pool = get_connection(&self.config.clone()).await;
         let user_service = UserServiceGrpcClient::new(self.config.clone()).await;
+        let payment_service = PaymentServiceGrpcClient::new(self.config.clone()).await;
+
+        // Repository Layer
+        let shipping_provider_postgres_repository =
+            ShippingProviderPostgresRepositoryImpl::new(postgres_pool.clone());
+        let shipping_postgres_repository =
+            ShippingPostgresRepositoryImpl::new(postgres_pool.clone());
+
+        // UseCase Layer
+        let shipping_provider_use_case =
+            ShippingProviderUseCaseImpl::new(shipping_provider_postgres_repository.clone());
+        let shipping_use_case = ShippingUseCaseImpl::new(
+            shipping_postgres_repository.clone(),
+            shipping_provider_postgres_repository.clone(),
+            user_service.clone(),
+            payment_service.clone(),
+        );
+
+        // Presenter Layer
+        let shipping_provider_presenter =
+            ShippingProviderHttpPresenter::new(shipping_provider_use_case, user_service.clone());
+        let shipping_presenter =
+            ShippingHttpPresenter::new(shipping_use_case.clone(), user_service.clone());
 
         let app = Router::new()
             .merge(
@@ -42,25 +66,9 @@ impl HttpTransport {
             )
             .nest(
                 "/v1/shipping/shipping_providers",
-                ShippingProviderHttpPresenter::new(
-                    ShippingProviderUseCaseImpl::new(ShippingProviderPostgresRepositoryImpl::new(
-                        postgres_pool.clone(),
-                    )),
-                    user_service.clone(),
-                )
-                .router(),
+                shipping_provider_presenter.router(),
             )
-            .nest(
-                "/v1/shipping/shippings",
-                ShippingHttpPresenter::new(
-                    ShippingUseCaseImpl::new(
-                        ShippingPostgresRepositoryImpl::new(
-                        postgres_pool.clone(),
-                    )),
-                    user_service.clone(),
-                )
-                .router(),
-            )
+            .nest("/v1/shipping/shippings", shipping_presenter.router())
             .route("/v1/shipping/checks", get(health_check_handler));
 
         let listener = tokio::net::TcpListener::bind(addr.as_str()).await?;

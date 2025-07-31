@@ -16,6 +16,7 @@ type (
 	IUserService interface {
 		AuthServiceVerifyIsExcluded(ctx context.Context, requestId string, in *pb.AuthServiceVerifyIsExcludedRequest) (*pb.AuthServiceVerifyIsExcludedResponse, error)
 		AuthUserVerifyAccessControl(ctx context.Context, requestId string) error
+		AuthUserFindUserByToken(ctx context.Context, requestId string, in *pb.AuthUserFindUserByTokenRequest) (*pb.AuthUserFindUserByTokenResponse, error)
 	}
 
 	userService struct {

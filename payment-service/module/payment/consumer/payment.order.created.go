@@ -47,7 +47,7 @@ func (c *paymentConsumer) PaymentOrderCreated(ctx context.Context, d *amqp091.De
 		return err
 	}
 
-	if err = c.paymentUseCase.CreatePayment(ctx, requestId, &request); err != nil {
+	if _, err = c.paymentUseCase.CreatePayment(ctx, requestId, &request); err != nil {
 		c.logger.Error("Payment Order Create Failed", zap.Error(err))
 		return err
 	}

@@ -17,6 +17,7 @@ export interface CreatePaymentRequest {
   userId: string;
   amount: number;
   providerId: string;
+  shippingProviderId: string;
 }
 
 export interface PaymentOrderDelayedCancelledRequest {
@@ -47,7 +48,7 @@ export interface FindPaymentProviderByIdRequest {
 }
 
 function createBaseCreatePaymentRequest(): CreatePaymentRequest {
-  return { items: [], userId: "", amount: 0, providerId: "" };
+  return { items: [], userId: "", amount: 0, providerId: "", shippingProviderId: "" };
 }
 
 export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
@@ -63,6 +64,9 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
     }
     if (message.providerId !== "") {
       writer.uint32(34).string(message.providerId);
+    }
+    if (message.shippingProviderId !== "") {
+      writer.uint32(42).string(message.shippingProviderId);
     }
     return writer;
   },
@@ -106,6 +110,14 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
           message.providerId = reader.string();
           continue;
         }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.shippingProviderId = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -121,6 +133,7 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
       userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
       providerId: isSet(object.providerId) ? globalThis.String(object.providerId) : "",
+      shippingProviderId: isSet(object.shippingProviderId) ? globalThis.String(object.shippingProviderId) : "",
     };
   },
 
@@ -138,6 +151,9 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
     if (message.providerId !== "") {
       obj.providerId = message.providerId;
     }
+    if (message.shippingProviderId !== "") {
+      obj.shippingProviderId = message.shippingProviderId;
+    }
     return obj;
   },
 
@@ -150,6 +166,7 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
     message.userId = object.userId ?? "";
     message.amount = object.amount ?? 0;
     message.providerId = object.providerId ?? "";
+    message.shippingProviderId = object.shippingProviderId ?? "";
     return message;
   },
 };

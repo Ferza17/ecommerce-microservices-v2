@@ -1,3 +1,4 @@
+use crate::interceptor;
 use crate::model::rpc::user::AuthServiceVerifyIsExcludedRequest;
 use crate::package::context::auth::AUTHORIZATION_HEADER;
 use crate::package::context::request_id::get_request_id_from_header;
@@ -7,7 +8,6 @@ use std::task::{Context, Poll};
 use tokio::runtime::Handle;
 use tonic::Status;
 use tonic::body::BoxBody;
-use crate::interceptor;
 
 impl<S> tower::Service<Request<BoxBody>> for interceptor::auth::AuthService<S>
 where
@@ -32,11 +32,11 @@ where
                     .clone()
                     .auth_service_verify_is_excluded(
                         request_id.clone(),
-                        AuthServiceVerifyIsExcludedRequest {
+                        tonic::Request::new(AuthServiceVerifyIsExcludedRequest {
                             full_method_name: Some(req.uri().path().to_string()),
                             http_url: None,
                             http_method: None,
-                        },
+                        }),
                     )
                     .await
             })

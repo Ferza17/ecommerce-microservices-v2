@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (p *paymentProviderUseCase) FindPaymentProviderById(ctx context.Context, requestId string, request *paymentRpc.FindPaymentProviderByIdRequest) (*paymentRpc.Provider, error) {
+func (p *paymentProviderUseCase) FindPaymentProviderById(ctx context.Context, requestId string, request *paymentRpc.FindPaymentProviderByIdRequest) (*paymentRpc.FindPaymentProviderByIdResponse, error) {
 	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "ProviderUseCase.FindPaymentProviderById")
 	defer span.End()
 
@@ -36,9 +36,12 @@ func (p *paymentProviderUseCase) FindPaymentProviderById(ctx context.Context, re
 		p.logger.Error(fmt.Sprintf("Provider not found for ID: %s", request.GetId()))
 		return nil, status.Error(codes.NotFound, "provider not found")
 	}
-
 	tx.Commit()
 
 	// Return the response
-	return provider.ToProto(), nil
+	return &paymentRpc.FindPaymentProviderByIdResponse{
+		Message: "FindPaymentProviderById",
+		Status:  "success",
+		Data:    provider.ToProto(),
+	}, nil
 }

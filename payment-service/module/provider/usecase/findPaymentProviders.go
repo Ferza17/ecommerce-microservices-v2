@@ -22,6 +22,12 @@ func (p *paymentProviderUseCase) FindPaymentProviders(ctx context.Context, reque
 
 	tx.Commit()
 	return &paymentRpc.FindPaymentProvidersResponse{
-		Providers: orm.ProvidersToProto(providers),
+		Message: "FindPaymentProviders",
+		Status:  "success",
+		Data: &paymentRpc.FindPaymentProvidersResponse_FindPaymentProvidersResponseData{
+			Providers: orm.ProvidersToProto(providers),
+			Page:      0,
+			Limit:     0,
+		},
 	}, nil
 }

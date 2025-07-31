@@ -14,7 +14,8 @@
     }
   ],
   "schemes": [
-    "https"
+    "https",
+    "http"
   ],
   "consumes": [
     "application/json"
@@ -50,7 +51,7 @@
           }
         ],
         "tags": [
-          "PAYMENT"
+          "PaymentProviderService"
         ],
         "security": [
           {
@@ -67,7 +68,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/paymentProvider"
+              "$ref": "#/definitions/paymentFindPaymentProviderByIdResponse"
             }
           },
           "default": {
@@ -86,7 +87,62 @@
           }
         ],
         "tags": [
-          "PAYMENT"
+          "PaymentProviderService"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/v1/payment/payments": {
+      "post": {
+        "summary": "Create a new payment",
+        "operationId": "PaymentService_CreatePayment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/paymentCreatePaymentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "amount",
+            "in": "query",
+            "required": false,
+            "type": "number",
+            "format": "double"
+          },
+          {
+            "name": "providerId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "shippingProviderId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PaymentService"
         ],
         "security": [
           {
@@ -124,7 +180,7 @@
           }
         ],
         "tags": [
-          "PAYMENT"
+          "PaymentService"
         ],
         "security": [
           {
@@ -135,7 +191,7 @@
     },
     "/v1/payment/payments/{id}": {
       "get": {
-        "summary": "Create a new payment",
+        "summary": "get a payment by provided id",
         "operationId": "PaymentService_FindPaymentById",
         "responses": {
           "200": {
@@ -160,7 +216,7 @@
           }
         ],
         "tags": [
-          "PAYMENT"
+          "PaymentService"
         ],
         "security": [
           {
@@ -171,6 +227,48 @@
     }
   },
   "definitions": {
+    "CreatePaymentResponseCreatePaymentResponseData": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "FindPaymentProvidersResponseFindPaymentProvidersResponseData": {
+      "type": "object",
+      "properties": {
+        "providers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/paymentProvider"
+          }
+        },
+        "page": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "paymentCreatePaymentResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/CreatePaymentResponseCreatePaymentResponseData"
+        }
+      }
+    },
     "paymentFindPaymentByUserIdAndStatusRequest": {
       "type": "object",
       "properties": {
@@ -182,15 +280,32 @@
         }
       }
     },
+    "paymentFindPaymentProviderByIdResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/paymentProvider"
+        }
+      },
+      "title": "PAYMENT PROVIDER PROTO DEFINITION"
+    },
     "paymentFindPaymentProvidersResponse": {
       "type": "object",
       "properties": {
-        "providers": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/paymentProvider"
-          }
+        "message": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/FindPaymentProvidersResponseFindPaymentProvidersResponseData"
         }
       }
     },
@@ -214,6 +329,41 @@
           "type": "string"
         },
         "userId": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "discardedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "title": "REFERRED TO DATABASE SCHEMA"
+    },
+    "paymentPaymentItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "productId": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number",
+          "format": "double"
+        },
+        "qty": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "paymentId": {
           "type": "string"
         },
         "createdAt": {

@@ -2,7 +2,7 @@ use crate::interceptor::request_id::RequestIdService;
 use crate::package::context::request_id::X_REQUEST_ID_HEADER;
 use axum::{
     body::Body,
-    http::{HeaderName, HeaderValue, Request},
+    http::{HeaderName, Request},
 };
 use std::convert::Infallible;
 use std::task::{Context, Poll};
@@ -29,10 +29,6 @@ where
             .map(|s| s.to_string())
             .unwrap_or_else(|| Uuid::new_v4().to_string());
         // Store into extensions for handler access
-        
-        
-        eprintln!("Request ID: {}", request_id);
-        
         req.headers_mut()
             .insert(X_REQUEST_ID_HEADER, request_id.clone().parse().unwrap());
         req.extensions_mut().insert(request_id.clone());

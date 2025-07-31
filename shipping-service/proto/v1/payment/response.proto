@@ -4,8 +4,29 @@ package payment;
 // LOCAL IMPORT
 import "v1/payment/model.proto";
 
+message CreatePaymentResponse {
+  string message = 1;
+  string status = 2;
+  message CreatePaymentResponseData {
+    string id = 1;
+  }
+  CreatePaymentResponseData data = 3;
+}
+
+// PAYMENT PROVIDER PROTO DEFINITION
+message FindPaymentProviderByIdResponse {
+  string message = 1;
+  string status = 2;
+  payment.Provider data = 3;
+}
 
 message FindPaymentProvidersResponse {
-  
-  repeated payment.Provider providers = 1;
+  string message = 1;
+  string status = 2;
+  message FindPaymentProvidersResponseData {
+    repeated payment.Provider providers = 1;
+    uint32 page = 2;
+    uint32 limit = 3;
+  }
+  FindPaymentProvidersResponseData data = 3;
 }

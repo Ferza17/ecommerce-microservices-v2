@@ -1,4 +1,4 @@
-use crate::model::diesel::to_proto::{
+use crate::model::diesel::shipping_providers::to_proto::{
     shipping_provider_to_proto, shipping_providers_to_proto,
 };
 use crate::model::rpc::shipping::list_shipping_providers_response::ListShippingProvidersResponseData;

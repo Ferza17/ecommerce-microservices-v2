@@ -18,7 +18,7 @@ use axum::http::{HeaderMap, StatusCode};
 use axum::routing::{delete, get, post, put};
 use prost_validate::NoopValidator;
 use std::sync::Arc;
-use tonic::{Code, Status};
+use tonic::Code;
 use tower::ServiceBuilder;
 use tracing::{error, instrument};
 
@@ -90,7 +90,7 @@ pub async fn create_shipping(
         .clone()
         .auth_user_verify_access_control(
             get_request_id_from_header(&headers),
-            AuthUserVerifyAccessControlRequest {
+            tonic::Request::new(AuthUserVerifyAccessControlRequest {
                 token: get_request_authorization_token_from_header(&headers),
                 full_method_name: Some(
                     http::uri::PathAndQuery::from_static(
@@ -100,7 +100,7 @@ pub async fn create_shipping(
                 ),
                 http_url: None,
                 http_method: None,
-            },
+            }),
         )
         .await;
     match validate_acl {
@@ -131,7 +131,11 @@ pub async fn create_shipping(
 
     let result = state
         .shipping_use_case
-        .create_shipping(get_request_id_from_header(&headers), request)
+        .create_shipping(
+            get_request_id_from_header(&headers),
+            get_request_authorization_token_from_header(&headers),
+            request,
+        )
         .await;
 
     match result {
@@ -192,7 +196,7 @@ pub async fn get_shipping_provider_by_id(
         .clone()
         .auth_user_verify_access_control(
             get_request_id_from_header(&headers),
-            AuthUserVerifyAccessControlRequest {
+            tonic::Request::new(AuthUserVerifyAccessControlRequest {
                 token: get_request_authorization_token_from_header(&headers),
                 full_method_name: Some(
                     http::uri::PathAndQuery::from_static(
@@ -202,7 +206,7 @@ pub async fn get_shipping_provider_by_id(
                 ),
                 http_url: None,
                 http_method: None,
-            },
+            }),
         )
         .await
     {
@@ -233,7 +237,11 @@ pub async fn get_shipping_provider_by_id(
 
     let result = state
         .shipping_use_case
-        .get_shipping_by_id(get_request_id_from_header(&headers), request)
+        .get_shipping_by_id(
+            get_request_id_from_header(&headers),
+            get_request_authorization_token_from_header(&headers),
+            request,
+        )
         .await;
 
     match result {
@@ -296,7 +304,7 @@ pub async fn list_shipping_providers(
         .clone()
         .auth_user_verify_access_control(
             get_request_id_from_header(&headers),
-            AuthUserVerifyAccessControlRequest {
+            tonic::Request::new(AuthUserVerifyAccessControlRequest {
                 token: get_request_authorization_token_from_header(&headers),
                 full_method_name: Some(
                     http::uri::PathAndQuery::from_static("/shipping.ShippingService/ListShipping")
@@ -304,7 +312,7 @@ pub async fn list_shipping_providers(
                 ),
                 http_url: None,
                 http_method: None,
-            },
+            }),
         )
         .await
     {
@@ -401,7 +409,7 @@ pub async fn update_shipping(
         .clone()
         .auth_user_verify_access_control(
             get_request_id_from_header(&headers),
-            AuthUserVerifyAccessControlRequest {
+            tonic::Request::new(AuthUserVerifyAccessControlRequest {
                 token: get_request_authorization_token_from_header(&headers),
                 full_method_name: Some(
                     http::uri::PathAndQuery::from_static(
@@ -411,7 +419,7 @@ pub async fn update_shipping(
                 ),
                 http_url: None,
                 http_method: None,
-            },
+            }),
         )
         .await
     {
@@ -500,7 +508,7 @@ pub async fn delete_shipping(
         .clone()
         .auth_user_verify_access_control(
             get_request_id_from_header(&headers),
-            AuthUserVerifyAccessControlRequest {
+            tonic::Request::new(AuthUserVerifyAccessControlRequest {
                 token: get_request_authorization_token_from_header(&headers),
                 full_method_name: Some(
                     http::uri::PathAndQuery::from_static(
@@ -510,7 +518,7 @@ pub async fn delete_shipping(
                 ),
                 http_url: None,
                 http_method: None,
-            },
+            }),
         )
         .await
     {

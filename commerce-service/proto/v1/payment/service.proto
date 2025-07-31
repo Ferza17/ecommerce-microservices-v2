@@ -16,7 +16,7 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
     version: "1.0.0";
     description: "API for PAYMENT";
   };
-  schemes: HTTPS;
+  schemes: [HTTPS, HTTP];
   consumes: "application/json";
   produces: "application/json";
   security_definitions: {
@@ -40,18 +40,46 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 
 
 service PaymentService {
+  // COMMAND
+  rpc CreatePayment(payment.CreatePaymentRequest) returns (payment.CreatePaymentResponse){
+    option (user.acl) = {
+      roles: [CUSTOMER_MEMBERSHIP],
+      http: {
+        method: "post",
+        url: "/v1/payment/payments"
+      },
+      is_public: false,
+    };
+    option (google.api.http) = {
+      post: "/v1/payment/payments"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Create a new payment";
+      tags: ["PaymentService"];
+      security: {
+        security_requirement: {
+          key: "Bearer";
+          value: {}
+        }
+      };
+    };
+  };
   // QUERY
   rpc FindPaymentById(payment.FindPaymentByIdRequest) returns (payment.Payment){
     option (user.acl) = {
       roles: [SUPER_ADMIN, ADMIN, CUSTOMER_MEMBERSHIP],
+      http: {
+        method: "get",
+        url: "/v1/payment/payments/{id}"
+      },
       is_public: false,
     };
     option (google.api.http) = {
       get: "/v1/payment/payments/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      summary: "Create a new payment";
-      tags: ["PAYMENT"];
+      summary: "get a payment by provided id";
+      tags: ["PaymentService"];
       security: {
         security_requirement: {
           key: "Bearer";
@@ -71,7 +99,7 @@ service PaymentService {
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       summary: "get a payment by user id and status";
-      tags: ["PAYMENT"];
+      tags: ["PaymentService"];
       security: {
         security_requirement: {
           key: "Bearer";
@@ -94,7 +122,7 @@ service PaymentProviderService {
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       summary: "get all payment providers";
-      tags: ["PAYMENT"];
+      tags: ["PaymentProviderService"];
       security: {
         security_requirement: {
           key: "Bearer";
@@ -103,7 +131,7 @@ service PaymentProviderService {
       };
     };
   };
-  rpc FindPaymentProviderById(payment.FindPaymentProviderByIdRequest) returns (payment.Provider){
+  rpc FindPaymentProviderById(payment.FindPaymentProviderByIdRequest) returns (payment.FindPaymentProviderByIdResponse){
     option (user.acl) = {
       roles: [SUPER_ADMIN, ADMIN, CUSTOMER_MEMBERSHIP],
       is_public: false,
@@ -113,7 +141,7 @@ service PaymentProviderService {
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       summary: "get payment providers by provided id";
-      tags: ["PAYMENT"];
+      tags: ["PaymentProviderService"];
       security: {
         security_requirement: {
           key: "Bearer";

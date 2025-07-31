@@ -4,16 +4,19 @@ import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/postgresql"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/shipping"
+	userService "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/user"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/repository"
+	paymentProviderRepository "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/provider/repository"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
 	"github.com/google/wire"
 )
 
 type (
 	IPaymentUseCase interface {
-		CreatePayment(ctx context.Context, requestId string, request *paymentRpc.CreatePaymentRequest) error
+		CreatePayment(ctx context.Context, requestId string, request *paymentRpc.CreatePaymentRequest) (*paymentRpc.CreatePaymentResponse, error)
 		PaymentOrderDelayedCancelled(ctx context.Context, requestId string, request *paymentRpc.PaymentOrderDelayedCancelledRequest) error
 
 		FindPaymentById(ctx context.Context, requestId string, request *paymentRpc.FindPaymentByIdRequest) (*paymentRpc.Payment, error)
@@ -21,11 +24,14 @@ type (
 	}
 
 	paymentUseCase struct {
-		paymentRepository       repository.IPaymentRepository
-		rabbitmqInfrastructure  rabbitmq.IRabbitMQInfrastructure
-		telemetryInfrastructure telemetry.ITelemetryInfrastructure
-		logger                  logger.IZapLogger
-		postgres                *postgresql.PostgresSQL
+		paymentRepository         repository.IPaymentRepository
+		paymentProviderRepository paymentProviderRepository.IPaymentProviderRepository
+		rabbitmqInfrastructure    rabbitmq.IRabbitMQInfrastructure
+		telemetryInfrastructure   telemetry.ITelemetryInfrastructure
+		logger                    logger.IZapLogger
+		postgres                  *postgresql.PostgresSQL
+		shippingService           shipping.IShippingService
+		userService               userService.IUserService
 	}
 )
 
@@ -36,16 +42,22 @@ var Set = wire.NewSet(
 
 func NewPaymentUseCase(
 	paymentRepository repository.IPaymentRepository,
+	paymentProviderRepository paymentProviderRepository.IPaymentProviderRepository,
 	rabbitmqInfrastructure rabbitmq.IRabbitMQInfrastructure,
 	telemetryInfrastructure telemetry.ITelemetryInfrastructure,
 	logger logger.IZapLogger,
 	postgres *postgresql.PostgresSQL,
+	shippingService shipping.IShippingService,
+	userService userService.IUserService,
 ) IPaymentUseCase {
 	return &paymentUseCase{
-		paymentRepository:       paymentRepository,
-		rabbitmqInfrastructure:  rabbitmqInfrastructure,
-		telemetryInfrastructure: telemetryInfrastructure,
-		logger:                  logger,
-		postgres:                postgres,
+		paymentRepository:         paymentRepository,
+		paymentProviderRepository: paymentProviderRepository,
+		rabbitmqInfrastructure:    rabbitmqInfrastructure,
+		telemetryInfrastructure:   telemetryInfrastructure,
+		logger:                    logger,
+		postgres:                  postgres,
+		shippingService:           shippingService,
+		userService:               userService,
 	}
 }

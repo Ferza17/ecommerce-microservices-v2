@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/shipping"
 	userService "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/user"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
 	authInterceptor "github.com/ferza17/ecommerce-microservices-v2/payment-service/interceptor/auth"
@@ -39,6 +40,7 @@ type (
 
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 		userService             userService.IUserService
+		shippingService         shipping.IShippingService
 
 		grpcServer *grpc.Server
 		logger     logger.IZapLogger

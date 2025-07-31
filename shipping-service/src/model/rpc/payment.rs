@@ -181,7 +181,7 @@ pub struct CreatePaymentRequest {
     pub items: ::prost::alloc::vec::Vec<PaymentItem>,
     #[prost(string, tag = "2")]
     #[validate(name = "payment.CreatePaymentRequest.user_id")]
-    #[validate(r#type(string(min_len = 1)))]
+    #[validate(r#type(string(ignore_empty = false)))]
     pub user_id: ::prost::alloc::string::String,
     #[prost(double, tag = "3")]
     #[validate(name = "payment.CreatePaymentRequest.amount")]
@@ -189,8 +189,12 @@ pub struct CreatePaymentRequest {
     pub amount: f64,
     #[prost(string, tag = "4")]
     #[validate(name = "payment.CreatePaymentRequest.provider_id")]
-    #[validate(r#type(string(min_len = 1)))]
+    #[validate(r#type(string(ignore_empty = false)))]
     pub provider_id: ::prost::alloc::string::String,
+    #[prost(string, tag = "5")]
+    #[validate(name = "payment.CreatePaymentRequest.shipping_provider_id")]
+    #[validate(r#type(string(ignore_empty = false)))]
+    pub shipping_provider_id: ::prost::alloc::string::String,
 }
 #[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
@@ -199,7 +203,7 @@ pub struct CreatePaymentRequest {
 pub struct PaymentOrderDelayedCancelledRequest {
     #[prost(string, tag = "1")]
     #[validate(name = "payment.PaymentOrderDelayedCancelledRequest.id")]
-    #[validate(r#type(string(min_len = 1)))]
+    #[validate(r#type(string(ignore_empty = false)))]
     pub id: ::prost::alloc::string::String,
 }
 #[derive(::prost_validate::Validator)]
@@ -265,10 +269,85 @@ pub struct FindPaymentProviderByIdRequest {
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CreatePaymentResponse {
+    #[prost(string, tag = "1")]
+    #[validate(name = "payment.CreatePaymentResponse.message")]
+    pub message: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    #[validate(name = "payment.CreatePaymentResponse.status")]
+    pub status: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    #[validate(name = "payment.CreatePaymentResponse.data")]
+    pub data: ::core::option::Option<create_payment_response::CreatePaymentResponseData>,
+}
+/// Nested message and enum types in `CreatePaymentResponse`.
+pub mod create_payment_response {
+    #[derive(::prost_validate::Validator)]
+    #[derive(utoipa::ToSchema)]
+    #[derive(serde::Serialize, serde::Deserialize)]
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct CreatePaymentResponseData {
+        #[prost(string, tag = "1")]
+        #[validate(name = "payment.CreatePaymentResponse.CreatePaymentResponseData.id")]
+        pub id: ::prost::alloc::string::String,
+    }
+}
+/// PAYMENT PROVIDER PROTO DEFINITION
+#[derive(::prost_validate::Validator)]
+#[derive(utoipa::ToSchema)]
+#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct FindPaymentProviderByIdResponse {
+    #[prost(string, tag = "1")]
+    #[validate(name = "payment.FindPaymentProviderByIdResponse.message")]
+    pub message: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    #[validate(name = "payment.FindPaymentProviderByIdResponse.status")]
+    pub status: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    #[validate(name = "payment.FindPaymentProviderByIdResponse.data")]
+    pub data: ::core::option::Option<Provider>,
+}
+#[derive(::prost_validate::Validator)]
+#[derive(utoipa::ToSchema)]
+#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FindPaymentProvidersResponse {
-    #[prost(message, repeated, tag = "1")]
-    #[validate(name = "payment.FindPaymentProvidersResponse.providers")]
-    pub providers: ::prost::alloc::vec::Vec<Provider>,
+    #[prost(string, tag = "1")]
+    #[validate(name = "payment.FindPaymentProvidersResponse.message")]
+    pub message: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    #[validate(name = "payment.FindPaymentProvidersResponse.status")]
+    pub status: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    #[validate(name = "payment.FindPaymentProvidersResponse.data")]
+    pub data: ::core::option::Option<
+        find_payment_providers_response::FindPaymentProvidersResponseData,
+    >,
+}
+/// Nested message and enum types in `FindPaymentProvidersResponse`.
+pub mod find_payment_providers_response {
+    #[derive(::prost_validate::Validator)]
+    #[derive(utoipa::ToSchema)]
+    #[derive(serde::Serialize, serde::Deserialize)]
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct FindPaymentProvidersResponseData {
+        #[prost(message, repeated, tag = "1")]
+        #[validate(
+            name = "payment.FindPaymentProvidersResponse.FindPaymentProvidersResponseData.providers"
+        )]
+        pub providers: ::prost::alloc::vec::Vec<super::Provider>,
+        #[prost(uint32, tag = "2")]
+        #[validate(
+            name = "payment.FindPaymentProvidersResponse.FindPaymentProvidersResponseData.page"
+        )]
+        pub page: u32,
+        #[prost(uint32, tag = "3")]
+        #[validate(
+            name = "payment.FindPaymentProvidersResponse.FindPaymentProvidersResponseData.limit"
+        )]
+        pub limit: u32,
+    }
 }
 /// Generated client implementations.
 pub mod payment_service_client {
@@ -360,6 +439,31 @@ pub mod payment_service_client {
         pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
             self.inner = self.inner.max_encoding_message_size(limit);
             self
+        }
+        /// COMMAND
+        pub async fn create_payment(
+            &mut self,
+            request: impl tonic::IntoRequest<super::CreatePaymentRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::CreatePaymentResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/payment.PaymentService/CreatePayment",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("payment.PaymentService", "CreatePayment"));
+            self.inner.unary(req, path, codec).await
         }
         /// QUERY
         pub async fn find_payment_by_id(
@@ -537,7 +641,10 @@ pub mod payment_provider_service_client {
         pub async fn find_payment_provider_by_id(
             &mut self,
             request: impl tonic::IntoRequest<super::FindPaymentProviderByIdRequest>,
-        ) -> std::result::Result<tonic::Response<super::Provider>, tonic::Status> {
+        ) -> std::result::Result<
+            tonic::Response<super::FindPaymentProviderByIdResponse>,
+            tonic::Status,
+        > {
             self.inner
                 .ready()
                 .await
@@ -575,6 +682,14 @@ pub mod payment_service_server {
     /// Generated trait containing gRPC methods that should be implemented for use with PaymentServiceServer.
     #[async_trait]
     pub trait PaymentService: std::marker::Send + std::marker::Sync + 'static {
+        /// COMMAND
+        async fn create_payment(
+            &self,
+            request: tonic::Request<super::CreatePaymentRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::CreatePaymentResponse>,
+            tonic::Status,
+        >;
         /// QUERY
         async fn find_payment_by_id(
             &self,
@@ -661,6 +776,51 @@ pub mod payment_service_server {
         }
         fn call(&mut self, req: http::Request<B>) -> Self::Future {
             match req.uri().path() {
+                "/payment.PaymentService/CreatePayment" => {
+                    #[allow(non_camel_case_types)]
+                    struct CreatePaymentSvc<T: PaymentService>(pub Arc<T>);
+                    impl<
+                        T: PaymentService,
+                    > tonic::server::UnaryService<super::CreatePaymentRequest>
+                    for CreatePaymentSvc<T> {
+                        type Response = super::CreatePaymentResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::CreatePaymentRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as PaymentService>::create_payment(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = CreatePaymentSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
                 "/payment.PaymentService/FindPaymentById" => {
                     #[allow(non_camel_case_types)]
                     struct FindPaymentByIdSvc<T: PaymentService>(pub Arc<T>);
@@ -823,7 +983,10 @@ pub mod payment_provider_service_server {
         async fn find_payment_provider_by_id(
             &self,
             request: tonic::Request<super::FindPaymentProviderByIdRequest>,
-        ) -> std::result::Result<tonic::Response<super::Provider>, tonic::Status>;
+        ) -> std::result::Result<
+            tonic::Response<super::FindPaymentProviderByIdResponse>,
+            tonic::Status,
+        >;
     }
     #[derive(Debug)]
     pub struct PaymentProviderServiceServer<T> {
@@ -962,7 +1125,7 @@ pub mod payment_provider_service_server {
                         T: PaymentProviderService,
                     > tonic::server::UnaryService<super::FindPaymentProviderByIdRequest>
                     for FindPaymentProviderByIdSvc<T> {
-                        type Response = super::Provider;
+                        type Response = super::FindPaymentProviderByIdResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
                             tonic::Status,
