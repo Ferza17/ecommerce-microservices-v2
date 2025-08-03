@@ -35,6 +35,119 @@ var (
 	_ = sort.Sort
 )
 
+// Validate checks the field values on CreatePaymentItemRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CreatePaymentItemRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CreatePaymentItemRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CreatePaymentItemRequestMultiError, or nil if none found.
+func (m *CreatePaymentItemRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreatePaymentItemRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.GetQty() <= 0 {
+		err := CreatePaymentItemRequestValidationError{
+			field:  "Qty",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return CreatePaymentItemRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// CreatePaymentItemRequestMultiError is an error wrapping multiple validation
+// errors returned by CreatePaymentItemRequest.ValidateAll() if the designated
+// constraints aren't met.
+type CreatePaymentItemRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreatePaymentItemRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreatePaymentItemRequestMultiError) AllErrors() []error { return m }
+
+// CreatePaymentItemRequestValidationError is the validation error returned by
+// CreatePaymentItemRequest.Validate if the designated constraints aren't met.
+type CreatePaymentItemRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreatePaymentItemRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreatePaymentItemRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreatePaymentItemRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreatePaymentItemRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreatePaymentItemRequestValidationError) ErrorName() string {
+	return "CreatePaymentItemRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreatePaymentItemRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreatePaymentItemRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreatePaymentItemRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreatePaymentItemRequestValidationError{}
+
 // Validate checks the field values on CreatePaymentRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -57,40 +170,36 @@ func (m *CreatePaymentRequest) validate(all bool) error {
 
 	var errors []error
 
-	if len(m.GetItems()) > 0 {
+	for idx, item := range m.GetItems() {
+		_, _ = idx, item
 
-		for idx, item := range m.GetItems() {
-			_, _ = idx, item
-
-			if all {
-				switch v := interface{}(item).(type) {
-				case interface{ ValidateAll() error }:
-					if err := v.ValidateAll(); err != nil {
-						errors = append(errors, CreatePaymentRequestValidationError{
-							field:  fmt.Sprintf("Items[%v]", idx),
-							reason: "embedded message failed validation",
-							cause:  err,
-						})
-					}
-				case interface{ Validate() error }:
-					if err := v.Validate(); err != nil {
-						errors = append(errors, CreatePaymentRequestValidationError{
-							field:  fmt.Sprintf("Items[%v]", idx),
-							reason: "embedded message failed validation",
-							cause:  err,
-						})
-					}
-				}
-			} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-				if err := v.Validate(); err != nil {
-					return CreatePaymentRequestValidationError{
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, CreatePaymentRequestValidationError{
 						field:  fmt.Sprintf("Items[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
-					}
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, CreatePaymentRequestValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
 				}
 			}
-
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return CreatePaymentRequestValidationError{
+					field:  fmt.Sprintf("Items[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
 		}
 
 	}

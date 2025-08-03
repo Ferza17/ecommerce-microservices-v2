@@ -69,4 +69,12 @@ func (c *Config) initExchange(kv *api.KV) {
 		log.Fatal("SetConfig | Consul | EXCHANGE/PAYMENT/DIRECT host is required")
 	}
 	c.ExchangePaymentDirect = string(pair.Value)
+	pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/EXCHANGE/SHIPPING", c.Env), nil)
+	if err != nil {
+		log.Fatalf("SetConfig | could not get EXCHANGE/SHIPPING from consul: %v", err)
+	}
+	if pair == nil {
+		log.Fatal("SetConfig | Consul | EXCHANGE/SHIPPING host is required")
+	}
+	c.ExchangeShipping = string(pair.Value)
 }

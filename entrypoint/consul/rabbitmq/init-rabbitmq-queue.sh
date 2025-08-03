@@ -59,8 +59,11 @@ consul kv put production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED "payment.
 
 #QUEUE LOCAL SHIPPING
 consul kv put local/broker/rabbitmq/QUEUE/SHIPPING/CREATED "shipping.created"
+consul kv put local/broker/rabbitmq/QUEUE/SHIPPING/UPDATED "shipping.updated"
+
 
 #QUEUE PRODUCTION SHIPPING
 consul kv put production/broker/rabbitmq/QUEUE/SHIPPING/CREATED "shipping.created"
+consul kv put production/broker/rabbitmq/QUEUE/SHIPPING/UPDATED "shipping.updated"
 
 echo "DONE INIT CONFIG RABBITMQ QUEUE"

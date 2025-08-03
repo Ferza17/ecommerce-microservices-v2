@@ -3,7 +3,6 @@ package notification;
 
 // LOCAL IMPORT
 import "v1/notification/model.proto";
-import "v1/payment/model.proto";
 import "external/validate/validate.proto";
 
 
@@ -15,6 +14,6 @@ message SendOtpEmailNotificationRequest {
 
 message SendEmailPaymentOrderCreateRequest {
   string email = 1 [(validate.rules).string.email = true];
-  payment.Payment payment = 2 [(validate.rules).message.required = true];
+  string payment_id = 2 [(validate.rules).string.ignore_empty = false];
   NotificationTypeEnum notificationType = 3 [(validate.rules).enum.defined_only = true];
 }

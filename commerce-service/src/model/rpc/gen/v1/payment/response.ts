@@ -6,7 +6,7 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Provider } from "./model";
+import { Payment, PaymentItem, Provider } from "./model";
 
 export const protobufPackage = "payment";
 
@@ -18,6 +18,18 @@ export interface CreatePaymentResponse {
 
 export interface CreatePaymentResponse_CreatePaymentResponseData {
   id: string;
+}
+
+export interface FindPaymentByIdResponse {
+  message: string;
+  status: string;
+  data: FindPaymentByIdResponse_FindPaymentByIdResponseData | undefined;
+}
+
+export interface FindPaymentByIdResponse_FindPaymentByIdResponseData {
+  payment: Payment | undefined;
+  provider: Provider | undefined;
+  paymentItems: PaymentItem[];
 }
 
 /** PAYMENT PROVIDER PROTO DEFINITION */
@@ -196,6 +208,207 @@ export const CreatePaymentResponse_CreatePaymentResponseData: MessageFns<
   ): CreatePaymentResponse_CreatePaymentResponseData {
     const message = createBaseCreatePaymentResponse_CreatePaymentResponseData();
     message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseFindPaymentByIdResponse(): FindPaymentByIdResponse {
+  return { message: "", status: "", data: undefined };
+}
+
+export const FindPaymentByIdResponse: MessageFns<FindPaymentByIdResponse> = {
+  encode(message: FindPaymentByIdResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.message !== "") {
+      writer.uint32(10).string(message.message);
+    }
+    if (message.status !== "") {
+      writer.uint32(18).string(message.status);
+    }
+    if (message.data !== undefined) {
+      FindPaymentByIdResponse_FindPaymentByIdResponseData.encode(message.data, writer.uint32(26).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): FindPaymentByIdResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseFindPaymentByIdResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.status = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.data = FindPaymentByIdResponse_FindPaymentByIdResponseData.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): FindPaymentByIdResponse {
+    return {
+      message: isSet(object.message) ? globalThis.String(object.message) : "",
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
+      data: isSet(object.data) ? FindPaymentByIdResponse_FindPaymentByIdResponseData.fromJSON(object.data) : undefined,
+    };
+  },
+
+  toJSON(message: FindPaymentByIdResponse): unknown {
+    const obj: any = {};
+    if (message.message !== "") {
+      obj.message = message.message;
+    }
+    if (message.status !== "") {
+      obj.status = message.status;
+    }
+    if (message.data !== undefined) {
+      obj.data = FindPaymentByIdResponse_FindPaymentByIdResponseData.toJSON(message.data);
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<FindPaymentByIdResponse>): FindPaymentByIdResponse {
+    return FindPaymentByIdResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<FindPaymentByIdResponse>): FindPaymentByIdResponse {
+    const message = createBaseFindPaymentByIdResponse();
+    message.message = object.message ?? "";
+    message.status = object.status ?? "";
+    message.data = (object.data !== undefined && object.data !== null)
+      ? FindPaymentByIdResponse_FindPaymentByIdResponseData.fromPartial(object.data)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseFindPaymentByIdResponse_FindPaymentByIdResponseData(): FindPaymentByIdResponse_FindPaymentByIdResponseData {
+  return { payment: undefined, provider: undefined, paymentItems: [] };
+}
+
+export const FindPaymentByIdResponse_FindPaymentByIdResponseData: MessageFns<
+  FindPaymentByIdResponse_FindPaymentByIdResponseData
+> = {
+  encode(
+    message: FindPaymentByIdResponse_FindPaymentByIdResponseData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
+    if (message.payment !== undefined) {
+      Payment.encode(message.payment, writer.uint32(10).fork()).join();
+    }
+    if (message.provider !== undefined) {
+      Provider.encode(message.provider, writer.uint32(18).fork()).join();
+    }
+    for (const v of message.paymentItems) {
+      PaymentItem.encode(v!, writer.uint32(26).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): FindPaymentByIdResponse_FindPaymentByIdResponseData {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseFindPaymentByIdResponse_FindPaymentByIdResponseData();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.payment = Payment.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.provider = Provider.decode(reader, reader.uint32());
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.paymentItems.push(PaymentItem.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): FindPaymentByIdResponse_FindPaymentByIdResponseData {
+    return {
+      payment: isSet(object.payment) ? Payment.fromJSON(object.payment) : undefined,
+      provider: isSet(object.provider) ? Provider.fromJSON(object.provider) : undefined,
+      paymentItems: globalThis.Array.isArray(object?.paymentItems)
+        ? object.paymentItems.map((e: any) => PaymentItem.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: FindPaymentByIdResponse_FindPaymentByIdResponseData): unknown {
+    const obj: any = {};
+    if (message.payment !== undefined) {
+      obj.payment = Payment.toJSON(message.payment);
+    }
+    if (message.provider !== undefined) {
+      obj.provider = Provider.toJSON(message.provider);
+    }
+    if (message.paymentItems?.length) {
+      obj.paymentItems = message.paymentItems.map((e) => PaymentItem.toJSON(e));
+    }
+    return obj;
+  },
+
+  create(
+    base?: DeepPartial<FindPaymentByIdResponse_FindPaymentByIdResponseData>,
+  ): FindPaymentByIdResponse_FindPaymentByIdResponseData {
+    return FindPaymentByIdResponse_FindPaymentByIdResponseData.fromPartial(base ?? {});
+  },
+  fromPartial(
+    object: DeepPartial<FindPaymentByIdResponse_FindPaymentByIdResponseData>,
+  ): FindPaymentByIdResponse_FindPaymentByIdResponseData {
+    const message = createBaseFindPaymentByIdResponse_FindPaymentByIdResponseData();
+    message.payment = (object.payment !== undefined && object.payment !== null)
+      ? Payment.fromPartial(object.payment)
+      : undefined;
+    message.provider = (object.provider !== undefined && object.provider !== null)
+      ? Provider.fromPartial(object.provider)
+      : undefined;
+    message.paymentItems = object.paymentItems?.map((e) => PaymentItem.fromPartial(e)) || [];
     return message;
   },
 };

@@ -6,8 +6,11 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/enum"
 	mailHogInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mailhog"
 	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification"
+	pb "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"strings"
+	"time"
 )
 
 func (u *notificationEmailUseCase) SendNotificationEmailPaymentOrderCreated(ctx context.Context, requestId string, req *notificationRpc.SendEmailPaymentOrderCreateRequest) error {
@@ -35,24 +38,62 @@ func (u *notificationEmailUseCase) SendNotificationEmailPaymentOrderCreated(ctx 
 		return status.Error(codes.NotFound, "email template not found")
 	}
 
+	fetchPayment, err := u.paymentSvc.FindPaymentById(ctx, requestId, &pb.FindPaymentByIdRequest{
+		Id: req.PaymentId,
+	})
+	if err != nil {
+		u.logger.Error(fmt.Sprintf("error finding email payment by id: %s", err.Error()))
+		return status.Error(codes.Internal, "error finding email payment by id")
+	}
+
 	var (
 		templateVars = map[string]any{
-			"Code":   req.Payment.Code,
-			"Status": req.Payment.Status.String(),
-			//"Provider":     req.Payment.Provider,
-			"CreatedAt":  req.Payment.CreatedAt,
-			"TotalPrice": req.Payment.TotalPrice,
-			//"PaymentItems": req.Payment.Items,
+			"Code":   fetchPayment.Data.Payment.Code,
+			"Status": strings.ToLower(fetchPayment.Data.Payment.Status.String()),
+			"Provider": struct {
+				Name      string
+				Method    string
+				CreatedAt time.Time
+				UpdatedAt time.Time
+			}{
+				Name:      fetchPayment.Data.Provider.Name,
+				Method:    fetchPayment.Data.Provider.Method.String(),
+				CreatedAt: fetchPayment.Data.Provider.CreatedAt.AsTime(),
+				UpdatedAt: fetchPayment.Data.Provider.UpdatedAt.AsTime(),
+			},
+			"CreatedAt":    fetchPayment.Data.Payment.CreatedAt.AsTime(),
+			"TotalPrice":   fetchPayment.Data.Payment.TotalPrice,
+			"PaymentItems": "",
 		}
 	)
 
-	// TODO: Assign request to template vars
+	var paymentItems []struct {
+		ProductID string
+		Amount    float64
+		Qty       uint32
+		CreatedAt time.Time
+		UpdatedAt time.Time
+	}
+
+	for _, item := range fetchPayment.Data.PaymentItems {
+		paymentItems = append(paymentItems, struct {
+			ProductID string
+			Amount    float64
+			Qty       uint32
+			CreatedAt time.Time
+			UpdatedAt time.Time
+		}{ProductID: item.ProductId, Amount: item.Amount, Qty: uint32(item.Qty), CreatedAt: item.CreatedAt.AsTime(), UpdatedAt: item.UpdatedAt.AsTime()})
+	}
+
+	templateVars["PaymentItems"] = paymentItems
+
 	if err = u.mailHogInfrastructure.SendMail(&mailHogInfrastructure.Mailer{
 		Subject:      "🤯 PAYMENT ORDER CREATED 🤯",
 		To:           req.Email,
 		Template:     fetchTemplate.Template,
 		TemplateVars: templateVars,
 	}); err != nil {
+		u.logger.Error(fmt.Sprintf("error sending email template: %s", err.Error()))
 		return err
 	}
 

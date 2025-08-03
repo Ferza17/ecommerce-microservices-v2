@@ -33,6 +33,30 @@ type Config struct {
 	NotificationServiceHttpPort       string
 	NotificationServiceMetricHttpPort string
 
+	// User Service Config
+	UserServiceServiceName    string
+	UserServiceRpcHost        string
+	UserServiceRpcPort        string
+	UserServiceHttpHost       string
+	UserServiceHttpPort       string
+	UserServiceMetricHttpPort string
+
+	// Shipping Service Config
+	ShippingServiceServiceName    string
+	ShippingServiceRpcHost        string
+	ShippingServiceRpcPort        string
+	ShippingServiceHttpHost       string
+	ShippingServiceHttpPort       string
+	ShippingServiceMetricHttpPort string
+
+	// Payment Service Config
+	PaymentServiceServiceName    string
+	PaymentServiceRpcHost        string
+	PaymentServiceRpcPort        string
+	PaymentServiceHttpHost       string
+	PaymentServiceHttpPort       string
+	PaymentServiceMetricHttpPort string
+
 	JaegerTelemetryHost string
 	JaegerTelemetryPort string
 
@@ -148,11 +172,13 @@ func SetConfig(path string) {
 		c.initMongoDB(consulClient.KV())
 	}()
 
-	// Notification Service Config
+	// Init Service Config
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 		c.initNotificationService(consulClient.KV())
+		c.initUserService(consulClient.KV())
+		c.initPaymentService(consulClient.KV())
 	}()
 
 	wg.Wait()

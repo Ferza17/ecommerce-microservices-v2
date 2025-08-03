@@ -9,8 +9,13 @@ import "external/validate/validate.proto";
 import "v1/payment/enum.proto";
 
 // PAYMENT REQUEST DEFINITION
+message CreatePaymentItemRequest {
+  string productId = 1 [(validate.rules).string.ignore_empty = false] ;
+  int32 qty = 2 [(validate.rules).int32.gt = 0];
+}
+
 message CreatePaymentRequest {
-  repeated payment.PaymentItem items = 1 [(validate.rules).repeated.ignore_empty = true];
+  repeated payment.CreatePaymentItemRequest items = 1 [(validate.rules).repeated.ignore_empty = false] ;
   string user_id = 2 [(validate.rules).string.ignore_empty = false];
   double amount = 3 [(validate.rules).double.gt = 0];
   string provider_id = 4 [(validate.rules).string.ignore_empty = false];

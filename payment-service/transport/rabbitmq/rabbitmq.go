@@ -100,8 +100,8 @@ func (srv *rabbitMQServer) Serve(ctx context.Context) error {
 					}
 
 					var (
-						requestId         string
-						newCtx, cancelCtx = context.WithTimeout(ctx, 20)
+						requestId string
+						newCtx, _ = context.WithTimeout(ctx, 20)
 					)
 
 					for key, value := range d.Headers {
@@ -141,8 +141,6 @@ func (srv *rabbitMQServer) Serve(ctx context.Context) error {
 
 					task.Ctx = newCtx
 					srv.workerPool.AddTaskQueue(task)
-
-					cancelCtx()
 					span.End()
 
 				case <-ctx.Done():

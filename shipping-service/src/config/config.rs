@@ -43,6 +43,55 @@ pub struct AppConfig {
     // FROM CONSUL JAEGER TELEMETRY
     pub jaeger_telemetry_host: String,
     pub jaeger_telemetry_rpc_port: String,
+
+    // FROM CONSUL RABBITMQ
+    pub rabbitmq_username: String,
+    pub rabbitmq_password: String,
+    pub rabbitmq_host: String,
+    pub rabbitmq_port: String,
+
+    // FROM CONSUL RABBITMQ EXCHANGE
+    pub exchange_shipping: String,
+
+    // FROM CONSUL RABBITMQ QUEUE
+    pub queue_shipping_created: String,
+    pub queue_shipping_updated: String,
+}
+
+impl Default for AppConfig {
+    fn default() -> Self {
+        Self {
+            env: "".to_string(),
+            consul_host: "".to_string(),
+            consul_port: "".to_string(),
+            database_postgres_host: "".to_string(),
+            database_postgres_port: "".to_string(),
+            database_postgres_username: "".to_string(),
+            database_postgres_password: "".to_string(),
+            database_postgres_database: "".to_string(),
+            shipping_service_service_name: "".to_string(),
+            shipping_service_service_rpc_host: "".to_string(),
+            shipping_service_service_rpc_port: "".to_string(),
+            shipping_service_service_http_host: "".to_string(),
+            shipping_service_service_http_port: "".to_string(),
+            shipping_service_service_metric_http_port: "".to_string(),
+            user_service_service_name: "".to_string(),
+            user_service_service_rpc_host: "".to_string(),
+            user_service_service_rpc_port: "".to_string(),
+            payment_service_service_name: "".to_string(),
+            payment_service_service_rpc_host: "".to_string(),
+            payment_service_service_rpc_port: "".to_string(),
+            jaeger_telemetry_host: "".to_string(),
+            jaeger_telemetry_rpc_port: "".to_string(),
+            rabbitmq_username: "".to_string(),
+            rabbitmq_password: "".to_string(),
+            rabbitmq_host: "".to_string(),
+            rabbitmq_port: "".to_string(),
+            exchange_shipping: "".to_string(),
+            queue_shipping_created: "".to_string(),
+            queue_shipping_updated: "".to_string(),
+        }
+    }
 }
 
 #[derive(Deserialize)]
@@ -63,30 +112,6 @@ impl AppConfig {
             .set_override("env", run_env.clone())?;
 
         let cfg_env = builder.build()?.get::<ConfigEnv>(&run_env)?;
-        let mut app_config = AppConfig {
-            env: cfg_env.env.clone(),
-            consul_host: cfg_env.consul_host.clone(),
-            consul_port: cfg_env.consul_port.clone(),
-            database_postgres_host: "".to_string(),
-            database_postgres_port: "".to_string(),
-            database_postgres_username: "".to_string(),
-            database_postgres_password: "".to_string(),
-            database_postgres_database: "".to_string(),
-            shipping_service_service_name: "".to_string(),
-            shipping_service_service_rpc_host: "".to_string(),
-            shipping_service_service_rpc_port: "".to_string(),
-            shipping_service_service_http_host: "".to_string(),
-            shipping_service_service_http_port: "".to_string(),
-            shipping_service_service_metric_http_port: "".to_string(),
-            user_service_service_name: "".to_string(),
-            user_service_service_rpc_host: "".to_string(),
-            user_service_service_rpc_port: "".to_string(),
-            payment_service_service_name: "".to_string(),
-            payment_service_service_rpc_host: "".to_string(),
-            payment_service_service_rpc_port: "".to_string(),
-            jaeger_telemetry_host: "".to_string(),
-            jaeger_telemetry_rpc_port: "".to_string(),
-        };
 
         // Create a Consul Client
         let client = ConsulClient::new(
@@ -102,11 +127,16 @@ impl AppConfig {
         .unwrap();
 
         // GET CONSUL CONFIG
+        let mut app_config = AppConfig::default();
+        app_config.env = cfg_env.env;
         app_config.get_config_shipping_service(&client).await;
         app_config.get_config_user_service(&client).await;
         app_config.get_config_payment_service(&client).await;
         app_config.get_config_database_postgres(&client).await;
         app_config.get_config_jaeger_telemetry(&client).await;
+        app_config.get_config_rabbitmq(&client).await;
+        app_config.get_config_rabbitmq_exchange(&client).await;
+        app_config.get_config_rabbitmq_queue(&client).await;
 
         // Register Consul Config
         app_config
@@ -265,6 +295,50 @@ impl AppConfig {
         .await;
     }
 
+    async fn get_config_rabbitmq(&mut self, client: &ConsulClient) {
+        self.rabbitmq_username = Self::get_kv(
+            client,
+            format!("{}/broker/rabbitmq/RABBITMQ_USERNAME", self.env),
+        )
+        .await;
+        self.rabbitmq_password = Self::get_kv(
+            client,
+            format!("{}/broker/rabbitmq/RABBITMQ_PASSWORD", self.env),
+        )
+        .await;
+        self.rabbitmq_host = Self::get_kv(
+            client,
+            format!("{}/broker/rabbitmq/RABBITMQ_HOST", self.env),
+        )
+        .await;
+        self.rabbitmq_port = Self::get_kv(
+            client,
+            format!("{}/broker/rabbitmq/RABBITMQ_PORT", self.env),
+        )
+        .await;
+    }
+
+    async fn get_config_rabbitmq_exchange(&mut self, client: &ConsulClient) {
+        self.exchange_shipping = Self::get_kv(
+            client,
+            format!("{}/broker/rabbitmq/EXCHANGE/SHIPPING", self.env),
+        )
+        .await;
+    }
+
+    async fn get_config_rabbitmq_queue(&mut self, client: &ConsulClient) {
+        self.queue_shipping_created = Self::get_kv(
+            client,
+            format!("{}/broker/rabbitmq/QUEUE/SHIPPING/CREATED", self.env),
+        )
+        .await;
+        self.queue_shipping_updated = Self::get_kv(
+            client,
+            format!("{}/broker/rabbitmq/QUEUE/SHIPPING/UPDATED", self.env),
+        )
+        .await;
+    }
+
     async fn register_consul_service(
         &mut self,
         config: &AppConfig,
@@ -304,7 +378,7 @@ impl AppConfig {
     async fn get_kv(client: &ConsulClient, formatted_key: String) -> String {
         kv::read(client, &*formatted_key, None)
             .await
-            .map_err(|e| error!(" Error Consul GET {} :  {:?}", formatted_key, e))
+            .map_err(|e| error!("Error Consul :  {:?}", e))
             .unwrap()
             .response
             .pop()
@@ -312,6 +386,7 @@ impl AppConfig {
             .value
             .unwrap()
             .try_into()
+            .map_err(|e| error!("Error Consul :  {:?}", e))
             .unwrap()
     }
 }

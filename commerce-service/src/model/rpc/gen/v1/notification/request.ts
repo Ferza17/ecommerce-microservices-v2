@@ -6,7 +6,6 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Payment } from "../payment/model";
 import { NotificationTypeEnum, notificationTypeEnumFromJSON, notificationTypeEnumToJSON } from "./model";
 
 export const protobufPackage = "notification";
@@ -19,7 +18,7 @@ export interface SendOtpEmailNotificationRequest {
 
 export interface SendEmailPaymentOrderCreateRequest {
   email: string;
-  payment: Payment | undefined;
+  paymentId: string;
   notificationType: NotificationTypeEnum;
 }
 
@@ -116,7 +115,7 @@ export const SendOtpEmailNotificationRequest: MessageFns<SendOtpEmailNotificatio
 };
 
 function createBaseSendEmailPaymentOrderCreateRequest(): SendEmailPaymentOrderCreateRequest {
-  return { email: "", payment: undefined, notificationType: 0 };
+  return { email: "", paymentId: "", notificationType: 0 };
 }
 
 export const SendEmailPaymentOrderCreateRequest: MessageFns<SendEmailPaymentOrderCreateRequest> = {
@@ -124,8 +123,8 @@ export const SendEmailPaymentOrderCreateRequest: MessageFns<SendEmailPaymentOrde
     if (message.email !== "") {
       writer.uint32(10).string(message.email);
     }
-    if (message.payment !== undefined) {
-      Payment.encode(message.payment, writer.uint32(18).fork()).join();
+    if (message.paymentId !== "") {
+      writer.uint32(18).string(message.paymentId);
     }
     if (message.notificationType !== 0) {
       writer.uint32(24).int32(message.notificationType);
@@ -153,7 +152,7 @@ export const SendEmailPaymentOrderCreateRequest: MessageFns<SendEmailPaymentOrde
             break;
           }
 
-          message.payment = Payment.decode(reader, reader.uint32());
+          message.paymentId = reader.string();
           continue;
         }
         case 3: {
@@ -176,7 +175,7 @@ export const SendEmailPaymentOrderCreateRequest: MessageFns<SendEmailPaymentOrde
   fromJSON(object: any): SendEmailPaymentOrderCreateRequest {
     return {
       email: isSet(object.email) ? globalThis.String(object.email) : "",
-      payment: isSet(object.payment) ? Payment.fromJSON(object.payment) : undefined,
+      paymentId: isSet(object.paymentId) ? globalThis.String(object.paymentId) : "",
       notificationType: isSet(object.notificationType) ? notificationTypeEnumFromJSON(object.notificationType) : 0,
     };
   },
@@ -186,8 +185,8 @@ export const SendEmailPaymentOrderCreateRequest: MessageFns<SendEmailPaymentOrde
     if (message.email !== "") {
       obj.email = message.email;
     }
-    if (message.payment !== undefined) {
-      obj.payment = Payment.toJSON(message.payment);
+    if (message.paymentId !== "") {
+      obj.paymentId = message.paymentId;
     }
     if (message.notificationType !== 0) {
       obj.notificationType = notificationTypeEnumToJSON(message.notificationType);
@@ -201,9 +200,7 @@ export const SendEmailPaymentOrderCreateRequest: MessageFns<SendEmailPaymentOrde
   fromPartial(object: DeepPartial<SendEmailPaymentOrderCreateRequest>): SendEmailPaymentOrderCreateRequest {
     const message = createBaseSendEmailPaymentOrderCreateRequest();
     message.email = object.email ?? "";
-    message.payment = (object.payment !== undefined && object.payment !== null)
-      ? Payment.fromPartial(object.payment)
-      : undefined;
+    message.paymentId = object.paymentId ?? "";
     message.notificationType = object.notificationType ?? 0;
     return message;
   },

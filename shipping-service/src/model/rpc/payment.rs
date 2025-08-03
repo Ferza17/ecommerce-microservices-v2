@@ -174,11 +174,25 @@ pub struct Payment {
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CreatePaymentItemRequest {
+    #[prost(string, tag = "1")]
+    #[validate(name = "payment.CreatePaymentItemRequest.productId")]
+    #[validate(r#type(string(ignore_empty = false)))]
+    pub product_id: ::prost::alloc::string::String,
+    #[prost(int32, tag = "2")]
+    #[validate(name = "payment.CreatePaymentItemRequest.qty")]
+    #[validate(r#type(int32(gt = 0)))]
+    pub qty: i32,
+}
+#[derive(::prost_validate::Validator)]
+#[derive(utoipa::ToSchema)]
+#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreatePaymentRequest {
     #[prost(message, repeated, tag = "1")]
     #[validate(name = "payment.CreatePaymentRequest.items")]
-    #[validate(r#type(repeated(ignore_empty = true)))]
-    pub items: ::prost::alloc::vec::Vec<PaymentItem>,
+    #[validate(r#type(repeated(ignore_empty = false)))]
+    pub items: ::prost::alloc::vec::Vec<CreatePaymentItemRequest>,
     #[prost(string, tag = "2")]
     #[validate(name = "payment.CreatePaymentRequest.user_id")]
     #[validate(r#type(string(ignore_empty = false)))]
@@ -290,6 +304,47 @@ pub mod create_payment_response {
         #[prost(string, tag = "1")]
         #[validate(name = "payment.CreatePaymentResponse.CreatePaymentResponseData.id")]
         pub id: ::prost::alloc::string::String,
+    }
+}
+#[derive(::prost_validate::Validator)]
+#[derive(utoipa::ToSchema)]
+#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct FindPaymentByIdResponse {
+    #[prost(string, tag = "1")]
+    #[validate(name = "payment.FindPaymentByIdResponse.message")]
+    pub message: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    #[validate(name = "payment.FindPaymentByIdResponse.status")]
+    pub status: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    #[validate(name = "payment.FindPaymentByIdResponse.data")]
+    pub data: ::core::option::Option<
+        find_payment_by_id_response::FindPaymentByIdResponseData,
+    >,
+}
+/// Nested message and enum types in `FindPaymentByIdResponse`.
+pub mod find_payment_by_id_response {
+    #[derive(::prost_validate::Validator)]
+    #[derive(utoipa::ToSchema)]
+    #[derive(serde::Serialize, serde::Deserialize)]
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct FindPaymentByIdResponseData {
+        #[prost(message, optional, tag = "1")]
+        #[validate(
+            name = "payment.FindPaymentByIdResponse.FindPaymentByIdResponseData.payment"
+        )]
+        pub payment: ::core::option::Option<super::Payment>,
+        #[prost(message, optional, tag = "2")]
+        #[validate(
+            name = "payment.FindPaymentByIdResponse.FindPaymentByIdResponseData.provider"
+        )]
+        pub provider: ::core::option::Option<super::Provider>,
+        #[prost(message, repeated, tag = "3")]
+        #[validate(
+            name = "payment.FindPaymentByIdResponse.FindPaymentByIdResponseData.payment_items"
+        )]
+        pub payment_items: ::prost::alloc::vec::Vec<super::PaymentItem>,
     }
 }
 /// PAYMENT PROVIDER PROTO DEFINITION
@@ -469,7 +524,10 @@ pub mod payment_service_client {
         pub async fn find_payment_by_id(
             &mut self,
             request: impl tonic::IntoRequest<super::FindPaymentByIdRequest>,
-        ) -> std::result::Result<tonic::Response<super::Payment>, tonic::Status> {
+        ) -> std::result::Result<
+            tonic::Response<super::FindPaymentByIdResponse>,
+            tonic::Status,
+        > {
             self.inner
                 .ready()
                 .await
@@ -694,7 +752,10 @@ pub mod payment_service_server {
         async fn find_payment_by_id(
             &self,
             request: tonic::Request<super::FindPaymentByIdRequest>,
-        ) -> std::result::Result<tonic::Response<super::Payment>, tonic::Status>;
+        ) -> std::result::Result<
+            tonic::Response<super::FindPaymentByIdResponse>,
+            tonic::Status,
+        >;
         async fn find_payment_by_user_id_and_status(
             &self,
             request: tonic::Request<super::FindPaymentByUserIdAndStatusRequest>,
@@ -828,7 +889,7 @@ pub mod payment_service_server {
                         T: PaymentService,
                     > tonic::server::UnaryService<super::FindPaymentByIdRequest>
                     for FindPaymentByIdSvc<T> {
-                        type Response = super::Payment;
+                        type Response = super::FindPaymentByIdResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
                             tonic::Status,

@@ -7,13 +7,17 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { PaymentStatus, paymentStatusFromJSON, paymentStatusToJSON } from "./enum";
-import { PaymentItem } from "./model";
 
 export const protobufPackage = "payment";
 
 /** PAYMENT REQUEST DEFINITION */
+export interface CreatePaymentItemRequest {
+  productId: string;
+  qty: number;
+}
+
 export interface CreatePaymentRequest {
-  items: PaymentItem[];
+  items: CreatePaymentItemRequest[];
   userId: string;
   amount: number;
   providerId: string;
@@ -47,6 +51,82 @@ export interface FindPaymentProviderByIdRequest {
   id: string;
 }
 
+function createBaseCreatePaymentItemRequest(): CreatePaymentItemRequest {
+  return { productId: "", qty: 0 };
+}
+
+export const CreatePaymentItemRequest: MessageFns<CreatePaymentItemRequest> = {
+  encode(message: CreatePaymentItemRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.productId !== "") {
+      writer.uint32(10).string(message.productId);
+    }
+    if (message.qty !== 0) {
+      writer.uint32(16).int32(message.qty);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): CreatePaymentItemRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreatePaymentItemRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.productId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.qty = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreatePaymentItemRequest {
+    return {
+      productId: isSet(object.productId) ? globalThis.String(object.productId) : "",
+      qty: isSet(object.qty) ? globalThis.Number(object.qty) : 0,
+    };
+  },
+
+  toJSON(message: CreatePaymentItemRequest): unknown {
+    const obj: any = {};
+    if (message.productId !== "") {
+      obj.productId = message.productId;
+    }
+    if (message.qty !== 0) {
+      obj.qty = Math.round(message.qty);
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<CreatePaymentItemRequest>): CreatePaymentItemRequest {
+    return CreatePaymentItemRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<CreatePaymentItemRequest>): CreatePaymentItemRequest {
+    const message = createBaseCreatePaymentItemRequest();
+    message.productId = object.productId ?? "";
+    message.qty = object.qty ?? 0;
+    return message;
+  },
+};
+
 function createBaseCreatePaymentRequest(): CreatePaymentRequest {
   return { items: [], userId: "", amount: 0, providerId: "", shippingProviderId: "" };
 }
@@ -54,7 +134,7 @@ function createBaseCreatePaymentRequest(): CreatePaymentRequest {
 export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
   encode(message: CreatePaymentRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.items) {
-      PaymentItem.encode(v!, writer.uint32(10).fork()).join();
+      CreatePaymentItemRequest.encode(v!, writer.uint32(10).fork()).join();
     }
     if (message.userId !== "") {
       writer.uint32(18).string(message.userId);
@@ -83,7 +163,7 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
             break;
           }
 
-          message.items.push(PaymentItem.decode(reader, reader.uint32()));
+          message.items.push(CreatePaymentItemRequest.decode(reader, reader.uint32()));
           continue;
         }
         case 2: {
@@ -129,7 +209,9 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
 
   fromJSON(object: any): CreatePaymentRequest {
     return {
-      items: globalThis.Array.isArray(object?.items) ? object.items.map((e: any) => PaymentItem.fromJSON(e)) : [],
+      items: globalThis.Array.isArray(object?.items)
+        ? object.items.map((e: any) => CreatePaymentItemRequest.fromJSON(e))
+        : [],
       userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
       providerId: isSet(object.providerId) ? globalThis.String(object.providerId) : "",
@@ -140,7 +222,7 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
   toJSON(message: CreatePaymentRequest): unknown {
     const obj: any = {};
     if (message.items?.length) {
-      obj.items = message.items.map((e) => PaymentItem.toJSON(e));
+      obj.items = message.items.map((e) => CreatePaymentItemRequest.toJSON(e));
     }
     if (message.userId !== "") {
       obj.userId = message.userId;
@@ -162,7 +244,7 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
   },
   fromPartial(object: DeepPartial<CreatePaymentRequest>): CreatePaymentRequest {
     const message = createBaseCreatePaymentRequest();
-    message.items = object.items?.map((e) => PaymentItem.fromPartial(e)) || [];
+    message.items = object.items?.map((e) => CreatePaymentItemRequest.fromPartial(e)) || [];
     message.userId = object.userId ?? "";
     message.amount = object.amount ?? 0;
     message.providerId = object.providerId ?? "";

@@ -1,6 +1,6 @@
 use crate::config::config::AppConfig;
 use crate::model::rpc::payment::payment_service_client::PaymentServiceClient;
-use crate::model::rpc::payment::{FindPaymentByIdRequest, Payment};
+use crate::model::rpc::payment::{FindPaymentByIdRequest, FindPaymentByIdResponse, Payment};
 use crate::package::context::auth::AUTHORIZATION_HEADER;
 use crate::package::context::request_id::X_REQUEST_ID_HEADER;
 use crate::util::metadata::MetadataInjector;
@@ -41,7 +41,7 @@ impl PaymentServiceGrpcClient {
         request_id: String,
         token: String,
         request: FindPaymentByIdRequest,
-    ) -> Result<Payment, Status> {
+    ) -> Result<FindPaymentByIdResponse, Status> {
         let mut req = Request::new(request.clone());
         // TOKEN TO HEADER
         req.metadata_mut().insert(

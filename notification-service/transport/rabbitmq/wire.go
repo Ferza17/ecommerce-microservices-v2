@@ -7,6 +7,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mailhog"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mongodb"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/rabbitmq"
+	paymentService "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/services/payment"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 	"github.com/google/wire"
@@ -23,6 +24,7 @@ func ProvideRabbitMQServer() *RabbitMQTransport {
 		mongodb.Set,
 		telemetry.Set,
 		rabbitmq.Set,
+		paymentService.Set,
 
 		notificationEmailMongoDBRepository.Set,
 		notificationEmailUseCase.Set,

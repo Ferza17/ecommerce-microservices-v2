@@ -1,7 +1,9 @@
 use crate::config::config::AppConfig;
 use std::net::TcpListener;
 
-pub async fn serve_metric_http_collector(config: AppConfig) {
+pub async fn serve_metric_http_collector(
+    config: AppConfig,
+) -> std::result::Result<(), Box<dyn std::error::Error>> {
     let end_point = format!(
         "{}:{}",
         config.shipping_service_service_http_host, config.shipping_service_service_metric_http_port
@@ -16,4 +18,6 @@ pub async fn serve_metric_http_collector(config: AppConfig) {
         let _stream = stream.unwrap();
         eprintln!("Connection established!");
     }
+
+    Ok(())
 }

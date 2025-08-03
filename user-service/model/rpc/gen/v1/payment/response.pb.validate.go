@@ -170,6 +170,141 @@ var _ interface {
 	ErrorName() string
 } = CreatePaymentResponseValidationError{}
 
+// Validate checks the field values on FindPaymentByIdResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *FindPaymentByIdResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on FindPaymentByIdResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// FindPaymentByIdResponseMultiError, or nil if none found.
+func (m *FindPaymentByIdResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *FindPaymentByIdResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Message
+
+	// no validation rules for Status
+
+	if all {
+		switch v := interface{}(m.GetData()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, FindPaymentByIdResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, FindPaymentByIdResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return FindPaymentByIdResponseValidationError{
+				field:  "Data",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return FindPaymentByIdResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// FindPaymentByIdResponseMultiError is an error wrapping multiple validation
+// errors returned by FindPaymentByIdResponse.ValidateAll() if the designated
+// constraints aren't met.
+type FindPaymentByIdResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m FindPaymentByIdResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m FindPaymentByIdResponseMultiError) AllErrors() []error { return m }
+
+// FindPaymentByIdResponseValidationError is the validation error returned by
+// FindPaymentByIdResponse.Validate if the designated constraints aren't met.
+type FindPaymentByIdResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e FindPaymentByIdResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e FindPaymentByIdResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e FindPaymentByIdResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e FindPaymentByIdResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e FindPaymentByIdResponseValidationError) ErrorName() string {
+	return "FindPaymentByIdResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e FindPaymentByIdResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sFindPaymentByIdResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = FindPaymentByIdResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = FindPaymentByIdResponseValidationError{}
+
 // Validate checks the field values on FindPaymentProviderByIdResponse with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -554,6 +689,212 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CreatePaymentResponse_CreatePaymentResponseDataValidationError{}
+
+// Validate checks the field values on
+// FindPaymentByIdResponse_FindPaymentByIdResponseData with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *FindPaymentByIdResponse_FindPaymentByIdResponseData) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// FindPaymentByIdResponse_FindPaymentByIdResponseData with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in
+// FindPaymentByIdResponse_FindPaymentByIdResponseDataMultiError, or nil if
+// none found.
+func (m *FindPaymentByIdResponse_FindPaymentByIdResponseData) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *FindPaymentByIdResponse_FindPaymentByIdResponseData) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetPayment()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, FindPaymentByIdResponse_FindPaymentByIdResponseDataValidationError{
+					field:  "Payment",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, FindPaymentByIdResponse_FindPaymentByIdResponseDataValidationError{
+					field:  "Payment",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetPayment()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return FindPaymentByIdResponse_FindPaymentByIdResponseDataValidationError{
+				field:  "Payment",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetProvider()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, FindPaymentByIdResponse_FindPaymentByIdResponseDataValidationError{
+					field:  "Provider",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, FindPaymentByIdResponse_FindPaymentByIdResponseDataValidationError{
+					field:  "Provider",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetProvider()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return FindPaymentByIdResponse_FindPaymentByIdResponseDataValidationError{
+				field:  "Provider",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	for idx, item := range m.GetPaymentItems() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, FindPaymentByIdResponse_FindPaymentByIdResponseDataValidationError{
+						field:  fmt.Sprintf("PaymentItems[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, FindPaymentByIdResponse_FindPaymentByIdResponseDataValidationError{
+						field:  fmt.Sprintf("PaymentItems[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return FindPaymentByIdResponse_FindPaymentByIdResponseDataValidationError{
+					field:  fmt.Sprintf("PaymentItems[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return FindPaymentByIdResponse_FindPaymentByIdResponseDataMultiError(errors)
+	}
+
+	return nil
+}
+
+// FindPaymentByIdResponse_FindPaymentByIdResponseDataMultiError is an error
+// wrapping multiple validation errors returned by
+// FindPaymentByIdResponse_FindPaymentByIdResponseData.ValidateAll() if the
+// designated constraints aren't met.
+type FindPaymentByIdResponse_FindPaymentByIdResponseDataMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m FindPaymentByIdResponse_FindPaymentByIdResponseDataMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m FindPaymentByIdResponse_FindPaymentByIdResponseDataMultiError) AllErrors() []error { return m }
+
+// FindPaymentByIdResponse_FindPaymentByIdResponseDataValidationError is the
+// validation error returned by
+// FindPaymentByIdResponse_FindPaymentByIdResponseData.Validate if the
+// designated constraints aren't met.
+type FindPaymentByIdResponse_FindPaymentByIdResponseDataValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e FindPaymentByIdResponse_FindPaymentByIdResponseDataValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e FindPaymentByIdResponse_FindPaymentByIdResponseDataValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e FindPaymentByIdResponse_FindPaymentByIdResponseDataValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e FindPaymentByIdResponse_FindPaymentByIdResponseDataValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e FindPaymentByIdResponse_FindPaymentByIdResponseDataValidationError) ErrorName() string {
+	return "FindPaymentByIdResponse_FindPaymentByIdResponseDataValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e FindPaymentByIdResponse_FindPaymentByIdResponseDataValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sFindPaymentByIdResponse_FindPaymentByIdResponseData.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = FindPaymentByIdResponse_FindPaymentByIdResponseDataValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = FindPaymentByIdResponse_FindPaymentByIdResponseDataValidationError{}
 
 // Validate checks the field values on
 // FindPaymentProvidersResponse_FindPaymentProvidersResponseData with the

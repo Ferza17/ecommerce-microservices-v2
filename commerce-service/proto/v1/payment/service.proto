@@ -51,7 +51,8 @@ service PaymentService {
       is_public: false,
     };
     option (google.api.http) = {
-      post: "/v1/payment/payments"
+      post: "/v1/payment/payments",
+      body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       summary: "Create a new payment";
@@ -65,7 +66,7 @@ service PaymentService {
     };
   };
   // QUERY
-  rpc FindPaymentById(payment.FindPaymentByIdRequest) returns (payment.Payment){
+  rpc FindPaymentById(payment.FindPaymentByIdRequest) returns (payment.FindPaymentByIdResponse){
     option (user.acl) = {
       roles: [SUPER_ADMIN, ADMIN, CUSTOMER_MEMBERSHIP],
       http: {

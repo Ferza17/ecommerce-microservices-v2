@@ -10,6 +10,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mailhog"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mongodb"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/rabbitmq"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/services/payment"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/consumer"
 	mongodb2 "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/repository/mongodb"
@@ -26,7 +27,8 @@ func ProvideRabbitMQServer() *RabbitMQTransport {
 	iMongoDBInfrastructure := mongodb.NewMongoDBInfrastructure(iZapLogger)
 	iNotificationEmailRepository := mongodb2.NewNotificationEmailRepository(iMongoDBInfrastructure, iTelemetryInfrastructure, iZapLogger)
 	iMailhogInfrastructure := mailhog.NewMailhogInfrastructure(iZapLogger)
-	iNotificationEmailUseCase := usecase.NewEventStoreUseCase(iNotificationEmailRepository, iRabbitMQInfrastructure, iMailhogInfrastructure, iTelemetryInfrastructure, iZapLogger)
+	iPaymentService := payment.NewPaymentService(iZapLogger)
+	iNotificationEmailUseCase := usecase.NewNotificationEmailUseCase(iNotificationEmailRepository, iRabbitMQInfrastructure, iMailhogInfrastructure, iTelemetryInfrastructure, iPaymentService, iZapLogger)
 	iNotificationEmailConsumer := consumer.NewNotificationConsumer(iRabbitMQInfrastructure, iNotificationEmailUseCase, iTelemetryInfrastructure, iZapLogger)
 	rabbitMQTransport := NewServer(iZapLogger, iNotificationEmailConsumer, iRabbitMQInfrastructure, iTelemetryInfrastructure)
 	return rabbitMQTransport

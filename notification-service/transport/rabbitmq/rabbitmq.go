@@ -14,6 +14,8 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.uber.org/zap"
 	"log"
+	"strings"
+	"time"
 )
 
 type (
@@ -75,7 +77,6 @@ func (srv *RabbitMQTransport) Serve(ctx context.Context) error {
 		}
 
 		go func(queue string) {
-
 			deliveries, err := srv.rabbitmq.Consume(ctx, queue)
 			if err != nil {
 				srv.logger.Error("failed to consume queue", zap.Error(err))
@@ -91,18 +92,18 @@ func (srv *RabbitMQTransport) Serve(ctx context.Context) error {
 					}
 
 					var (
-						requestId         string
-						newCtx, cancelCtx = context.WithTimeout(ctx, 20)
+						requestId string
+						newCtx, _ = context.WithTimeout(ctx, 30*time.Second)
 					)
 
 					for key, value := range d.Headers {
-						if key == pkgContext.CtxKeyRequestID {
+						if strings.ToLower(key) == strings.ToLower(pkgContext.CtxKeyRequestID) {
 							requestId = value.(string)
-							newCtx = pkgContext.SetRequestIDToContext(ctx, requestId)
+							newCtx = pkgContext.SetRequestIDToContext(newCtx, requestId)
 						}
 
-						if key == pkgContext.CtxKeyAuthorization {
-							newCtx = pkgContext.SetTokenAuthorizationToContext(ctx, value.(string))
+						if strings.ToLower(key) == strings.ToLower(pkgContext.CtxKeyAuthorization) {
+							newCtx = pkgContext.SetTokenAuthorizationToContext(newCtx, value.(string))
 						}
 					}
 
@@ -120,11 +121,11 @@ func (srv *RabbitMQTransport) Serve(ctx context.Context) error {
 					switch queue {
 					case config.Get().QueueNotificationEmailOtpCreated:
 						task.Handler = func(ctx context.Context, d *amqp091.Delivery) error {
-							return srv.notificationEmailConsumer.NotificationEmailOTP(ctx, d)
+							return srv.notificationEmailConsumer.NotificationEmailOTP(newCtx, d)
 						}
 					case config.Get().QueueNotificationEmailPaymentOrderCreated:
 						task.Handler = func(ctx context.Context, d *amqp091.Delivery) error {
-							return srv.notificationEmailConsumer.NotificationEmailPaymentOrderCreated(ctx, d)
+							return srv.notificationEmailConsumer.NotificationEmailPaymentOrderCreated(newCtx, d)
 						}
 					default:
 						log.Fatalf("invalid queue %s", queue)
@@ -132,8 +133,6 @@ func (srv *RabbitMQTransport) Serve(ctx context.Context) error {
 
 					task.Ctx = newCtx
 					srv.workerPool.AddTaskQueue(task)
-
-					cancelCtx()
 					span.End()
 
 				case <-ctx.Done():

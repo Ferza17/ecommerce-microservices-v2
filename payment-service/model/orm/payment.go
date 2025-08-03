@@ -8,15 +8,18 @@ import (
 
 // Payment GORM model
 type Payment struct {
-	ID          string     `gorm:"primaryKey;type:varchar(255)"`
-	Code        string     `gorm:"type:varchar(100);uniqueIndex;not null"`
-	TotalPrice  float64    `gorm:"not null"`
-	Status      string     `gorm:"not null"`
-	ProviderID  string     `gorm:"type:varchar(255);not null"`
-	UserID      string     `gorm:"type:varchar(255);not null"`
-	CreatedAt   *time.Time `gorm:"autoCreateTime"`
-	UpdatedAt   *time.Time `gorm:"autoUpdateTime"`
-	DiscardedAt *time.Time `gorm:"index"`
+	ID          string     `gorm:"primaryKey;type:varchar(255)" json:"id"`
+	Code        string     `gorm:"type:varchar(100);uniqueIndex;not null" json:"code"`
+	TotalPrice  float64    `gorm:"not null" json:"total_price"`
+	Status      string     `gorm:"not null" json:"status"`
+	ProviderID  string     `gorm:"type:varchar(255);not null" json:"provider_id"`
+	UserID      string     `gorm:"type:varchar(255);not null" json:"user_id"`
+	CreatedAt   *time.Time `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt   *time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+	DiscardedAt *time.Time `gorm:"index" json:"discarded_at"`
+
+	PaymentItems    []*PaymentItem `gorm:"foreignKey:PaymentID;references:ID" json:"payment_items"`
+	PaymentProvider *Provider      `gorm:"foreignKey:ProviderID;references:ID" json:"payment_provider"`
 }
 
 func (Payment) TableName() string {

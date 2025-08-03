@@ -13,7 +13,7 @@ data:
     consul kv put local/broker/rabbitmq/EXCHANGE/USER "user.direct.exchange"
     consul kv put local/broker/rabbitmq/EXCHANGE/PAYMENT/DIRECT "payment.direct.exchange"
     consul kv put local/broker/rabbitmq/EXCHANGE/PAYMENT/DELAYED "payment.delayed.exchange"
-
+    consul kv put local/broker/rabbitmq/EXCHANGE/SHIPPING "shipping.direct.exchange"
 
     # EXCHANGE PRODUCTION
     consul kv put production/broker/rabbitmq/EXCHANGE/PRODUCT "product.direct.exchange"
@@ -23,6 +23,7 @@ data:
     consul kv put production/broker/rabbitmq/EXCHANGE/USER "user.direct.exchange"
     consul kv put production/broker/rabbitmq/EXCHANGE/PAYMENT/DIRECT "payment.direct.exchange"
     consul kv put production/broker/rabbitmq/EXCHANGE/PAYMENT/DELAYED "payment.delayed.exchange"
+    consul kv put production/broker/rabbitmq/EXCHANGE/SHIPPING "shipping.direct.exchange"
 
     echo "DONE INIT CONFIG RABBITMQ EXCHANGE"
   init-rabbitmq-proxy.sh: |
@@ -125,6 +126,15 @@ data:
     # QUEUE PRODUCTION PAYMENT
     consul kv put production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED "payment.order.created"
     consul kv put production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED "payment.order.delayed.cancelled"
+
+    #QUEUE LOCAL SHIPPING
+    consul kv put local/broker/rabbitmq/QUEUE/SHIPPING/CREATED "shipping.created"
+    consul kv put local/broker/rabbitmq/QUEUE/SHIPPING/UPDATED "shipping.updated"
+
+
+    #QUEUE PRODUCTION SHIPPING
+    consul kv put production/broker/rabbitmq/QUEUE/SHIPPING/CREATED "shipping.created"
+    consul kv put production/broker/rabbitmq/QUEUE/SHIPPING/UPDATED "shipping.updated"
 
     echo "DONE INIT CONFIG RABBITMQ QUEUE"
   init-rabbitmq.sh: |

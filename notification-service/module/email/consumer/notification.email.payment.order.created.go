@@ -26,7 +26,7 @@ func (c *notificationEmailConsumer) NotificationEmailPaymentOrderCreated(ctx con
 	defer func(err error) {
 		if err != nil {
 			span.RecordError(err)
-			pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueNotificationEmailOtpCreated, "failed").Inc()
+			pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueNotificationEmailPaymentOrderCreated, "failed").Inc()
 		}
 		span.End()
 	}(err)

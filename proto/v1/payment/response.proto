@@ -13,6 +13,17 @@ message CreatePaymentResponse {
   CreatePaymentResponseData data = 3;
 }
 
+message FindPaymentByIdResponse {
+  string message = 1;
+  string status = 2;
+  message FindPaymentByIdResponseData {
+    payment.Payment payment = 1;
+    payment.Provider provider = 2;
+    repeated payment.PaymentItem payment_items = 3;
+  }
+  FindPaymentByIdResponseData data = 3;
+}
+
 // PAYMENT PROVIDER PROTO DEFINITION
 message FindPaymentProviderByIdResponse {
   string message = 1;

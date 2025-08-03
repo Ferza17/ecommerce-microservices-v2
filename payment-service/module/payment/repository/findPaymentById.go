@@ -10,19 +10,20 @@ func (r *paymentRepository) FindPaymentById(ctx context.Context, requestId strin
 	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "PaymentPostgresRepository.FindPaymentById")
 	defer span.End()
 	var payment orm.Payment
-	// Execute the query with preloading of all foreign keys
-	result := tx.WithContext(ctx).
-		Preload("Provider").
-		First(&payment, "id = ?", id)
-
+	// Execute the query with preloading of all foreign keys\
 	// Check and handle errors
 
-	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
+	if err := tx.WithContext(ctx).
+		Preload("PaymentProvider").
+		Preload("PaymentItems").
+		Where("discarded_at IS NULL").
+		First(&payment, "id = ?", id).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			r.logger.Error(err.Error())
 			return nil, nil
 		}
-
-		return nil, result.Error
+		r.logger.Error(err.Error())
+		return nil, err
 	}
 
 	return &payment, nil

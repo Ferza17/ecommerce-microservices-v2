@@ -37,11 +37,13 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 	}
 
 	carrier := c.telemetryInfrastructure.InjectSpanToTextMapPropagator(ctx)
-	headers := amqp091.Table{}
+	headers := amqp091.Table{
+		pkgContext.CtxKeyRequestID:     requestId,
+		pkgContext.CtxKeyAuthorization: pkgContext.GetTokenAuthorizationFromContext(ctx),
+	}
 	for k, v := range carrier {
 		headers[k] = v
 	}
-	headers[pkgContext.CtxKeyRequestID] = requestId
 
 	// Publish message
 	if _, err := c.channel.PublishWithDeferredConfirmWithContext(

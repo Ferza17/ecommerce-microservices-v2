@@ -15,6 +15,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.uber.org/zap"
 	"log"
+	"strings"
 )
 
 type (
@@ -85,7 +86,7 @@ func (srv *Server) Serve(ctx context.Context) error {
 			return err
 		}
 		go func(queue string) {
-			
+
 			deliveries, err := srv.amqpInfrastructure.Consume(ctx, queue)
 			if err != nil {
 				srv.logger.Error("failed to consume queue", zap.Error(err))
@@ -106,14 +107,15 @@ func (srv *Server) Serve(ctx context.Context) error {
 					)
 
 					for key, value := range d.Headers {
-						if key == pkgContext.CtxKeyRequestID {
+						if strings.ToLower(key) == strings.ToLower(pkgContext.CtxKeyRequestID) {
 							requestId = value.(string)
 							newCtx = pkgContext.SetRequestIDToContext(ctx, requestId)
 						}
 
-						if key == pkgContext.CtxKeyAuthorization {
+						if strings.ToLower(key) == strings.ToLower(pkgContext.CtxKeyAuthorization) {
 							newCtx = pkgContext.SetTokenAuthorizationToContext(ctx, value.(string))
 						}
+
 					}
 
 					newCtx, span := srv.telemetryInfrastructure.StartSpanFromRabbitMQHeader(newCtx, d.Headers, "RabbitMQTransport")

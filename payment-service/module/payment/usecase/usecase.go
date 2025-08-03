@@ -19,7 +19,7 @@ type (
 		CreatePayment(ctx context.Context, requestId string, request *paymentRpc.CreatePaymentRequest) (*paymentRpc.CreatePaymentResponse, error)
 		PaymentOrderDelayedCancelled(ctx context.Context, requestId string, request *paymentRpc.PaymentOrderDelayedCancelledRequest) error
 
-		FindPaymentById(ctx context.Context, requestId string, request *paymentRpc.FindPaymentByIdRequest) (*paymentRpc.Payment, error)
+		FindPaymentById(ctx context.Context, requestId string, request *paymentRpc.FindPaymentByIdRequest) (*paymentRpc.FindPaymentByIdResponse, error)
 		FindPaymentByUserIdAndStatus(ctx context.Context, requestId string, request *paymentRpc.FindPaymentByUserIdAndStatusRequest) (*paymentRpc.Payment, error)
 	}
 

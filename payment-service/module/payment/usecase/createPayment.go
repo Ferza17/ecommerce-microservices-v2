@@ -12,6 +12,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"time"
 
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/util"
@@ -40,18 +41,15 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 		return nil, fmt.Errorf("failed to create payment: %w", err)
 	}
 
-	// Map the request into the ORM Payment model
-	payment := &orm.Payment{
+	now := time.Now()
+	paymentID, err := u.paymentRepository.CreatePayment(ctx, requestId, &orm.Payment{
 		ID:         uuid.NewString(),
 		Code:       util.GenerateInvoiceCode(),
 		TotalPrice: request.Amount,
 		Status:     paymentRpc.PaymentStatus_PENDING.String(),
 		ProviderID: request.ProviderId,
 		UserID:     request.UserId,
-	}
-
-	// Call repository to create the Payment
-	paymentID, err := u.paymentRepository.CreatePayment(ctx, requestId, payment, tx)
+	}, tx)
 	if err != nil {
 		tx.Rollback() // Roll back the transaction on error
 		u.logger.Error(fmt.Sprintf("Failed to create payment, requestId: %s, error: %v", requestId, err))
@@ -70,47 +68,63 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 	// Process PaymentItems
 	for _, item := range request.Items {
 		// Call a repository to create the PaymentItem
-		if _, err := u.paymentRepository.CreatePaymentItem(ctx, orm.PaymentItemFromProto(item), tx); err != nil {
+		if _, err = u.paymentRepository.CreatePaymentItem(ctx, &orm.PaymentItem{
+			ID:          uuid.NewString(),
+			ProductID:   item.ProductId,
+			Amount:      0,
+			Qty:         item.Qty,
+			PaymentID:   paymentID,
+			CreatedAt:   &now,
+			UpdatedAt:   &now,
+			DiscardedAt: nil,
+		}, tx); err != nil {
 			tx.Rollback() // Roll back the transaction on error
 			u.logger.Error(fmt.Sprintf("Failed to create payment item, requestId: %s, error: %v", requestId, err))
 			return nil, fmt.Errorf("failed to create payment item: %w", err)
 		}
 	}
 
-	// Create Shipping with RPC
-	// TODO: Change to RabbitMQ
-	if _, err = u.shippingService.CreateShipping(ctx, requestId, &shippingRpc.CreateShippingRequest{
+	// Publish to shipping.created
+	messages, err := proto.Marshal(&shippingRpc.CreateShippingRequest{
 		UserId:             user.Data.User.Id,
 		PaymentId:          paymentID,
 		ShippingProviderId: request.ShippingProviderId,
-	}); err != nil {
+	})
+	if err != nil {
 		tx.Rollback()
-		u.logger.Error(fmt.Sprintf("Failed to create shipping, requestId: %s, error: %v", requestId, err))
-		return nil, fmt.Errorf("failed to create shipping: %w", err)
+		u.logger.Error(fmt.Sprintf("Failed to marshal CreateShipping request, requestId: %s, error: %v", requestId, err))
+		return nil, fmt.Errorf("failed to marshal CreateShipping request: %w", err)
+	}
+	if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, config.Get().ExchangeShipping, config.Get().QueueShippingCreated, messages); err != nil {
+		tx.Rollback()
+		u.logger.Error(fmt.Sprintf("Failed to publish CreateShipping request, requestId: %s, error: %v", requestId, err))
+		return nil, fmt.Errorf("failed to publish CreateShipping request: %w", err)
 	}
 
-	// Publish to payment.order.direct.created
-	reqNotificationOrderCreated := &notificationRpc.SendEmailPaymentOrderCreateRequest{
+	// Publish to Notification Payment Order Created
+	if messages, err = proto.Marshal(&notificationRpc.SendEmailPaymentOrderCreateRequest{
 		Email:            user.Data.User.Email,
-		Payment:          nil, //TODO: Fill this argument
+		PaymentId:        paymentID,
 		NotificationType: notificationRpc.NotificationTypeEnum_NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED,
-	}
-	message, err := proto.Marshal(reqNotificationOrderCreated)
-	if err != nil {
-		u.logger.Error("AuthUseCase.SentOTP", zap.String("requestId", requestId), zap.Error(err))
+	}); err != nil {
+		u.logger.Error("NotificationTypeEnum_NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED", zap.String("requestId", requestId), zap.Error(err))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, config.Get().ExchangePaymentDirect, config.Get().QueuePaymentOrderCreated, message); err != nil {
+	if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, config.Get().ExchangeNotification, config.Get().QueueNotificationEmailPaymentOrderCreated, messages); err != nil {
 		u.logger.Error("Failed to publish notification", zap.Error(err))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	// Publish to Payment.Order.Delayed.Cancelled
-	delayedMessage, err := proto.Marshal(&paymentRpc.PaymentOrderDelayedCancelledRequest{
+	if messages, err = proto.Marshal(&paymentRpc.PaymentOrderDelayedCancelledRequest{
 		Id: paymentID,
-	})
+	}); err != nil {
+		tx.Rollback()
+		u.logger.Error(fmt.Sprintf("Failed to marshal PaymentOrderDelayedCancelledRequest request, requestId: %s, error: %v", requestId, err))
+		return nil, fmt.Errorf("failed to marshal PaymentOrderDelayedCancelledRequest request: %w", err)
+	}
 
-	if err = u.rabbitmqInfrastructure.PublishDelayedMessage(ctx, requestId, config.Get().ExchangePaymentDelayed, config.Get().QueuePaymentOrderDelayedCancelled, delayedMessage, config.Get().PaymentOrderCancelledInMs); err != nil {
+	if err = u.rabbitmqInfrastructure.PublishDelayedMessage(ctx, requestId, config.Get().ExchangePaymentDelayed, config.Get().QueuePaymentOrderDelayedCancelled, messages, config.Get().PaymentOrderCancelledInMs); err != nil {
 		tx.Rollback()
 		u.logger.Error(fmt.Sprintf("Failed to publish event payment.delayed.cancelled, requestId: %s, error: %v", requestId, err))
 		return nil, fmt.Errorf("failed to commit transaction: %w", err)

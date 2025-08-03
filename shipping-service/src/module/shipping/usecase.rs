@@ -1,8 +1,6 @@
 use crate::infrastructure::services::payment::PaymentServiceGrpcClient;
 use crate::infrastructure::services::user::UserServiceGrpcClient;
-use crate::model::diesel::shipping_providers::to_proto::{
-    shipping_provider_to_proto,
-};
+use crate::model::diesel::shipping_providers::to_proto::shipping_provider_to_proto;
 use crate::model::diesel::shippings::to_proto::shippings_to_proto;
 use crate::model::diesel::shippings::{CreateShippings, UpdateShippings};
 use crate::model::rpc::payment::FindPaymentByIdRequest;
@@ -242,7 +240,7 @@ impl ShippingUseCase for ShippingUseCaseImpl {
             data: Option::from(ShippingFullResponse {
                 id: fetch_shipping.id,
                 user: fetch_user.data.unwrap().user,
-                payment: Option::from(fetch_payment),
+                payment: Option::from(fetch_payment.data.unwrap().payment),
                 shipping_provider: Option::from(shipping_provider_to_proto(
                     fetch_shipping_provider,
                 )),

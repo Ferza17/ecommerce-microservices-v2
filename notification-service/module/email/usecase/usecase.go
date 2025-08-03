@@ -4,6 +4,7 @@ import (
 	"context"
 	mailHogInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mailhog"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/rabbitmq"
+	paymentService "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/services/payment"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
 	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification"
 	notificationRepository "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/repository/mongodb"
@@ -22,23 +23,26 @@ type (
 		rabbitmqInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
 		mailHogInfrastructure   mailHogInfrastructure.IMailhogInfrastructure
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
+		paymentSvc              paymentService.IPaymentService
 		logger                  logger.IZapLogger
 	}
 )
 
-var Set = wire.NewSet(NewEventStoreUseCase)
+var Set = wire.NewSet(NewNotificationEmailUseCase)
 
-func NewEventStoreUseCase(
+func NewNotificationEmailUseCase(
 	notificationRepository notificationRepository.INotificationEmailRepository,
 	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
 	mailHogInfrastructure mailHogInfrastructure.IMailhogInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
+	paymentSvc paymentService.IPaymentService,
 	logger logger.IZapLogger) INotificationEmailUseCase {
 	return &notificationEmailUseCase{
 		notificationRepository:  notificationRepository,
 		rabbitmqInfrastructure:  rabbitmqInfrastructure,
 		mailHogInfrastructure:   mailHogInfrastructure,
 		telemetryInfrastructure: telemetryInfrastructure,
+		paymentSvc:              paymentSvc,
 		logger:                  logger,
 	}
 }

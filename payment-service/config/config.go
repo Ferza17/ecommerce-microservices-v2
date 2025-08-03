@@ -50,6 +50,7 @@ type Config struct {
 	ExchangeUser           string
 	ExchangePaymentDelayed string
 	ExchangePaymentDirect  string
+	ExchangeShipping       string
 
 	// Queue Notification Config
 	QueueNotificationEmailOtpCreated          string
@@ -58,6 +59,10 @@ type Config struct {
 	// Queue Payment Config
 	QueuePaymentOrderCreated          string
 	QueuePaymentOrderDelayedCancelled string
+
+	// Queue Shipping Config
+	QueueShippingCreated string
+	QueueShippingUpdated string
 
 	// POSTGRES CONFIG
 	PostgresHost         string
@@ -176,6 +181,7 @@ func SetConfig(path string) {
 		c.initExchange(client.KV())
 		c.initQueueNotification(client.KV())
 		c.initQueuePayment(client.KV())
+		c.initQueueShipping(client.KV())
 	}()
 
 	// COMMON Config

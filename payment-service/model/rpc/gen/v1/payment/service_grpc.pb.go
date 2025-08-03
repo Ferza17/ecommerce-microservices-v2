@@ -31,7 +31,7 @@ type PaymentServiceClient interface {
 	// COMMAND
 	CreatePayment(ctx context.Context, in *CreatePaymentRequest, opts ...grpc.CallOption) (*CreatePaymentResponse, error)
 	// QUERY
-	FindPaymentById(ctx context.Context, in *FindPaymentByIdRequest, opts ...grpc.CallOption) (*Payment, error)
+	FindPaymentById(ctx context.Context, in *FindPaymentByIdRequest, opts ...grpc.CallOption) (*FindPaymentByIdResponse, error)
 	FindPaymentByUserIdAndStatus(ctx context.Context, in *FindPaymentByUserIdAndStatusRequest, opts ...grpc.CallOption) (*Payment, error)
 }
 
@@ -53,9 +53,9 @@ func (c *paymentServiceClient) CreatePayment(ctx context.Context, in *CreatePaym
 	return out, nil
 }
 
-func (c *paymentServiceClient) FindPaymentById(ctx context.Context, in *FindPaymentByIdRequest, opts ...grpc.CallOption) (*Payment, error) {
+func (c *paymentServiceClient) FindPaymentById(ctx context.Context, in *FindPaymentByIdRequest, opts ...grpc.CallOption) (*FindPaymentByIdResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Payment)
+	out := new(FindPaymentByIdResponse)
 	err := c.cc.Invoke(ctx, PaymentService_FindPaymentById_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -80,7 +80,7 @@ type PaymentServiceServer interface {
 	// COMMAND
 	CreatePayment(context.Context, *CreatePaymentRequest) (*CreatePaymentResponse, error)
 	// QUERY
-	FindPaymentById(context.Context, *FindPaymentByIdRequest) (*Payment, error)
+	FindPaymentById(context.Context, *FindPaymentByIdRequest) (*FindPaymentByIdResponse, error)
 	FindPaymentByUserIdAndStatus(context.Context, *FindPaymentByUserIdAndStatusRequest) (*Payment, error)
 }
 
@@ -94,7 +94,7 @@ type UnimplementedPaymentServiceServer struct{}
 func (UnimplementedPaymentServiceServer) CreatePayment(context.Context, *CreatePaymentRequest) (*CreatePaymentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreatePayment not implemented")
 }
-func (UnimplementedPaymentServiceServer) FindPaymentById(context.Context, *FindPaymentByIdRequest) (*Payment, error) {
+func (UnimplementedPaymentServiceServer) FindPaymentById(context.Context, *FindPaymentByIdRequest) (*FindPaymentByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindPaymentById not implemented")
 }
 func (UnimplementedPaymentServiceServer) FindPaymentByUserIdAndStatus(context.Context, *FindPaymentByUserIdAndStatusRequest) (*Payment, error) {

@@ -25,7 +25,12 @@ import {
   FindPaymentProviderByIdRequest,
   FindPaymentProvidersRequest,
 } from "./request";
-import { CreatePaymentResponse, FindPaymentProviderByIdResponse, FindPaymentProvidersResponse } from "./response";
+import {
+  CreatePaymentResponse,
+  FindPaymentByIdResponse,
+  FindPaymentProviderByIdResponse,
+  FindPaymentProvidersResponse,
+} from "./response";
 
 export const protobufPackage = "payment";
 
@@ -48,8 +53,8 @@ export const PaymentServiceService = {
     responseStream: false,
     requestSerialize: (value: FindPaymentByIdRequest) => Buffer.from(FindPaymentByIdRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer) => FindPaymentByIdRequest.decode(value),
-    responseSerialize: (value: Payment) => Buffer.from(Payment.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => Payment.decode(value),
+    responseSerialize: (value: FindPaymentByIdResponse) => Buffer.from(FindPaymentByIdResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => FindPaymentByIdResponse.decode(value),
   },
   findPaymentByUserIdAndStatus: {
     path: "/payment.PaymentService/FindPaymentByUserIdAndStatus",
@@ -67,7 +72,7 @@ export interface PaymentServiceServer extends UntypedServiceImplementation {
   /** COMMAND */
   createPayment: handleUnaryCall<CreatePaymentRequest, CreatePaymentResponse>;
   /** QUERY */
-  findPaymentById: handleUnaryCall<FindPaymentByIdRequest, Payment>;
+  findPaymentById: handleUnaryCall<FindPaymentByIdRequest, FindPaymentByIdResponse>;
   findPaymentByUserIdAndStatus: handleUnaryCall<FindPaymentByUserIdAndStatusRequest, Payment>;
 }
 
@@ -91,18 +96,18 @@ export interface PaymentServiceClient extends Client {
   /** QUERY */
   findPaymentById(
     request: FindPaymentByIdRequest,
-    callback: (error: ServiceError | null, response: Payment) => void,
+    callback: (error: ServiceError | null, response: FindPaymentByIdResponse) => void,
   ): ClientUnaryCall;
   findPaymentById(
     request: FindPaymentByIdRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: Payment) => void,
+    callback: (error: ServiceError | null, response: FindPaymentByIdResponse) => void,
   ): ClientUnaryCall;
   findPaymentById(
     request: FindPaymentByIdRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: Payment) => void,
+    callback: (error: ServiceError | null, response: FindPaymentByIdResponse) => void,
   ): ClientUnaryCall;
   findPaymentByUserIdAndStatus(
     request: FindPaymentByUserIdAndStatusRequest,

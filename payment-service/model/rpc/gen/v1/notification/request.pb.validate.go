@@ -248,46 +248,6 @@ func (m *SendEmailPaymentOrderCreateRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetPayment() == nil {
-		err := SendEmailPaymentOrderCreateRequestValidationError{
-			field:  "Payment",
-			reason: "value is required",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if all {
-		switch v := interface{}(m.GetPayment()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, SendEmailPaymentOrderCreateRequestValidationError{
-					field:  "Payment",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, SendEmailPaymentOrderCreateRequestValidationError{
-					field:  "Payment",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetPayment()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return SendEmailPaymentOrderCreateRequestValidationError{
-				field:  "Payment",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
 	if _, ok := NotificationTypeEnum_name[int32(m.GetNotificationType())]; !ok {
 		err := SendEmailPaymentOrderCreateRequestValidationError{
 			field:  "NotificationType",

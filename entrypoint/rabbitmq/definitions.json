@@ -176,6 +176,11 @@
       "name": "shipping.created",
       "vhost": "/",
       "durable": true
+    },
+    {
+      "name": "shipping.updated",
+      "vhost": "/",
+      "durable": true
     }
   ]
 }

@@ -116,29 +116,12 @@
         },
         "parameters": [
           {
-            "name": "userId",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "amount",
-            "in": "query",
-            "required": false,
-            "type": "number",
-            "format": "double"
-          },
-          {
-            "name": "providerId",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "shippingProviderId",
-            "in": "query",
-            "required": false,
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paymentCreatePaymentRequest"
+            }
           }
         ],
         "tags": [
@@ -197,7 +180,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/paymentPayment"
+              "$ref": "#/definitions/paymentFindPaymentByIdResponse"
             }
           },
           "default": {
@@ -235,6 +218,24 @@
         }
       }
     },
+    "FindPaymentByIdResponseFindPaymentByIdResponseData": {
+      "type": "object",
+      "properties": {
+        "payment": {
+          "$ref": "#/definitions/paymentPayment"
+        },
+        "provider": {
+          "$ref": "#/definitions/paymentProvider"
+        },
+        "paymentItems": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/paymentPaymentItem"
+          }
+        }
+      }
+    },
     "FindPaymentProvidersResponseFindPaymentProvidersResponseData": {
       "type": "object",
       "properties": {
@@ -255,6 +256,44 @@
         }
       }
     },
+    "paymentCreatePaymentItemRequest": {
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "string"
+        },
+        "qty": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "PAYMENT REQUEST DEFINITION"
+    },
+    "paymentCreatePaymentRequest": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/paymentCreatePaymentItemRequest"
+          }
+        },
+        "userId": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number",
+          "format": "double"
+        },
+        "providerId": {
+          "type": "string"
+        },
+        "shippingProviderId": {
+          "type": "string"
+        }
+      }
+    },
     "paymentCreatePaymentResponse": {
       "type": "object",
       "properties": {
@@ -266,6 +305,20 @@
         },
         "data": {
           "$ref": "#/definitions/CreatePaymentResponseCreatePaymentResponseData"
+        }
+      }
+    },
+    "paymentFindPaymentByIdResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/FindPaymentByIdResponseFindPaymentByIdResponseData"
         }
       }
     },
