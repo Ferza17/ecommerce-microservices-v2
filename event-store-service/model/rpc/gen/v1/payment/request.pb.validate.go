@@ -204,17 +204,6 @@ func (m *CreatePaymentRequest) validate(all bool) error {
 
 	}
 
-	if m.GetAmount() <= 0 {
-		err := CreatePaymentRequestValidationError{
-			field:  "Amount",
-			reason: "value must be greater than 0",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	if len(errors) > 0 {
 		return CreatePaymentRequestMultiError(errors)
 	}

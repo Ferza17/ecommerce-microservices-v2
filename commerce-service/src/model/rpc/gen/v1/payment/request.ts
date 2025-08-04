@@ -19,7 +19,6 @@ export interface CreatePaymentItemRequest {
 export interface CreatePaymentRequest {
   items: CreatePaymentItemRequest[];
   userId: string;
-  amount: number;
   providerId: string;
   shippingProviderId: string;
 }
@@ -128,7 +127,7 @@ export const CreatePaymentItemRequest: MessageFns<CreatePaymentItemRequest> = {
 };
 
 function createBaseCreatePaymentRequest(): CreatePaymentRequest {
-  return { items: [], userId: "", amount: 0, providerId: "", shippingProviderId: "" };
+  return { items: [], userId: "", providerId: "", shippingProviderId: "" };
 }
 
 export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
@@ -138,9 +137,6 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
     }
     if (message.userId !== "") {
       writer.uint32(18).string(message.userId);
-    }
-    if (message.amount !== 0) {
-      writer.uint32(25).double(message.amount);
     }
     if (message.providerId !== "") {
       writer.uint32(34).string(message.providerId);
@@ -174,14 +170,6 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
           message.userId = reader.string();
           continue;
         }
-        case 3: {
-          if (tag !== 25) {
-            break;
-          }
-
-          message.amount = reader.double();
-          continue;
-        }
         case 4: {
           if (tag !== 34) {
             break;
@@ -213,7 +201,6 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
         ? object.items.map((e: any) => CreatePaymentItemRequest.fromJSON(e))
         : [],
       userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
-      amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
       providerId: isSet(object.providerId) ? globalThis.String(object.providerId) : "",
       shippingProviderId: isSet(object.shippingProviderId) ? globalThis.String(object.shippingProviderId) : "",
     };
@@ -226,9 +213,6 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
     }
     if (message.userId !== "") {
       obj.userId = message.userId;
-    }
-    if (message.amount !== 0) {
-      obj.amount = message.amount;
     }
     if (message.providerId !== "") {
       obj.providerId = message.providerId;
@@ -246,7 +230,6 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
     const message = createBaseCreatePaymentRequest();
     message.items = object.items?.map((e) => CreatePaymentItemRequest.fromPartial(e)) || [];
     message.userId = object.userId ?? "";
-    message.amount = object.amount ?? 0;
     message.providerId = object.providerId ?? "";
     message.shippingProviderId = object.shippingProviderId ?? "";
     return message;

@@ -449,7 +449,11 @@ pub async fn update_shipping(
     }
     let result = state
         .shipping_use_case
-        .update_shipping(get_request_id_from_header(&headers), request)
+        .update_shipping(
+            get_request_id_from_header(&headers),
+            get_request_authorization_token_from_header(&headers),
+            request,
+        )
         .await;
 
     match result {

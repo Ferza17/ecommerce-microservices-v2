@@ -101,24 +101,6 @@ service UserService {
     option (user.acl) = {
       roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
       is_public: false,
-      http: {
-        method: "get",
-        url: "/v1/user/users/{email}/{password}"
-      },
-    };
-    option (google.api.http) = {
-      get: "/v1/user/users/{email}/{password}"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      summary: "find user by provided email and password";
-      description: "its not commonly used for http, its only used for rpc request. this endpoint will blocked by http middleware";
-      tags: ["UserService"];
-      security: {
-        security_requirement: {
-          key: "Bearer";
-          value: {}
-        }
-      };
     };
   };
 }
@@ -204,34 +186,12 @@ service AuthService {
     option (user.acl) = {
       roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
       is_public: false,
-      http: {
-        method: "post",
-        url: "/v1/user/auth/acl/verify"
-      },
-    };
-    option (google.api.http) = {
-      post: "/v1/user/auth/acl/verify"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      summary: "verified access control user by provided request";
-      tags: ["AuthService"];
     };
   };
   rpc AuthServiceVerifyIsExcluded(user.AuthServiceVerifyIsExcludedRequest) returns (user.AuthServiceVerifyIsExcludedResponse){
     option (user.acl) = {
       roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
       is_public: true,
-      http: {
-        method: "post",
-        url: "/v1/user/auth/acl/excluded"
-      },
-    };
-    option (google.api.http) = {
-      post: "/v1/user/auth/acl/excluded"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      summary: "verify RPC FullMethodName or HTTP URL & HTTP Method with provided request";
-      tags: ["AuthService"];
     };
   };
 

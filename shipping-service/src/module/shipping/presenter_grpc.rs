@@ -12,7 +12,6 @@ use crate::package::context::request_id::get_request_id_from_metadata;
 use crate::package::context::url_path::get_url_path_from_metadata;
 use prost_validate::NoopValidator;
 use tonic::{Code, Request, Response, Status};
-use tracing::instrument;
 
 #[derive(Debug)]
 pub struct ShippingGrpcPresenter {
@@ -34,7 +33,7 @@ impl ShippingGrpcPresenter {
 
 #[tonic::async_trait]
 impl ShippingService for ShippingGrpcPresenter {
-    #[instrument]
+    #[tracing::instrument]
     async fn create_shipping(
         &self,
         request: Request<CreateShippingRequest>,
@@ -67,7 +66,7 @@ impl ShippingService for ShippingGrpcPresenter {
             .map_err(|e| Status::new(e.code(), e.message()))
     }
 
-    #[instrument]
+    #[tracing::instrument]
     async fn get_shipping_by_id(
         &self,
         request: Request<GetShippingByIdRequest>,
@@ -100,7 +99,7 @@ impl ShippingService for ShippingGrpcPresenter {
             .map_err(|e| Status::new(e.code(), e.message()))
     }
 
-    #[instrument]
+    #[tracing::instrument]
     async fn list_shipping(
         &self,
         request: Request<ListShippingRequest>,
@@ -129,7 +128,7 @@ impl ShippingService for ShippingGrpcPresenter {
             .map_err(|e| Status::new(e.code(), e.message()))
     }
 
-    #[instrument]
+    #[tracing::instrument]
     async fn update_shipping(
         &self,
         request: Request<UpdateShippingRequest>,
@@ -153,12 +152,16 @@ impl ShippingService for ShippingGrpcPresenter {
             .map_err(|e| Status::from_error(Box::new(e)))?;
 
         self.shipping_use_case
-            .update_shipping(get_request_id_from_metadata(request.metadata()), request)
+            .update_shipping(
+                get_request_id_from_metadata(request.metadata()),
+                get_request_authorization_token_from_metadata(request.metadata()),
+                request,
+            )
             .await
             .map_err(|e| Status::new(e.code(), e.message()))
     }
 
-    #[instrument]
+    #[tracing::instrument]
     async fn delete_shipping(
         &self,
         request: Request<DeleteShippingRequest>,

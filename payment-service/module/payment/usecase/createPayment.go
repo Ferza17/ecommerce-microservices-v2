@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/model/orm"
-	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/notification"
-	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
+	notificationPb "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/notification"
+	paymentPb "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
+	productPb "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/product"
 	shippingRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/shipping"
 	userRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/user"
+
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -20,7 +22,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, request *paymentRpc.CreatePaymentRequest) (*paymentRpc.CreatePaymentResponse, error) {
+func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, request *paymentPb.CreatePaymentRequest) (*paymentPb.CreatePaymentResponse, error) {
 	tx := u.postgres.GormDB.Begin()
 	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "PaymentUseCase.CreatePayment")
 	defer span.End()
@@ -41,12 +43,54 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 		return nil, fmt.Errorf("failed to create payment: %w", err)
 	}
 
+	// VALIDATE PRODUCT AND SET AMOUNT
+	var (
+		productIds    []string
+		mapProductQty = map[string]int32{}              // product_id as a key
+		mapProduct    = map[string]*productPb.Product{} // product_id as a key
+		totalAmount   = float64(0)
+	)
+
+	for _, item := range request.Items {
+		mapProductQty[item.ProductId] = item.Qty
+		productIds = append(productIds, item.ProductId)
+	}
+
+	fetchProducts, err := u.productService.FindProductsWithPagination(ctx, requestId, &productPb.FindProductsWithPaginationRequest{
+		Ids:   productIds,
+		Name:  nil,
+		Page:  1,
+		Limit: int32(len(productIds)),
+	})
+	if err != nil {
+		tx.Rollback()
+		u.logger.Error(fmt.Sprintf("failed to fetch products: %v", err))
+		return nil, fmt.Errorf("failed to fetch products: %w", err)
+	}
+
+	if fetchProducts.Data == nil {
+		tx.Rollback()
+		u.logger.Error(fmt.Sprintf("failed to fetch products: %v", err))
+		return nil, fmt.Errorf("failed to fetch products: %w", err)
+	}
+
+	for _, datum := range fetchProducts.Data {
+		productQty, ok := mapProductQty[datum.Id]
+		if !ok {
+			tx.Rollback()
+			u.logger.Error(fmt.Sprintf("failed to fetch product qty with id : %s : %v", datum.Id, err))
+			return nil, fmt.Errorf("failed to fetch product qty with id %s : %w", datum.Id, err)
+		}
+		mapProduct[datum.Id] = datum
+		totalAmount += float64(productQty) * datum.Price
+	}
+
 	now := time.Now()
 	paymentID, err := u.paymentRepository.CreatePayment(ctx, requestId, &orm.Payment{
 		ID:         uuid.NewString(),
 		Code:       util.GenerateInvoiceCode(),
-		TotalPrice: request.Amount,
-		Status:     paymentRpc.PaymentStatus_PENDING.String(),
+		TotalPrice: totalAmount,
+		Status:     paymentPb.PaymentStatus_PENDING.String(),
 		ProviderID: request.ProviderId,
 		UserID:     request.UserId,
 	}, tx)
@@ -67,11 +111,25 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 
 	// Process PaymentItems
 	for _, item := range request.Items {
+		productQty, ok := mapProductQty[item.ProductId]
+		if !ok {
+			tx.Rollback()
+			u.logger.Error(fmt.Sprintf("failed to fetch product qty with id : %s : %v", item.ProductId, err))
+			return nil, fmt.Errorf("failed to fetch product qty with id %s : %w", item.ProductId, err)
+		}
+
+		product, ok := mapProduct[item.ProductId]
+		if !ok {
+			tx.Rollback()
+			u.logger.Error(fmt.Sprintf("failed to fetch product with id : %s : %v", item.ProductId, err))
+			return nil, fmt.Errorf("failed to fetch product with id %s : %w", item.ProductId, err)
+		}
+
 		// Call a repository to create the PaymentItem
 		if _, err = u.paymentRepository.CreatePaymentItem(ctx, &orm.PaymentItem{
 			ID:          uuid.NewString(),
 			ProductID:   item.ProductId,
-			Amount:      0,
+			Amount:      float64(productQty) * product.Price,
 			Qty:         item.Qty,
 			PaymentID:   paymentID,
 			CreatedAt:   &now,
@@ -102,10 +160,10 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 	}
 
 	// Publish to Notification Payment Order Created
-	if messages, err = proto.Marshal(&notificationRpc.SendEmailPaymentOrderCreateRequest{
+	if messages, err = proto.Marshal(&notificationPb.SendEmailPaymentOrderCreateRequest{
 		Email:            user.Data.User.Email,
 		PaymentId:        paymentID,
-		NotificationType: notificationRpc.NotificationTypeEnum_NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED,
+		NotificationType: notificationPb.NotificationTypeEnum_NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED,
 	}); err != nil {
 		u.logger.Error("NotificationTypeEnum_NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED", zap.String("requestId", requestId), zap.Error(err))
 		return nil, status.Error(codes.Internal, err.Error())
@@ -116,7 +174,7 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 	}
 
 	// Publish to Payment.Order.Delayed.Cancelled
-	if messages, err = proto.Marshal(&paymentRpc.PaymentOrderDelayedCancelledRequest{
+	if messages, err = proto.Marshal(&paymentPb.PaymentOrderDelayedCancelledRequest{
 		Id: paymentID,
 	}); err != nil {
 		tx.Rollback()
@@ -135,12 +193,10 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 		u.logger.Error(fmt.Sprintf("Failed to commit transaction, requestId: %s, error: %v", requestId, err))
 		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
-
-	tx.Commit()
-	return &paymentRpc.CreatePaymentResponse{
+	return &paymentPb.CreatePaymentResponse{
 		Message: "CreatePayment",
 		Status:  "success",
-		Data: &paymentRpc.CreatePaymentResponse_CreatePaymentResponseData{
+		Data: &paymentPb.CreatePaymentResponse_CreatePaymentResponseData{
 			Id: paymentID,
 		},
 	}, nil

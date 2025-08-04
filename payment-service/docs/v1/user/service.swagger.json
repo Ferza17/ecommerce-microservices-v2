@@ -24,9 +24,8 @@
     "application/json"
   ],
   "paths": {
-    "/v1/user/auth/acl/excluded": {
+    "/user.AuthService/AuthServiceVerifyIsExcluded": {
       "post": {
-        "summary": "verify RPC FullMethodName or HTTP URL \u0026 HTTP Method with provided request",
         "operationId": "AuthService_AuthServiceVerifyIsExcluded",
         "responses": {
           "200": {
@@ -44,22 +43,12 @@
         },
         "parameters": [
           {
-            "name": "fullMethodName",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "httpUrl",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "httpMethod",
-            "in": "query",
-            "required": false,
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/userAuthServiceVerifyIsExcludedRequest"
+            }
           }
         ],
         "tags": [
@@ -67,9 +56,8 @@
         ]
       }
     },
-    "/v1/user/auth/acl/verify": {
+    "/user.AuthService/AuthUserVerifyAccessControl": {
       "post": {
-        "summary": "verified access control user by provided request",
         "operationId": "AuthService_AuthUserVerifyAccessControl",
         "responses": {
           "200": {
@@ -87,32 +75,48 @@
         },
         "parameters": [
           {
-            "name": "token",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "fullMethodName",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "httpUrl",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "httpMethod",
-            "in": "query",
-            "required": false,
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/userAuthUserVerifyAccessControlRequest"
+            }
           }
         ],
         "tags": [
           "AuthService"
+        ]
+      }
+    },
+    "/user.UserService/FindUserByEmailAndPassword": {
+      "post": {
+        "operationId": "UserService_FindUserByEmailAndPassword",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userFindUserByEmailAndPasswordResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/userFindUserByEmailAndPasswordRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
         ]
       }
     },
@@ -311,49 +315,6 @@
         ],
         "tags": [
           "AuthService"
-        ]
-      }
-    },
-    "/v1/user/users/{email}/{password}": {
-      "get": {
-        "summary": "find user by provided email and password",
-        "description": "its not commonly used for http, its only used for rpc request. this endpoint will blocked by http middleware",
-        "operationId": "UserService_FindUserByEmailAndPassword",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/userFindUserByEmailAndPasswordResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "email",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "password",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "UserService"
-        ],
-        "security": [
-          {
-            "Bearer": []
-          }
         ]
       }
     },
@@ -586,6 +547,20 @@
         }
       }
     },
+    "userAuthServiceVerifyIsExcludedRequest": {
+      "type": "object",
+      "properties": {
+        "fullMethodName": {
+          "type": "string"
+        },
+        "httpUrl": {
+          "type": "string"
+        },
+        "httpMethod": {
+          "type": "string"
+        }
+      }
+    },
     "userAuthServiceVerifyIsExcludedResponse": {
       "type": "object",
       "properties": {
@@ -648,6 +623,23 @@
         }
       }
     },
+    "userAuthUserVerifyAccessControlRequest": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        },
+        "fullMethodName": {
+          "type": "string"
+        },
+        "httpUrl": {
+          "type": "string"
+        },
+        "httpMethod": {
+          "type": "string"
+        }
+      }
+    },
     "userAuthUserVerifyAccessControlResponse": {
       "type": "object",
       "properties": {
@@ -701,6 +693,17 @@
         "SUPER_ADMIN"
       ],
       "default": "CUSTOMER"
+    },
+    "userFindUserByEmailAndPasswordRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
     },
     "userFindUserByEmailAndPasswordResponse": {
       "type": "object",

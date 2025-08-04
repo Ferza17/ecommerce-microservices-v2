@@ -5,9 +5,9 @@ use crate::model::diesel::shippings::{
 };
 use anyhow::Context;
 use anyhow::{Error, Result};
-use diesel::ExpressionMethods;
 use diesel::QueryDsl;
 use diesel::SelectableHelper;
+use diesel::{ExpressionMethods, QueryResult};
 use diesel_async::RunQueryDsl;
 use std::fmt;
 use tracing::{Level, event, instrument};
@@ -134,12 +134,16 @@ impl ShippingPostgresRepository for ShippingPostgresRepositoryImpl {
             request_id = request_id
         );
 
-        diesel::update(shippingSchema.filter(id.eq(shipping_id)))
+        match diesel::update(shippingSchema.filter(id.eq(shipping_id)))
             .set(shipping)
             .execute(&mut self.pg.get().await?)
             .await
-            .map(|_| ())
-            .map_err(Error::from)
+        {
+            Ok(_) => Ok(()),
+            Err(err) => {
+                return Err(err.into());
+            }
+        }
     }
 
     async fn delete_shipping(&self, request_id: &str, shipping_id: &str) -> Result<(), Error> {
@@ -148,10 +152,14 @@ impl ShippingPostgresRepository for ShippingPostgresRepositoryImpl {
             name = "ShippingPostgresRepository.delete_shipping",
             request_id = request_id
         );
-        diesel::delete(shippingSchema.filter(id.eq(shipping_id)))
+        match diesel::delete(shippingSchema.filter(id.eq(shipping_id)))
             .execute(&mut self.pg.get().await?)
             .await
-            .map(|_| ())
-            .map_err(Error::from)
+        {
+            Ok(_) => Ok(()),
+            Err(_) => {
+                return Err(Error::msg("Failed to delete shipping"));
+            }
+        }
     }
 }

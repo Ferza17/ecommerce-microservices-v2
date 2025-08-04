@@ -1,13 +1,11 @@
 use crate::interceptor;
 use crate::model::rpc::user::AuthServiceVerifyIsExcludedRequest;
-use crate::package::context::auth::AUTHORIZATION_HEADER;
-use crate::package::context::request_id::get_request_id_from_header;
+use crate::package::context::{auth::AUTHORIZATION_HEADER, request_id::get_request_id_from_header};
 use axum::http::{Request, Response};
 use futures::future::{Ready, ready};
 use std::task::{Context, Poll};
 use tokio::runtime::Handle;
-use tonic::Status;
-use tonic::body::BoxBody;
+use tonic::{Status, body::BoxBody};
 
 impl<S> tower::Service<Request<BoxBody>> for interceptor::auth::AuthService<S>
 where

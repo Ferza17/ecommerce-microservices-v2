@@ -2,6 +2,7 @@ use crate::model::rpc::shipping::{CreateShippingRequest, UpdateShippingRequest};
 use crate::module::shipping::usecase::{ShippingUseCase, ShippingUseCaseImpl};
 use crate::package::context::auth::AUTHORIZATION_HEADER;
 use crate::package::context::request_id::X_REQUEST_ID_HEADER;
+use anyhow::{Error, Result};
 use lapin::message::Delivery;
 use lapin::types::AMQPValue;
 use prost::Message;
@@ -17,7 +18,7 @@ impl ShippingRabbitMQConsumer {
         Self { shipping_use_case }
     }
 
-    pub async fn consumer_shipping_created(&self, delivery: Delivery) {
+    pub async fn consumer_shipping_created(&self, delivery: Delivery) -> Result<(), Error> {
         let mut token = String::new();
         let mut request_id = String::new();
         if let Some(headers) = delivery.properties.headers() {
@@ -26,7 +27,12 @@ impl ShippingRabbitMQConsumer {
                     token = match value {
                         AMQPValue::ShortString(str) => str.to_string(),
                         AMQPValue::LongString(str) => str.to_string(),
-                        _ => String::new(),
+                        _ => {
+                            return Err::<(), Error>(Error::msg(format!(
+                                "missing {} header",
+                                AUTHORIZATION_HEADER.to_lowercase()
+                            )));
+                        }
                     }
                 }
 
@@ -34,7 +40,7 @@ impl ShippingRabbitMQConsumer {
                     request_id = match value {
                         AMQPValue::ShortString(str) => str.to_string(),
                         AMQPValue::LongString(str) => str.to_string(),
-                        _ => String::new(),
+                        _ => Uuid::new_v4().to_string(),
                     }
                 }
             }
@@ -46,7 +52,10 @@ impl ShippingRabbitMQConsumer {
             Ok(data) => data,
             Err(err) => {
                 error!("[shipping] consumer_shipping_created : {}", err);
-                return;
+                return Err(Error::msg(format!(
+                    "Failed to decode shipping request: {}",
+                    err
+                )));
             }
         };
 
@@ -55,34 +64,43 @@ impl ShippingRabbitMQConsumer {
             .create_shipping(request_id, token, tonic::Request::new(data))
             .await
         {
-            Ok(res) => {
-                delivery
-                    .acker
-                    .ack(lapin::options::BasicAckOptions::default())
-                    .await
-                    .unwrap();
-                info!("[shipping] consumer_shipping_created : {:?}", res);
-            }
+            Ok(_) => Ok(delivery
+                .acker
+                .ack(lapin::options::BasicAckOptions::default())
+                .await?),
             Err(err) => {
-                error!("[shipping] consumer_shipping_created :{}", err)
+                error!("[shipping] consumer_shipping_created : {}", err);
+                Err(Error::msg(format!(
+                    "[shipping] consumer_shipping_created : {}",
+                    err
+                )))
             }
         }
     }
 
-    pub async fn consumer_shipping_updated(&self, delivery: Delivery) {
+    pub async fn consumer_shipping_updated(&self, delivery: Delivery) -> Result<(), Error> {
         let mut request_id = String::new();
+        let mut token = String::new();
         if let Some(headers) = delivery.properties.headers() {
             for (key, value) in headers {
-                let header_string_val = match value {
-                    AMQPValue::ShortString(str) => str.to_string(),
-                    AMQPValue::LongString(str) => str.to_string(),
-                    _ => String::new(),
-                };
+                if key.to_string().to_lowercase().as_str() == AUTHORIZATION_HEADER {
+                    token = match value {
+                        AMQPValue::ShortString(str) => str.to_string(),
+                        AMQPValue::LongString(str) => str.to_string(),
+                        _ => {
+                            return Err::<(), Error>(Error::msg(format!(
+                                "missing {} header",
+                                AUTHORIZATION_HEADER.to_lowercase()
+                            )));
+                        }
+                    }
+                }
 
-                match key.to_string().to_lowercase().as_str() {
-                    X_REQUEST_ID_HEADER => request_id = header_string_val,
-                    _ => {
-                        Uuid::new_v4().to_string();
+                if key.to_string().to_lowercase().as_str() == X_REQUEST_ID_HEADER {
+                    request_id = match value {
+                        AMQPValue::ShortString(str) => str.to_string(),
+                        AMQPValue::LongString(str) => str.to_string(),
+                        _ => Uuid::new_v4().to_string(),
                     }
                 }
             }
@@ -90,34 +108,32 @@ impl ShippingRabbitMQConsumer {
             error!("No headers found");
         }
 
-        // let data = UpdateShippingRequest::decode(&*delivery.data).unwrap();
-
         let data = match UpdateShippingRequest::decode(&*delivery.data) {
             Ok(data) => data,
             Err(err) => {
                 error!("[shipping] consumer_shipping_updated : {}", err);
-                return;
+                return Err(Error::msg(format!(
+                    "Failed to decode shipping update: {}",
+                    err
+                )));
             }
         };
 
         match self
             .shipping_use_case
-            .update_shipping(request_id, tonic::Request::new(data))
+            .update_shipping(request_id, token,tonic::Request::new(data))
             .await
         {
-            Ok(_) => {
-                delivery
-                    .acker
-                    .ack(lapin::options::BasicAckOptions::default())
-                    .await
-                    .unwrap();
-
-                delivery.properties.headers().iter().for_each(|header| {
-                    eprintln!("[shipping] consumer_shipping_created : {:?}", header);
-                });
-            }
-            Err(_) => {
-                error!("[shipping] consumer_shipping_updated :")
+            Ok(_) => Ok(delivery
+                .acker
+                .ack(lapin::options::BasicAckOptions::default())
+                .await?),
+            Err(err) => {
+                error!("[shipping] consumer_shipping_updated : {}", err);
+                Err(Error::msg(format!(
+                    "[shipping] consumer_shipping_updated : {}",
+                    err
+                )))
             }
         }
     }

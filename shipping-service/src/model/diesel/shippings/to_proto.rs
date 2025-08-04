@@ -1,6 +1,5 @@
 use crate::model::diesel::shippings::Shippings as ShippingsModel;
 use crate::model::rpc::shipping::Shipping as ProtoShipping;
-use prost_wkt_types::Timestamp;
 
 pub fn shipping_to_proto(shipping: ShippingsModel) -> ProtoShipping {
     ProtoShipping {
@@ -8,9 +7,11 @@ pub fn shipping_to_proto(shipping: ShippingsModel) -> ProtoShipping {
         user_id: shipping.user_id,
         payment_id: shipping.payment_id,
         shipping_provider_id: shipping.shipping_provider_id,
-        created_at: Option::from(Timestamp::from(shipping.created_at)),
-        updated_at: Option::from(Timestamp::from(shipping.updated_at)),
-        discarded_at: shipping.discarded_at.map(|dt| Timestamp::from(dt)),
+        created_at: Option::from(prost_wkt_types::Timestamp::from(shipping.created_at)),
+        updated_at: Option::from(prost_wkt_types::Timestamp::from(shipping.updated_at)),
+        discarded_at: shipping
+            .discarded_at
+            .map(|dt| prost_wkt_types::Timestamp::from(dt)),
     }
 }
 

@@ -282,10 +282,6 @@
         "userId": {
           "type": "string"
         },
-        "amount": {
-          "type": "number",
-          "format": "double"
-        },
         "providerId": {
           "type": "string"
         },

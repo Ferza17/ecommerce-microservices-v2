@@ -9,8 +9,6 @@ use crate::module::shipping::usecase::ShippingUseCaseImpl;
 use crate::module::shipping_provider::repository_postgres::ShippingProviderPostgresRepositoryImpl;
 use crate::package::worker_pool::worker_pool::{WorkerPool, WorkerPoolError};
 use futures::StreamExt;
-use lapin::message::Delivery;
-use lapin::options::BasicConsumeOptions;
 use std::sync::Arc;
 use tokio::task::JoinHandle;
 use tracing::{error, info, warn};
@@ -71,7 +69,12 @@ impl RabbitMQTransport {
                         while let Some(delivery) = messages.next().await {
                             match delivery {
                                 Ok(delivery) => {
-                                    consumer_clone.consumer_shipping_created(delivery).await;
+                                    match consumer_clone.consumer_shipping_created(delivery).await {
+                                        Ok(_) => {}
+                                        Err(e) => {
+                                            error!("[RABBITMQ] Error consumer_shipping_created message: {}", e);
+                                        }
+                                    }
                                 }
                                 Err(e) => {
                                     error!("[RABBITMQ] Error receiving message: {}", e);
@@ -100,7 +103,12 @@ impl RabbitMQTransport {
                     while let Some(delivery) = messages.next().await {
                         match delivery {
                             Ok(delivery) => {
-                                consumer_clone.consumer_shipping_updated(delivery).await;
+                                match consumer_clone.consumer_shipping_updated(delivery).await {
+                                    Ok(_) => {}
+                                    Err(e) => {
+                                        error!("[RABBITMQ] Error consumer_shipping_updated message: {}", e);
+                                    }
+                                }
                             }
                             Err(e) => {
                                 error!("[RABBITMQ] Error receiving message: {}", e);

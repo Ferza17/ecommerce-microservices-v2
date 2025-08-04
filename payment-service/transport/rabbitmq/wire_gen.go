@@ -9,6 +9,7 @@ package rabbitmq
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/postgresql"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/product"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/shipping"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/user"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
@@ -31,7 +32,8 @@ func ProvideGrpcServer() IRabbitMQServer {
 	iPaymentProviderRepository := repository2.NewPaymentProviderRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
 	iShippingService := shipping.NewShippingService(iZapLogger)
 	iUserService := user.NewUserService(iZapLogger)
-	iPaymentUseCase := usecase.NewPaymentUseCase(iPaymentRepository, iPaymentProviderRepository, iRabbitMQInfrastructure, iTelemetryInfrastructure, iZapLogger, postgresSQL, iShippingService, iUserService)
+	iProductService := product.NewProductService(iZapLogger)
+	iPaymentUseCase := usecase.NewPaymentUseCase(iPaymentRepository, iPaymentProviderRepository, iRabbitMQInfrastructure, iTelemetryInfrastructure, iZapLogger, postgresSQL, iShippingService, iUserService, iProductService)
 	iPaymentConsumer := consumer.NewPaymentConsumer(iRabbitMQInfrastructure, iTelemetryInfrastructure, iPaymentUseCase, iZapLogger)
 	iRabbitMQServer := NewRabbitMQServer(iRabbitMQInfrastructure, iPaymentConsumer, iTelemetryInfrastructure, iZapLogger)
 	return iRabbitMQServer

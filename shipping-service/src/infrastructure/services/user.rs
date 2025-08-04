@@ -120,7 +120,6 @@ impl UserServiceGrpcClient {
                     error = %err,
                     "Failed to get auth_service_verify_is_excluded"
                 );
-
                 Err(err)
             }
         }
@@ -188,7 +187,8 @@ impl UserServiceGrpcClient {
             format!("Bearer {}", token).parse().unwrap(),
         );
         // REQUEST ID TO HEADER
-        request.metadata_mut()
+        request
+            .metadata_mut()
             .insert(X_REQUEST_ID_HEADER, request_id.parse().unwrap());
         // SEND TRACER PARENT
         global::get_text_map_propagator(|propagator| {
@@ -197,7 +197,12 @@ impl UserServiceGrpcClient {
                 &mut MetadataInjector(request.metadata_mut()),
             )
         });
-        match self.user_service_client.clone().find_user_by_id(request).await {
+        match self
+            .user_service_client
+            .clone()
+            .find_user_by_id(request)
+            .await
+        {
             Ok(response) => {
                 event!(Level::INFO,
                     request_id = request_id,

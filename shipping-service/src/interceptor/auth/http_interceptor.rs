@@ -1,18 +1,20 @@
 use crate::interceptor::auth::AuthService;
-use crate::model::rpc::response::Response as CommonResponse;
-use crate::model::rpc::user::AuthServiceVerifyIsExcludedRequest;
-use crate::package::context::auth::AUTHORIZATION_HEADER;
-use crate::package::context::request_id::get_request_id_from_header;
+use crate::model::rpc::{
+    response::Response as CommonResponse, user::AuthServiceVerifyIsExcludedRequest,
+};
+use crate::package::context::{auth::AUTHORIZATION_HEADER, request_id::get_request_id_from_header};
 use crate::util;
-use axum::body::Body;
-use axum::http::{Request, Response};
-use axum::response::Json;
-use futures::future::ready;
-use futures::future::{Either, Ready};
-use std::convert::Infallible;
-use std::task::{Context, Poll};
+use axum::{
+    body::Body,
+    http::{Request, Response},
+    response::Json,
+};
+use futures::future::{Either, Ready, ready};
+use std::{
+    convert::Infallible,
+    task::{Context, Poll},
+};
 use tokio::runtime::Handle;
-use tonic::Code;
 
 impl<S> tower::Service<Request<Body>> for AuthService<S>
 where
@@ -55,7 +57,7 @@ where
             Ok(res) => {
                 let Some(data) = res.data else {
                     return Either::Right(ready(unauthorize_response(
-                        Code::Unauthenticated,
+                        tonic::Code::Unauthenticated,
                         "no data in response",
                     )));
                 };
@@ -75,7 +77,7 @@ where
                     Ok(s) => s,
                     Err(_) => {
                         return Either::Right(ready(unauthorize_response(
-                            Code::Unauthenticated,
+                            tonic::Code::Unauthenticated,
                             "invalid authorization header",
                         )));
                     }
@@ -85,7 +87,7 @@ where
                     || token_str.trim_start_matches("Bearer ").trim().is_empty()
                 {
                     return Either::Right(ready(unauthorize_response(
-                        Code::Unauthenticated,
+                        tonic::Code::Unauthenticated,
                         "invalid bearer token format",
                     )));
                 }
@@ -94,7 +96,7 @@ where
             }
             None => {
                 return Either::Right(ready(unauthorize_response(
-                    Code::Unauthenticated,
+                    tonic::Code::Unauthenticated,
                     "missing authorization header",
                 )));
             }
@@ -107,7 +109,7 @@ where
     }
 }
 
-fn unauthorize_response(status: Code, message: &str) -> Result<Response<Body>, Infallible> {
+fn unauthorize_response(status: tonic::Code, message: &str) -> Result<Response<Body>, Infallible> {
     let json_response = Json(CommonResponse {
         error: "unauthorized".to_string(),
         message: message.to_string(),

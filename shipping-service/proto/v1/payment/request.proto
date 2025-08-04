@@ -17,7 +17,6 @@ message CreatePaymentItemRequest {
 message CreatePaymentRequest {
   repeated payment.CreatePaymentItemRequest items = 1 [(validate.rules).repeated.ignore_empty = false] ;
   string user_id = 2 [(validate.rules).string.ignore_empty = false];
-  double amount = 3 [(validate.rules).double.gt = 0];
   string provider_id = 4 [(validate.rules).string.ignore_empty = false];
   string shipping_provider_id = 5 [(validate.rules).string.ignore_empty = false];
 }

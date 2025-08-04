@@ -197,10 +197,6 @@ pub struct CreatePaymentRequest {
     #[validate(name = "payment.CreatePaymentRequest.user_id")]
     #[validate(r#type(string(ignore_empty = false)))]
     pub user_id: ::prost::alloc::string::String,
-    #[prost(double, tag = "3")]
-    #[validate(name = "payment.CreatePaymentRequest.amount")]
-    #[validate(r#type(double(gt = 0.0)))]
-    pub amount: f64,
     #[prost(string, tag = "4")]
     #[validate(name = "payment.CreatePaymentRequest.provider_id")]
     #[validate(r#type(string(ignore_empty = false)))]

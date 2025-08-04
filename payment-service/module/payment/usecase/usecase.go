@@ -4,8 +4,10 @@ import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/postgresql"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
+	productService "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/product"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/shipping"
 	userService "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/user"
+
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/repository"
@@ -32,6 +34,7 @@ type (
 		postgres                  *postgresql.PostgresSQL
 		shippingService           shipping.IShippingService
 		userService               userService.IUserService
+		productService            productService.IProductService
 	}
 )
 
@@ -49,6 +52,7 @@ func NewPaymentUseCase(
 	postgres *postgresql.PostgresSQL,
 	shippingService shipping.IShippingService,
 	userService userService.IUserService,
+	productService productService.IProductService,
 ) IPaymentUseCase {
 	return &paymentUseCase{
 		paymentRepository:         paymentRepository,
@@ -59,5 +63,6 @@ func NewPaymentUseCase(
 		postgres:                  postgres,
 		shippingService:           shippingService,
 		userService:               userService,
+		productService:            productService,
 	}
 }
