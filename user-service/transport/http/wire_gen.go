@@ -11,6 +11,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/redis"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/temporal"
 	postgres4 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/postgres"
 	redis3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/redis"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/usecase"
@@ -38,7 +39,8 @@ func ProvideHttpServer() *Server {
 	iAccessControlRedisRepository := redis3.NewAccessControlRedisRepository(iRedisInfrastructure, iTelemetryInfrastructure, iZapLogger)
 	iAccessControlUseCase := usecase.NewAccessControlUseCase(iAccessControlPostgresqlRepository, iAccessControlRedisRepository, iTelemetryInfrastructure, iPostgresSQL, iZapLogger)
 	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iTelemetryInfrastructure, iZapLogger)
-	iAuthUseCase := usecase2.NewAuthUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iAuthRedisRepository, iAccessControlUseCase, iRabbitMQInfrastructure, iTelemetryInfrastructure, iPostgresSQL, iZapLogger)
+	iTemporalInfrastructure := temporal.NewTemporalInfrastructure(iZapLogger)
+	iAuthUseCase := usecase2.NewAuthUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iAuthRedisRepository, iAccessControlUseCase, iRabbitMQInfrastructure, iTelemetryInfrastructure, iPostgresSQL, iTemporalInfrastructure, iZapLogger)
 	authPresenter := presenter.NewAuthPresenter(iAuthUseCase, iTelemetryInfrastructure, iZapLogger)
 	iUserUseCase := usecase3.NewUserUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iRabbitMQInfrastructure, iAuthRedisRepository, iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
 	userPresenter := presenter2.NewUserPresenter(iUserUseCase, iAuthUseCase, iTelemetryInfrastructure, iZapLogger)

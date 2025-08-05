@@ -25,45 +25,5 @@ message EventStore {
 }
 
 
-
-
-// SagaEvent represents events specific to SAGA orchestration
-message SagaEvent {
-  string id = 1;
-  string saga_id = 2;
-  string saga_type = 3;
-  string step_name = 4;
-  event.SagaEventType event_type = 5;
-  google.protobuf.Timestamp timestamp = 6;
-  google.protobuf.Any payload = 7;
-  map<string, string> metadata = 8;
-  string correlation_id = 9;
-  string causation_id = 10;
-}
-
-// Event represents a domain event in the event store
-message Event {
-  string id = 1;
-  string aggregate_id = 2;
-  string aggregate_type = 3;
-  string event_type = 4;
-  int64 version = 5;
-  google.protobuf.Timestamp timestamp = 6;
-  google.protobuf.Any data = 7;
-  map<string, string> metadata = 8;
-}
-
-// CompensationEvent represents a compensation action
-message CompensationEvent {
-  string id = 1;
-  string saga_id = 2;
-  string original_event_id = 3;
-  string service_name = 4;
-  string operation = 5;
-  google.protobuf.Timestamp timestamp = 6;
-  google.protobuf.Any compensation_data = 7;
-  event.CompensationStatus status = 8;
-  string error_message = 9;
-  map<string, string> metadata = 10;
-}
+// NEW
 

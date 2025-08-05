@@ -8,6 +8,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/redis"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/temporal"
 	accessControlPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/postgres"
 	accessControlRedisRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/redis"
 	accessControlUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/usecase"
@@ -18,6 +19,7 @@ import (
 	userPresenter "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/presenter"
 	userPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/postgres"
 	userUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/usecase"
+
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/google/wire"
 )
@@ -31,6 +33,7 @@ func ProvideHttpServer() *Server {
 		postgres.Set,
 		rabbitmq.Set,
 		telemetry.Set,
+		temporal.Set,
 
 		// Repository Layer
 		userPostgresqlRepository.Set,

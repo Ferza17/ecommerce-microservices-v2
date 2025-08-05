@@ -41,6 +41,7 @@ func NewPostgresqlInfrastructure(logger logger.IZapLogger) IPostgresSQL {
 	sqldb, err := sql.Open("pgx", dsn)
 	if err != nil {
 		logger.Error(fmt.Sprintf("failed to connect to postgres: %v", err))
+		panic(err)
 	}
 
 	gormConfig := gorm.Config{}
