@@ -3,8 +3,8 @@ package temporal
 import (
 	"context"
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 	"github.com/google/wire"
 	"github.com/nexus-rpc/sdk-go/nexus"
 	"go.temporal.io/sdk/client"
@@ -20,10 +20,12 @@ type (
 		//Stop()
 
 		// Nexus
-		//RegisterNexusOperation()
+		RegisterNexusOperation(operations ...nexus.RegisterableOperation) error
 
 		RegisterWorkflow(w interface{}) ITemporalInfrastructure
 		RegisterActivity(a interface{}) ITemporalInfrastructure
+
+		// Register Nexus Operation
 	}
 
 	temporalInfrastructure struct {
@@ -48,11 +50,11 @@ func NewTemporalInfrastructure(logger logger.IZapLogger) ITemporalInfrastructure
 	return &temporalInfrastructure{
 		logger: logger,
 		client: c,
-		worker: worker.New(c, config.Get().UserServiceServiceName, worker.Options{
+		worker: worker.New(c, config.Get().NotificationServiceServiceName, worker.Options{
 			EnableLoggingInReplay:       true,
-			Identity:                    config.Get().UserServiceServiceName,
+			Identity:                    config.Get().NotificationServiceServiceName,
 			DisableRegistrationAliasing: true,
 		}),
-		nexusService: nexus.NewService(config.Get().UserServiceServiceName),
+		nexusService: nexus.NewService(config.Get().NotificationServiceServiceName),
 	}
 }

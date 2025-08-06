@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/temporal"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/worker"
 	"github.com/google/wire"
@@ -23,12 +24,15 @@ type (
 		workerPool *pkgWorker.WorkerPool
 		grpcServer *grpc.Server
 		logger     logger.IZapLogger
+		temporal   temporal.ITemporalInfrastructure
 	}
 )
 
 var Set = wire.NewSet(NewGrpcServer)
 
-func NewGrpcServer(logger logger.IZapLogger) *GrpcServer {
+func NewGrpcServer(
+	temporal temporal.ITemporalInfrastructure,
+	logger logger.IZapLogger) *GrpcServer {
 	return &GrpcServer{
 		workerPool: pkgWorker.NewWorkerPool(
 			fmt.Sprintf("GRPC SERVER ON %s:%s", config.Get().NotificationServiceRpcHost, config.Get().NotificationServiceRpcPort),
@@ -37,6 +41,7 @@ func NewGrpcServer(logger logger.IZapLogger) *GrpcServer {
 		address:    config.Get().NotificationServiceRpcHost,
 		port:       config.Get().NotificationServiceRpcPort,
 		grpcServer: grpc.NewServer(),
+		temporal:   temporal,
 		logger:     logger,
 	}
 }
@@ -59,6 +64,14 @@ func (s *GrpcServer) Serve(ctx context.Context) error {
 	if err = s.grpcServer.Serve(listen); err != nil {
 		s.logger.Error(fmt.Sprintf("failed to serve : %s", zap.Error(err).String))
 	}
+
+	// Setup Temporal
+	go func() {
+		if err = s.temporal.Start(); err != nil {
+			s.logger.Error("failed to start temporal server", zap.Error(err))
+			return
+		}
+	}()
 
 	<-ctx.Done()
 	s.grpcServer.GracefulStop()

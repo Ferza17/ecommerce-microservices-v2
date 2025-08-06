@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/temporal"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/google/wire"
 	"github.com/rabbitmq/amqp091-go"
@@ -24,6 +25,7 @@ type (
 		amqpConn                *amqp091.Connection
 		channel                 *amqp091.Channel
 		logger                  logger.IZapLogger
+		temporal                temporal.ITemporalInfrastructure
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 	}
 )
@@ -32,7 +34,9 @@ var Set = wire.NewSet(NewRabbitMQInfrastructure)
 
 func NewRabbitMQInfrastructure(
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
-	logger logger.IZapLogger) IRabbitMQInfrastructure {
+	temporal temporal.ITemporalInfrastructure,
+	logger logger.IZapLogger,
+) IRabbitMQInfrastructure {
 
 	amqpConn, err := amqp091.Dial(
 		fmt.Sprintf("amqp://%s:%s@%s:%s/",
@@ -54,12 +58,15 @@ func NewRabbitMQInfrastructure(
 		log.Fatalf("Failed to set QoS: %s", err)
 	}
 
-	return &RabbitMQInfrastructure{
+	c := &RabbitMQInfrastructure{
 		amqpConn:                amqpConn,
 		channel:                 ch,
 		telemetryInfrastructure: telemetryInfrastructure,
 		logger:                  logger,
+		temporal:                temporal,
 	}
+	c.temporal = c.temporal.RegisterActivity(c.Publish)
+	return c
 }
 
 func (c *RabbitMQInfrastructure) Close() error {

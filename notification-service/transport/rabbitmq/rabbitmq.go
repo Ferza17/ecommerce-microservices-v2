@@ -5,6 +5,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/temporal"
 	notificationEmailConsumer "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/consumer"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
@@ -15,7 +16,6 @@ import (
 	"go.uber.org/zap"
 	"log"
 	"strings"
-	"time"
 )
 
 type (
@@ -25,6 +25,7 @@ type (
 		notificationEmailConsumer notificationEmailConsumer.INotificationEmailConsumer
 		rabbitmq                  rabbitmq.IRabbitMQInfrastructure
 		telemetryInfrastructure   telemetryInfrastructure.ITelemetryInfrastructure
+		temporal                  temporal.ITemporalInfrastructure
 	}
 )
 
@@ -35,6 +36,7 @@ func NewServer(
 	notificationEmailConsumer notificationEmailConsumer.INotificationEmailConsumer,
 	rabbitmq rabbitmq.IRabbitMQInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
+	temporal temporal.ITemporalInfrastructure,
 ) *RabbitMQTransport {
 	return &RabbitMQTransport{
 		workerPool: pkgWorker.NewWorkerPoolTaskQueue(
@@ -43,12 +45,12 @@ func NewServer(
 		notificationEmailConsumer: notificationEmailConsumer,
 		rabbitmq:                  rabbitmq,
 		telemetryInfrastructure:   telemetryInfrastructure,
+		temporal:                  temporal,
 	}
 }
 
 func (srv *RabbitMQTransport) Serve(ctx context.Context) error {
 	srv.workerPool.Start()
-
 	queues := []struct {
 		Queue    string
 		Exchange string
@@ -93,45 +95,43 @@ func (srv *RabbitMQTransport) Serve(ctx context.Context) error {
 
 					var (
 						requestId string
-						newCtx, _ = context.WithTimeout(ctx, 30*time.Second)
 					)
 
 					for key, value := range d.Headers {
 						if strings.ToLower(key) == strings.ToLower(pkgContext.CtxKeyRequestID) {
 							requestId = value.(string)
-							newCtx = pkgContext.SetRequestIDToContext(newCtx, requestId)
+							ctx = pkgContext.SetRequestIDToContext(ctx, requestId)
 						}
 
 						if strings.ToLower(key) == strings.ToLower(pkgContext.CtxKeyAuthorization) {
-							newCtx = pkgContext.SetTokenAuthorizationToContext(newCtx, value.(string))
+							ctx = pkgContext.SetTokenAuthorizationToContext(ctx, value.(string))
 						}
 					}
 
-					newCtx, span := srv.telemetryInfrastructure.StartSpanFromRabbitMQHeader(newCtx, d.Headers, "RabbitMQTransport")
+					ctx, span := srv.telemetryInfrastructure.StartSpanFromRabbitMQHeader(ctx, d.Headers, "RabbitMQTransport")
 					span.SetAttributes(attribute.String("messaging.destination", queue))
 					span.SetAttributes(attribute.String(pkgContext.CtxKeyRequestID, requestId))
 
 					task := pkgWorker.TaskQueue{
 						QueueName: queue,
-						Ctx:       newCtx,
+						Ctx:       context.WithoutCancel(ctx),
 						Delivery:  &d,
 					}
 
 					// REGISTER HANDLER
 					switch queue {
 					case config.Get().QueueNotificationEmailOtpCreated:
-						task.Handler = func(ctx context.Context, d *amqp091.Delivery) error {
-							return srv.notificationEmailConsumer.NotificationEmailOTP(newCtx, d)
+						task.Handler = func(newCtx context.Context, d *amqp091.Delivery) error {
+							return srv.notificationEmailConsumer.NotificationEmailOTP(context.WithoutCancel(ctx), d)
 						}
 					case config.Get().QueueNotificationEmailPaymentOrderCreated:
-						task.Handler = func(ctx context.Context, d *amqp091.Delivery) error {
-							return srv.notificationEmailConsumer.NotificationEmailPaymentOrderCreated(newCtx, d)
+						task.Handler = func(newCtx context.Context, d *amqp091.Delivery) error {
+							return srv.notificationEmailConsumer.NotificationEmailPaymentOrderCreated(context.WithoutCancel(ctx), d)
 						}
 					default:
 						log.Fatalf("invalid queue %s", queue)
 					}
 
-					task.Ctx = newCtx
 					srv.workerPool.AddTaskQueue(task)
 					span.End()
 
@@ -143,6 +143,14 @@ func (srv *RabbitMQTransport) Serve(ctx context.Context) error {
 
 		}(queue.Queue)
 	}
+
+	// Setup Temporal
+	go func() {
+		if err := srv.temporal.Start(); err != nil {
+			srv.logger.Error("failed to start temporal server", zap.Error(err))
+			return
+		}
+	}()
 
 	<-ctx.Done()
 	srv.workerPool.Stop()

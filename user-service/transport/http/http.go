@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/temporal"
 	authInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/auth"
 	loggerInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/logger"
 	metricInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/metric"
@@ -23,6 +24,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	httpSwagger "github.com/swaggo/http-swagger"
+	"go.uber.org/zap"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
 	"net/http"
@@ -36,6 +38,7 @@ type (
 		server                  *http.Server
 		logger                  logger.IZapLogger
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
+		temporal                temporal.ITemporalInfrastructure
 		authPresenter           *authPresenter.AuthPresenter
 		userPresenter           *userPresenter.UserPresenter
 
@@ -50,6 +53,7 @@ var Set = wire.NewSet(NewServer)
 func NewServer(
 	logger logger.IZapLogger,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
+	temporal temporal.ITemporalInfrastructure,
 	authPresenter *authPresenter.AuthPresenter,
 	userPresenter *userPresenter.UserPresenter,
 	accessControlUseCase accessControlUseCase.IAccessControlUseCase,
@@ -65,6 +69,7 @@ func NewServer(
 		),
 		logger:                  logger,
 		telemetryInfrastructure: telemetryInfrastructure,
+		temporal:                temporal,
 		authPresenter:           authPresenter,
 		userPresenter:           userPresenter,
 		accessControlUseCase:    accessControlUseCase,
@@ -151,6 +156,14 @@ func (s *Server) Serve(ctx context.Context) error {
 	router.PathPrefix("/v1/user").Handler(gwMux)
 	router.PathPrefix("/v1/user").
 		Subrouter()
+
+	// Setup Temporal, FAIL FORGET !
+	go func() {
+		if err := s.temporal.Start(); err != nil {
+			s.logger.Error("failed to start temporal server", zap.Error(err))
+			return
+		}
+	}()
 
 	// Create an HTTP server instance
 	s.server = &http.Server{

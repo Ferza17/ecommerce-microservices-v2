@@ -4,6 +4,7 @@
 package grpc
 
 import (
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/temporal"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 	"github.com/google/wire"
 )
@@ -11,6 +12,7 @@ import (
 func ProvideGrpcServer() *GrpcServer {
 	wire.Build(
 		logger.Set,
+		temporal.Set,
 		Set)
 	return nil
 }

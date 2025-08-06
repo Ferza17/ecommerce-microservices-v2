@@ -6,6 +6,7 @@ import (
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/rabbitmq"
 	paymentService "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/services/payment"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/temporal"
 	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification"
 	notificationRepository "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/repository/mongodb"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
@@ -24,6 +25,7 @@ type (
 		mailHogInfrastructure   mailHogInfrastructure.IMailhogInfrastructure
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 		paymentSvc              paymentService.IPaymentService
+		temporal                temporal.ITemporalInfrastructure
 		logger                  logger.IZapLogger
 	}
 )
@@ -36,13 +38,19 @@ func NewNotificationEmailUseCase(
 	mailHogInfrastructure mailHogInfrastructure.IMailhogInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	paymentSvc paymentService.IPaymentService,
+	temporal temporal.ITemporalInfrastructure,
 	logger logger.IZapLogger) INotificationEmailUseCase {
-	return &notificationEmailUseCase{
+	c := &notificationEmailUseCase{
 		notificationRepository:  notificationRepository,
 		rabbitmqInfrastructure:  rabbitmqInfrastructure,
 		mailHogInfrastructure:   mailHogInfrastructure,
 		telemetryInfrastructure: telemetryInfrastructure,
 		paymentSvc:              paymentSvc,
+		temporal:                temporal,
 		logger:                  logger,
 	}
+	c.temporal = c.temporal.
+		RegisterActivity(c.SendNotificationEmailOTP).
+		RegisterActivity(c.SendNotificationEmailPaymentOrderCreated)
+	return c
 }

@@ -1,5 +1,6 @@
 package consumer
 
+import "C"
 import (
 	"context"
 	"encoding/json"
@@ -7,6 +8,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	pkgMetric "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/metric"
 	"github.com/rabbitmq/amqp091-go"
 	"go.uber.org/zap"
@@ -19,7 +21,7 @@ func (c *authConsumer) UserLogin(ctx context.Context, d *amqp091.Delivery) error
 
 	var (
 		request   pb.AuthUserLoginByEmailAndPasswordRequest
-		requestId string
+		requestId = pkgContext.GetRequestIDFromContext(ctx)
 		err       error
 	)
 
@@ -48,10 +50,21 @@ func (c *authConsumer) UserLogin(ctx context.Context, d *amqp091.Delivery) error
 		return err
 	}
 
-	if _, err = c.authUseCase.AuthUserLoginByEmailAndPassword(ctx, requestId, &request); err != nil {
-		c.logger.Error(fmt.Sprintf("failed to request user login : %v", zap.Error(err)))
-		return err
-	}
+	//workflowID := fmt.Sprintf("user-login-%s", requestId)
+	//workflowRun, err := c.temporal.StartWorkflow(ctx, workflowID, c.UserLoginWorkflow, ctx, requestId, &request)
+	//if err != nil {
+	//	c.logger.Error(fmt.Sprintf("failed to start workflow : %v", zap.Error(err)))
+	//}
+
+	//if _, err = c.authUseCase.AuthUserLoginByEmailAndPassword(ctx, requestId, &request); err != nil {
+	//	c.logger.Error(fmt.Sprintf("failed to request user login : %v", zap.Error(err)))
+	//	return err
+	//}
+
+	//c.logger.Info("UserLoginWorkflow started",
+	//	zap.String("requestId", requestId),
+	//	zap.String("workflowId", workflowID),
+	//	zap.String("runId", workflowRun.GetRunID()))
 
 	if err = d.Ack(true); err != nil {
 		c.logger.Error(fmt.Sprintf("failed to ack delivery message : %v", zap.Error(err)))

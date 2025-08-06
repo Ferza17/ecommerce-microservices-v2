@@ -7,6 +7,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/enum"
 	mailHogInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mailhog"
 	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification"
+	"go.uber.org/zap"
 )
 
 func (u *notificationEmailUseCase) SendNotificationEmailOTP(ctx context.Context, requestId string, req *notificationRpc.SendOtpEmailNotificationRequest) error {
@@ -23,7 +24,7 @@ func (u *notificationEmailUseCase) SendNotificationEmailOTP(ctx context.Context,
 		return err
 	}
 
-	fetchTemplate, err := u.notificationRepository.FindNotificationTemplateByNotificationType(ctx, notificationType)
+	fetchTemplate, err := u.notificationRepository.FindNotificationTemplateByNotificationType(ctx, requestId, notificationType)
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("error finding email template by email type: %s", err.Error()))
 		return err
@@ -42,6 +43,13 @@ func (u *notificationEmailUseCase) SendNotificationEmailOTP(ctx context.Context,
 			"otp": req.Otp,
 		},
 	}); err != nil {
+		return err
+	}
+
+	if err = u.temporal.SignalWorkflow(ctx, requestId, "NotificationEmailUseCase.SendNotificationEmailOTP", nil); err != nil {
+		u.logger.Error("NotificationEmailUseCase.SendNotificationEmailOTP - Failed to signal workflow",
+			zap.String("requestId", requestId),
+			zap.Error(err))
 		return err
 	}
 

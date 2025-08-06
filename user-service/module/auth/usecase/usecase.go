@@ -59,7 +59,7 @@ func NewAuthUseCase(
 	temporal temporal.ITemporalInfrastructure,
 	logger logger.IZapLogger,
 ) IAuthUseCase {
-	return &authUseCase{
+	u := &authUseCase{
 		userPostgresqlRepository: userPostgresqlRepository,
 		rolePostgresqlRepository: rolePostgresqlRepository,
 		authRedisRepository:      authRedisRepository,
@@ -70,4 +70,14 @@ func NewAuthUseCase(
 		temporal:                 temporal,
 		logger:                   logger,
 	}
+	u.temporal = temporal.
+		RegisterActivity(u.AuthUserRegister).
+		RegisterActivity(u.AuthUserLoginByEmailAndPassword).
+		RegisterActivity(u.AuthUserVerifyOtp).
+		RegisterActivity(u.AuthUserLogoutByToken).
+		RegisterActivity(u.AuthUserVerifyAccessControl).
+		RegisterActivity(u.AuthServiceVerifyIsExcluded).
+		RegisterActivity(u.AuthUserFindUserByToken).
+		RegisterActivity(u.SentOTP)
+	return u
 }

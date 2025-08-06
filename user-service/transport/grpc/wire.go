@@ -15,6 +15,7 @@ import (
 	authPresenter "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/presenter"
 	userRedisRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
 	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
+	authWorkflow "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/workflow"
 	rolePostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/repository/postgres"
 	userPresenter "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/presenter"
 	userPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/postgres"
@@ -50,6 +51,9 @@ func ProvideGrpcServer() *Server {
 		// Presenter Layer
 		authPresenter.Set,
 		userPresenter.Set,
+
+		// Workflow Layer
+		authWorkflow.Set,
 
 		Set,
 	)

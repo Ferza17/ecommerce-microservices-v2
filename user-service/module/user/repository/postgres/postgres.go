@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/postgres"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/temporal"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/orm"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/google/wire"
@@ -21,6 +22,7 @@ type (
 	userPostgresqlRepository struct {
 		postgresSQLInfrastructure postgres.IPostgresSQL
 		telemetryInfrastructure   telemetryInfrastructure.ITelemetryInfrastructure
+		temporal                  temporal.ITemporalInfrastructure
 		logger                    logger.IZapLogger
 	}
 )
@@ -30,10 +32,18 @@ var Set = wire.NewSet(NewUserPostgresqlRepository)
 func NewUserPostgresqlRepository(
 	postgresSQLInfrastructure postgres.IPostgresSQL,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
+	temporal temporal.ITemporalInfrastructure,
 	logger logger.IZapLogger) IUserPostgresqlRepository {
-	return &userPostgresqlRepository{
+	c := &userPostgresqlRepository{
 		postgresSQLInfrastructure: postgresSQLInfrastructure,
 		telemetryInfrastructure:   telemetryInfrastructure,
+		temporal:                  temporal,
 		logger:                    logger,
 	}
+	c.temporal = c.temporal.
+		RegisterActivity(c.CreateUser).
+		RegisterActivity(c.FindUserById).
+		RegisterActivity(c.FindUserByEmail).
+		RegisterActivity(c.UpdateUserById)
+	return c
 }

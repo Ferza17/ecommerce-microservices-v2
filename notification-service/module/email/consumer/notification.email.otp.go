@@ -7,21 +7,23 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/enum"
 	pb "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/context"
 	pkgMetric "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/metric"
 	"github.com/rabbitmq/amqp091-go"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
+	"time"
 )
 
 func (c *notificationEmailConsumer) NotificationEmailOTP(ctx context.Context, d *amqp091.Delivery) error {
-	ctx, span := c.telemetryInfrastructure.StartSpanFromContext(ctx, "EmailConsumer.NotificationEmailOTP")
 
 	var (
 		request   pb.SendOtpEmailNotificationRequest
-		requestId string
+		requestId = pkgContext.GetRequestIDFromContext(ctx)
 		err       error
 	)
 
+	ctx, span := c.telemetryInfrastructure.StartSpanFromContext(ctx, "EmailConsumer.NotificationEmailOTP")
 	defer func(err error) {
 		if err != nil {
 			span.RecordError(err)
@@ -47,8 +49,10 @@ func (c *notificationEmailConsumer) NotificationEmailOTP(ctx context.Context, d 
 		return err
 	}
 
-	if err = c.notificationUseCase.SendNotificationEmailOTP(ctx, requestId, &request); err != nil {
-		c.logger.Error(fmt.Sprintf("failed to send email otp : %v", zap.Error(err)))
+	time.Sleep(500 * time.Millisecond)
+	if _, err = c.temporal.
+		StartWorkflow(context.WithoutCancel(ctx), requestId, c.emailWorkflow.NotificationEmailOTPWorkflow, requestId, &request); err != nil {
+		c.logger.Error(fmt.Sprintf("failed to start workflow : %v", zap.Error(err)))
 		return err
 	}
 

@@ -5,6 +5,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/temporal"
 	authConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/consumer"
 	userConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/consumer"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
@@ -16,6 +17,7 @@ import (
 	"go.uber.org/zap"
 	"log"
 	"strings"
+	"time"
 )
 
 type (
@@ -23,6 +25,7 @@ type (
 		workerPool              *pkgWorker.WorkerPool
 		amqpInfrastructure      rabbitmq.IRabbitMQInfrastructure
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
+		temporal                temporal.ITemporalInfrastructure
 		logger                  logger.IZapLogger
 		userConsumer            userConsumer.IUserConsumer
 		authConsumer            authConsumer.IAuthConsumer
@@ -34,6 +37,7 @@ var Set = wire.NewSet(NewServer)
 func NewServer(
 	amqpInfrastructure rabbitmq.IRabbitMQInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
+	temporal temporal.ITemporalInfrastructure,
 	logger logger.IZapLogger,
 	userConsumer userConsumer.IUserConsumer,
 	authConsumer authConsumer.IAuthConsumer,
@@ -46,6 +50,7 @@ func NewServer(
 		userConsumer:            userConsumer,
 		authConsumer:            authConsumer,
 		telemetryInfrastructure: telemetryInfrastructure,
+		temporal:                temporal,
 	}
 }
 
@@ -102,18 +107,18 @@ func (srv *Server) Serve(ctx context.Context) error {
 					}
 
 					var (
-						requestId         string
-						newCtx, cancelCtx = context.WithTimeout(ctx, 20)
+						requestId string
+						newCtx, _ = context.WithTimeout(ctx, 20*time.Second)
 					)
 
 					for key, value := range d.Headers {
 						if strings.ToLower(key) == strings.ToLower(pkgContext.CtxKeyRequestID) {
 							requestId = value.(string)
-							newCtx = pkgContext.SetRequestIDToContext(ctx, requestId)
+							newCtx = pkgContext.SetRequestIDToContext(newCtx, requestId)
 						}
 
 						if strings.ToLower(key) == strings.ToLower(pkgContext.CtxKeyAuthorization) {
-							newCtx = pkgContext.SetTokenAuthorizationToContext(ctx, value.(string))
+							newCtx = pkgContext.SetTokenAuthorizationToContext(newCtx, value.(string))
 						}
 
 					}
@@ -132,15 +137,15 @@ func (srv *Server) Serve(ctx context.Context) error {
 					switch queue {
 					case config.Get().QueueUserLogin:
 						task.Handler = func(ctx context.Context, d *amqp091.Delivery) error {
-							return srv.authConsumer.UserLogin(ctx, d)
+							return srv.authConsumer.UserLogin(newCtx, d)
 						}
 					case config.Get().QueueUserCreated:
 						task.Handler = func(ctx context.Context, d *amqp091.Delivery) error {
-							return srv.userConsumer.UserCreated(ctx, d)
+							return srv.userConsumer.UserCreated(newCtx, d)
 						}
 					case config.Get().QueueUserUpdated:
 						task.Handler = func(ctx context.Context, d *amqp091.Delivery) error {
-							return srv.userConsumer.UserCreated(ctx, d)
+							return srv.userConsumer.UserCreated(newCtx, d)
 						}
 					default:
 						log.Fatalf("invalid queue %s", queue)
@@ -149,7 +154,6 @@ func (srv *Server) Serve(ctx context.Context) error {
 					task.Ctx = newCtx
 					srv.workerPool.AddTaskQueue(task)
 
-					cancelCtx()
 					span.End()
 
 				case <-ctx.Done():
@@ -160,6 +164,14 @@ func (srv *Server) Serve(ctx context.Context) error {
 
 		}(queue.Queue)
 	}
+
+	// Setup Temporal
+	go func() {
+		if err := srv.temporal.Start(); err != nil {
+			srv.logger.Error("failed to start temporal server", zap.Error(err))
+			return
+		}
+	}()
 
 	<-ctx.Done()
 	srv.workerPool.Stop()

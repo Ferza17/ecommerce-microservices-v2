@@ -7,6 +7,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	pkgMetric "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/metric"
 	"github.com/rabbitmq/amqp091-go"
 	"go.uber.org/zap"
@@ -19,7 +20,7 @@ func (c *userConsumer) UserCreated(ctx context.Context, d *amqp091.Delivery) err
 
 	var (
 		request   pb.AuthUserRegisterRequest
-		requestId string
+		requestId = pkgContext.GetRequestIDFromContext(ctx)
 	)
 
 	switch d.ContentType {

@@ -7,6 +7,7 @@ import (
 	"github.com/google/wire"
 
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
+	authWorkflow "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/workflow"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 )
 
@@ -14,6 +15,7 @@ type AuthPresenter struct {
 	userRpc.UnimplementedAuthServiceServer
 
 	authUseCase             usecase.IAuthUseCase
+	authWorkflow            authWorkflow.IAuthWorkflow
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 	temporal                temporal.ITemporalInfrastructure
 	logger                  logger.IZapLogger
@@ -25,11 +27,14 @@ func NewAuthPresenter(
 	authUseCase usecase.IAuthUseCase,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	temporal temporal.ITemporalInfrastructure,
+	authWorkflow authWorkflow.IAuthWorkflow,
 	logger logger.IZapLogger) *AuthPresenter {
-	return &AuthPresenter{
+	c := &AuthPresenter{
 		authUseCase:             authUseCase,
 		telemetryInfrastructure: telemetryInfrastructure,
 		temporal:                temporal,
+		authWorkflow:            authWorkflow,
 		logger:                  logger,
 	}
+	return c
 }

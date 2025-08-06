@@ -22,7 +22,7 @@ func LoggerHTTPMiddleware(
 					zap.String("http_url", r.URL.String()),
 					zap.String("requestId", pkgContext.GetRequestIDFromContext(r.Context())),
 					zap.Time("start", start),
-					zap.Any("request", r),
+					//zap.Any("request", r),
 					zap.Duration("duration", time.Since(start)),
 					zap.Time("end", end),
 				)

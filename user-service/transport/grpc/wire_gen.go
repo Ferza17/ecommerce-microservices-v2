@@ -18,6 +18,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/presenter"
 	redis2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
 	usecase2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/workflow"
 	postgres3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/repository/postgres"
 	presenter2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/presenter"
 	postgres2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/postgres"
@@ -30,20 +31,21 @@ import (
 func ProvideGrpcServer() *Server {
 	iZapLogger := logger.NewZapLogger()
 	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
+	iTemporalInfrastructure := temporal.NewTemporalInfrastructure(iZapLogger)
 	iPostgresSQL := postgres.NewPostgresqlInfrastructure(iZapLogger)
-	iUserPostgresqlRepository := postgres2.NewUserPostgresqlRepository(iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
-	iRolePostgresqlRepository := postgres3.NewRolePostgresqlRepository(iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
+	iUserPostgresqlRepository := postgres2.NewUserPostgresqlRepository(iPostgresSQL, iTelemetryInfrastructure, iTemporalInfrastructure, iZapLogger)
+	iRolePostgresqlRepository := postgres3.NewRolePostgresqlRepository(iPostgresSQL, iTelemetryInfrastructure, iTemporalInfrastructure, iZapLogger)
 	iRedisInfrastructure := redis.NewRedisInfrastructure(iZapLogger)
-	iAuthRedisRepository := redis2.NewAuthRedisRepository(iRedisInfrastructure, iTelemetryInfrastructure, iZapLogger)
+	iAuthRedisRepository := redis2.NewAuthRedisRepository(iRedisInfrastructure, iTelemetryInfrastructure, iTemporalInfrastructure, iZapLogger)
 	iAccessControlPostgresqlRepository := postgres4.NewAccessControlPostgresqlRepository(iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
 	iAccessControlRedisRepository := redis3.NewAccessControlRedisRepository(iRedisInfrastructure, iTelemetryInfrastructure, iZapLogger)
 	iAccessControlUseCase := usecase.NewAccessControlUseCase(iAccessControlPostgresqlRepository, iAccessControlRedisRepository, iTelemetryInfrastructure, iPostgresSQL, iZapLogger)
-	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iTelemetryInfrastructure, iZapLogger)
-	iTemporalInfrastructure := temporal.NewTemporalInfrastructure(iZapLogger)
+	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iTelemetryInfrastructure, iTemporalInfrastructure, iZapLogger)
 	iAuthUseCase := usecase2.NewAuthUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iAuthRedisRepository, iAccessControlUseCase, iRabbitMQInfrastructure, iTelemetryInfrastructure, iPostgresSQL, iTemporalInfrastructure, iZapLogger)
-	authPresenter := presenter.NewAuthPresenter(iAuthUseCase, iTelemetryInfrastructure, iZapLogger)
+	iAuthWorkflow := workflow.NewAuthWorkflow(iTemporalInfrastructure, iAuthUseCase)
+	authPresenter := presenter.NewAuthPresenter(iAuthUseCase, iTelemetryInfrastructure, iTemporalInfrastructure, iAuthWorkflow, iZapLogger)
 	iUserUseCase := usecase3.NewUserUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iRabbitMQInfrastructure, iAuthRedisRepository, iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
 	userPresenter := presenter2.NewUserPresenter(iUserUseCase, iAuthUseCase, iTelemetryInfrastructure, iZapLogger)
-	server := NewServer(iZapLogger, iTelemetryInfrastructure, authPresenter, userPresenter, iAccessControlUseCase, iAuthUseCase)
+	server := NewServer(iZapLogger, iTelemetryInfrastructure, iTemporalInfrastructure, authPresenter, userPresenter, iAccessControlUseCase, iAuthUseCase)
 	return server
 }

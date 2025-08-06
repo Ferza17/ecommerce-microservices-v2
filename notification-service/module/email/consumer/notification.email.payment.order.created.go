@@ -48,9 +48,9 @@ func (c *notificationEmailConsumer) NotificationEmailPaymentOrderCreated(ctx con
 		return err
 	}
 
-	if err = c.notificationUseCase.SendNotificationEmailPaymentOrderCreated(ctx, requestId, &request); err != nil {
-		c.logger.Error(fmt.Sprintf("failed to send email otp : %v", zap.Error(err)))
-		return err
+	if _, err = c.temporal.
+		StartWorkflow(ctx, requestId, c.emailWorkflow.SendNotificationEmailPaymentOrderCreatedWorkflow, requestId, &request); err != nil {
+		c.logger.Error(fmt.Sprintf("failed to start workflow : %v", zap.Error(err)))
 	}
 
 	if err = d.Ack(true); err != nil {

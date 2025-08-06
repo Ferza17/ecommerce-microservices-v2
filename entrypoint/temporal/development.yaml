@@ -3,59 +3,6 @@ system.forceSearchAttributesCacheRefreshOnRead:
   - value: true
     constraints: {}
 
-# Workflow execution settings
-limit.maxIDLength:
-  - value: 1000
-    constraints: {}
-
-# History service settings
-history.maxAutoResetPoints:
-  - value: 20
-    constraints: {}
-
-# Matching service settings
-matching.numTaskqueueReadPartitions:
-  - value: 4
-    constraints: {}
-
-matching.numTaskqueueWritePartitions:
-  - value: 4
-    constraints: {}
-
-frontend.keepAliveMaxConnectionAge:
-  - value: "5m"
-    constraints: {}
-
-# Worker service settings
-worker.replicationTaskProcessorMaxPollRPS:
-  - value: 20
-    constraints: {}
-
-# Visibility settings (important for UI visibility)
-system.enableReadFromES:
-  - value: false
-    constraints: {}
-
-# Archival settings
-system.enableArchivalCompression:
-  - value: false
-    constraints: {}
-
-# Namespace settings
-system.enableNamespaceNotActiveAutoForwarding:
-  - value: true
-    constraints: {}
-
-# Metrics and monitoring
-system.enableLogCustomerQueryParameter:
-  - value: true
-    constraints: {}
-
-# Task queue settings
-matching.longPollExpirationInterval:
-  - value: "60s"
-    constraints: {}
-
 # Workflow task settings
 system.defaultWorkflowTaskTimeout:
   - value: "10s"
@@ -78,24 +25,6 @@ system.standardVisibilityPersistenceMaxWriteQPS:
 # Enable advanced visibility features
 system.advancedVisibilityWritingMode:
   - value: "on"
-    constraints: {}
-
-# Workflow execution limits
-limit.blobSize.error:
-  - value: 2097152  # 2MB
-    constraints: {}
-
-limit.blobSize.warn:
-  - value: 262144   # 256KB
-    constraints: {}
-
-# History limits
-limit.historySize.error:
-  - value: 52428800  # 50MB
-    constraints: {}
-
-limit.historySize.warn:
-  - value: 10485760  # 10MB
     constraints: {}
 
 # Task processing
@@ -128,6 +57,95 @@ system.defaultNamespaceRetention:
   - value: "72h"
     constraints: {}
 
+# Visibility settings (important for UI visibility)
+system.enableReadFromES:
+  - value: false
+    constraints: {}
+
+# Archival settings
+system.enableArchivalCompression:
+  - value: false
+    constraints: {}
+
+# Namespace settings
+system.enableNamespaceNotActiveAutoForwarding:
+  - value: true
+    constraints: {}
+
+# Metrics and monitoring
+system.enableLogCustomerQueryParameter:
+  - value: true
+    constraints: {}
+
+# Workflow Configuration
+system.enableActivityLocalDispatchByDomain:
+  - value: true
+    constraints: { }
+
+# Development specific settings
+system.enableLoggerRateLimiting:
+  - value: false
+    constraints: { }
+
+# Workflow execution limits
+limit.blobSize.error:
+  - value: 2097152  # 2MB
+    constraints: {}
+
+limit.blobSize.warn:
+  - value: 262144   # 256KB
+    constraints: {}
+
+# History limits
+limit.historySize.error:
+  - value: 52428800  # 50MB
+    constraints: {}
+
+limit.historySize.warn:
+  - value: 10485760  # 10MB
+    constraints: {}
+
+limit.maxIDLength:
+  - value: 1000
+    constraints: {}
+
+# History service settings
+history.maxAutoResetPoints:
+  - value: 20
+    constraints: {}
+
+# History Configuration
+history.persistenceMaxQPS:
+  - value: 3000
+    constraints: { }
+
+# Matching service settings
+matching.numTaskqueueReadPartitions:
+  - value: 4
+    constraints: {}
+
+matching.numTaskqueueWritePartitions:
+  - value: 4
+    constraints: {}
+
+# Task queue settings
+matching.longPollExpirationInterval:
+  - value: "60s"
+    constraints: {}
+
+# Matching Configuration
+matching.persistenceMaxQPS:
+  - value: 3000
+    constraints: { }
+
+frontend.keepAliveMaxConnectionAge:
+  - value: "5m"
+    constraints: {}
+
+# Worker service settings
+worker.replicationTaskProcessorMaxPollRPS:
+  - value: 20
+    constraints: {}
 
 # Frontend Configuration
 frontend.persistenceMaxQPS:
@@ -147,30 +165,11 @@ frontend.persistenceNamespaceMaxQPS:
       namespace: "user-service"
   - value: 2000
     constraints:
-      namespace: "product-service"
-  - value: 2000
-    constraints:
-      namespace: "shipping-service"
-  - value: 2000
-    constraints:
-      namespace: "payment-service"
-  - value: 2000
-    constraints:
       namespace: "notification-service"
 
 # Worker Configuration
 worker.persistenceMaxQPS:
   - value: 2000
-    constraints: { }
-
-# History Configuration
-history.persistenceMaxQPS:
-  - value: 3000
-    constraints: { }
-
-# Matching Configuration
-matching.persistenceMaxQPS:
-  - value: 3000
     constraints: { }
 
 # Visibility Configuration
@@ -180,16 +179,6 @@ visibility.persistenceMaxReadQPS:
 
 visibility.persistenceMaxWriteQPS:
   - value: 9000
-    constraints: { }
-
-# Workflow Configuration
-system.enableActivityLocalDispatchByDomain:
-  - value: true
-    constraints: { }
-
-# Development specific settings
-system.enableLoggerRateLimiting:
-  - value: false
     constraints: { }
 
 # Archival Configuration
@@ -208,4 +197,3 @@ historyArchival.enableRead:
 visibilityArchival.enableRead:
   - value: true
     constraints: { }
-
