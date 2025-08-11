@@ -11,7 +11,6 @@ import (
 	"github.com/google/wire"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/temporal"
 	authRedisRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
 	userPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/postgres"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
@@ -41,7 +40,6 @@ type (
 		rabbitmqInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 		postgresSQL             postgres.IPostgresSQL
-		temporal                temporal.ITemporalInfrastructure
 		logger                  logger.IZapLogger
 	}
 )
@@ -56,7 +54,6 @@ func NewAuthUseCase(
 	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	postgresSQL postgres.IPostgresSQL,
-	temporal temporal.ITemporalInfrastructure,
 	logger logger.IZapLogger,
 ) IAuthUseCase {
 	u := &authUseCase{
@@ -67,17 +64,7 @@ func NewAuthUseCase(
 		rabbitmqInfrastructure:   rabbitmqInfrastructure,
 		telemetryInfrastructure:  telemetryInfrastructure,
 		postgresSQL:              postgresSQL,
-		temporal:                 temporal,
 		logger:                   logger,
 	}
-	u.temporal = temporal.
-		RegisterActivity(u.AuthUserRegister).
-		RegisterActivity(u.AuthUserLoginByEmailAndPassword).
-		RegisterActivity(u.AuthUserVerifyOtp).
-		RegisterActivity(u.AuthUserLogoutByToken).
-		RegisterActivity(u.AuthUserVerifyAccessControl).
-		RegisterActivity(u.AuthServiceVerifyIsExcluded).
-		RegisterActivity(u.AuthUserFindUserByToken).
-		RegisterActivity(u.SentOTP)
 	return u
 }

@@ -81,14 +81,6 @@ func (u *authUseCase) AuthUserRegister(ctx context.Context, requestId string, re
 		return nil, status.Error(codes.Internal, "internal server error")
 	}
 
-	err = u.temporal.SignalWorkflow(ctx, requestId, "AuthUseCase.AuthUserRegister", &emptypb.Empty{})
-	if err != nil {
-		u.logger.Error("AuthUseCase.AuthUserRegister - Failed to signal workflow",
-			zap.String("requestId", requestId),
-			zap.Error(err))
-		return nil, status.Error(codes.Internal, "internal server error")
-	}
-
 	tx.Commit()
 	return nil, nil
 }

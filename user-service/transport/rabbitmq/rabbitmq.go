@@ -5,7 +5,6 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/temporal"
 	authConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/consumer"
 	userConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/consumer"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
@@ -25,7 +24,6 @@ type (
 		workerPool              *pkgWorker.WorkerPool
 		amqpInfrastructure      rabbitmq.IRabbitMQInfrastructure
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
-		temporal                temporal.ITemporalInfrastructure
 		logger                  logger.IZapLogger
 		userConsumer            userConsumer.IUserConsumer
 		authConsumer            authConsumer.IAuthConsumer
@@ -37,7 +35,6 @@ var Set = wire.NewSet(NewServer)
 func NewServer(
 	amqpInfrastructure rabbitmq.IRabbitMQInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
-	temporal temporal.ITemporalInfrastructure,
 	logger logger.IZapLogger,
 	userConsumer userConsumer.IUserConsumer,
 	authConsumer authConsumer.IAuthConsumer,
@@ -50,7 +47,6 @@ func NewServer(
 		userConsumer:            userConsumer,
 		authConsumer:            authConsumer,
 		telemetryInfrastructure: telemetryInfrastructure,
-		temporal:                temporal,
 	}
 }
 
@@ -164,14 +160,6 @@ func (srv *Server) Serve(ctx context.Context) error {
 
 		}(queue.Queue)
 	}
-
-	// Setup Temporal
-	go func() {
-		if err := srv.temporal.Start(); err != nil {
-			srv.logger.Error("failed to start temporal server", zap.Error(err))
-			return
-		}
-	}()
 
 	<-ctx.Done()
 	srv.workerPool.Stop()

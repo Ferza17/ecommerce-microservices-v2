@@ -50,21 +50,10 @@ func (c *authConsumer) UserLogin(ctx context.Context, d *amqp091.Delivery) error
 		return err
 	}
 
-	//workflowID := fmt.Sprintf("user-login-%s", requestId)
-	//workflowRun, err := c.temporal.StartWorkflow(ctx, workflowID, c.UserLoginWorkflow, ctx, requestId, &request)
-	//if err != nil {
-	//	c.logger.Error(fmt.Sprintf("failed to start workflow : %v", zap.Error(err)))
-	//}
-
-	//if _, err = c.authUseCase.AuthUserLoginByEmailAndPassword(ctx, requestId, &request); err != nil {
-	//	c.logger.Error(fmt.Sprintf("failed to request user login : %v", zap.Error(err)))
-	//	return err
-	//}
-
-	//c.logger.Info("UserLoginWorkflow started",
-	//	zap.String("requestId", requestId),
-	//	zap.String("workflowId", workflowID),
-	//	zap.String("runId", workflowRun.GetRunID()))
+	if _, err = c.authUseCase.AuthUserLoginByEmailAndPassword(ctx, requestId, &request); err != nil {
+		c.logger.Error(fmt.Sprintf("failed to request user login : %v", zap.Error(err)))
+		return err
+	}
 
 	if err = d.Ack(true); err != nil {
 		c.logger.Error(fmt.Sprintf("failed to ack delivery message : %v", zap.Error(err)))

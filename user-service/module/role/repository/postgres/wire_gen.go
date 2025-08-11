@@ -9,7 +9,6 @@ package postgres
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/postgres"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/temporal"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 )
 
@@ -19,7 +18,6 @@ func ProvideRoleRepository() IRolePostgresqlRepository {
 	iZapLogger := logger.NewZapLogger()
 	iPostgresSQL := postgres.NewPostgresqlInfrastructure(iZapLogger)
 	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
-	iTemporalInfrastructure := temporal.NewTemporalInfrastructure(iZapLogger)
-	iRolePostgresqlRepository := NewRolePostgresqlRepository(iPostgresSQL, iTelemetryInfrastructure, iTemporalInfrastructure, iZapLogger)
+	iRolePostgresqlRepository := NewRolePostgresqlRepository(iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
 	return iRolePostgresqlRepository
 }

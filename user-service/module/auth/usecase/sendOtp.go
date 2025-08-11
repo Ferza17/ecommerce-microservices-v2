@@ -10,7 +10,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func (u *authUseCase) SentOTP(ctx context.Context, requestId string, user *pb.User) error {
@@ -38,14 +37,6 @@ func (u *authUseCase) SentOTP(ctx context.Context, requestId string, user *pb.Us
 	if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, config.Get().ExchangeNotification, config.Get().QueueNotificationEmailOtpCreated, message); err != nil {
 		u.logger.Error("AuthUseCase.SentOTP", zap.String("requestId", requestId), zap.Error(err))
 		return status.Error(codes.Internal, err.Error())
-	}
-
-	err = u.temporal.SignalWorkflow(ctx, requestId, "AuthUseCase.SentOTP", &emptypb.Empty{})
-	if err != nil {
-		u.logger.Error("AuthUseCase.SentOTP - Failed to signal workflow",
-			zap.String("requestId", requestId),
-			zap.Error(err))
-		return status.Error(codes.Internal, "internal server error")
 	}
 
 	return nil

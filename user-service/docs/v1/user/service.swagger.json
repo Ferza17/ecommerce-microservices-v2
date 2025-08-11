@@ -56,6 +56,39 @@
         ]
       }
     },
+    "/user.AuthService/AuthUserFindUserByToken": {
+      "post": {
+        "summary": "QUERY",
+        "operationId": "AuthService_AuthUserFindUserByToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userAuthUserFindUserByTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/userAuthUserFindUserByTokenRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
     "/user.AuthService/AuthUserVerifyAccessControl": {
       "post": {
         "operationId": "AuthService_AuthUserVerifyAccessControl",
@@ -280,37 +313,6 @@
               "SUPER_ADMIN"
             ],
             "default": "CUSTOMER"
-          }
-        ],
-        "tags": [
-          "AuthService"
-        ]
-      }
-    },
-    "/v1/user/auth/{token}": {
-      "get": {
-        "summary": "get user otp with provided token",
-        "operationId": "AuthService_AuthUserFindUserByToken",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/userAuthUserFindUserByTokenResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "token",
-            "in": "path",
-            "required": true,
-            "type": "string"
           }
         ],
         "tags": [
@@ -576,6 +578,14 @@
         },
         "data": {
           "$ref": "#/definitions/AuthServiceVerifyIsExcludedResponseAuthServiceVerifyIsExcludedResponseData"
+        }
+      }
+    },
+    "userAuthUserFindUserByTokenRequest": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
         }
       }
     },

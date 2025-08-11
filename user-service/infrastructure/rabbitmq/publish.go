@@ -7,8 +7,6 @@ import (
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/rabbitmq/amqp091-go"
 	"go.uber.org/zap"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"time"
 )
 
@@ -66,13 +64,6 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 	); err != nil {
 		c.logger.Error(fmt.Sprintf("Failed to publish a message: %v", err))
 		return err
-	}
-
-	if err := c.temporal.SignalWorkflow(ctx, requestId, "RabbitMQInfrastructure.Publish", nil); err != nil {
-		c.logger.Error("RabbitMQInfrastructure.Publish - Failed to signal workflow",
-			zap.String("requestId", requestId),
-			zap.Error(err))
-		return status.Error(codes.Internal, "internal server error")
 	}
 
 	return nil

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/temporal"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/google/wire"
 	"github.com/rabbitmq/amqp091-go"
@@ -25,7 +24,6 @@ type (
 		amqpConn                *amqp091.Connection
 		channel                 *amqp091.Channel
 		logger                  logger.IZapLogger
-		temporal                temporal.ITemporalInfrastructure
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 	}
 )
@@ -34,7 +32,6 @@ var Set = wire.NewSet(NewRabbitMQInfrastructure)
 
 func NewRabbitMQInfrastructure(
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
-	temporal temporal.ITemporalInfrastructure,
 	logger logger.IZapLogger,
 ) IRabbitMQInfrastructure {
 
@@ -63,9 +60,7 @@ func NewRabbitMQInfrastructure(
 		channel:                 ch,
 		telemetryInfrastructure: telemetryInfrastructure,
 		logger:                  logger,
-		temporal:                temporal,
 	}
-	c.temporal = c.temporal.RegisterActivity(c.Publish)
 	return c
 }
 
