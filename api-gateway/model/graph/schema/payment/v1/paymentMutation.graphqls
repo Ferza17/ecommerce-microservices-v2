@@ -1,3 +1,0 @@
-extend type Mutation {
-    createPayment(input: CreatePaymentRequest!): CreatePaymentResponse
-}

@@ -1,4 +1,0 @@
-extend type Query {
-    findProductsWithPagination(filter: FindProductsWithPaginationRequest!): FindProductsWithPaginationResponse!
-    findProductById(id: String!): Product!
-}

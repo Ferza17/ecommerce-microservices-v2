@@ -1,0 +1,12 @@
+/Users/ferza/Documents/project/ecommerce-microservices-v2/api-gateway/target/debug/deps/typetag-6c5dd3fc632f3bde.d: /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/lib.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/adjacently.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/content.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/de.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/externally.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/internally.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/is_serialize_str.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/ser.rs
+
+/Users/ferza/Documents/project/ecommerce-microservices-v2/api-gateway/target/debug/deps/libtypetag-6c5dd3fc632f3bde.rmeta: /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/lib.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/adjacently.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/content.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/de.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/externally.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/internally.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/is_serialize_str.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/ser.rs
+
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/lib.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/adjacently.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/content.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/de.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/externally.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/internally.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/is_serialize_str.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typetag-0.2.20/src/ser.rs:

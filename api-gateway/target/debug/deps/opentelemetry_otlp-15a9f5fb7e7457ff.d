@@ -1,0 +1,14 @@
+/Users/ferza/Documents/project/ecommerce-microservices-v2/api-gateway/target/debug/deps/opentelemetry_otlp-15a9f5fb7e7457ff.d: /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/lib.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/exporter/mod.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/exporter/tonic.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/metric.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/span.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/transform/mod.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/transform/metrics.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/transform/resource.rs
+
+/Users/ferza/Documents/project/ecommerce-microservices-v2/api-gateway/target/debug/deps/libopentelemetry_otlp-15a9f5fb7e7457ff.rmeta: /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/lib.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/exporter/mod.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/exporter/tonic.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/metric.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/span.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/transform/mod.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/transform/metrics.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/transform/resource.rs
+
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/lib.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/exporter/mod.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/exporter/tonic.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/metric.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/span.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/transform/mod.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/transform/metrics.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opentelemetry-otlp-0.12.0/src/transform/resource.rs:
+
+# env-dep:CARGO_PKG_VERSION=0.12.0

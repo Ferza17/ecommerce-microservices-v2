@@ -7,10 +7,9 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func (p *AuthPresenter) AuthUserRegister(ctx context.Context, req *pb.AuthUserRegisterRequest) (*emptypb.Empty, error) {
+func (p *AuthPresenter) AuthUserRegister(ctx context.Context, req *pb.AuthUserRegisterRequest) (*pb.AuthUserRegisterResponse, error) {
 	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthPresenter.AuthUserRegister")
 	defer span.End()
 	requestID := pkgContext.GetRequestIDFromContext(ctx)

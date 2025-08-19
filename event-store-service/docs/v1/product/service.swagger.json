@@ -51,7 +51,7 @@
             "collectionFormat": "multi"
           },
           {
-            "name": "name",
+            "name": "names",
             "in": "query",
             "required": false,
             "type": "array",
@@ -238,6 +238,30 @@
     }
   },
   "definitions": {
+    "FindProductsWithPaginationResponseFindProductsWithPaginationResponseData": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/productProduct"
+          }
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "page": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "ProductServiceUpdateProductByIdBody": {
       "type": "object",
       "properties": {
@@ -291,24 +315,14 @@
     "productFindProductsWithPaginationResponse": {
       "type": "object",
       "properties": {
+        "status": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
         "data": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/productProduct"
-          }
-        },
-        "limit": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "page": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "total": {
-          "type": "integer",
-          "format": "int32"
+          "$ref": "#/definitions/FindProductsWithPaginationResponseFindProductsWithPaginationResponseData"
         }
       }
     },

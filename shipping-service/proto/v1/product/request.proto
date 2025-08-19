@@ -5,8 +5,8 @@ import "external/validate/validate.proto";
 // PRODUCT REQUEST DEFINITION
 
 message FindProductsWithPaginationRequest {
-  repeated string ids = 1 [(validate.rules).repeated.min_items = 0];
-  repeated string name = 2 [(validate.rules).repeated.min_items = 0];
+  repeated string ids = 1;
+  repeated string names = 2;
   int32 page = 3 [(validate.rules).int32.gt = 0];
   int32 limit = 4 [(validate.rules).int32.gt = 0];
 }

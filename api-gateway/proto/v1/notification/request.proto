@@ -1,0 +1,19 @@
+syntax = "proto3";
+package notification;
+
+// LOCAL IMPORT
+import "v1/notification/model.proto";
+import "external/validate/validate.proto";
+
+
+message SendOtpEmailNotificationRequest {
+  string otp = 1 [(validate.rules).string.min_len = 1];
+  string email = 2 [(validate.rules).string.email = true];
+  notification.NotificationTypeEnum notificationType = 3;
+}
+
+message SendEmailPaymentOrderCreateRequest {
+  string email = 1 [(validate.rules).string.email = true];
+  string payment_id = 2 [(validate.rules).string.ignore_empty = false];
+  NotificationTypeEnum notificationType = 3 [(validate.rules).enum.defined_only = true];
+}

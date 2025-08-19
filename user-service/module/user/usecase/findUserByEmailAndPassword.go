@@ -50,9 +50,8 @@ func (u *userUseCase) FindUserByEmailAndPassword(ctx context.Context, requestId 
 
 	tx.Commit()
 	return &userRpc.FindUserByEmailAndPasswordResponse{
-		Error:   "",
+		Status:  "success",
 		Message: codes.OK.String(),
-		Code:    uint32(codes.OK),
 		Data: &userRpc.FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData{
 			User: user.ToProto(),
 		},

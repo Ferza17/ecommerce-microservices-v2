@@ -34,6 +34,7 @@ import {
   AuthServiceVerifyIsExcludedResponse,
   AuthUserFindUserByTokenResponse,
   AuthUserLogoutByTokenResponse,
+  AuthUserRegisterResponse,
   AuthUserVerifyAccessControlResponse,
   AuthUserVerifyOtpResponse,
   FindUserByEmailAndPasswordResponse,
@@ -150,8 +151,9 @@ export const AuthServiceService = {
     responseStream: false,
     requestSerialize: (value: AuthUserRegisterRequest) => Buffer.from(AuthUserRegisterRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer) => AuthUserRegisterRequest.decode(value),
-    responseSerialize: (value: Empty) => Buffer.from(Empty.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => Empty.decode(value),
+    responseSerialize: (value: AuthUserRegisterResponse) =>
+      Buffer.from(AuthUserRegisterResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => AuthUserRegisterResponse.decode(value),
   },
   authUserLoginByEmailAndPassword: {
     path: "/user.AuthService/AuthUserLoginByEmailAndPassword",
@@ -222,7 +224,7 @@ export const AuthServiceService = {
 
 export interface AuthServiceServer extends UntypedServiceImplementation {
   /** COMMAND */
-  authUserRegister: handleUnaryCall<AuthUserRegisterRequest, Empty>;
+  authUserRegister: handleUnaryCall<AuthUserRegisterRequest, AuthUserRegisterResponse>;
   authUserLoginByEmailAndPassword: handleUnaryCall<AuthUserLoginByEmailAndPasswordRequest, Empty>;
   authUserVerifyOtp: handleUnaryCall<AuthUserVerifyOtpRequest, AuthUserVerifyOtpResponse>;
   authUserLogoutByToken: handleUnaryCall<AuthUserLogoutByTokenRequest, AuthUserLogoutByTokenResponse>;
@@ -236,18 +238,18 @@ export interface AuthServiceClient extends Client {
   /** COMMAND */
   authUserRegister(
     request: AuthUserRegisterRequest,
-    callback: (error: ServiceError | null, response: Empty) => void,
+    callback: (error: ServiceError | null, response: AuthUserRegisterResponse) => void,
   ): ClientUnaryCall;
   authUserRegister(
     request: AuthUserRegisterRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: Empty) => void,
+    callback: (error: ServiceError | null, response: AuthUserRegisterResponse) => void,
   ): ClientUnaryCall;
   authUserRegister(
     request: AuthUserRegisterRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: Empty) => void,
+    callback: (error: ServiceError | null, response: AuthUserRegisterResponse) => void,
   ): ClientUnaryCall;
   authUserLoginByEmailAndPassword(
     request: AuthUserLoginByEmailAndPasswordRequest,

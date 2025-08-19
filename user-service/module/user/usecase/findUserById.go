@@ -26,9 +26,8 @@ func (u *userUseCase) FindUserById(ctx context.Context, requestId string, req *u
 	tx.Commit()
 	fetchedUser.Password = ""
 	return &userRpc.FindUserByIdResponse{
-		Error:   "",
-		Message: codes.OK.String(),
-		Code:    uint32(codes.OK),
+		Status:  "success",
+		Message: "FindUserById",
 		Data: &userRpc.FindUserByIdResponse_FindUserByIdResponseData{
 			User: fetchedUser.ToProto(),
 		},

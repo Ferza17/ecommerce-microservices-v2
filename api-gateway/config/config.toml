@@ -1,0 +1,14 @@
+[default]
+env = "local"
+consul_host = "localhost"
+consul_port = "8500"
+
+[local]
+env = "local"
+consul_host = "localhost"
+consul_port = "8500"
+
+[production]
+env = "production"
+consul_host = "consul-local"
+consul_port = "8500"

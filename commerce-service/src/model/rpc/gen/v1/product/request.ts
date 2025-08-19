@@ -11,7 +11,7 @@ export const protobufPackage = "product";
 
 export interface FindProductsWithPaginationRequest {
   ids: string[];
-  name: string[];
+  names: string[];
   page: number;
   limit: number;
 }
@@ -44,7 +44,7 @@ export interface DeleteProductByIdRequest {
 }
 
 function createBaseFindProductsWithPaginationRequest(): FindProductsWithPaginationRequest {
-  return { ids: [], name: [], page: 0, limit: 0 };
+  return { ids: [], names: [], page: 0, limit: 0 };
 }
 
 export const FindProductsWithPaginationRequest: MessageFns<FindProductsWithPaginationRequest> = {
@@ -52,7 +52,7 @@ export const FindProductsWithPaginationRequest: MessageFns<FindProductsWithPagin
     for (const v of message.ids) {
       writer.uint32(10).string(v!);
     }
-    for (const v of message.name) {
+    for (const v of message.names) {
       writer.uint32(18).string(v!);
     }
     if (message.page !== 0) {
@@ -84,7 +84,7 @@ export const FindProductsWithPaginationRequest: MessageFns<FindProductsWithPagin
             break;
           }
 
-          message.name.push(reader.string());
+          message.names.push(reader.string());
           continue;
         }
         case 3: {
@@ -115,7 +115,7 @@ export const FindProductsWithPaginationRequest: MessageFns<FindProductsWithPagin
   fromJSON(object: any): FindProductsWithPaginationRequest {
     return {
       ids: globalThis.Array.isArray(object?.ids) ? object.ids.map((e: any) => globalThis.String(e)) : [],
-      name: globalThis.Array.isArray(object?.name) ? object.name.map((e: any) => globalThis.String(e)) : [],
+      names: globalThis.Array.isArray(object?.names) ? object.names.map((e: any) => globalThis.String(e)) : [],
       page: isSet(object.page) ? globalThis.Number(object.page) : 0,
       limit: isSet(object.limit) ? globalThis.Number(object.limit) : 0,
     };
@@ -126,8 +126,8 @@ export const FindProductsWithPaginationRequest: MessageFns<FindProductsWithPagin
     if (message.ids?.length) {
       obj.ids = message.ids;
     }
-    if (message.name?.length) {
-      obj.name = message.name;
+    if (message.names?.length) {
+      obj.names = message.names;
     }
     if (message.page !== 0) {
       obj.page = Math.round(message.page);
@@ -144,7 +144,7 @@ export const FindProductsWithPaginationRequest: MessageFns<FindProductsWithPagin
   fromPartial(object: DeepPartial<FindProductsWithPaginationRequest>): FindProductsWithPaginationRequest {
     const message = createBaseFindProductsWithPaginationRequest();
     message.ids = object.ids?.map((e) => e) || [];
-    message.name = object.name?.map((e) => e) || [];
+    message.names = object.names?.map((e) => e) || [];
     message.page = object.page ?? 0;
     message.limit = object.limit ?? 0;
     return message;

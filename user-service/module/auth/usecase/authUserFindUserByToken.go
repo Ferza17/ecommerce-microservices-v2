@@ -39,9 +39,8 @@ func (u *authUseCase) AuthUserFindUserByToken(ctx context.Context, requestId str
 	// Build Response
 	tx.Commit()
 	return &pb.AuthUserFindUserByTokenResponse{
-		Error:   "",
-		Message: codes.OK.String(),
-		Code:    uint32(codes.OK),
+		Status:  "success",
+		Message: "FindUserByToken",
 		Data: &pb.AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData{
 			User: user.ToProto(),
 		},

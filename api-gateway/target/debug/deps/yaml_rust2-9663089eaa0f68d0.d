@@ -1,0 +1,11 @@
+/Users/ferza/Documents/project/ecommerce-microservices-v2/api-gateway/target/debug/deps/yaml_rust2-9663089eaa0f68d0.d: /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/lib.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/char_traits.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/debug.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/emitter.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/parser.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/scanner.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/yaml.rs
+
+/Users/ferza/Documents/project/ecommerce-microservices-v2/api-gateway/target/debug/deps/libyaml_rust2-9663089eaa0f68d0.rmeta: /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/lib.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/char_traits.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/debug.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/emitter.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/parser.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/scanner.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/yaml.rs
+
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/lib.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/char_traits.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/debug.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/emitter.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/parser.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/scanner.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/yaml-rust2-0.10.3/src/yaml.rs:

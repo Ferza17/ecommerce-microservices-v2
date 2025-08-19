@@ -5,7 +5,6 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/temporal"
 	notificationEmailConsumer "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/consumer"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
@@ -25,7 +24,6 @@ type (
 		notificationEmailConsumer notificationEmailConsumer.INotificationEmailConsumer
 		rabbitmq                  rabbitmq.IRabbitMQInfrastructure
 		telemetryInfrastructure   telemetryInfrastructure.ITelemetryInfrastructure
-		temporal                  temporal.ITemporalInfrastructure
 	}
 )
 
@@ -36,7 +34,6 @@ func NewServer(
 	notificationEmailConsumer notificationEmailConsumer.INotificationEmailConsumer,
 	rabbitmq rabbitmq.IRabbitMQInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
-	temporal temporal.ITemporalInfrastructure,
 ) *RabbitMQTransport {
 	return &RabbitMQTransport{
 		workerPool: pkgWorker.NewWorkerPoolTaskQueue(
@@ -45,7 +42,6 @@ func NewServer(
 		notificationEmailConsumer: notificationEmailConsumer,
 		rabbitmq:                  rabbitmq,
 		telemetryInfrastructure:   telemetryInfrastructure,
-		temporal:                  temporal,
 	}
 }
 
@@ -143,14 +139,6 @@ func (srv *RabbitMQTransport) Serve(ctx context.Context) error {
 
 		}(queue.Queue)
 	}
-
-	// Setup Temporal
-	go func() {
-		if err := srv.temporal.Start(); err != nil {
-			srv.logger.Error("failed to start temporal server", zap.Error(err))
-			return
-		}
-	}()
 
 	<-ctx.Done()
 	srv.workerPool.Stop()

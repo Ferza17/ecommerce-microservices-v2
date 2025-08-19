@@ -6,7 +6,7 @@ use anyhow::{Error, Result};
 use lapin::message::Delivery;
 use lapin::types::AMQPValue;
 use prost::Message;
-use tracing::{error, info};
+use tracing::{error};
 use uuid::Uuid;
 
 pub struct ShippingRabbitMQConsumer {

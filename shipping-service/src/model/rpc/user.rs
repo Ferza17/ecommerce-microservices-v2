@@ -347,14 +347,11 @@ pub struct FindUserByEmailAndPasswordRequest {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthUserRegisterResponse {
     #[prost(string, tag = "1")]
-    #[validate(name = "user.AuthUserRegisterResponse.error")]
-    pub error: ::prost::alloc::string::String,
+    #[validate(name = "user.AuthUserRegisterResponse.status")]
+    pub status: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     #[validate(name = "user.AuthUserRegisterResponse.message")]
     pub message: ::prost::alloc::string::String,
-    #[prost(uint32, tag = "3")]
-    #[validate(name = "user.AuthUserRegisterResponse.code")]
-    pub code: u32,
     #[prost(message, optional, tag = "4")]
     #[validate(name = "user.AuthUserRegisterResponse.data")]
     pub data: ::core::option::Option<
@@ -391,14 +388,11 @@ pub mod auth_user_register_response {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthUserVerifyOtpResponse {
     #[prost(string, tag = "1")]
-    #[validate(name = "user.AuthUserVerifyOtpResponse.error")]
-    pub error: ::prost::alloc::string::String,
+    #[validate(name = "user.AuthUserVerifyOtpResponse.status")]
+    pub status: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     #[validate(name = "user.AuthUserVerifyOtpResponse.message")]
     pub message: ::prost::alloc::string::String,
-    #[prost(uint32, tag = "3")]
-    #[validate(name = "user.AuthUserVerifyOtpResponse.code")]
-    pub code: u32,
     #[prost(message, optional, tag = "4")]
     #[validate(name = "user.AuthUserVerifyOtpResponse.data")]
     pub data: ::core::option::Option<
@@ -430,14 +424,11 @@ pub mod auth_user_verify_otp_response {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthUserLogoutByTokenResponse {
     #[prost(string, tag = "1")]
-    #[validate(name = "user.AuthUserLogoutByTokenResponse.error")]
-    pub error: ::prost::alloc::string::String,
+    #[validate(name = "user.AuthUserLogoutByTokenResponse.status")]
+    pub status: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     #[validate(name = "user.AuthUserLogoutByTokenResponse.message")]
     pub message: ::prost::alloc::string::String,
-    #[prost(uint32, tag = "3")]
-    #[validate(name = "user.AuthUserLogoutByTokenResponse.code")]
-    pub code: u32,
     #[prost(message, optional, tag = "5")]
     #[validate(name = "user.AuthUserLogoutByTokenResponse.data")]
     pub data: ::core::option::Option<
@@ -464,14 +455,11 @@ pub mod auth_user_logout_by_token_response {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthUserVerifyAccessControlResponse {
     #[prost(string, tag = "1")]
-    #[validate(name = "user.AuthUserVerifyAccessControlResponse.error")]
-    pub error: ::prost::alloc::string::String,
+    #[validate(name = "user.AuthUserVerifyAccessControlResponse.status")]
+    pub status: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     #[validate(name = "user.AuthUserVerifyAccessControlResponse.message")]
     pub message: ::prost::alloc::string::String,
-    #[prost(uint32, tag = "3")]
-    #[validate(name = "user.AuthUserVerifyAccessControlResponse.code")]
-    pub code: u32,
     #[prost(message, optional, tag = "4")]
     #[validate(name = "user.AuthUserVerifyAccessControlResponse.data")]
     pub data: ::core::option::Option<
@@ -513,14 +501,11 @@ pub mod auth_user_verify_access_control_response {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthUserFindUserByTokenResponse {
     #[prost(string, tag = "1")]
-    #[validate(name = "user.AuthUserFindUserByTokenResponse.error")]
-    pub error: ::prost::alloc::string::String,
+    #[validate(name = "user.AuthUserFindUserByTokenResponse.status")]
+    pub status: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     #[validate(name = "user.AuthUserFindUserByTokenResponse.message")]
     pub message: ::prost::alloc::string::String,
-    #[prost(uint32, tag = "3")]
-    #[validate(name = "user.AuthUserFindUserByTokenResponse.code")]
-    pub code: u32,
     #[prost(message, optional, tag = "4")]
     #[validate(name = "user.AuthUserFindUserByTokenResponse.data")]
     pub data: ::core::option::Option<
@@ -547,14 +532,11 @@ pub mod auth_user_find_user_by_token_response {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthServiceVerifyIsExcludedResponse {
     #[prost(string, tag = "1")]
-    #[validate(name = "user.AuthServiceVerifyIsExcludedResponse.error")]
-    pub error: ::prost::alloc::string::String,
+    #[validate(name = "user.AuthServiceVerifyIsExcludedResponse.status")]
+    pub status: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     #[validate(name = "user.AuthServiceVerifyIsExcludedResponse.message")]
     pub message: ::prost::alloc::string::String,
-    #[prost(uint32, tag = "3")]
-    #[validate(name = "user.AuthServiceVerifyIsExcludedResponse.code")]
-    pub code: u32,
     #[prost(message, optional, tag = "4")]
     #[validate(name = "user.AuthServiceVerifyIsExcludedResponse.data")]
     pub data: ::core::option::Option<
@@ -582,14 +564,11 @@ pub mod auth_service_verify_is_excluded_response {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdateUserByIdResponse {
     #[prost(string, tag = "1")]
-    #[validate(name = "user.UpdateUserByIdResponse.error")]
-    pub error: ::prost::alloc::string::String,
+    #[validate(name = "user.UpdateUserByIdResponse.status")]
+    pub status: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     #[validate(name = "user.UpdateUserByIdResponse.message")]
     pub message: ::prost::alloc::string::String,
-    #[prost(uint32, tag = "3")]
-    #[validate(name = "user.UpdateUserByIdResponse.code")]
-    pub code: u32,
     #[prost(message, optional, tag = "4")]
     #[validate(name = "user.UpdateUserByIdResponse.data")]
     pub data: ::core::option::Option<
@@ -614,14 +593,11 @@ pub mod update_user_by_id_response {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FindUserByIdResponse {
     #[prost(string, tag = "1")]
-    #[validate(name = "user.FindUserByIdResponse.error")]
-    pub error: ::prost::alloc::string::String,
+    #[validate(name = "user.FindUserByIdResponse.status")]
+    pub status: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     #[validate(name = "user.FindUserByIdResponse.message")]
     pub message: ::prost::alloc::string::String,
-    #[prost(uint32, tag = "3")]
-    #[validate(name = "user.FindUserByIdResponse.code")]
-    pub code: u32,
     #[prost(message, optional, tag = "4")]
     #[validate(name = "user.FindUserByIdResponse.data")]
     pub data: ::core::option::Option<find_user_by_id_response::FindUserByIdResponseData>,
@@ -644,14 +620,11 @@ pub mod find_user_by_id_response {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FindUserByEmailAndPasswordResponse {
     #[prost(string, tag = "1")]
-    #[validate(name = "user.FindUserByEmailAndPasswordResponse.error")]
-    pub error: ::prost::alloc::string::String,
+    #[validate(name = "user.FindUserByEmailAndPasswordResponse.status")]
+    pub status: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     #[validate(name = "user.FindUserByEmailAndPasswordResponse.message")]
     pub message: ::prost::alloc::string::String,
-    #[prost(uint32, tag = "3")]
-    #[validate(name = "user.FindUserByEmailAndPasswordResponse.code")]
-    pub code: u32,
     #[prost(message, optional, tag = "4")]
     #[validate(name = "user.FindUserByEmailAndPasswordResponse.data")]
     pub data: ::core::option::Option<
@@ -933,7 +906,10 @@ pub mod auth_service_client {
         pub async fn auth_user_register(
             &mut self,
             request: impl tonic::IntoRequest<super::AuthUserRegisterRequest>,
-        ) -> std::result::Result<tonic::Response<()>, tonic::Status> {
+        ) -> std::result::Result<
+            tonic::Response<super::AuthUserRegisterResponse>,
+            tonic::Status,
+        > {
             self.inner
                 .ready()
                 .await
@@ -1413,7 +1389,10 @@ pub mod auth_service_server {
         async fn auth_user_register(
             &self,
             request: tonic::Request<super::AuthUserRegisterRequest>,
-        ) -> std::result::Result<tonic::Response<()>, tonic::Status>;
+        ) -> std::result::Result<
+            tonic::Response<super::AuthUserRegisterResponse>,
+            tonic::Status,
+        >;
         async fn auth_user_login_by_email_and_password(
             &self,
             request: tonic::Request<super::AuthUserLoginByEmailAndPasswordRequest>,
@@ -1538,7 +1517,7 @@ pub mod auth_service_server {
                         T: AuthService,
                     > tonic::server::UnaryService<super::AuthUserRegisterRequest>
                     for AuthUserRegisterSvc<T> {
-                        type Response = ();
+                        type Response = super::AuthUserRegisterResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
                             tonic::Status,

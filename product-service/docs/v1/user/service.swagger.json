@@ -56,6 +56,39 @@
         ]
       }
     },
+    "/user.AuthService/AuthUserFindUserByToken": {
+      "post": {
+        "summary": "QUERY",
+        "operationId": "AuthService_AuthUserFindUserByToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userAuthUserFindUserByTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/userAuthUserFindUserByTokenRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
     "/user.AuthService/AuthUserVerifyAccessControl": {
       "post": {
         "operationId": "AuthService_AuthUserVerifyAccessControl",
@@ -238,8 +271,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "type": "object",
-              "properties": {}
+              "$ref": "#/definitions/userAuthUserRegisterResponse"
             }
           },
           "default": {
@@ -280,37 +312,6 @@
               "SUPER_ADMIN"
             ],
             "default": "CUSTOMER"
-          }
-        ],
-        "tags": [
-          "AuthService"
-        ]
-      }
-    },
-    "/v1/user/auth/{token}": {
-      "get": {
-        "summary": "get user otp with provided token",
-        "operationId": "AuthService_AuthUserFindUserByToken",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/userAuthUserFindUserByTokenResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "token",
-            "in": "path",
-            "required": true,
-            "type": "string"
           }
         ],
         "tags": [
@@ -420,6 +421,24 @@
       "properties": {
         "isValid": {
           "type": "boolean"
+        }
+      }
+    },
+    "AuthUserRegisterResponseAuthUserRegisterResponseData": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/userUser"
+        },
+        "role": {
+          "$ref": "#/definitions/userRole"
+        },
+        "accessControl": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/userAccessControl"
+          }
         }
       }
     },
@@ -564,33 +583,33 @@
     "userAuthServiceVerifyIsExcludedResponse": {
       "type": "object",
       "properties": {
-        "error": {
+        "status": {
           "type": "string"
         },
         "message": {
           "type": "string"
-        },
-        "code": {
-          "type": "integer",
-          "format": "int64"
         },
         "data": {
           "$ref": "#/definitions/AuthServiceVerifyIsExcludedResponseAuthServiceVerifyIsExcludedResponseData"
         }
       }
     },
+    "userAuthUserFindUserByTokenRequest": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        }
+      }
+    },
     "userAuthUserFindUserByTokenResponse": {
       "type": "object",
       "properties": {
-        "error": {
+        "status": {
           "type": "string"
         },
         "message": {
           "type": "string"
-        },
-        "code": {
-          "type": "integer",
-          "format": "int64"
         },
         "data": {
           "$ref": "#/definitions/AuthUserFindUserByTokenResponseAuthUserFindUserByTokenResponseData"
@@ -608,20 +627,31 @@
     "userAuthUserLogoutByTokenResponse": {
       "type": "object",
       "properties": {
-        "error": {
+        "status": {
           "type": "string"
         },
         "message": {
           "type": "string"
         },
-        "code": {
-          "type": "integer",
-          "format": "int64"
-        },
         "data": {
           "$ref": "#/definitions/AuthUserLogoutByTokenResponseAuthUserLogoutByTokenResponseData"
         }
       }
+    },
+    "userAuthUserRegisterResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/AuthUserRegisterResponseAuthUserRegisterResponseData"
+        }
+      },
+      "title": "AUTH RESPONSE DEFINITION"
     },
     "userAuthUserVerifyAccessControlRequest": {
       "type": "object",
@@ -643,15 +673,11 @@
     "userAuthUserVerifyAccessControlResponse": {
       "type": "object",
       "properties": {
-        "error": {
+        "status": {
           "type": "string"
         },
         "message": {
           "type": "string"
-        },
-        "code": {
-          "type": "integer",
-          "format": "int64"
         },
         "data": {
           "$ref": "#/definitions/AuthUserVerifyAccessControlResponseAuthUserVerifyAccessControlResponseData"
@@ -669,15 +695,11 @@
     "userAuthUserVerifyOtpResponse": {
       "type": "object",
       "properties": {
-        "error": {
+        "status": {
           "type": "string"
         },
         "message": {
           "type": "string"
-        },
-        "code": {
-          "type": "integer",
-          "format": "int64"
         },
         "data": {
           "$ref": "#/definitions/AuthUserVerifyOtpResponseAuthUserVerifyOtpResponseData"
@@ -708,15 +730,11 @@
     "userFindUserByEmailAndPasswordResponse": {
       "type": "object",
       "properties": {
-        "error": {
+        "status": {
           "type": "string"
         },
         "message": {
           "type": "string"
-        },
-        "code": {
-          "type": "integer",
-          "format": "int64"
         },
         "data": {
           "$ref": "#/definitions/FindUserByEmailAndPasswordResponseFindUserByEmailAndPasswordResponseData"
@@ -726,15 +744,11 @@
     "userFindUserByIdResponse": {
       "type": "object",
       "properties": {
-        "error": {
+        "status": {
           "type": "string"
         },
         "message": {
           "type": "string"
-        },
-        "code": {
-          "type": "integer",
-          "format": "int64"
         },
         "data": {
           "$ref": "#/definitions/FindUserByIdResponseFindUserByIdResponseData"

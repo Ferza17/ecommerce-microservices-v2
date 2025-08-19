@@ -7,7 +7,6 @@ import (
 	mailHogInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mailhog"
 	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification"
 	pb "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment"
-	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"strings"
@@ -97,13 +96,5 @@ func (u *notificationEmailUseCase) SendNotificationEmailPaymentOrderCreated(ctx 
 		u.logger.Error(fmt.Sprintf("error sending email template: %s", err.Error()))
 		return err
 	}
-
-	if err = u.temporal.SignalWorkflow(ctx, requestId, "NotificationEmailUseCase.SendNotificationEmailPaymentOrderCreated", nil); err != nil {
-		u.logger.Error("NotificationEmailUseCase.SendNotificationEmailPaymentOrderCreated - Failed to signal workflow",
-			zap.String("requestId", requestId),
-			zap.Error(err))
-		return err
-	}
-
 	return nil
 }

@@ -12,11 +12,9 @@ import (
 	"github.com/rabbitmq/amqp091-go"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
-	"time"
 )
 
 func (c *notificationEmailConsumer) NotificationEmailOTP(ctx context.Context, d *amqp091.Delivery) error {
-
 	var (
 		request   pb.SendOtpEmailNotificationRequest
 		requestId = pkgContext.GetRequestIDFromContext(ctx)
@@ -28,6 +26,11 @@ func (c *notificationEmailConsumer) NotificationEmailOTP(ctx context.Context, d 
 		if err != nil {
 			span.RecordError(err)
 			pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueNotificationEmailOtpCreated, "failed").Inc()
+			if err = d.Nack(true, true); err != nil {
+				c.logger.Error(fmt.Sprintf("failed to nack : %v", zap.Error(err)))
+				return
+			}
+			//TODO: Publish Event Notification Email Otp Failed
 		}
 		span.End()
 	}(err)
@@ -49,10 +52,8 @@ func (c *notificationEmailConsumer) NotificationEmailOTP(ctx context.Context, d 
 		return err
 	}
 
-	time.Sleep(500 * time.Millisecond)
-	if _, err = c.temporal.
-		StartWorkflow(context.WithoutCancel(ctx), requestId, c.emailWorkflow.NotificationEmailOTPWorkflow, requestId, &request); err != nil {
-		c.logger.Error(fmt.Sprintf("failed to start workflow : %v", zap.Error(err)))
+	if err = c.notificationUseCase.SendNotificationEmailOTP(ctx, requestId, &request); err != nil {
+		c.logger.Error(fmt.Sprintf("failed to send email OTP : %v", zap.Error(err)))
 		return err
 	}
 

@@ -1,8 +1,7 @@
 #!/bin/sh
 
 echo "Cleaning generated docs..."
-  rm -rf api-gateway/docs \
-           commerce-service/src/docs \
+  rm -rf commerce-service/src/docs \
            event-store-service/docs \
            notification-service/docs \
            payment-service/docs \

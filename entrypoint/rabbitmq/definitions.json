@@ -103,7 +103,17 @@
       "durable": true
     },
     {
+      "name": "user.created.failed",
+      "vhost": "/",
+      "durable": true
+    },
+    {
       "name": "user.updated",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "user.updated.failed",
       "vhost": "/",
       "durable": true
     },

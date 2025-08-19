@@ -21,44 +21,37 @@ func CustomErrorHandler(ctx context.Context, mux *runtime.ServeMux, marshaler ru
 	httpStatusCode := runtime.HTTPStatusFromCode(st.Code())
 
 	errorResp := pb.Response{
-		Error:   st.Code().String(),
 		Message: st.Message(),
-		Code:    int32(httpStatusCode),
+		Status:  "error",
 		Data:    nil,
 	}
 
 	switch st.Code() {
 	case codes.InvalidArgument:
 		errorResp = pb.Response{
-			Code:    http.StatusBadRequest,
 			Message: fmt.Sprintf("Invalid request parameters : %s", st.Message()),
 		}
 	case codes.NotFound:
 		errorResp = pb.Response{
-			Code:    http.StatusNotFound,
 			Message: fmt.Sprintf("Resource not found : %s", st.Message()),
 		}
 	case codes.PermissionDenied:
 		errorResp = pb.Response{
-			Code:    http.StatusForbidden,
 			Message: fmt.Sprintf("Permission denied : %s", st.Message()),
 		}
 	case codes.Unauthenticated:
 		errorResp = pb.Response{
-			Code:    http.StatusUnauthorized,
 			Message: fmt.Sprintf("Authentication failed : %s", st.Message()),
 		}
 	case codes.Internal:
 		errorResp = pb.Response{
-			Code:    http.StatusInternalServerError,
 			Message: "Internal server error",
 		}
 	default:
 		errorResp = pb.Response{
-			Code:    http.StatusInternalServerError,
 			Message: "Unknown error",
 		}
 	}
 
-	WriteErrorResponse(w, int(errorResp.Code), errorResp.Message, err)
+	WriteErrorResponse(w, httpStatusCode, errorResp.Message, err)
 }

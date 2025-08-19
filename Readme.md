@@ -3,7 +3,7 @@
 
 <img src="./diagram.png">
 
-### TODO
+### IMPLEMENTS
 - [X] Implement **GraphQL** on API-GATEWAY
 - [X] Implement **CQRS**
 - [X] Implement **SAGA**
@@ -17,11 +17,20 @@
 - [X] Implement Load Balance And Reverse Proxy using **Traefik**
 - [X] Implement **Worker Pools**
 
+### SERVICES
+- API-GATEWAY
+- USER-SERVICE
+- PRODUCT-SERVICE
+- PAYMENT-SERVICE
+- SHIPPING-SERVICE
+
+### TODOS
+- [ ] Rewrite API-GATEWAY to RUST
+- [ ] Rewrite Event Store Service to RUST
 
 ## Author
 * Fery Reza Aditya
 * feryreza85@gmail.com
-* github.com/Ferza17
 
 
 

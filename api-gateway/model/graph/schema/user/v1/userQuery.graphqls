@@ -1,4 +1,0 @@
-extend type Query {
-    findUserById(id: String!): User
-    findUserByEmailAndPassword(input: FindUserByEmailAndPasswordRequest!): User
-}

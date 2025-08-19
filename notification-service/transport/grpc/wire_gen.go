@@ -7,7 +7,6 @@
 package grpc
 
 import (
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/temporal"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 )
 
@@ -15,7 +14,6 @@ import (
 
 func ProvideGrpcServer() *GrpcServer {
 	iZapLogger := logger.NewZapLogger()
-	iTemporalInfrastructure := temporal.NewTemporalInfrastructure(iZapLogger)
-	grpcServer := NewGrpcServer(iTemporalInfrastructure, iZapLogger)
+	grpcServer := NewGrpcServer(iZapLogger)
 	return grpcServer
 }

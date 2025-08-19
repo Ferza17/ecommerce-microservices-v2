@@ -5,9 +5,8 @@ import "v1/user/model.proto";
 
 // AUTH RESPONSE DEFINITION
 message AuthUserRegisterResponse {
-  string error = 1;
+  string status = 1;
   string message = 2;
-  uint32 code = 3;
   message AuthUserRegisterResponseData {
     user.User user = 1;
     user.Role role = 2;
@@ -17,9 +16,8 @@ message AuthUserRegisterResponse {
 }
 
 message AuthUserVerifyOtpResponse {
-  string error = 1;
+  string status = 1;
   string message = 2;
-  uint32 code = 3;
   message AuthUserVerifyOtpResponseData {
     string accessToken = 1;
     string refreshToken = 2;
@@ -28,9 +26,8 @@ message AuthUserVerifyOtpResponse {
 }
 
 message AuthUserLogoutByTokenResponse {
-  string error = 1;
+  string status = 1;
   string message = 2;
-  uint32 code = 3;
   message AuthUserLogoutByTokenResponseData {
     bool is_valid = 1;
   }
@@ -38,9 +35,8 @@ message AuthUserLogoutByTokenResponse {
 }
 
 message AuthUserVerifyAccessControlResponse {
-  string error = 1;
+  string status = 1;
   string message = 2;
-  uint32 code = 3;
   message AuthUserVerifyAccessControlResponseData {
     bool isValid = 1;
     user.User user = 2;
@@ -51,9 +47,8 @@ message AuthUserVerifyAccessControlResponse {
 }
 
 message AuthUserFindUserByTokenResponse {
-  string error = 1;
+  string status = 1;
   string message = 2;
-  uint32 code = 3;
   message AuthUserFindUserByTokenResponseData {
     user.User user = 1;
   }
@@ -61,9 +56,8 @@ message AuthUserFindUserByTokenResponse {
 }
 
 message AuthServiceVerifyIsExcludedResponse {
-  string error = 1;
+  string status = 1;
   string message = 2;
-  uint32 code = 3;
   message AuthServiceVerifyIsExcludedResponseData {
     bool IsExcluded = 1;
   }
@@ -72,9 +66,8 @@ message AuthServiceVerifyIsExcludedResponse {
 
 // USER RESPONSE DEFINITION
 message UpdateUserByIdResponse {
-  string error = 1;
+  string status = 1;
   string message = 2;
-  uint32 code = 3;
   message UpdateUserByIdResponseData {
     string id = 1;
   }
@@ -82,9 +75,8 @@ message UpdateUserByIdResponse {
 }
 
 message FindUserByIdResponse{
-  string error = 1;
+  string status = 1;
   string message = 2;
-  uint32 code = 3;
   message FindUserByIdResponseData {
     user.User user = 1;
   }
@@ -92,9 +84,8 @@ message FindUserByIdResponse{
 }
 
 message FindUserByEmailAndPasswordResponse{
-  string error = 1;
+  string status = 1;
   string message = 2;
-  uint32 code = 3;
   message FindUserByEmailAndPasswordResponseData {
     user.User user = 1;
   }

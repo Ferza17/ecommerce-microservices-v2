@@ -58,7 +58,7 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 
 	fetchProducts, err := u.productService.FindProductsWithPagination(ctx, requestId, &productPb.FindProductsWithPaginationRequest{
 		Ids:   productIds,
-		Name:  nil,
+		Names: nil,
 		Page:  1,
 		Limit: int32(len(productIds)),
 	})
@@ -74,7 +74,7 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 		return nil, fmt.Errorf("failed to fetch products: %w", err)
 	}
 
-	for _, datum := range fetchProducts.Data {
+	for _, datum := range fetchProducts.Data.Data {
 		productQty, ok := mapProductQty[datum.Id]
 		if !ok {
 			tx.Rollback()

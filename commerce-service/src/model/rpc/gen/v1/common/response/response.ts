@@ -11,26 +11,22 @@ import { Struct } from "../../../google/protobuf/struct";
 export const protobufPackage = "response";
 
 export interface Response {
-  error: string;
+  status: string;
   message: string;
-  Code: number;
   data: { [key: string]: any } | undefined;
 }
 
 function createBaseResponse(): Response {
-  return { error: "", message: "", Code: 0, data: undefined };
+  return { status: "", message: "", data: undefined };
 }
 
 export const Response: MessageFns<Response> = {
   encode(message: Response, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.error !== "") {
-      writer.uint32(10).string(message.error);
+    if (message.status !== "") {
+      writer.uint32(10).string(message.status);
     }
     if (message.message !== "") {
       writer.uint32(18).string(message.message);
-    }
-    if (message.Code !== 0) {
-      writer.uint32(24).int32(message.Code);
     }
     if (message.data !== undefined) {
       Struct.encode(Struct.wrap(message.data), writer.uint32(34).fork()).join();
@@ -50,7 +46,7 @@ export const Response: MessageFns<Response> = {
             break;
           }
 
-          message.error = reader.string();
+          message.status = reader.string();
           continue;
         }
         case 2: {
@@ -59,14 +55,6 @@ export const Response: MessageFns<Response> = {
           }
 
           message.message = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
-            break;
-          }
-
-          message.Code = reader.int32();
           continue;
         }
         case 4: {
@@ -88,23 +76,19 @@ export const Response: MessageFns<Response> = {
 
   fromJSON(object: any): Response {
     return {
-      error: isSet(object.error) ? globalThis.String(object.error) : "",
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
       message: isSet(object.message) ? globalThis.String(object.message) : "",
-      Code: isSet(object.Code) ? globalThis.Number(object.Code) : 0,
       data: isObject(object.data) ? object.data : undefined,
     };
   },
 
   toJSON(message: Response): unknown {
     const obj: any = {};
-    if (message.error !== "") {
-      obj.error = message.error;
+    if (message.status !== "") {
+      obj.status = message.status;
     }
     if (message.message !== "") {
       obj.message = message.message;
-    }
-    if (message.Code !== 0) {
-      obj.Code = Math.round(message.Code);
     }
     if (message.data !== undefined) {
       obj.data = message.data;
@@ -117,9 +101,8 @@ export const Response: MessageFns<Response> = {
   },
   fromPartial(object: DeepPartial<Response>): Response {
     const message = createBaseResponse();
-    message.error = object.error ?? "";
+    message.status = object.status ?? "";
     message.message = object.message ?? "";
-    message.Code = object.Code ?? 0;
     message.data = object.data ?? undefined;
     return message;
   },

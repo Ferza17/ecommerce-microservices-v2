@@ -11,6 +11,12 @@ import { Product } from "./model";
 export const protobufPackage = "product";
 
 export interface FindProductsWithPaginationResponse {
+  status: string;
+  message: string;
+  data: FindProductsWithPaginationResponse_FindProductsWithPaginationResponseData | undefined;
+}
+
+export interface FindProductsWithPaginationResponse_FindProductsWithPaginationResponseData {
   data: Product[];
   limit: number;
   page: number;
@@ -18,19 +24,138 @@ export interface FindProductsWithPaginationResponse {
 }
 
 export interface CreateProductResponse {
+  status: string;
+  message: string;
+  data: CreateProductResponse_CreateProductResponseData | undefined;
+}
+
+export interface CreateProductResponse_CreateProductResponseData {
   id: string;
 }
 
 export interface DeleteProductByIdResponse {
+  status: string;
+  message: string;
+  data: DeleteProductByIdResponse_DeleteProductByIdResponseData | undefined;
+}
+
+export interface DeleteProductByIdResponse_DeleteProductByIdResponseData {
   message: string;
 }
 
 function createBaseFindProductsWithPaginationResponse(): FindProductsWithPaginationResponse {
-  return { data: [], limit: 0, page: 0, total: 0 };
+  return { status: "", message: "", data: undefined };
 }
 
 export const FindProductsWithPaginationResponse: MessageFns<FindProductsWithPaginationResponse> = {
   encode(message: FindProductsWithPaginationResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.status !== "") {
+      writer.uint32(10).string(message.status);
+    }
+    if (message.message !== "") {
+      writer.uint32(18).string(message.message);
+    }
+    if (message.data !== undefined) {
+      FindProductsWithPaginationResponse_FindProductsWithPaginationResponseData.encode(
+        message.data,
+        writer.uint32(26).fork(),
+      ).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): FindProductsWithPaginationResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseFindProductsWithPaginationResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.status = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.data = FindProductsWithPaginationResponse_FindProductsWithPaginationResponseData.decode(
+            reader,
+            reader.uint32(),
+          );
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): FindProductsWithPaginationResponse {
+    return {
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
+      message: isSet(object.message) ? globalThis.String(object.message) : "",
+      data: isSet(object.data)
+        ? FindProductsWithPaginationResponse_FindProductsWithPaginationResponseData.fromJSON(object.data)
+        : undefined,
+    };
+  },
+
+  toJSON(message: FindProductsWithPaginationResponse): unknown {
+    const obj: any = {};
+    if (message.status !== "") {
+      obj.status = message.status;
+    }
+    if (message.message !== "") {
+      obj.message = message.message;
+    }
+    if (message.data !== undefined) {
+      obj.data = FindProductsWithPaginationResponse_FindProductsWithPaginationResponseData.toJSON(message.data);
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<FindProductsWithPaginationResponse>): FindProductsWithPaginationResponse {
+    return FindProductsWithPaginationResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<FindProductsWithPaginationResponse>): FindProductsWithPaginationResponse {
+    const message = createBaseFindProductsWithPaginationResponse();
+    message.status = object.status ?? "";
+    message.message = object.message ?? "";
+    message.data = (object.data !== undefined && object.data !== null)
+      ? FindProductsWithPaginationResponse_FindProductsWithPaginationResponseData.fromPartial(object.data)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseFindProductsWithPaginationResponse_FindProductsWithPaginationResponseData(): FindProductsWithPaginationResponse_FindProductsWithPaginationResponseData {
+  return { data: [], limit: 0, page: 0, total: 0 };
+}
+
+export const FindProductsWithPaginationResponse_FindProductsWithPaginationResponseData: MessageFns<
+  FindProductsWithPaginationResponse_FindProductsWithPaginationResponseData
+> = {
+  encode(
+    message: FindProductsWithPaginationResponse_FindProductsWithPaginationResponseData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     for (const v of message.data) {
       Product.encode(v!, writer.uint32(10).fork()).join();
     }
@@ -46,10 +171,13 @@ export const FindProductsWithPaginationResponse: MessageFns<FindProductsWithPagi
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): FindProductsWithPaginationResponse {
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): FindProductsWithPaginationResponse_FindProductsWithPaginationResponseData {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseFindProductsWithPaginationResponse();
+    const message = createBaseFindProductsWithPaginationResponse_FindProductsWithPaginationResponseData();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -94,7 +222,7 @@ export const FindProductsWithPaginationResponse: MessageFns<FindProductsWithPagi
     return message;
   },
 
-  fromJSON(object: any): FindProductsWithPaginationResponse {
+  fromJSON(object: any): FindProductsWithPaginationResponse_FindProductsWithPaginationResponseData {
     return {
       data: globalThis.Array.isArray(object?.data) ? object.data.map((e: any) => Product.fromJSON(e)) : [],
       limit: isSet(object.limit) ? globalThis.Number(object.limit) : 0,
@@ -103,7 +231,7 @@ export const FindProductsWithPaginationResponse: MessageFns<FindProductsWithPagi
     };
   },
 
-  toJSON(message: FindProductsWithPaginationResponse): unknown {
+  toJSON(message: FindProductsWithPaginationResponse_FindProductsWithPaginationResponseData): unknown {
     const obj: any = {};
     if (message.data?.length) {
       obj.data = message.data.map((e) => Product.toJSON(e));
@@ -120,11 +248,15 @@ export const FindProductsWithPaginationResponse: MessageFns<FindProductsWithPagi
     return obj;
   },
 
-  create(base?: DeepPartial<FindProductsWithPaginationResponse>): FindProductsWithPaginationResponse {
-    return FindProductsWithPaginationResponse.fromPartial(base ?? {});
+  create(
+    base?: DeepPartial<FindProductsWithPaginationResponse_FindProductsWithPaginationResponseData>,
+  ): FindProductsWithPaginationResponse_FindProductsWithPaginationResponseData {
+    return FindProductsWithPaginationResponse_FindProductsWithPaginationResponseData.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<FindProductsWithPaginationResponse>): FindProductsWithPaginationResponse {
-    const message = createBaseFindProductsWithPaginationResponse();
+  fromPartial(
+    object: DeepPartial<FindProductsWithPaginationResponse_FindProductsWithPaginationResponseData>,
+  ): FindProductsWithPaginationResponse_FindProductsWithPaginationResponseData {
+    const message = createBaseFindProductsWithPaginationResponse_FindProductsWithPaginationResponseData();
     message.data = object.data?.map((e) => Product.fromPartial(e)) || [];
     message.limit = object.limit ?? 0;
     message.page = object.page ?? 0;
@@ -134,13 +266,19 @@ export const FindProductsWithPaginationResponse: MessageFns<FindProductsWithPagi
 };
 
 function createBaseCreateProductResponse(): CreateProductResponse {
-  return { id: "" };
+  return { status: "", message: "", data: undefined };
 }
 
 export const CreateProductResponse: MessageFns<CreateProductResponse> = {
   encode(message: CreateProductResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
+    if (message.status !== "") {
+      writer.uint32(10).string(message.status);
+    }
+    if (message.message !== "") {
+      writer.uint32(18).string(message.message);
+    }
+    if (message.data !== undefined) {
+      CreateProductResponse_CreateProductResponseData.encode(message.data, writer.uint32(26).fork()).join();
     }
     return writer;
   },
@@ -149,6 +287,99 @@ export const CreateProductResponse: MessageFns<CreateProductResponse> = {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCreateProductResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.status = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.data = CreateProductResponse_CreateProductResponseData.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateProductResponse {
+    return {
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
+      message: isSet(object.message) ? globalThis.String(object.message) : "",
+      data: isSet(object.data) ? CreateProductResponse_CreateProductResponseData.fromJSON(object.data) : undefined,
+    };
+  },
+
+  toJSON(message: CreateProductResponse): unknown {
+    const obj: any = {};
+    if (message.status !== "") {
+      obj.status = message.status;
+    }
+    if (message.message !== "") {
+      obj.message = message.message;
+    }
+    if (message.data !== undefined) {
+      obj.data = CreateProductResponse_CreateProductResponseData.toJSON(message.data);
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<CreateProductResponse>): CreateProductResponse {
+    return CreateProductResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<CreateProductResponse>): CreateProductResponse {
+    const message = createBaseCreateProductResponse();
+    message.status = object.status ?? "";
+    message.message = object.message ?? "";
+    message.data = (object.data !== undefined && object.data !== null)
+      ? CreateProductResponse_CreateProductResponseData.fromPartial(object.data)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseCreateProductResponse_CreateProductResponseData(): CreateProductResponse_CreateProductResponseData {
+  return { id: "" };
+}
+
+export const CreateProductResponse_CreateProductResponseData: MessageFns<
+  CreateProductResponse_CreateProductResponseData
+> = {
+  encode(
+    message: CreateProductResponse_CreateProductResponseData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): CreateProductResponse_CreateProductResponseData {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateProductResponse_CreateProductResponseData();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -169,11 +400,11 @@ export const CreateProductResponse: MessageFns<CreateProductResponse> = {
     return message;
   },
 
-  fromJSON(object: any): CreateProductResponse {
+  fromJSON(object: any): CreateProductResponse_CreateProductResponseData {
     return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
   },
 
-  toJSON(message: CreateProductResponse): unknown {
+  toJSON(message: CreateProductResponse_CreateProductResponseData): unknown {
     const obj: any = {};
     if (message.id !== "") {
       obj.id = message.id;
@@ -181,24 +412,34 @@ export const CreateProductResponse: MessageFns<CreateProductResponse> = {
     return obj;
   },
 
-  create(base?: DeepPartial<CreateProductResponse>): CreateProductResponse {
-    return CreateProductResponse.fromPartial(base ?? {});
+  create(
+    base?: DeepPartial<CreateProductResponse_CreateProductResponseData>,
+  ): CreateProductResponse_CreateProductResponseData {
+    return CreateProductResponse_CreateProductResponseData.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<CreateProductResponse>): CreateProductResponse {
-    const message = createBaseCreateProductResponse();
+  fromPartial(
+    object: DeepPartial<CreateProductResponse_CreateProductResponseData>,
+  ): CreateProductResponse_CreateProductResponseData {
+    const message = createBaseCreateProductResponse_CreateProductResponseData();
     message.id = object.id ?? "";
     return message;
   },
 };
 
 function createBaseDeleteProductByIdResponse(): DeleteProductByIdResponse {
-  return { message: "" };
+  return { status: "", message: "", data: undefined };
 }
 
 export const DeleteProductByIdResponse: MessageFns<DeleteProductByIdResponse> = {
   encode(message: DeleteProductByIdResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.status !== "") {
+      writer.uint32(10).string(message.status);
+    }
     if (message.message !== "") {
-      writer.uint32(10).string(message.message);
+      writer.uint32(18).string(message.message);
+    }
+    if (message.data !== undefined) {
+      DeleteProductByIdResponse_DeleteProductByIdResponseData.encode(message.data, writer.uint32(26).fork()).join();
     }
     return writer;
   },
@@ -207,6 +448,101 @@ export const DeleteProductByIdResponse: MessageFns<DeleteProductByIdResponse> = 
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDeleteProductByIdResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.status = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.data = DeleteProductByIdResponse_DeleteProductByIdResponseData.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DeleteProductByIdResponse {
+    return {
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
+      message: isSet(object.message) ? globalThis.String(object.message) : "",
+      data: isSet(object.data)
+        ? DeleteProductByIdResponse_DeleteProductByIdResponseData.fromJSON(object.data)
+        : undefined,
+    };
+  },
+
+  toJSON(message: DeleteProductByIdResponse): unknown {
+    const obj: any = {};
+    if (message.status !== "") {
+      obj.status = message.status;
+    }
+    if (message.message !== "") {
+      obj.message = message.message;
+    }
+    if (message.data !== undefined) {
+      obj.data = DeleteProductByIdResponse_DeleteProductByIdResponseData.toJSON(message.data);
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<DeleteProductByIdResponse>): DeleteProductByIdResponse {
+    return DeleteProductByIdResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<DeleteProductByIdResponse>): DeleteProductByIdResponse {
+    const message = createBaseDeleteProductByIdResponse();
+    message.status = object.status ?? "";
+    message.message = object.message ?? "";
+    message.data = (object.data !== undefined && object.data !== null)
+      ? DeleteProductByIdResponse_DeleteProductByIdResponseData.fromPartial(object.data)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseDeleteProductByIdResponse_DeleteProductByIdResponseData(): DeleteProductByIdResponse_DeleteProductByIdResponseData {
+  return { message: "" };
+}
+
+export const DeleteProductByIdResponse_DeleteProductByIdResponseData: MessageFns<
+  DeleteProductByIdResponse_DeleteProductByIdResponseData
+> = {
+  encode(
+    message: DeleteProductByIdResponse_DeleteProductByIdResponseData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
+    if (message.message !== "") {
+      writer.uint32(10).string(message.message);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): DeleteProductByIdResponse_DeleteProductByIdResponseData {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeleteProductByIdResponse_DeleteProductByIdResponseData();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -227,11 +563,11 @@ export const DeleteProductByIdResponse: MessageFns<DeleteProductByIdResponse> = 
     return message;
   },
 
-  fromJSON(object: any): DeleteProductByIdResponse {
+  fromJSON(object: any): DeleteProductByIdResponse_DeleteProductByIdResponseData {
     return { message: isSet(object.message) ? globalThis.String(object.message) : "" };
   },
 
-  toJSON(message: DeleteProductByIdResponse): unknown {
+  toJSON(message: DeleteProductByIdResponse_DeleteProductByIdResponseData): unknown {
     const obj: any = {};
     if (message.message !== "") {
       obj.message = message.message;
@@ -239,11 +575,15 @@ export const DeleteProductByIdResponse: MessageFns<DeleteProductByIdResponse> = 
     return obj;
   },
 
-  create(base?: DeepPartial<DeleteProductByIdResponse>): DeleteProductByIdResponse {
-    return DeleteProductByIdResponse.fromPartial(base ?? {});
+  create(
+    base?: DeepPartial<DeleteProductByIdResponse_DeleteProductByIdResponseData>,
+  ): DeleteProductByIdResponse_DeleteProductByIdResponseData {
+    return DeleteProductByIdResponse_DeleteProductByIdResponseData.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<DeleteProductByIdResponse>): DeleteProductByIdResponse {
-    const message = createBaseDeleteProductByIdResponse();
+  fromPartial(
+    object: DeepPartial<DeleteProductByIdResponse_DeleteProductByIdResponseData>,
+  ): DeleteProductByIdResponse_DeleteProductByIdResponseData {
+    const message = createBaseDeleteProductByIdResponse_DeleteProductByIdResponseData();
     message.message = object.message ?? "";
     return message;
   },

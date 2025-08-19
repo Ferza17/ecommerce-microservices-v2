@@ -74,7 +74,7 @@ service UserService {
   };
 
   // QUERY
-  rpc FindUserById(user.FindUserByIdRequest) returns (user.FindUserByIdResponse){
+  rpc FindUserById(user.FindUserByIdRequest) returns (user.FindUserByIdResponse)  {
     option (user.acl) = {
       roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
       is_public: false,
@@ -105,9 +105,11 @@ service UserService {
   };
 }
 
+
+
 service AuthService {
   // COMMAND
-  rpc AuthUserRegister(user.AuthUserRegisterRequest) returns (google.protobuf.Empty) {
+  rpc AuthUserRegister(user.AuthUserRegisterRequest) returns (user.AuthUserRegisterResponse) {
     option (user.acl) = {
       is_public: true,
       http: {
@@ -196,21 +198,5 @@ service AuthService {
   };
 
   // QUERY
-  rpc AuthUserFindUserByToken(user.AuthUserFindUserByTokenRequest) returns (user.AuthUserFindUserByTokenResponse){
-    option (user.acl) = {
-      roles: [SUPER_ADMIN, CUSTOMER_MEMBERSHIP, CUSTOMER, ADMIN],
-      is_public: false,
-      http: {
-        method: "get",
-        url: "/v1/user/auth/{token}"
-      },
-    };
-    option (google.api.http) = {
-      get: "/v1/user/auth/{token}"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      summary: "get user otp with provided token";
-      tags: ["AuthService"];
-    };
-  };
+  rpc AuthUserFindUserByToken(user.AuthUserFindUserByTokenRequest) returns (user.AuthUserFindUserByTokenResponse);
 }

@@ -12,11 +12,9 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/services/payment"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/temporal"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/consumer"
 	mongodb2 "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/repository/mongodb"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/usecase"
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/workflow"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 )
 
@@ -27,13 +25,11 @@ func ProvideRabbitMQServer() *RabbitMQTransport {
 	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
 	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iZapLogger, iTelemetryInfrastructure)
 	iMongoDBInfrastructure := mongodb.NewMongoDBInfrastructure(iZapLogger)
-	iTemporalInfrastructure := temporal.NewTemporalInfrastructure(iZapLogger)
-	iNotificationEmailRepository := mongodb2.NewNotificationEmailRepository(iMongoDBInfrastructure, iTelemetryInfrastructure, iTemporalInfrastructure, iZapLogger)
+	iNotificationEmailRepository := mongodb2.NewNotificationEmailRepository(iMongoDBInfrastructure, iTelemetryInfrastructure, iZapLogger)
 	iMailhogInfrastructure := mailhog.NewMailhogInfrastructure(iZapLogger)
 	iPaymentService := payment.NewPaymentService(iZapLogger)
-	iNotificationEmailUseCase := usecase.NewNotificationEmailUseCase(iNotificationEmailRepository, iRabbitMQInfrastructure, iMailhogInfrastructure, iTelemetryInfrastructure, iPaymentService, iTemporalInfrastructure, iZapLogger)
-	iEmailWorkflow := workflow.NewEmailWorkflow(iNotificationEmailUseCase, iTemporalInfrastructure, iZapLogger)
-	iNotificationEmailConsumer := consumer.NewNotificationConsumer(iRabbitMQInfrastructure, iNotificationEmailUseCase, iTelemetryInfrastructure, iTemporalInfrastructure, iEmailWorkflow, iZapLogger)
-	rabbitMQTransport := NewServer(iZapLogger, iNotificationEmailConsumer, iRabbitMQInfrastructure, iTelemetryInfrastructure, iTemporalInfrastructure)
+	iNotificationEmailUseCase := usecase.NewNotificationEmailUseCase(iNotificationEmailRepository, iRabbitMQInfrastructure, iMailhogInfrastructure, iTelemetryInfrastructure, iPaymentService, iZapLogger)
+	iNotificationEmailConsumer := consumer.NewNotificationConsumer(iRabbitMQInfrastructure, iNotificationEmailUseCase, iTelemetryInfrastructure, iZapLogger)
+	rabbitMQTransport := NewServer(iZapLogger, iNotificationEmailConsumer, iRabbitMQInfrastructure, iTelemetryInfrastructure)
 	return rabbitMQTransport
 }

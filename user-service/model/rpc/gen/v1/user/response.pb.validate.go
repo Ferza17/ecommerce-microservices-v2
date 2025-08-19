@@ -57,11 +57,9 @@ func (m *AuthUserRegisterResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Error
+	// no validation rules for Status
 
 	// no validation rules for Message
-
-	// no validation rules for Code
 
 	if all {
 		switch v := interface{}(m.GetData()).(type) {
@@ -194,11 +192,9 @@ func (m *AuthUserVerifyOtpResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Error
+	// no validation rules for Status
 
 	// no validation rules for Message
-
-	// no validation rules for Code
 
 	if all {
 		switch v := interface{}(m.GetData()).(type) {
@@ -331,11 +327,9 @@ func (m *AuthUserLogoutByTokenResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Error
+	// no validation rules for Status
 
 	// no validation rules for Message
-
-	// no validation rules for Code
 
 	if all {
 		switch v := interface{}(m.GetData()).(type) {
@@ -470,11 +464,9 @@ func (m *AuthUserVerifyAccessControlResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Error
+	// no validation rules for Status
 
 	// no validation rules for Message
-
-	// no validation rules for Code
 
 	if all {
 		switch v := interface{}(m.GetData()).(type) {
@@ -609,11 +601,9 @@ func (m *AuthUserFindUserByTokenResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Error
+	// no validation rules for Status
 
 	// no validation rules for Message
-
-	// no validation rules for Code
 
 	if all {
 		switch v := interface{}(m.GetData()).(type) {
@@ -748,11 +738,9 @@ func (m *AuthServiceVerifyIsExcludedResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Error
+	// no validation rules for Status
 
 	// no validation rules for Message
-
-	// no validation rules for Code
 
 	if all {
 		switch v := interface{}(m.GetData()).(type) {
@@ -887,11 +875,9 @@ func (m *UpdateUserByIdResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Error
+	// no validation rules for Status
 
 	// no validation rules for Message
-
-	// no validation rules for Code
 
 	if all {
 		switch v := interface{}(m.GetData()).(type) {
@@ -1024,11 +1010,9 @@ func (m *FindUserByIdResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Error
+	// no validation rules for Status
 
 	// no validation rules for Message
-
-	// no validation rules for Code
 
 	if all {
 		switch v := interface{}(m.GetData()).(type) {
@@ -1162,11 +1146,9 @@ func (m *FindUserByEmailAndPasswordResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Error
+	// no validation rules for Status
 
 	// no validation rules for Message
-
-	// no validation rules for Code
 
 	if all {
 		switch v := interface{}(m.GetData()).(type) {

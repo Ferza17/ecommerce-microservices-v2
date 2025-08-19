@@ -111,9 +111,8 @@ where
 
 fn unauthorize_response(status: tonic::Code, message: &str) -> Result<Response<Body>, Infallible> {
     let json_response = Json(CommonResponse {
-        error: "unauthorized".to_string(),
+        status: "".to_string(),
         message: message.to_string(),
-        code: util::convert_status::tonic_to_http_status(status).as_u16() as i32,
         data: None,
     });
 

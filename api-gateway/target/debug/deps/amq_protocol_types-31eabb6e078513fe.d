@@ -1,0 +1,10 @@
+/Users/ferza/Documents/project/ecommerce-microservices-v2/api-gateway/target/debug/deps/amq_protocol_types-31eabb6e078513fe.d: /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/amq-protocol-types-7.2.3/src/lib.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/amq-protocol-types-7.2.3/src/types.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/amq-protocol-types-7.2.3/src/value.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/amq-protocol-types-7.2.3/src/flags.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/amq-protocol-types-7.2.3/src/generation.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/amq-protocol-types-7.2.3/src/parsing.rs
+
+/Users/ferza/Documents/project/ecommerce-microservices-v2/api-gateway/target/debug/deps/libamq_protocol_types-31eabb6e078513fe.rmeta: /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/amq-protocol-types-7.2.3/src/lib.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/amq-protocol-types-7.2.3/src/types.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/amq-protocol-types-7.2.3/src/value.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/amq-protocol-types-7.2.3/src/flags.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/amq-protocol-types-7.2.3/src/generation.rs /Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/amq-protocol-types-7.2.3/src/parsing.rs
+
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/amq-protocol-types-7.2.3/src/lib.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/amq-protocol-types-7.2.3/src/types.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/amq-protocol-types-7.2.3/src/value.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/amq-protocol-types-7.2.3/src/flags.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/amq-protocol-types-7.2.3/src/generation.rs:
+/Users/ferza/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/amq-protocol-types-7.2.3/src/parsing.rs:

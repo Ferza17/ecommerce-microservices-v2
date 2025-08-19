@@ -214,7 +214,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
 	// COMMAND
-	AuthUserRegister(ctx context.Context, in *AuthUserRegisterRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	AuthUserRegister(ctx context.Context, in *AuthUserRegisterRequest, opts ...grpc.CallOption) (*AuthUserRegisterResponse, error)
 	AuthUserLoginByEmailAndPassword(ctx context.Context, in *AuthUserLoginByEmailAndPasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	AuthUserVerifyOtp(ctx context.Context, in *AuthUserVerifyOtpRequest, opts ...grpc.CallOption) (*AuthUserVerifyOtpResponse, error)
 	AuthUserLogoutByToken(ctx context.Context, in *AuthUserLogoutByTokenRequest, opts ...grpc.CallOption) (*AuthUserLogoutByTokenResponse, error)
@@ -232,9 +232,9 @@ func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
 	return &authServiceClient{cc}
 }
 
-func (c *authServiceClient) AuthUserRegister(ctx context.Context, in *AuthUserRegisterRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *authServiceClient) AuthUserRegister(ctx context.Context, in *AuthUserRegisterRequest, opts ...grpc.CallOption) (*AuthUserRegisterResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
+	out := new(AuthUserRegisterResponse)
 	err := c.cc.Invoke(ctx, AuthService_AuthUserRegister_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -307,7 +307,7 @@ func (c *authServiceClient) AuthUserFindUserByToken(ctx context.Context, in *Aut
 // for forward compatibility.
 type AuthServiceServer interface {
 	// COMMAND
-	AuthUserRegister(context.Context, *AuthUserRegisterRequest) (*emptypb.Empty, error)
+	AuthUserRegister(context.Context, *AuthUserRegisterRequest) (*AuthUserRegisterResponse, error)
 	AuthUserLoginByEmailAndPassword(context.Context, *AuthUserLoginByEmailAndPasswordRequest) (*emptypb.Empty, error)
 	AuthUserVerifyOtp(context.Context, *AuthUserVerifyOtpRequest) (*AuthUserVerifyOtpResponse, error)
 	AuthUserLogoutByToken(context.Context, *AuthUserLogoutByTokenRequest) (*AuthUserLogoutByTokenResponse, error)
@@ -324,7 +324,7 @@ type AuthServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAuthServiceServer struct{}
 
-func (UnimplementedAuthServiceServer) AuthUserRegister(context.Context, *AuthUserRegisterRequest) (*emptypb.Empty, error) {
+func (UnimplementedAuthServiceServer) AuthUserRegister(context.Context, *AuthUserRegisterRequest) (*AuthUserRegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthUserRegister not implemented")
 }
 func (UnimplementedAuthServiceServer) AuthUserLoginByEmailAndPassword(context.Context, *AuthUserLoginByEmailAndPasswordRequest) (*emptypb.Empty, error) {

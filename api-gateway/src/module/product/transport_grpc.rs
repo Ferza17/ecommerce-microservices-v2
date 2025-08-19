@@ -1,0 +1,75 @@
+use crate::config::config::AppConfig;
+use crate::model::rpc::product::product_service_client::ProductServiceClient;
+use crate::model::rpc::product::{
+    FindProductsWithPaginationRequest, FindProductsWithPaginationResponse,
+};
+use crate::package::context::auth::AUTHORIZATION_HEADER;
+use crate::package::context::request_id::X_REQUEST_ID_HEADER;
+use tracing::{Level, event, instrument};
+
+#[derive(Debug, Clone)]
+pub struct ProductTransportGrpc {
+    product_service_client: ProductServiceClient<tonic::transport::Channel>,
+}
+
+impl ProductTransportGrpc {
+    #[instrument]
+    pub async fn new(config: AppConfig) -> Result<Self, anyhow::Error> {
+        let addr = format!(
+            "http://{}:{}",
+            config.product_service_service_rpc_host, config.product_service_service_rpc_port
+        );
+        let channel = tonic::transport::Channel::from_shared(addr.to_string())
+            .expect("Failed to connect to user service")
+            .connect()
+            .await
+            .map_err(|e| panic!("product service not connected : {}", e))
+            .unwrap();
+
+        Ok(Self {
+            product_service_client: ProductServiceClient::new(channel),
+        })
+    }
+
+    pub async fn find_products_with_pagination(
+        &mut self,
+        request_id: String,
+        token: String,
+        mut request: tonic::Request<FindProductsWithPaginationRequest>,
+    ) -> Result<FindProductsWithPaginationResponse, tonic::Status> {
+        // REQUEST ID TO HEADER
+        request
+            .metadata_mut()
+            .insert(X_REQUEST_ID_HEADER, request_id.parse().unwrap());
+
+        // TOKEN TO HEADER
+        request.metadata_mut().insert(
+            AUTHORIZATION_HEADER,
+            format!("Bearer {}", token).parse().unwrap(),
+        );
+
+        match self
+            .product_service_client
+            .find_products_with_pagination(request)
+            .await
+        {
+            Ok(response) => {
+                event!(
+                    Level::INFO,
+                    request_id = request_id,
+                    data=?response
+                );
+                Ok(response.into_inner())
+            }
+            Err(err) => {
+                event!(
+                    Level::ERROR,
+                    request_id = request_id,
+                    error = %err,
+                    "Failed to get find_products_with_pagination"
+                );
+                Err(err)
+            }
+        }
+    }
+}

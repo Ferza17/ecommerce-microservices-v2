@@ -57,9 +57,8 @@ func (u *authUseCase) AuthUserVerifyAccessControl(ctx context.Context, requestId
 
 	tx.Commit()
 	return &pb.AuthUserVerifyAccessControlResponse{
-		Error:   "",
-		Message: codes.OK.String(),
-		Code:    uint32(codes.OK),
+		Status:  "success",
+		Message: "AuthUserVerifyAccessControl",
 		Data: &pb.AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData{
 			IsValid: isValid,
 			User:    user.ToProto(),

@@ -12,9 +12,8 @@ export const protobufPackage = "user";
 
 /** AUTH RESPONSE DEFINITION */
 export interface AuthUserRegisterResponse {
-  error: string;
+  status: string;
   message: string;
-  code: number;
   data: AuthUserRegisterResponse_AuthUserRegisterResponseData | undefined;
 }
 
@@ -25,9 +24,8 @@ export interface AuthUserRegisterResponse_AuthUserRegisterResponseData {
 }
 
 export interface AuthUserVerifyOtpResponse {
-  error: string;
+  status: string;
   message: string;
-  code: number;
   data: AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData | undefined;
 }
 
@@ -37,9 +35,8 @@ export interface AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData {
 }
 
 export interface AuthUserLogoutByTokenResponse {
-  error: string;
+  status: string;
   message: string;
-  code: number;
   data: AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData | undefined;
 }
 
@@ -48,9 +45,8 @@ export interface AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData
 }
 
 export interface AuthUserVerifyAccessControlResponse {
-  error: string;
+  status: string;
   message: string;
-  code: number;
   data: AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData | undefined;
 }
 
@@ -62,9 +58,8 @@ export interface AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControl
 }
 
 export interface AuthUserFindUserByTokenResponse {
-  error: string;
+  status: string;
   message: string;
-  code: number;
   data: AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData | undefined;
 }
 
@@ -73,9 +68,8 @@ export interface AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponse
 }
 
 export interface AuthServiceVerifyIsExcludedResponse {
-  error: string;
+  status: string;
   message: string;
-  code: number;
   data: AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData | undefined;
 }
 
@@ -85,9 +79,8 @@ export interface AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcluded
 
 /** USER RESPONSE DEFINITION */
 export interface UpdateUserByIdResponse {
-  error: string;
+  status: string;
   message: string;
-  code: number;
   data: UpdateUserByIdResponse_UpdateUserByIdResponseData | undefined;
 }
 
@@ -96,9 +89,8 @@ export interface UpdateUserByIdResponse_UpdateUserByIdResponseData {
 }
 
 export interface FindUserByIdResponse {
-  error: string;
+  status: string;
   message: string;
-  code: number;
   data: FindUserByIdResponse_FindUserByIdResponseData | undefined;
 }
 
@@ -107,9 +99,8 @@ export interface FindUserByIdResponse_FindUserByIdResponseData {
 }
 
 export interface FindUserByEmailAndPasswordResponse {
-  error: string;
+  status: string;
   message: string;
-  code: number;
   data: FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData | undefined;
 }
 
@@ -118,19 +109,16 @@ export interface FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordRe
 }
 
 function createBaseAuthUserRegisterResponse(): AuthUserRegisterResponse {
-  return { error: "", message: "", code: 0, data: undefined };
+  return { status: "", message: "", data: undefined };
 }
 
 export const AuthUserRegisterResponse: MessageFns<AuthUserRegisterResponse> = {
   encode(message: AuthUserRegisterResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.error !== "") {
-      writer.uint32(10).string(message.error);
+    if (message.status !== "") {
+      writer.uint32(10).string(message.status);
     }
     if (message.message !== "") {
       writer.uint32(18).string(message.message);
-    }
-    if (message.code !== 0) {
-      writer.uint32(24).uint32(message.code);
     }
     if (message.data !== undefined) {
       AuthUserRegisterResponse_AuthUserRegisterResponseData.encode(message.data, writer.uint32(34).fork()).join();
@@ -150,7 +138,7 @@ export const AuthUserRegisterResponse: MessageFns<AuthUserRegisterResponse> = {
             break;
           }
 
-          message.error = reader.string();
+          message.status = reader.string();
           continue;
         }
         case 2: {
@@ -159,14 +147,6 @@ export const AuthUserRegisterResponse: MessageFns<AuthUserRegisterResponse> = {
           }
 
           message.message = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
-            break;
-          }
-
-          message.code = reader.uint32();
           continue;
         }
         case 4: {
@@ -188,9 +168,8 @@ export const AuthUserRegisterResponse: MessageFns<AuthUserRegisterResponse> = {
 
   fromJSON(object: any): AuthUserRegisterResponse {
     return {
-      error: isSet(object.error) ? globalThis.String(object.error) : "",
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
       message: isSet(object.message) ? globalThis.String(object.message) : "",
-      code: isSet(object.code) ? globalThis.Number(object.code) : 0,
       data: isSet(object.data)
         ? AuthUserRegisterResponse_AuthUserRegisterResponseData.fromJSON(object.data)
         : undefined,
@@ -199,14 +178,11 @@ export const AuthUserRegisterResponse: MessageFns<AuthUserRegisterResponse> = {
 
   toJSON(message: AuthUserRegisterResponse): unknown {
     const obj: any = {};
-    if (message.error !== "") {
-      obj.error = message.error;
+    if (message.status !== "") {
+      obj.status = message.status;
     }
     if (message.message !== "") {
       obj.message = message.message;
-    }
-    if (message.code !== 0) {
-      obj.code = Math.round(message.code);
     }
     if (message.data !== undefined) {
       obj.data = AuthUserRegisterResponse_AuthUserRegisterResponseData.toJSON(message.data);
@@ -219,9 +195,8 @@ export const AuthUserRegisterResponse: MessageFns<AuthUserRegisterResponse> = {
   },
   fromPartial(object: DeepPartial<AuthUserRegisterResponse>): AuthUserRegisterResponse {
     const message = createBaseAuthUserRegisterResponse();
-    message.error = object.error ?? "";
+    message.status = object.status ?? "";
     message.message = object.message ?? "";
-    message.code = object.code ?? 0;
     message.data = (object.data !== undefined && object.data !== null)
       ? AuthUserRegisterResponse_AuthUserRegisterResponseData.fromPartial(object.data)
       : undefined;
@@ -333,19 +308,16 @@ export const AuthUserRegisterResponse_AuthUserRegisterResponseData: MessageFns<
 };
 
 function createBaseAuthUserVerifyOtpResponse(): AuthUserVerifyOtpResponse {
-  return { error: "", message: "", code: 0, data: undefined };
+  return { status: "", message: "", data: undefined };
 }
 
 export const AuthUserVerifyOtpResponse: MessageFns<AuthUserVerifyOtpResponse> = {
   encode(message: AuthUserVerifyOtpResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.error !== "") {
-      writer.uint32(10).string(message.error);
+    if (message.status !== "") {
+      writer.uint32(10).string(message.status);
     }
     if (message.message !== "") {
       writer.uint32(18).string(message.message);
-    }
-    if (message.code !== 0) {
-      writer.uint32(24).uint32(message.code);
     }
     if (message.data !== undefined) {
       AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData.encode(message.data, writer.uint32(34).fork()).join();
@@ -365,7 +337,7 @@ export const AuthUserVerifyOtpResponse: MessageFns<AuthUserVerifyOtpResponse> = 
             break;
           }
 
-          message.error = reader.string();
+          message.status = reader.string();
           continue;
         }
         case 2: {
@@ -374,14 +346,6 @@ export const AuthUserVerifyOtpResponse: MessageFns<AuthUserVerifyOtpResponse> = 
           }
 
           message.message = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
-            break;
-          }
-
-          message.code = reader.uint32();
           continue;
         }
         case 4: {
@@ -403,9 +367,8 @@ export const AuthUserVerifyOtpResponse: MessageFns<AuthUserVerifyOtpResponse> = 
 
   fromJSON(object: any): AuthUserVerifyOtpResponse {
     return {
-      error: isSet(object.error) ? globalThis.String(object.error) : "",
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
       message: isSet(object.message) ? globalThis.String(object.message) : "",
-      code: isSet(object.code) ? globalThis.Number(object.code) : 0,
       data: isSet(object.data)
         ? AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData.fromJSON(object.data)
         : undefined,
@@ -414,14 +377,11 @@ export const AuthUserVerifyOtpResponse: MessageFns<AuthUserVerifyOtpResponse> = 
 
   toJSON(message: AuthUserVerifyOtpResponse): unknown {
     const obj: any = {};
-    if (message.error !== "") {
-      obj.error = message.error;
+    if (message.status !== "") {
+      obj.status = message.status;
     }
     if (message.message !== "") {
       obj.message = message.message;
-    }
-    if (message.code !== 0) {
-      obj.code = Math.round(message.code);
     }
     if (message.data !== undefined) {
       obj.data = AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData.toJSON(message.data);
@@ -434,9 +394,8 @@ export const AuthUserVerifyOtpResponse: MessageFns<AuthUserVerifyOtpResponse> = 
   },
   fromPartial(object: DeepPartial<AuthUserVerifyOtpResponse>): AuthUserVerifyOtpResponse {
     const message = createBaseAuthUserVerifyOtpResponse();
-    message.error = object.error ?? "";
+    message.status = object.status ?? "";
     message.message = object.message ?? "";
-    message.code = object.code ?? 0;
     message.data = (object.data !== undefined && object.data !== null)
       ? AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData.fromPartial(object.data)
       : undefined;
@@ -530,19 +489,16 @@ export const AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData: MessageFns
 };
 
 function createBaseAuthUserLogoutByTokenResponse(): AuthUserLogoutByTokenResponse {
-  return { error: "", message: "", code: 0, data: undefined };
+  return { status: "", message: "", data: undefined };
 }
 
 export const AuthUserLogoutByTokenResponse: MessageFns<AuthUserLogoutByTokenResponse> = {
   encode(message: AuthUserLogoutByTokenResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.error !== "") {
-      writer.uint32(10).string(message.error);
+    if (message.status !== "") {
+      writer.uint32(10).string(message.status);
     }
     if (message.message !== "") {
       writer.uint32(18).string(message.message);
-    }
-    if (message.code !== 0) {
-      writer.uint32(24).uint32(message.code);
     }
     if (message.data !== undefined) {
       AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData.encode(message.data, writer.uint32(42).fork())
@@ -563,7 +519,7 @@ export const AuthUserLogoutByTokenResponse: MessageFns<AuthUserLogoutByTokenResp
             break;
           }
 
-          message.error = reader.string();
+          message.status = reader.string();
           continue;
         }
         case 2: {
@@ -572,14 +528,6 @@ export const AuthUserLogoutByTokenResponse: MessageFns<AuthUserLogoutByTokenResp
           }
 
           message.message = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
-            break;
-          }
-
-          message.code = reader.uint32();
           continue;
         }
         case 5: {
@@ -604,9 +552,8 @@ export const AuthUserLogoutByTokenResponse: MessageFns<AuthUserLogoutByTokenResp
 
   fromJSON(object: any): AuthUserLogoutByTokenResponse {
     return {
-      error: isSet(object.error) ? globalThis.String(object.error) : "",
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
       message: isSet(object.message) ? globalThis.String(object.message) : "",
-      code: isSet(object.code) ? globalThis.Number(object.code) : 0,
       data: isSet(object.data)
         ? AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData.fromJSON(object.data)
         : undefined,
@@ -615,14 +562,11 @@ export const AuthUserLogoutByTokenResponse: MessageFns<AuthUserLogoutByTokenResp
 
   toJSON(message: AuthUserLogoutByTokenResponse): unknown {
     const obj: any = {};
-    if (message.error !== "") {
-      obj.error = message.error;
+    if (message.status !== "") {
+      obj.status = message.status;
     }
     if (message.message !== "") {
       obj.message = message.message;
-    }
-    if (message.code !== 0) {
-      obj.code = Math.round(message.code);
     }
     if (message.data !== undefined) {
       obj.data = AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData.toJSON(message.data);
@@ -635,9 +579,8 @@ export const AuthUserLogoutByTokenResponse: MessageFns<AuthUserLogoutByTokenResp
   },
   fromPartial(object: DeepPartial<AuthUserLogoutByTokenResponse>): AuthUserLogoutByTokenResponse {
     const message = createBaseAuthUserLogoutByTokenResponse();
-    message.error = object.error ?? "";
+    message.status = object.status ?? "";
     message.message = object.message ?? "";
-    message.code = object.code ?? 0;
     message.data = (object.data !== undefined && object.data !== null)
       ? AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData.fromPartial(object.data)
       : undefined;
@@ -716,19 +659,16 @@ export const AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData: Me
 };
 
 function createBaseAuthUserVerifyAccessControlResponse(): AuthUserVerifyAccessControlResponse {
-  return { error: "", message: "", code: 0, data: undefined };
+  return { status: "", message: "", data: undefined };
 }
 
 export const AuthUserVerifyAccessControlResponse: MessageFns<AuthUserVerifyAccessControlResponse> = {
   encode(message: AuthUserVerifyAccessControlResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.error !== "") {
-      writer.uint32(10).string(message.error);
+    if (message.status !== "") {
+      writer.uint32(10).string(message.status);
     }
     if (message.message !== "") {
       writer.uint32(18).string(message.message);
-    }
-    if (message.code !== 0) {
-      writer.uint32(24).uint32(message.code);
     }
     if (message.data !== undefined) {
       AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData.encode(
@@ -751,7 +691,7 @@ export const AuthUserVerifyAccessControlResponse: MessageFns<AuthUserVerifyAcces
             break;
           }
 
-          message.error = reader.string();
+          message.status = reader.string();
           continue;
         }
         case 2: {
@@ -760,14 +700,6 @@ export const AuthUserVerifyAccessControlResponse: MessageFns<AuthUserVerifyAcces
           }
 
           message.message = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
-            break;
-          }
-
-          message.code = reader.uint32();
           continue;
         }
         case 4: {
@@ -792,9 +724,8 @@ export const AuthUserVerifyAccessControlResponse: MessageFns<AuthUserVerifyAcces
 
   fromJSON(object: any): AuthUserVerifyAccessControlResponse {
     return {
-      error: isSet(object.error) ? globalThis.String(object.error) : "",
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
       message: isSet(object.message) ? globalThis.String(object.message) : "",
-      code: isSet(object.code) ? globalThis.Number(object.code) : 0,
       data: isSet(object.data)
         ? AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData.fromJSON(object.data)
         : undefined,
@@ -803,14 +734,11 @@ export const AuthUserVerifyAccessControlResponse: MessageFns<AuthUserVerifyAcces
 
   toJSON(message: AuthUserVerifyAccessControlResponse): unknown {
     const obj: any = {};
-    if (message.error !== "") {
-      obj.error = message.error;
+    if (message.status !== "") {
+      obj.status = message.status;
     }
     if (message.message !== "") {
       obj.message = message.message;
-    }
-    if (message.code !== 0) {
-      obj.code = Math.round(message.code);
     }
     if (message.data !== undefined) {
       obj.data = AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData.toJSON(message.data);
@@ -823,9 +751,8 @@ export const AuthUserVerifyAccessControlResponse: MessageFns<AuthUserVerifyAcces
   },
   fromPartial(object: DeepPartial<AuthUserVerifyAccessControlResponse>): AuthUserVerifyAccessControlResponse {
     const message = createBaseAuthUserVerifyAccessControlResponse();
-    message.error = object.error ?? "";
+    message.status = object.status ?? "";
     message.message = object.message ?? "";
-    message.code = object.code ?? 0;
     message.data = (object.data !== undefined && object.data !== null)
       ? AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData.fromPartial(object.data)
       : undefined;
@@ -956,19 +883,16 @@ export const AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResp
 };
 
 function createBaseAuthUserFindUserByTokenResponse(): AuthUserFindUserByTokenResponse {
-  return { error: "", message: "", code: 0, data: undefined };
+  return { status: "", message: "", data: undefined };
 }
 
 export const AuthUserFindUserByTokenResponse: MessageFns<AuthUserFindUserByTokenResponse> = {
   encode(message: AuthUserFindUserByTokenResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.error !== "") {
-      writer.uint32(10).string(message.error);
+    if (message.status !== "") {
+      writer.uint32(10).string(message.status);
     }
     if (message.message !== "") {
       writer.uint32(18).string(message.message);
-    }
-    if (message.code !== 0) {
-      writer.uint32(24).uint32(message.code);
     }
     if (message.data !== undefined) {
       AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData.encode(message.data, writer.uint32(34).fork())
@@ -989,7 +913,7 @@ export const AuthUserFindUserByTokenResponse: MessageFns<AuthUserFindUserByToken
             break;
           }
 
-          message.error = reader.string();
+          message.status = reader.string();
           continue;
         }
         case 2: {
@@ -998,14 +922,6 @@ export const AuthUserFindUserByTokenResponse: MessageFns<AuthUserFindUserByToken
           }
 
           message.message = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
-            break;
-          }
-
-          message.code = reader.uint32();
           continue;
         }
         case 4: {
@@ -1030,9 +946,8 @@ export const AuthUserFindUserByTokenResponse: MessageFns<AuthUserFindUserByToken
 
   fromJSON(object: any): AuthUserFindUserByTokenResponse {
     return {
-      error: isSet(object.error) ? globalThis.String(object.error) : "",
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
       message: isSet(object.message) ? globalThis.String(object.message) : "",
-      code: isSet(object.code) ? globalThis.Number(object.code) : 0,
       data: isSet(object.data)
         ? AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData.fromJSON(object.data)
         : undefined,
@@ -1041,14 +956,11 @@ export const AuthUserFindUserByTokenResponse: MessageFns<AuthUserFindUserByToken
 
   toJSON(message: AuthUserFindUserByTokenResponse): unknown {
     const obj: any = {};
-    if (message.error !== "") {
-      obj.error = message.error;
+    if (message.status !== "") {
+      obj.status = message.status;
     }
     if (message.message !== "") {
       obj.message = message.message;
-    }
-    if (message.code !== 0) {
-      obj.code = Math.round(message.code);
     }
     if (message.data !== undefined) {
       obj.data = AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData.toJSON(message.data);
@@ -1061,9 +973,8 @@ export const AuthUserFindUserByTokenResponse: MessageFns<AuthUserFindUserByToken
   },
   fromPartial(object: DeepPartial<AuthUserFindUserByTokenResponse>): AuthUserFindUserByTokenResponse {
     const message = createBaseAuthUserFindUserByTokenResponse();
-    message.error = object.error ?? "";
+    message.status = object.status ?? "";
     message.message = object.message ?? "";
-    message.code = object.code ?? 0;
     message.data = (object.data !== undefined && object.data !== null)
       ? AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData.fromPartial(object.data)
       : undefined;
@@ -1142,19 +1053,16 @@ export const AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData
 };
 
 function createBaseAuthServiceVerifyIsExcludedResponse(): AuthServiceVerifyIsExcludedResponse {
-  return { error: "", message: "", code: 0, data: undefined };
+  return { status: "", message: "", data: undefined };
 }
 
 export const AuthServiceVerifyIsExcludedResponse: MessageFns<AuthServiceVerifyIsExcludedResponse> = {
   encode(message: AuthServiceVerifyIsExcludedResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.error !== "") {
-      writer.uint32(10).string(message.error);
+    if (message.status !== "") {
+      writer.uint32(10).string(message.status);
     }
     if (message.message !== "") {
       writer.uint32(18).string(message.message);
-    }
-    if (message.code !== 0) {
-      writer.uint32(24).uint32(message.code);
     }
     if (message.data !== undefined) {
       AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData.encode(
@@ -1177,7 +1085,7 @@ export const AuthServiceVerifyIsExcludedResponse: MessageFns<AuthServiceVerifyIs
             break;
           }
 
-          message.error = reader.string();
+          message.status = reader.string();
           continue;
         }
         case 2: {
@@ -1186,14 +1094,6 @@ export const AuthServiceVerifyIsExcludedResponse: MessageFns<AuthServiceVerifyIs
           }
 
           message.message = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
-            break;
-          }
-
-          message.code = reader.uint32();
           continue;
         }
         case 4: {
@@ -1218,9 +1118,8 @@ export const AuthServiceVerifyIsExcludedResponse: MessageFns<AuthServiceVerifyIs
 
   fromJSON(object: any): AuthServiceVerifyIsExcludedResponse {
     return {
-      error: isSet(object.error) ? globalThis.String(object.error) : "",
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
       message: isSet(object.message) ? globalThis.String(object.message) : "",
-      code: isSet(object.code) ? globalThis.Number(object.code) : 0,
       data: isSet(object.data)
         ? AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData.fromJSON(object.data)
         : undefined,
@@ -1229,14 +1128,11 @@ export const AuthServiceVerifyIsExcludedResponse: MessageFns<AuthServiceVerifyIs
 
   toJSON(message: AuthServiceVerifyIsExcludedResponse): unknown {
     const obj: any = {};
-    if (message.error !== "") {
-      obj.error = message.error;
+    if (message.status !== "") {
+      obj.status = message.status;
     }
     if (message.message !== "") {
       obj.message = message.message;
-    }
-    if (message.code !== 0) {
-      obj.code = Math.round(message.code);
     }
     if (message.data !== undefined) {
       obj.data = AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData.toJSON(message.data);
@@ -1249,9 +1145,8 @@ export const AuthServiceVerifyIsExcludedResponse: MessageFns<AuthServiceVerifyIs
   },
   fromPartial(object: DeepPartial<AuthServiceVerifyIsExcludedResponse>): AuthServiceVerifyIsExcludedResponse {
     const message = createBaseAuthServiceVerifyIsExcludedResponse();
-    message.error = object.error ?? "";
+    message.status = object.status ?? "";
     message.message = object.message ?? "";
-    message.code = object.code ?? 0;
     message.data = (object.data !== undefined && object.data !== null)
       ? AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData.fromPartial(object.data)
       : undefined;
@@ -1330,19 +1225,16 @@ export const AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResp
 };
 
 function createBaseUpdateUserByIdResponse(): UpdateUserByIdResponse {
-  return { error: "", message: "", code: 0, data: undefined };
+  return { status: "", message: "", data: undefined };
 }
 
 export const UpdateUserByIdResponse: MessageFns<UpdateUserByIdResponse> = {
   encode(message: UpdateUserByIdResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.error !== "") {
-      writer.uint32(10).string(message.error);
+    if (message.status !== "") {
+      writer.uint32(10).string(message.status);
     }
     if (message.message !== "") {
       writer.uint32(18).string(message.message);
-    }
-    if (message.code !== 0) {
-      writer.uint32(24).uint32(message.code);
     }
     if (message.data !== undefined) {
       UpdateUserByIdResponse_UpdateUserByIdResponseData.encode(message.data, writer.uint32(34).fork()).join();
@@ -1362,7 +1254,7 @@ export const UpdateUserByIdResponse: MessageFns<UpdateUserByIdResponse> = {
             break;
           }
 
-          message.error = reader.string();
+          message.status = reader.string();
           continue;
         }
         case 2: {
@@ -1371,14 +1263,6 @@ export const UpdateUserByIdResponse: MessageFns<UpdateUserByIdResponse> = {
           }
 
           message.message = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
-            break;
-          }
-
-          message.code = reader.uint32();
           continue;
         }
         case 4: {
@@ -1400,23 +1284,19 @@ export const UpdateUserByIdResponse: MessageFns<UpdateUserByIdResponse> = {
 
   fromJSON(object: any): UpdateUserByIdResponse {
     return {
-      error: isSet(object.error) ? globalThis.String(object.error) : "",
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
       message: isSet(object.message) ? globalThis.String(object.message) : "",
-      code: isSet(object.code) ? globalThis.Number(object.code) : 0,
       data: isSet(object.data) ? UpdateUserByIdResponse_UpdateUserByIdResponseData.fromJSON(object.data) : undefined,
     };
   },
 
   toJSON(message: UpdateUserByIdResponse): unknown {
     const obj: any = {};
-    if (message.error !== "") {
-      obj.error = message.error;
+    if (message.status !== "") {
+      obj.status = message.status;
     }
     if (message.message !== "") {
       obj.message = message.message;
-    }
-    if (message.code !== 0) {
-      obj.code = Math.round(message.code);
     }
     if (message.data !== undefined) {
       obj.data = UpdateUserByIdResponse_UpdateUserByIdResponseData.toJSON(message.data);
@@ -1429,9 +1309,8 @@ export const UpdateUserByIdResponse: MessageFns<UpdateUserByIdResponse> = {
   },
   fromPartial(object: DeepPartial<UpdateUserByIdResponse>): UpdateUserByIdResponse {
     const message = createBaseUpdateUserByIdResponse();
-    message.error = object.error ?? "";
+    message.status = object.status ?? "";
     message.message = object.message ?? "";
-    message.code = object.code ?? 0;
     message.data = (object.data !== undefined && object.data !== null)
       ? UpdateUserByIdResponse_UpdateUserByIdResponseData.fromPartial(object.data)
       : undefined;
@@ -1507,19 +1386,16 @@ export const UpdateUserByIdResponse_UpdateUserByIdResponseData: MessageFns<
 };
 
 function createBaseFindUserByIdResponse(): FindUserByIdResponse {
-  return { error: "", message: "", code: 0, data: undefined };
+  return { status: "", message: "", data: undefined };
 }
 
 export const FindUserByIdResponse: MessageFns<FindUserByIdResponse> = {
   encode(message: FindUserByIdResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.error !== "") {
-      writer.uint32(10).string(message.error);
+    if (message.status !== "") {
+      writer.uint32(10).string(message.status);
     }
     if (message.message !== "") {
       writer.uint32(18).string(message.message);
-    }
-    if (message.code !== 0) {
-      writer.uint32(24).uint32(message.code);
     }
     if (message.data !== undefined) {
       FindUserByIdResponse_FindUserByIdResponseData.encode(message.data, writer.uint32(34).fork()).join();
@@ -1539,7 +1415,7 @@ export const FindUserByIdResponse: MessageFns<FindUserByIdResponse> = {
             break;
           }
 
-          message.error = reader.string();
+          message.status = reader.string();
           continue;
         }
         case 2: {
@@ -1548,14 +1424,6 @@ export const FindUserByIdResponse: MessageFns<FindUserByIdResponse> = {
           }
 
           message.message = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
-            break;
-          }
-
-          message.code = reader.uint32();
           continue;
         }
         case 4: {
@@ -1577,23 +1445,19 @@ export const FindUserByIdResponse: MessageFns<FindUserByIdResponse> = {
 
   fromJSON(object: any): FindUserByIdResponse {
     return {
-      error: isSet(object.error) ? globalThis.String(object.error) : "",
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
       message: isSet(object.message) ? globalThis.String(object.message) : "",
-      code: isSet(object.code) ? globalThis.Number(object.code) : 0,
       data: isSet(object.data) ? FindUserByIdResponse_FindUserByIdResponseData.fromJSON(object.data) : undefined,
     };
   },
 
   toJSON(message: FindUserByIdResponse): unknown {
     const obj: any = {};
-    if (message.error !== "") {
-      obj.error = message.error;
+    if (message.status !== "") {
+      obj.status = message.status;
     }
     if (message.message !== "") {
       obj.message = message.message;
-    }
-    if (message.code !== 0) {
-      obj.code = Math.round(message.code);
     }
     if (message.data !== undefined) {
       obj.data = FindUserByIdResponse_FindUserByIdResponseData.toJSON(message.data);
@@ -1606,9 +1470,8 @@ export const FindUserByIdResponse: MessageFns<FindUserByIdResponse> = {
   },
   fromPartial(object: DeepPartial<FindUserByIdResponse>): FindUserByIdResponse {
     const message = createBaseFindUserByIdResponse();
-    message.error = object.error ?? "";
+    message.status = object.status ?? "";
     message.message = object.message ?? "";
-    message.code = object.code ?? 0;
     message.data = (object.data !== undefined && object.data !== null)
       ? FindUserByIdResponse_FindUserByIdResponseData.fromPartial(object.data)
       : undefined;
@@ -1683,19 +1546,16 @@ export const FindUserByIdResponse_FindUserByIdResponseData: MessageFns<FindUserB
   };
 
 function createBaseFindUserByEmailAndPasswordResponse(): FindUserByEmailAndPasswordResponse {
-  return { error: "", message: "", code: 0, data: undefined };
+  return { status: "", message: "", data: undefined };
 }
 
 export const FindUserByEmailAndPasswordResponse: MessageFns<FindUserByEmailAndPasswordResponse> = {
   encode(message: FindUserByEmailAndPasswordResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.error !== "") {
-      writer.uint32(10).string(message.error);
+    if (message.status !== "") {
+      writer.uint32(10).string(message.status);
     }
     if (message.message !== "") {
       writer.uint32(18).string(message.message);
-    }
-    if (message.code !== 0) {
-      writer.uint32(24).uint32(message.code);
     }
     if (message.data !== undefined) {
       FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData.encode(
@@ -1718,7 +1578,7 @@ export const FindUserByEmailAndPasswordResponse: MessageFns<FindUserByEmailAndPa
             break;
           }
 
-          message.error = reader.string();
+          message.status = reader.string();
           continue;
         }
         case 2: {
@@ -1727,14 +1587,6 @@ export const FindUserByEmailAndPasswordResponse: MessageFns<FindUserByEmailAndPa
           }
 
           message.message = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
-            break;
-          }
-
-          message.code = reader.uint32();
           continue;
         }
         case 4: {
@@ -1759,9 +1611,8 @@ export const FindUserByEmailAndPasswordResponse: MessageFns<FindUserByEmailAndPa
 
   fromJSON(object: any): FindUserByEmailAndPasswordResponse {
     return {
-      error: isSet(object.error) ? globalThis.String(object.error) : "",
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
       message: isSet(object.message) ? globalThis.String(object.message) : "",
-      code: isSet(object.code) ? globalThis.Number(object.code) : 0,
       data: isSet(object.data)
         ? FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData.fromJSON(object.data)
         : undefined,
@@ -1770,14 +1621,11 @@ export const FindUserByEmailAndPasswordResponse: MessageFns<FindUserByEmailAndPa
 
   toJSON(message: FindUserByEmailAndPasswordResponse): unknown {
     const obj: any = {};
-    if (message.error !== "") {
-      obj.error = message.error;
+    if (message.status !== "") {
+      obj.status = message.status;
     }
     if (message.message !== "") {
       obj.message = message.message;
-    }
-    if (message.code !== 0) {
-      obj.code = Math.round(message.code);
     }
     if (message.data !== undefined) {
       obj.data = FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData.toJSON(message.data);
@@ -1790,9 +1638,8 @@ export const FindUserByEmailAndPasswordResponse: MessageFns<FindUserByEmailAndPa
   },
   fromPartial(object: DeepPartial<FindUserByEmailAndPasswordResponse>): FindUserByEmailAndPasswordResponse {
     const message = createBaseFindUserByEmailAndPasswordResponse();
-    message.error = object.error ?? "";
+    message.status = object.status ?? "";
     message.message = object.message ?? "";
-    message.code = object.code ?? 0;
     message.data = (object.data !== undefined && object.data !== null)
       ? FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData.fromPartial(object.data)
       : undefined;

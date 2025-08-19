@@ -27,6 +27,11 @@ func (c *notificationEmailConsumer) NotificationEmailPaymentOrderCreated(ctx con
 		if err != nil {
 			span.RecordError(err)
 			pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueNotificationEmailPaymentOrderCreated, "failed").Inc()
+			if err = d.Nack(true, true); err != nil {
+				c.logger.Error(fmt.Sprintf("failed to nack : %v", zap.Error(err)))
+				return
+			}
+			//TODO: Publish Event Notification Email Payment Order Created Failed
 		}
 		span.End()
 	}(err)
@@ -48,9 +53,9 @@ func (c *notificationEmailConsumer) NotificationEmailPaymentOrderCreated(ctx con
 		return err
 	}
 
-	if _, err = c.temporal.
-		StartWorkflow(ctx, requestId, c.emailWorkflow.SendNotificationEmailPaymentOrderCreatedWorkflow, requestId, &request); err != nil {
-		c.logger.Error(fmt.Sprintf("failed to start workflow : %v", zap.Error(err)))
+	if err = c.notificationUseCase.SendNotificationEmailPaymentOrderCreated(ctx, requestId, &request); err != nil {
+		c.logger.Error(fmt.Sprintf("failed to send email payment order created for request : %v", zap.Error(err)))
+		return err
 	}
 
 	if err = d.Ack(true); err != nil {

@@ -35,408 +35,6 @@ var (
 	_ = sort.Sort
 )
 
-// Validate checks the field values on EventStore with the rules defined in the
-// proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *EventStore) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on EventStore with the rules defined in
-// the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in EventStoreMultiError, or
-// nil if none found.
-func (m *EventStore) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *EventStore) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Id
-
-	// no validation rules for RequestId
-
-	// no validation rules for Service
-
-	// no validation rules for EventType
-
-	// no validation rules for Status
-
-	if all {
-		switch v := interface{}(m.GetPayload()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, EventStoreValidationError{
-					field:  "Payload",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, EventStoreValidationError{
-					field:  "Payload",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetPayload()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return EventStoreValidationError{
-				field:  "Payload",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if all {
-		switch v := interface{}(m.GetCreatedAt()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, EventStoreValidationError{
-					field:  "CreatedAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, EventStoreValidationError{
-					field:  "CreatedAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return EventStoreValidationError{
-				field:  "CreatedAt",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if all {
-		switch v := interface{}(m.GetUpdatedAt()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, EventStoreValidationError{
-					field:  "UpdatedAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, EventStoreValidationError{
-					field:  "UpdatedAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return EventStoreValidationError{
-				field:  "UpdatedAt",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if m.PreviousState != nil {
-
-		if all {
-			switch v := interface{}(m.GetPreviousState()).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, EventStoreValidationError{
-						field:  "PreviousState",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, EventStoreValidationError{
-						field:  "PreviousState",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(m.GetPreviousState()).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return EventStoreValidationError{
-					field:  "PreviousState",
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
-	if len(errors) > 0 {
-		return EventStoreMultiError(errors)
-	}
-
-	return nil
-}
-
-// EventStoreMultiError is an error wrapping multiple validation errors
-// returned by EventStore.ValidateAll() if the designated constraints aren't met.
-type EventStoreMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m EventStoreMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m EventStoreMultiError) AllErrors() []error { return m }
-
-// EventStoreValidationError is the validation error returned by
-// EventStore.Validate if the designated constraints aren't met.
-type EventStoreValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e EventStoreValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e EventStoreValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e EventStoreValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e EventStoreValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e EventStoreValidationError) ErrorName() string { return "EventStoreValidationError" }
-
-// Error satisfies the builtin error interface
-func (e EventStoreValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sEventStore.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = EventStoreValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = EventStoreValidationError{}
-
-// Validate checks the field values on SagaEvent with the rules defined in the
-// proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *SagaEvent) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on SagaEvent with the rules defined in
-// the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in SagaEventMultiError, or nil
-// if none found.
-func (m *SagaEvent) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *SagaEvent) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Id
-
-	// no validation rules for SagaId
-
-	// no validation rules for SagaType
-
-	// no validation rules for StepName
-
-	// no validation rules for EventType
-
-	if all {
-		switch v := interface{}(m.GetTimestamp()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, SagaEventValidationError{
-					field:  "Timestamp",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, SagaEventValidationError{
-					field:  "Timestamp",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetTimestamp()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return SagaEventValidationError{
-				field:  "Timestamp",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if all {
-		switch v := interface{}(m.GetPayload()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, SagaEventValidationError{
-					field:  "Payload",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, SagaEventValidationError{
-					field:  "Payload",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetPayload()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return SagaEventValidationError{
-				field:  "Payload",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	// no validation rules for Metadata
-
-	// no validation rules for CorrelationId
-
-	// no validation rules for CausationId
-
-	if len(errors) > 0 {
-		return SagaEventMultiError(errors)
-	}
-
-	return nil
-}
-
-// SagaEventMultiError is an error wrapping multiple validation errors returned
-// by SagaEvent.ValidateAll() if the designated constraints aren't met.
-type SagaEventMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m SagaEventMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m SagaEventMultiError) AllErrors() []error { return m }
-
-// SagaEventValidationError is the validation error returned by
-// SagaEvent.Validate if the designated constraints aren't met.
-type SagaEventValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e SagaEventValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e SagaEventValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e SagaEventValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e SagaEventValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e SagaEventValidationError) ErrorName() string { return "SagaEventValidationError" }
-
-// Error satisfies the builtin error interface
-func (e SagaEventValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sSagaEvent.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = SagaEventValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = SagaEventValidationError{}
-
 // Validate checks the field values on Event with the rules defined in the
 // proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
@@ -458,22 +56,16 @@ func (m *Event) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
-
 	// no validation rules for AggregateId
-
-	// no validation rules for AggregateType
 
 	// no validation rules for EventType
 
-	// no validation rules for Version
-
 	if all {
-		switch v := interface{}(m.GetTimestamp()).(type) {
+		switch v := interface{}(m.GetLastState()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
 				errors = append(errors, EventValidationError{
-					field:  "Timestamp",
+					field:  "LastState",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
@@ -481,16 +73,16 @@ func (m *Event) validate(all bool) error {
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
 				errors = append(errors, EventValidationError{
-					field:  "Timestamp",
+					field:  "LastState",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetTimestamp()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetLastState()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return EventValidationError{
-				field:  "Timestamp",
+				field:  "LastState",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
@@ -498,11 +90,11 @@ func (m *Event) validate(all bool) error {
 	}
 
 	if all {
-		switch v := interface{}(m.GetData()).(type) {
+		switch v := interface{}(m.GetPayload()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
 				errors = append(errors, EventValidationError{
-					field:  "Data",
+					field:  "Payload",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
@@ -510,23 +102,79 @@ func (m *Event) validate(all bool) error {
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
 				errors = append(errors, EventValidationError{
-					field:  "Data",
+					field:  "Payload",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetPayload()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return EventValidationError{
-				field:  "Data",
+				field:  "Payload",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
 		}
 	}
 
-	// no validation rules for Metadata
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, EventValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, EventValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return EventValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetUpdatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, EventValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, EventValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return EventValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if len(errors) > 0 {
 		return EventMultiError(errors)
@@ -604,179 +252,3 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = EventValidationError{}
-
-// Validate checks the field values on CompensationEvent with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// first error encountered is returned, or nil if there are no violations.
-func (m *CompensationEvent) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on CompensationEvent with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// CompensationEventMultiError, or nil if none found.
-func (m *CompensationEvent) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *CompensationEvent) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Id
-
-	// no validation rules for SagaId
-
-	// no validation rules for OriginalEventId
-
-	// no validation rules for ServiceName
-
-	// no validation rules for Operation
-
-	if all {
-		switch v := interface{}(m.GetTimestamp()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, CompensationEventValidationError{
-					field:  "Timestamp",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, CompensationEventValidationError{
-					field:  "Timestamp",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetTimestamp()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return CompensationEventValidationError{
-				field:  "Timestamp",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if all {
-		switch v := interface{}(m.GetCompensationData()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, CompensationEventValidationError{
-					field:  "CompensationData",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, CompensationEventValidationError{
-					field:  "CompensationData",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetCompensationData()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return CompensationEventValidationError{
-				field:  "CompensationData",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	// no validation rules for Status
-
-	// no validation rules for ErrorMessage
-
-	// no validation rules for Metadata
-
-	if len(errors) > 0 {
-		return CompensationEventMultiError(errors)
-	}
-
-	return nil
-}
-
-// CompensationEventMultiError is an error wrapping multiple validation errors
-// returned by CompensationEvent.ValidateAll() if the designated constraints
-// aren't met.
-type CompensationEventMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m CompensationEventMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m CompensationEventMultiError) AllErrors() []error { return m }
-
-// CompensationEventValidationError is the validation error returned by
-// CompensationEvent.Validate if the designated constraints aren't met.
-type CompensationEventValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e CompensationEventValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e CompensationEventValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e CompensationEventValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e CompensationEventValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e CompensationEventValidationError) ErrorName() string {
-	return "CompensationEventValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e CompensationEventValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sCompensationEvent.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = CompensationEventValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = CompensationEventValidationError{}

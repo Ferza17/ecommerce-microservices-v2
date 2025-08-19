@@ -10,13 +10,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 	"time"
 )
 
-func (u *authUseCase) AuthUserRegister(ctx context.Context, requestId string, req *pb.AuthUserRegisterRequest) (*emptypb.Empty, error) {
+func (u *authUseCase) AuthUserRegister(ctx context.Context, requestId string, req *pb.AuthUserRegisterRequest) (*pb.AuthUserRegisterResponse, error) {
 	var (
 		tx  = u.postgresSQL.GormDB().Begin()
 		now = time.Now()
@@ -82,5 +81,8 @@ func (u *authUseCase) AuthUserRegister(ctx context.Context, requestId string, re
 	}
 
 	tx.Commit()
-	return nil, nil
+	return &pb.AuthUserRegisterResponse{
+		Status:  "success",
+		Message: "AuthUserRegister",
+	}, nil
 }

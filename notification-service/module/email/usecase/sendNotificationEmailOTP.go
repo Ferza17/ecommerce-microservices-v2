@@ -7,7 +7,6 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/enum"
 	mailHogInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mailhog"
 	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification"
-	"go.uber.org/zap"
 )
 
 func (u *notificationEmailUseCase) SendNotificationEmailOTP(ctx context.Context, requestId string, req *notificationRpc.SendOtpEmailNotificationRequest) error {
@@ -45,13 +44,6 @@ func (u *notificationEmailUseCase) SendNotificationEmailOTP(ctx context.Context,
 	}); err != nil {
 		return err
 	}
-
-	if err = u.temporal.SignalWorkflow(ctx, requestId, "NotificationEmailUseCase.SendNotificationEmailOTP", nil); err != nil {
-		u.logger.Error("NotificationEmailUseCase.SendNotificationEmailOTP - Failed to signal workflow",
-			zap.String("requestId", requestId),
-			zap.Error(err))
-		return err
-	}
-
+	
 	return nil
 }

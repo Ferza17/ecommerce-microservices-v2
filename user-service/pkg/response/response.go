@@ -21,9 +21,8 @@ func WriteErrorResponse(w http.ResponseWriter, statusCode int, message string, e
 	w.WriteHeader(statusCode)
 
 	marshal, err := marshalOptions.Marshal(&pb.Response{
-		Error:   err.Error(),
+		Status:  "error",
 		Message: message,
-		Code:    int32(statusCode),
 	})
 	if err != nil {
 		log.Println(err)
@@ -38,9 +37,8 @@ func WriteSuccessResponse(w http.ResponseWriter, statusCode int, data *structpb.
 	w.WriteHeader(statusCode)
 
 	marshal, err := marshalOptions.Marshal(&pb.Response{
-		Error:   "",
 		Message: codes.Ok.String(),
-		Code:    int32(statusCode),
+		Status:  "success",
 		Data:    data,
 	})
 	if err != nil {

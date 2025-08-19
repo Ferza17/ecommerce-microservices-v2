@@ -1,23 +1,2 @@
 syntax = "proto3";
 package event;
-
-// SagaEventType defines the type of saga event
-enum SagaEventType {
-  SAGA_STARTED = 0;
-  SAGA_STEP_STARTED = 1;
-  SAGA_STEP_COMPLETED = 2;
-  SAGA_STEP_FAILED = 3;
-  SAGA_STEP_COMPENSATED = 4;
-  SAGA_COMPLETED = 5;
-  SAGA_FAILED = 6;
-  SAGA_COMPENSATING = 7;
-}
-
-
-// CompensationStatus defines the status of compensation
-enum CompensationStatus {
-  COMPENSATION_PENDING = 0;
-  COMPENSATION_COMPLETED = 1;
-  COMPENSATION_FAILED = 2;
-  COMPENSATION_SKIPPED = 3;
-}

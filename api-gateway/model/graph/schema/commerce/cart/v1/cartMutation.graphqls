@@ -1,5 +1,0 @@
-extend type Mutation {
-    createCartItem(input: CreateCartItemRequest): CreateCartItemResponse
-    updateCartItemById(input: UpdateCartItemByIdRequest): UpdateCartItemByIdResponse
-    deleteCartItem(input: DeleteCartItemRequest): DeleteCartItemResponse
-}

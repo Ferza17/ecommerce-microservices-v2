@@ -57,11 +57,9 @@ func (m *Response) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Error
+	// no validation rules for Status
 
 	// no validation rules for Message
-
-	// no validation rules for Code
 
 	if all {
 		switch v := interface{}(m.GetData()).(type) {

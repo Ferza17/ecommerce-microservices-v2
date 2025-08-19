@@ -1,4 +1,0 @@
-extend type Mutation {
-    createUser(input: CreateUserRequest!): CreateUserResponse!
-    updateUserById(input: UpdateUserByIdRequest!): UpdateUserByIdResponse
-}

@@ -24,7 +24,7 @@ func (r *productElasticsearchRepository) FindProductsWithPagination(ctx context.
 
 	reqBody := map[string]interface{}{}
 
-	if request.Name != nil || request.Ids != nil {
+	if request.Names != nil || request.Ids != nil {
 		reqBody["query"] = map[string]interface{}{}
 
 		reqBody["query"].(map[string]interface{})["bool"] = map[string]interface{}{
@@ -39,10 +39,10 @@ func (r *productElasticsearchRepository) FindProductsWithPagination(ctx context.
 			})
 		}
 
-		if request.Name != nil {
+		if request.Names != nil {
 			reqBody["query"].(map[string]interface{})["bool"].(map[string]interface{})["should"] = append(reqBody["query"].(map[string]interface{})["bool"].(map[string]interface{})["should"].([]interface{}), map[string]interface{}{
 				"multi_match": map[string]interface{}{
-					"query": strings.Join(request.Name, " "),
+					"query": strings.Join(request.Names, " "),
 					"fields": []string{
 						"name",
 					},
