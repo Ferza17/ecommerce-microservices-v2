@@ -1,1 +1,0 @@
-fn(axum::extract::State<std::sync::Arc<UserPresenterHttp>>, HeaderMap, axum::Json<AuthUserRegisterRequest>) -> impl futures::Future<Output = Result<(StatusCode, axum::Json<AuthUserRegisterResponse>), StatusCode>> {auth_register}

@@ -1,1 +1,0 @@
-tonic::Status: From<impl futures::Future<Output = Result<AuthUserRegisterResponse, tonic::Status>>>

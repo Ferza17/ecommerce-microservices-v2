@@ -1,2 +1,0 @@
-fn(axum::extract::State<UserPresenterHttp>, {type error}, HeaderMap, axum::Json<AuthUserRegisterRequest>) -> impl futures::Future<Output = Result<(StatusCode, axum::Json<AuthUserRegisterResponse>), StatusCode>> {auth_register}
-fn(axum::extract::State<UserPresenterHttp>, {type error}, HeaderMap, axum::Json<AuthUserRegisterRequest>) -> impl futures::Future<Output = Result<(StatusCode, axum::Json<AuthUserRegisterResponse>), StatusCode>> {auth_register}: Handler<_, _>

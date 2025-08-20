@@ -1,8 +1,0 @@
-OUT_DIR: /Users/ferza/Documents/project/ecommerce-microservices-v2/api-gateway/target/debug/build/utoipa-swagger-ui-c328e779a4cdb68e/out
-SWAGGER_UI_DOWNLOAD_URL: https://github.com/swagger-api/swagger-ui/archive/refs/tags/v5.17.14.zip
-cargo:rerun-if-env-changed=SWAGGER_UI_DOWNLOAD_URL
-start download to : "/Users/ferza/Documents/project/ecommerce-microservices-v2/api-gateway/target/debug/build/utoipa-swagger-ui-c328e779a4cdb68e/out/v5.17.14.zip"
-reqwest feature: Err(NotPresent)
-trying to download using `curl` system package
-zip_top_level_folder: "swagger-ui-5.17.14"
-SWAGGER_UI_OVERWRITE_FOLDER not found: "overwrite"

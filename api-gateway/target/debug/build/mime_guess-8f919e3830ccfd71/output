@@ -1,1 +1,0 @@
-cargo:rustc-env=MIME_TYPES_GENERATED_PATH=/Users/ferza/Documents/project/ecommerce-microservices-v2/api-gateway/target/debug/build/mime_guess-8f919e3830ccfd71/out/mime_types_generated.rs
