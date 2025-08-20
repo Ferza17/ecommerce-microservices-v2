@@ -1,3 +1,4 @@
+use tracing::instrument;
 use crate::model::rpc::product::{
     FindProductsWithPaginationRequest, FindProductsWithPaginationResponse,
 };
@@ -15,6 +16,7 @@ impl ProductUseCase {
         }
     }
 
+    #[instrument]
     pub async fn find_products_with_pagination(
         &mut self,
         request_id: String,

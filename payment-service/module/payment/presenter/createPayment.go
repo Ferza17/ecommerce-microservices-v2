@@ -13,11 +13,6 @@ func (p *paymentPresenter) CreatePayment(ctx context.Context, request *paymentRp
 	defer span.End()
 	requestId := pkgContext.GetRequestIDFromContext(ctx)
 
-	if err := p.userService.AuthUserVerifyAccessControl(ctx, requestId); err != nil {
-		p.logger.Error("PaymentPresenter.CreatePayment", zap.String("requestID", requestId), zap.Error(err))
-		return nil, err
-	}
-
 	if err := request.Validate(); err != nil {
 		p.logger.Error("PaymentPresenter.CreatePayment", zap.String("requestID", requestId), zap.Error(err))
 		return nil, err

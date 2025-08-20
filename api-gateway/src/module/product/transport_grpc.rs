@@ -1,11 +1,16 @@
 use crate::config::config::AppConfig;
 use crate::model::rpc::product::product_service_client::ProductServiceClient;
 use crate::model::rpc::product::{
-    FindProductsWithPaginationRequest, FindProductsWithPaginationResponse,
+    FindProductByIdRequest, FindProductsWithPaginationRequest, FindProductsWithPaginationResponse,
+    Product,
 };
 use crate::package::context::auth::AUTHORIZATION_HEADER;
 use crate::package::context::request_id::X_REQUEST_ID_HEADER;
-use tracing::{Level, event, instrument};
+use opentelemetry::global;
+use opentelemetry::trace::FutureExt;
+use opentelemetry_tonic::MetadataInjector;
+use tracing::{Level, Span, event, instrument};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 #[derive(Debug, Clone)]
 pub struct ProductTransportGrpc {
@@ -13,7 +18,6 @@ pub struct ProductTransportGrpc {
 }
 
 impl ProductTransportGrpc {
-    #[instrument]
     pub async fn new(config: AppConfig) -> Result<Self, anyhow::Error> {
         let addr = format!(
             "http://{}:{}",
@@ -31,6 +35,7 @@ impl ProductTransportGrpc {
         })
     }
 
+    #[instrument]
     pub async fn find_products_with_pagination(
         &mut self,
         request_id: String,
@@ -48,9 +53,15 @@ impl ProductTransportGrpc {
             format!("Bearer {}", token).parse().unwrap(),
         );
 
+        let cx = tracing::Span::current().context();
+        global::get_text_map_propagator(|propagator| {
+            propagator.inject_context(&cx, &mut MetadataInjector(request))
+        });
+
         match self
             .product_service_client
             .find_products_with_pagination(request)
+            .with_current_context()
             .await
         {
             Ok(response) => {
@@ -69,6 +80,47 @@ impl ProductTransportGrpc {
                     "Failed to get find_products_with_pagination"
                 );
                 Err(err)
+            }
+        }
+    }
+
+    #[instrument]
+    pub async fn find_product_by_id(
+        &mut self,
+        request_id: String,
+        token: String,
+        mut request: tonic::Request<FindProductByIdRequest>,
+    ) -> Result<Product, tonic::Status> {
+        request
+            .metadata_mut()
+            .insert(X_REQUEST_ID_HEADER, request_id.parse().unwrap());
+        request.metadata_mut().insert(
+            AUTHORIZATION_HEADER,
+            format!("Bearer {}", token).parse().unwrap(),
+        );
+
+        match self
+            .product_service_client
+            .find_product_by_id(request)
+            .with_context(Span::current().context())
+            .await
+        {
+            Ok(response) => {
+                event!(
+                    Level::INFO,
+                    request_id = request_id,
+                    data=?response
+                );
+                Ok(response.into_inner())
+            }
+            Err(err) => {
+                event!(
+                    Level::ERROR,
+                    request_id = request_id,
+                    error = %err,
+                    "Failed to find_payment_provider_by_id"
+                );
+                Err(err.into())
             }
         }
     }

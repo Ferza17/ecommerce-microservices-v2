@@ -13,11 +13,6 @@ func (p *paymentPresenter) FindPaymentByUserIdAndStatus(ctx context.Context, req
 	defer span.End()
 	requestId := pkgContext.GetRequestIDFromContext(ctx)
 
-	if err := p.userService.AuthUserVerifyAccessControl(ctx, requestId); err != nil {
-		p.logger.Error("PaymentPresenter.FindPaymentByUserIdAndStatus", zap.String("requestID", requestId), zap.Error(err))
-		return nil, err
-	}
-
 	if err := req.Validate(); err != nil {
 		p.logger.Error("PaymentPresenter.FindPaymentByUserIdAndStatus", zap.String("requestID", requestId), zap.Error(err))
 		return nil, err

@@ -32,6 +32,7 @@ where
         req.headers_mut()
             .insert(X_REQUEST_ID_HEADER, request_id.clone().parse().unwrap());
         req.extensions_mut().insert(request_id.clone());
+        println!("request_id: {}", request_id);
         self.inner.call(req)
     }
 }

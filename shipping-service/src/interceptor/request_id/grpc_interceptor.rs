@@ -1,10 +1,10 @@
+use crate::interceptor::request_id::RequestIdService;
 use crate::package::context::request_id::X_REQUEST_ID_HEADER;
 use hyper::{Request, header::HeaderValue};
 use std::task::{Context, Poll};
 use tonic::body::BoxBody;
 use tracing::error;
 use uuid::Uuid;
-use crate::interceptor::request_id::RequestIdService;
 
 impl<S> tower::Service<Request<BoxBody>> for RequestIdService<S>
 where

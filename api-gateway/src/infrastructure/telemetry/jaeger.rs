@@ -3,6 +3,7 @@ use opentelemetry::KeyValue;
 use opentelemetry::sdk::Resource;
 use opentelemetry::sdk::trace as sdktrace;
 use opentelemetry_otlp::WithExportConfig;
+use tracing::Level;
 use tracing_opentelemetry::OpenTelemetryLayer;
 use tracing_subscriber::Registry;
 use tracing_subscriber::prelude::*;
@@ -27,11 +28,11 @@ pub fn init_tracing(config: AppConfig) -> Result<(), Box<dyn std::error::Error>>
         )
         .install_batch(opentelemetry::runtime::Tokio)?;
 
-    let otel_layer = OpenTelemetryLayer::new(tracer);
-    Registry::default()
+    let telemetry = OpenTelemetryLayer::new(tracer);
+    let subscriber = Registry::default()
         .with(tracing_subscriber::fmt::layer())
-        .with(otel_layer)
-        .init();
+        .with(telemetry);
 
+    tracing::subscriber::set_global_default(subscriber).unwrap();
     Ok(())
 }

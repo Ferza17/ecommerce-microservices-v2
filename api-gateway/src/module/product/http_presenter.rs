@@ -67,6 +67,8 @@ pub async fn find_products_with_pagination(
     ),
     axum::http::StatusCode,
 > {
+    // TODO: Validate RBAC
+    
     let request = tonic::Request::new(query);
     match request.validate() {
         Ok(_) => {}

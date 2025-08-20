@@ -22,45 +22,6 @@ where
     }
 
     fn call(&mut self, mut req: Request<BoxBody>) -> Self::Future {
-        let request_id = get_request_id_from_header(req.headers());
-        // VERIFY ACL ON METHOD
-        let verify_result = tokio::task::block_in_place(|| {
-            Handle::current().block_on(async {
-                self.user_service
-                    .clone()
-                    .auth_service_verify_is_excluded(
-                        request_id.clone(),
-                        tonic::Request::new(AuthServiceVerifyIsExcludedRequest {
-                            full_method_name: Some(req.uri().path().to_string()),
-                            http_url: None,
-                            http_method: None,
-                        }),
-                    )
-                    .await
-            })
-        });
-        match verify_result {
-            Ok(res) => {
-                let Some(data) = res.data else {
-                    return futures::future::Either::Right(ready(Ok(Status::unauthenticated(
-                        "No data in response",
-                    )
-                    .into_http())));
-                };
-
-                if data.is_excluded {
-                    return futures::future::Either::Left(self.inner.call(req));
-                }
-            }
-            Err(err) => {
-                tracing::error!(%request_id, "Auth check failed: {err}");
-                return futures::future::Either::Right(ready(Ok(Status::unauthenticated(
-                    "Failed to verify exclusion",
-                )
-                .into_http())));
-            }
-        }
-
         // VERIFY TOKEN
         let token_from_header = match req.headers().get(AUTHORIZATION_HEADER) {
             Some(val) => val.to_str().unwrap_or_default().to_string(),

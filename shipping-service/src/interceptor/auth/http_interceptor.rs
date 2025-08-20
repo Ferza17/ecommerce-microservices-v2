@@ -34,42 +34,6 @@ where
     }
 
     fn call(&mut self, mut req: Request<Body>) -> Self::Future {
-        let request_id = get_request_id_from_header(req.headers());
-        let path = req.uri().path().to_string();
-        let mut cloned_user_service = self.user_service.clone();
-
-        let verify_result = tokio::task::block_in_place(|| {
-            Handle::current().block_on(async move {
-                cloned_user_service
-                    .auth_service_verify_is_excluded(
-                        request_id.clone(),
-                        tonic::Request::new(AuthServiceVerifyIsExcludedRequest {
-                            full_method_name: Some(path.clone()),
-                            http_url: None,
-                            http_method: None,
-                        }),
-                    )
-                    .await
-            })
-        });
-
-        match verify_result {
-            Ok(res) => {
-                let Some(data) = res.data else {
-                    return Either::Right(ready(unauthorize_response(
-                        tonic::Code::Unauthenticated,
-                        "no data in response",
-                    )));
-                };
-                if data.is_excluded {
-                    return Either::Left(self.inner.call(req));
-                }
-            }
-            Err(err) => {
-                return Either::Right(ready(unauthorize_response(err.code(), err.message())));
-            }
-        }
-
         // Check bearer token
         let token = match req.headers().get(AUTHORIZATION_HEADER) {
             Some(val) => {

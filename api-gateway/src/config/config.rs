@@ -22,6 +22,7 @@ pub struct AppConfig {
     pub api_gateway_service_service_metric_http_port: String,
 
     // FROM CONSUL KV SERVICES/SHIPPING
+    pub shipping_service_service_name: String,
     pub shipping_service_service_rpc_host: String,
     pub shipping_service_service_rpc_port: String,
 
@@ -88,6 +89,7 @@ impl Default for AppConfig {
             exchange_shipping: "".to_string(),
             queue_shipping_created: "".to_string(),
             queue_shipping_updated: "".to_string(),
+            shipping_service_service_name: "".to_string(),
         }
     }
 }
@@ -230,6 +232,11 @@ impl AppConfig {
         &mut self,
         client: &ConsulClient,
     ) -> Result<(), anyhow::Error> {
+        self.shipping_service_service_name =
+            Self::get_kv(client, format!("{}/services/shipping/SERVICE_NAME", self.env))
+                .await
+                .parse()
+                .map_err(|e| anyhow::anyhow!("Error Consul :  {:?}", e))?;
         self.shipping_service_service_rpc_host =
             Self::get_kv(client, format!("{}/services/shipping/RPC_HOST", self.env))
                 .await
@@ -270,7 +277,6 @@ impl AppConfig {
         Ok(())
     }
 
-
     async fn get_config_product_service(
         &mut self,
         client: &ConsulClient,
@@ -279,9 +285,9 @@ impl AppConfig {
             client,
             format!("{}/services/product/SERVICE_NAME", self.env),
         )
-            .await
-            .parse()
-            .map_err(|e| anyhow::anyhow!("Error Consul :  {:?}", e))?;
+        .await
+        .parse()
+        .map_err(|e| anyhow::anyhow!("Error Consul :  {:?}", e))?;
 
         self.product_service_service_rpc_host =
             Self::get_kv(client, format!("{}/services/product/RPC_HOST", self.env))

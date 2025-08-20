@@ -57,7 +57,6 @@ impl ShippingProviderService for ShippingProviderGrpcPresenter {
         request
             .validate()
             .map_err(|e| Status::new(Code::InvalidArgument, e.field.to_string()))?;
-
         // Validate access control
         self.user_service
             .clone()

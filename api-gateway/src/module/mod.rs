@@ -12,6 +12,12 @@ pub mod product {
     pub mod usecase;
 }
 
+pub mod shipping {
+    pub mod http_presenter;
+    pub mod transport_grpc;
+    pub mod usecase;
+}
+
 pub mod payment {
     pub mod http_presenter;
     pub mod transport_grpc;

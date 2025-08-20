@@ -1,11 +1,14 @@
 use crate::model::rpc::{
-    payment::{FindPaymentProvidersRequest, FindPaymentProvidersResponse},
+    payment::{FindPaymentProvidersRequest, FindPaymentProvidersResponse, CreatePaymentRequest, CreatePaymentResponse},
     product::{FindProductsWithPaginationRequest, FindProductsWithPaginationResponse},
     response::Response,
     user::{
         AuthUserRegisterRequest, AuthUserRegisterResponse, AuthUserVerifyOtpRequest,
         AuthUserVerifyOtpResponse,
     },
+    shipping::{
+        ListShippingProvidersRequest, ListShippingProvidersResponse,
+    }
 };
 use crate::package::context::auth::AUTHORIZATION_HEADER;
 use utoipa::{
@@ -31,6 +34,12 @@ use utoipa::{
 
         // PAYMENT PROVIDERS
         crate::module::payment::http_presenter::find_payment_providers,
+
+        // PAYMENT
+        crate::module::payment::http_presenter::create_payment,
+    
+        // SHIPPING PROVIDERS
+        crate::module::shipping::http_presenter::list_shipping_providers,
     ),
     components(
         schemas(
@@ -47,13 +56,21 @@ use utoipa::{
             // PAYMENT PROVIDERS
             FindPaymentProvidersRequest,
             FindPaymentProvidersResponse,
+            // PAYMENT
+            CreatePaymentRequest,
+            CreatePaymentResponse,
+            // SHIPPING PROVIDERS
+            ListShippingProvidersRequest,
+            ListShippingProvidersResponse,
         ),
     ),
     tags(
         (name = "Auth", description = "Authentication route API"),
         (name = "Product", description = "Product route API"),
-        (name = "PaymentProviders", description = "Payment Providers route API")
-
+        (name = "ShippingProviders", description = "Shipping Providers route API"),
+        (name = "Shipping", description = "Shipping route API"),
+        (name = "PaymentProviders", description = "Payment Providers route API"),
+        (name = "Payment", description = "Payment route API"),
     ),
     modifiers(&SecurityAddon)
 )]
