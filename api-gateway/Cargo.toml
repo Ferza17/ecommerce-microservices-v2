@@ -47,7 +47,9 @@ tower = "0.5.2"
 http = "0.2.12"
 axum = "0.8.4"
 tower-http = { version = "0.6.2", features = ["cors", "trace"] }
-hyper = "1.6.0"
+hyper = { version = "1.6.0", features = ["full"] }
+hyper-util = { version = "0.1.16", features = ["full"] }
+
 
 # OpenAPI
 utoipa = "5"
@@ -61,4 +63,5 @@ anyhow = "1.0.98"
 serde_json = "1.0.142"
 futures = "0.3.31"
 opentelemetry-tonic = "0.1.0"
+http-body-util = "0.1.3"
 

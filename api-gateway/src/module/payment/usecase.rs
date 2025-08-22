@@ -35,7 +35,7 @@ impl PaymentUseCase {
         }
     }
 
-    #[instrument]
+    #[instrument("PaymentUseCase.find_payment_providers")]
     pub async fn find_payment_providers(
         &mut self,
         request_id: String,
@@ -52,7 +52,7 @@ impl PaymentUseCase {
         }
     }
 
-    #[instrument]
+    #[instrument("PaymentUseCase.create_payment")]
     pub async fn create_payment(
         &mut self,
         request_id: String,

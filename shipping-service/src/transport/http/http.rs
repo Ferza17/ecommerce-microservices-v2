@@ -2,16 +2,22 @@ use crate::config::config::AppConfig;
 use crate::infrastructure::database::async_postgres::get_connection;
 use crate::infrastructure::services::payment::PaymentServiceGrpcClient;
 use crate::infrastructure::services::user::UserServiceGrpcClient;
-use crate::module::shipping::presenter_http::ShippingHttpPresenter;
+use crate::module::shipping::presenter_http::PresenterHttp as ShippingHttpPresenter;
 use crate::module::shipping::repository_postgres::ShippingPostgresRepositoryImpl;
 use crate::module::shipping::usecase::ShippingUseCaseImpl;
 use crate::module::shipping_provider::{
-    presenter_http::ShippingProviderHttpPresenter,
+    presenter_http::PresenterHttp as ShippingProviderHttpPresenter,
     repository_postgres::ShippingProviderPostgresRepositoryImpl,
     usecase::ShippingProviderUseCaseImpl,
 };
+use crate::package::context::request_id::X_REQUEST_ID_HEADER;
 use crate::transport::http::api_docs::ApiDocs;
+use axum::http::HeaderValue;
+use axum::http::header::{AUTHORIZATION, CONTENT_TYPE};
 use axum::{Router, http::StatusCode, response::Json, routing::get};
+use tower_http::cors::{Any, CorsLayer};
+use tower_http::trace::TraceLayer;
+use tracing::info_span;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
@@ -69,7 +75,33 @@ impl HttpTransport {
                 shipping_provider_presenter.router(),
             )
             .nest("/v1/shipping/shippings", shipping_presenter.router())
-            .route("/v1/shipping/checks", get(health_check_handler));
+            .route("/v1/shipping/checks", get(health_check_handler))
+            .layer(
+                CorsLayer::new()
+                    .allow_methods(Any)
+                    .allow_origin("*".parse::<HeaderValue>()?)
+                    .allow_headers([AUTHORIZATION, CONTENT_TYPE, X_REQUEST_ID_HEADER.parse()?]),
+            )
+            .layer(
+                TraceLayer::new_for_http()
+                    .make_span_with(|request: &hyper::Request<_>| {
+                        info_span!(
+                            "http-request",
+                            method = ?request.method(),
+                            path = %request.uri().path(),
+                        )
+                    })
+                    .on_request(|request: &hyper::Request<_>, _span: &tracing::Span| {
+                        tracing::info!("started {} {}", request.method(), request.uri().path());
+                    })
+                    .on_response(
+                        |response: &hyper::Response<_>,
+                         latency: std::time::Duration,
+                         _span: &tracing::Span| {
+                            tracing::info!("response {} in {:?}", response.status(), latency);
+                        },
+                    ),
+            );
 
         let listener = tokio::net::TcpListener::bind(addr.as_str()).await?;
         eprintln!("Starting HTTP server on {}", addr.as_str());

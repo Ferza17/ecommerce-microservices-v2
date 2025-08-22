@@ -1,7 +1,6 @@
 use crate::config::config::AppConfig;
 use crate::transport::{
-    grpc::grpc::GrpcTransport,
-    http::{http::HttpTransport, metric::serve_metric_http_collector},
+    grpc::grpc::GrpcTransport, http::metric::serve_metric_http_collector,
     message_broker::rabbitmq::RabbitMQTransport,
 };
 use std::sync::Arc;
@@ -9,9 +8,9 @@ use std::sync::Arc;
 use crate::infrastructure::telemetry::jaeger::init_tracing;
 use crate::package::worker_pool::typed_worker_pool::TypedWorkerPool;
 use crate::package::worker_pool::worker_pool::WorkerPoolError;
+use crate::transport::http::http::HttpTransport;
 use clap::Args;
 use tokio::task::JoinHandle;
-
 #[derive(Args, Debug)]
 pub struct RunArgs {
     #[arg(short, long, help = "run direction: 'local' or 'production'")]

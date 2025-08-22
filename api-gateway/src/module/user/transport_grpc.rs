@@ -13,6 +13,7 @@ use opentelemetry::trace::FutureExt;
 use tonic::{Response, Status};
 use tracing::{Level, Span, event, instrument};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
+use crate::util::metadata::inject_trace_context;
 
 #[derive(Debug, Clone)]
 pub struct UserTransportGrpc {
@@ -39,7 +40,7 @@ impl UserTransportGrpc {
         })
     }
 
-    #[instrument]
+    #[instrument("UserTransportGrpc.auth_service_verify_is_excluded")]
     pub async fn auth_service_verify_is_excluded(
         &mut self,
         request_id: String,
@@ -52,8 +53,8 @@ impl UserTransportGrpc {
 
         match self
             .auth_service_client
-            .auth_service_verify_is_excluded(request)
-            .with_context(Span::current().context())
+            .auth_service_verify_is_excluded(inject_trace_context(request, Span::current().context()))
+            
             .await
         {
             Ok(response) => {
@@ -76,6 +77,7 @@ impl UserTransportGrpc {
         }
     }
 
+    #[instrument("UserTransportGrpc.auth_service_verify_is_excluded")]
     pub async fn auth_user_verify_access_control(
         &mut self,
         request_id: String,
@@ -93,7 +95,7 @@ impl UserTransportGrpc {
             .insert(X_REQUEST_ID_HEADER, request_id.parse().unwrap());
     }
 
-    #[instrument]
+    #[instrument("UserTransportGrpc.auth_register")]
     pub async fn auth_register(
         &mut self,
         request_id: String,
@@ -106,8 +108,8 @@ impl UserTransportGrpc {
 
         match self
             .auth_service_client
-            .auth_user_register(request)
-            .with_context(Span::current().context())
+            .auth_user_register(inject_trace_context(request, Span::current().context()))
+            
             .await
         {
             Ok(response) => {
@@ -130,7 +132,7 @@ impl UserTransportGrpc {
         }
     }
 
-    #[instrument]
+    #[instrument("UserTransportGrpc.auth_user_login_by_email_and_password")]
     pub async fn auth_user_login_by_email_and_password(
         &mut self,
         request_id: String,
@@ -143,8 +145,8 @@ impl UserTransportGrpc {
 
         match self
             .auth_service_client
-            .auth_user_login_by_email_and_password(request)
-            .with_context(Span::current().context())
+            .auth_user_login_by_email_and_password(inject_trace_context(request, Span::current().context()))
+            
             .await
         {
             Ok(response) => {
@@ -167,7 +169,7 @@ impl UserTransportGrpc {
         }
     }
 
-    #[instrument]
+    #[instrument("UserTransportGrpc.auth_user_verify_otp")]
     pub async fn auth_user_verify_otp(
         &mut self,
         request_id: String,
@@ -180,8 +182,8 @@ impl UserTransportGrpc {
 
         match self
             .auth_service_client
-            .auth_user_verify_otp(request)
-            .with_context(Span::current().context())
+            .auth_user_verify_otp(inject_trace_context(request, Span::current().context()))
+            
             .await
         {
             Ok(response) => {
@@ -204,7 +206,7 @@ impl UserTransportGrpc {
         }
     }
 
-    #[instrument]
+    #[instrument("UserTransportGrpc.find_user_by_id")]
     pub async fn find_user_by_id(
         &mut self,
         request_id: String,
@@ -221,8 +223,8 @@ impl UserTransportGrpc {
 
         match self
             .user_service_client
-            .find_user_by_id(request)
-            .with_context(Span::current().context())
+            .find_user_by_id(inject_trace_context(request, Span::current().context()))
+            
             .await
         {
             Ok(response) => {

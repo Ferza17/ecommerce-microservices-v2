@@ -11,15 +11,9 @@ import (
 func (p *ProductPresenter) DeleteProductById(ctx context.Context, req *productRpc.DeleteProductByIdRequest) (*empty.Empty, error) {
 	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "Presenter.DeleteProductById")
 	defer span.End()
-	requestId := pkgContext.GetRequestIDFromContext(ctx)
-
-	if err := p.userService.AuthUserVerifyAccessControl(ctx, requestId); err != nil {
-		p.logger.Error("Presenter.CreateProduct", zap.String("requestID", requestId), zap.Error(err))
-		return nil, err
-	}
 
 	if err := req.Validate(); err != nil {
-		p.logger.Error("ProductPresenter.CreateProduct", zap.String("requestID", requestId), zap.Error(err))
+		p.logger.Error("ProductPresenter.CreateProduct", zap.String("requestID", pkgContext.GetRequestIDFromContext(ctx)), zap.Error(err))
 		return nil, err
 	}
 

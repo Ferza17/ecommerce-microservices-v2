@@ -1,5 +1,5 @@
 use crate::interceptor::auth::AuthLayer;
-use crate::interceptor::{logger::LoggerLayer, request_id::RequestIdLayer};
+use crate::interceptor::request_id::RequestIdLayer;
 use crate::model::rpc::{
     response::Response,
     user::{
@@ -30,22 +30,13 @@ impl UserPresenterHttp {
             .route("/register", post(auth_register))
             .route("/login", post(auth_user_login_by_email_and_password))
             .route("/verify-otp", post(auth_user_verify_otp))
-            .layer(
-                ServiceBuilder::new()
-                    .layer(RequestIdLayer)
-                    .layer(LoggerLayer),
-            )
+            .layer(ServiceBuilder::new().layer(RequestIdLayer).layer(AuthLayer))
             .with_state(self.clone())
     }
 
     pub fn user_router(&self) -> axum::Router {
         axum::Router::new()
-            .layer(
-                ServiceBuilder::new()
-                    .layer(RequestIdLayer)
-                    .layer(LoggerLayer)
-                    .layer(AuthLayer::new(self.user_use_case.clone())),
-            )
+            .layer(ServiceBuilder::new().layer(RequestIdLayer).layer(AuthLayer))
             .with_state(self.clone())
     }
 }
@@ -59,7 +50,7 @@ impl UserPresenterHttp {
         (status = OK, body = AuthUserRegisterResponse, content_type = "application/json" )
     )
 )]
-#[instrument(skip(state))]
+#[instrument("UserPresenterHttp.auth_register")]
 pub async fn auth_register(
     State(state): State<UserPresenterHttp>,
     headers: HeaderMap,
@@ -108,7 +99,7 @@ pub async fn auth_register(
         (status = OK, body = Response, content_type = "application/json" )
     )
 )]
-#[instrument(skip(state))]
+#[instrument("UserPresenterHttp.auth_user_login_by_email_and_password")]
 pub async fn auth_user_login_by_email_and_password(
     State(mut state): State<UserPresenterHttp>,
     headers: HeaderMap,
@@ -161,7 +152,7 @@ pub async fn auth_user_login_by_email_and_password(
         (status = OK, body = AuthUserVerifyOtpResponse, content_type = "application/json" )
     )
 )]
-#[instrument(skip(state))]
+#[instrument("UserPresenterHttp.auth_user_verify_otp")]
 pub async fn auth_user_verify_otp(
     State(mut state): State<UserPresenterHttp>,
     headers: HeaderMap,

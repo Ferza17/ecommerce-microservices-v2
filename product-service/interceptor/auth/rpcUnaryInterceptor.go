@@ -2,8 +2,6 @@ package auth
 
 import (
 	"context"
-	userService "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/service/user"
-	pb "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/user"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/logger"
 	"go.uber.org/zap"
@@ -16,24 +14,8 @@ import (
 
 func AuthRPCUnaryInterceptor(
 	logger logger.IZapLogger,
-	userService userService.IUserService,
 ) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
-		requestId := pkgContext.GetRequestIDFromContext(ctx)
-
-		// Validate is an excluded method
-		authExcluded, err := userService.AuthServiceVerifyIsExcluded(ctx, requestId, &pb.AuthServiceVerifyIsExcludedRequest{
-			FullMethodName: &info.FullMethod,
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		// Bypass if excluded methods
-		if authExcluded.Data.IsExcluded {
-			return handler(ctx, req)
-		}
-
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
 			logger.Error("Interceptor.AuthRPCUnaryInterceptor", zap.Error(status.Error(codes.Unauthenticated, "missing metadata")))

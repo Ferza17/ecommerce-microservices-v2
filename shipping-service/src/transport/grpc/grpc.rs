@@ -3,7 +3,6 @@ use crate::infrastructure::database::async_postgres::get_connection;
 use crate::infrastructure::services::payment::PaymentServiceGrpcClient;
 use crate::infrastructure::services::user::UserServiceGrpcClient;
 use crate::interceptor::auth::AuthLayer;
-use crate::interceptor::logger::LoggerLayer;
 use crate::interceptor::request_id::RequestIdLayer;
 use crate::model::rpc::shipping::shipping_provider_service_server::ShippingProviderServiceServer;
 use crate::model::rpc::shipping::shipping_service_server::ShippingServiceServer;
@@ -26,15 +25,6 @@ impl GrpcTransport {
     }
 
     pub async fn serve(&self) -> std::result::Result<(), Box<dyn std::error::Error>> {
-        let addr = format!(
-            "{}:{}",
-            self.config.shipping_service_service_rpc_host,
-            self.config.shipping_service_service_rpc_port
-        )
-        .to_string();
-
-        eprintln!("GRPC Server is running on {}", addr);
-
         // Infrastructure Layer
         let postgres_pool = get_connection(&self.config.clone()).await;
         let user_service = UserServiceGrpcClient::new(self.config.clone()).await;
@@ -68,23 +58,22 @@ impl GrpcTransport {
             .build_v1alpha()
             .unwrap();
 
-        let mut server = Server::builder()
-            .layer(
-                ServiceBuilder::new()
-                    .layer(RequestIdLayer)
-                    .layer(LoggerLayer)
-                    .layer(AuthLayer::new(user_service.clone())),
-            )
+        let addr = format!(
+            "{}:{}",
+            self.config.shipping_service_service_rpc_host,
+            self.config.shipping_service_service_rpc_port
+        )
+        .parse()?;
+        Server::builder()
+            .layer(AuthLayer)
             .add_service(ShippingProviderServiceServer::new(
                 shipping_provider_presenter,
             ))
-            .add_service(ShippingServiceServer::new(shipping_presenter));
+            .add_service(ShippingServiceServer::new(shipping_presenter))
+            .add_service(reflection_service)
+            .serve(addr)
+            .await?;
 
-        if self.config.env != "production" {
-            server = server.add_service(reflection_service);
-        }
-
-        server.serve(addr.parse()?).await?;
         Ok(())
     }
 }

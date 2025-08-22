@@ -1,7 +1,4 @@
 use crate::infrastructure::services::user::UserServiceGrpcClient;
-use crate::interceptor::auth::AuthLayer;
-use crate::interceptor::logger::LoggerLayer;
-use crate::interceptor::request_id::RequestIdLayer;
 use crate::model::rpc::shipping::{
     GetShippingProviderByIdRequest, GetShippingProviderByIdResponse, ListShippingProvidersRequest,
     ListShippingProvidersResponse,
@@ -27,14 +24,16 @@ use std::sync::Arc;
 use tonic::Code;
 use tower::ServiceBuilder;
 use tracing::{error, instrument};
+use crate::interceptor::auth::AuthLayer;
+use crate::interceptor::request_id::RequestIdLayer;
 
 #[derive(Debug, Clone)]
-pub struct ShippingProviderHttpPresenter {
+pub struct PresenterHttp {
     shipping_provider_use_case: ShippingProviderUseCaseImpl,
     user_service: UserServiceGrpcClient,
 }
 
-impl ShippingProviderHttpPresenter {
+impl PresenterHttp {
     pub fn new(
         shipping_provider_use_case: ShippingProviderUseCaseImpl,
         user_service: UserServiceGrpcClient,
@@ -49,12 +48,7 @@ impl ShippingProviderHttpPresenter {
         axum::Router::new()
             .route("/", get(list_shipping_providers))
             .route("/{id}", get(get_shipping_provider_by_id))
-            .layer(
-                ServiceBuilder::new()
-                    .layer(RequestIdLayer)
-                    .layer(LoggerLayer)
-                    .layer(AuthLayer::new(self.user_service.clone())),
-            )
+            .layer(ServiceBuilder::new().layer(RequestIdLayer).layer(AuthLayer))
             .with_state(Arc::from(self.clone()))
     }
 }
@@ -76,7 +70,7 @@ impl ShippingProviderHttpPresenter {
 )]
 #[instrument(skip(state))]
 pub async fn list_shipping_providers(
-    State(state): State<Arc<ShippingProviderHttpPresenter>>,
+    State(state): State<Arc<PresenterHttp>>,
     headers: HeaderMap,
     Query(query): Query<ListShippingProvidersRequest>,
 ) -> Result<(StatusCode, Json<ListShippingProvidersResponse>), StatusCode> {
@@ -174,7 +168,7 @@ pub async fn list_shipping_providers(
 )]
 #[instrument(skip(state))]
 pub async fn get_shipping_provider_by_id(
-    State(state): State<Arc<ShippingProviderHttpPresenter>>,
+    State(state): State<Arc<PresenterHttp>>,
     headers: HeaderMap,
     Path(id): Path<String>,
 ) -> Result<(StatusCode, Json<GetShippingProviderByIdResponse>), Infallible> {

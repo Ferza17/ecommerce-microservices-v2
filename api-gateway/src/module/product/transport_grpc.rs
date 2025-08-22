@@ -1,15 +1,12 @@
 use crate::config::config::AppConfig;
-use crate::model::rpc::product::product_service_client::ProductServiceClient;
 use crate::model::rpc::product::{
     FindProductByIdRequest, FindProductsWithPaginationRequest, FindProductsWithPaginationResponse,
-    Product,
+    Product, product_service_client::ProductServiceClient,
 };
-use crate::package::context::auth::AUTHORIZATION_HEADER;
-use crate::package::context::request_id::X_REQUEST_ID_HEADER;
-use opentelemetry::global;
+use crate::package::context::{auth::AUTHORIZATION_HEADER, request_id::X_REQUEST_ID_HEADER};
+use crate::util::metadata::inject_trace_context;
 use opentelemetry::trace::FutureExt;
-use opentelemetry_tonic::MetadataInjector;
-use tracing::{Level, Span, event, instrument};
+use tracing::{Level, Span, error, event, info, instrument};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 #[derive(Debug, Clone)]
@@ -35,7 +32,7 @@ impl ProductTransportGrpc {
         })
     }
 
-    #[instrument]
+    #[instrument("ProductTransportGrpc.find_products_with_pagination")]
     pub async fn find_products_with_pagination(
         &mut self,
         request_id: String,
@@ -52,29 +49,18 @@ impl ProductTransportGrpc {
             AUTHORIZATION_HEADER,
             format!("Bearer {}", token).parse().unwrap(),
         );
-
-        let cx = tracing::Span::current().context();
-        global::get_text_map_propagator(|propagator| {
-            propagator.inject_context(&cx, &mut MetadataInjector(request))
-        });
-
+        info!(request_id = request_id, request = ?request, "Request to find products with pagination");
         match self
             .product_service_client
-            .find_products_with_pagination(request)
-            .with_current_context()
+            .find_products_with_pagination(inject_trace_context(request, Span::current().context()))
             .await
         {
             Ok(response) => {
-                event!(
-                    Level::INFO,
-                    request_id = request_id,
-                    data=?response
-                );
+                info!(request_id = request_id, data=?response,"Response to find products with pagination");
                 Ok(response.into_inner())
             }
             Err(err) => {
-                event!(
-                    Level::ERROR,
+                error!(
                     request_id = request_id,
                     error = %err,
                     "Failed to get find_products_with_pagination"
@@ -84,7 +70,7 @@ impl ProductTransportGrpc {
         }
     }
 
-    #[instrument]
+    #[instrument("ProductTransportGrpc.find_product_by_id")]
     pub async fn find_product_by_id(
         &mut self,
         request_id: String,
@@ -99,28 +85,23 @@ impl ProductTransportGrpc {
             format!("Bearer {}", token).parse().unwrap(),
         );
 
+        info!(request_id = request_id, request = ?request, "Find products with pagination");
         match self
             .product_service_client
-            .find_product_by_id(request)
-            .with_context(Span::current().context())
+            .find_product_by_id(inject_trace_context(request, Span::current().context()))
             .await
         {
             Ok(response) => {
-                event!(
-                    Level::INFO,
-                    request_id = request_id,
-                    data=?response
-                );
+                info!(request_id = request_id, data=?response,"Response to find_product_by_id");
                 Ok(response.into_inner())
             }
             Err(err) => {
-                event!(
-                    Level::ERROR,
+                error!(
                     request_id = request_id,
                     error = %err,
-                    "Failed to find_payment_provider_by_id"
+                    "Failed to find_product_by_id"
                 );
-                Err(err.into())
+                Err(err)
             }
         }
     }

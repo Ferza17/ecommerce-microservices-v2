@@ -11,19 +11,13 @@ import (
 func (p *ProductPresenter) CreateProduct(ctx context.Context, req *productRpc.CreateProductRequest) (*empty.Empty, error) {
 	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "ProductPresenter.CreateProduct")
 	defer span.End()
-	requestId := pkgContext.GetRequestIDFromContext(ctx)
-
-	if err := p.userService.AuthUserVerifyAccessControl(ctx, requestId); err != nil {
-		p.logger.Error("ProductPresenter.CreateProduct", zap.String("requestID", requestId), zap.Error(err))
-		return nil, err
-	}
 
 	if err := req.Validate(); err != nil {
-		p.logger.Error("ProductPresenter.CreateProduct", zap.String("requestID", requestId), zap.Error(err))
+		p.logger.Error("ProductPresenter.CreateProduct", zap.String("requestID", pkgContext.GetRequestIDFromContext(ctx)), zap.Error(err))
 		return nil, err
 	}
 
-	res, err := p.productUseCase.CreateProduct(ctx, requestId, req)
+	res, err := p.productUseCase.CreateProduct(ctx, pkgContext.GetRequestIDFromContext(ctx), req)
 	if err != nil {
 		return nil, err
 	}

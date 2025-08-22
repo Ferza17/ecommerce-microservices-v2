@@ -10,6 +10,7 @@ use crate::package::context::request_id::X_REQUEST_ID_HEADER;
 use opentelemetry::trace::FutureExt;
 use tracing::{Level, Span, event, instrument};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
+use crate::util::metadata::inject_trace_context;
 
 #[derive(Debug, Clone)]
 pub struct PaymentTransportGrpc {
@@ -37,7 +38,7 @@ impl PaymentTransportGrpc {
         })
     }
 
-    #[instrument]
+    #[instrument("PaymentTransportGrpc.find_payment_providers")]
     pub async fn find_payment_providers(
         &mut self,
         request_id: String,
@@ -54,7 +55,7 @@ impl PaymentTransportGrpc {
 
         match self
             .payment_provider_service_client
-            .find_payment_providers(request)
+            .find_payment_providers(inject_trace_context(request, Span::current().context()))
             .with_context(Span::current().context())
             .await
         {
@@ -78,7 +79,7 @@ impl PaymentTransportGrpc {
         }
     }
 
-    #[instrument]
+    #[instrument("PaymentTransportGrpc.find_payment_provider_by_id")]
     pub async fn find_payment_provider_by_id(
         &mut self,
         request_id: String,
@@ -95,8 +96,7 @@ impl PaymentTransportGrpc {
 
         match self
             .payment_provider_service_client
-            .find_payment_provider_by_id(request)
-            .with_context(Span::current().context())
+            .find_payment_provider_by_id(inject_trace_context(request, Span::current().context()))
             .await
         {
             Ok(response) => {
@@ -119,7 +119,7 @@ impl PaymentTransportGrpc {
         }
     }
 
-    #[instrument]
+    #[instrument("PaymentTransportGrpc.create_payment")]
     pub async fn create_payment(
         &mut self,
         request_id: String,
@@ -135,8 +135,7 @@ impl PaymentTransportGrpc {
         );
         match self
             .payment_service_client
-            .create_payment(request)
-            .with_context(Span::current().context())
+            .create_payment(inject_trace_context(request, Span::current().context()))
             .await
         {
             Ok(response) => {

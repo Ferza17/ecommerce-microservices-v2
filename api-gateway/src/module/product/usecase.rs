@@ -16,7 +16,7 @@ impl ProductUseCase {
         }
     }
 
-    #[instrument]
+    #[instrument("ProductUseCase.find_products_with_pagination")]
     pub async fn find_products_with_pagination(
         &mut self,
         request_id: String,

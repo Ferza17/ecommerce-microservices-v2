@@ -86,13 +86,4 @@ impl RabbitMQInfrastructure {
             .unwrap();
         self
     }
-    pub async fn setup_consumer(&self, queue: &str) -> Consumer {
-        self.connection
-            .create_channel()
-            .await
-            .unwrap()
-            .basic_consume(queue, "", Default::default(), Default::default())
-            .await
-            .unwrap()
-    }
 }

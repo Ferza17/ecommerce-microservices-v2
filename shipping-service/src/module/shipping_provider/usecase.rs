@@ -43,7 +43,7 @@ impl ShippingProviderUseCase for ShippingProviderUseCaseImpl {
     async fn get_shipping_provider_by_id(
         &self,
         request_id: String,
-        request: Request<GetShippingProviderByIdRequest>,
+        request: tonic::Request<GetShippingProviderByIdRequest>,
     ) -> Result<Response<GetShippingProviderByIdResponse>, Status> {
         event!(name: "ShippingProviderUseCase.get_shipping_provider_by_id", Level::INFO, request_id = request_id, request = ?request);
 

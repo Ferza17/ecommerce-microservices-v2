@@ -1,5 +1,4 @@
 use crate::interceptor::auth::AuthLayer;
-use crate::interceptor::logger::LoggerLayer;
 use crate::interceptor::request_id::RequestIdLayer;
 use crate::model::rpc::shipping::{ListShippingProvidersRequest, ListShippingProvidersResponse};
 use crate::module::shipping::usecase::ShippingUseCase;
@@ -30,23 +29,13 @@ impl ShippingPresenterHttp {
 
     pub fn shipping_route(&self) -> axum::Router {
         Router::new()
-            .layer(
-                ServiceBuilder::new()
-                    .layer(RequestIdLayer)
-                    .layer(LoggerLayer)
-                    .layer(AuthLayer::new(self.user_use_case.clone())),
-            )
+            .layer(ServiceBuilder::new().layer(RequestIdLayer).layer(AuthLayer))
             .with_state(self.clone())
     }
     pub fn shipping_provider_route(&self) -> axum::Router {
         Router::new()
             .route("/", get(list_shipping_providers))
-            .layer(
-                ServiceBuilder::new()
-                    .layer(RequestIdLayer)
-                    .layer(LoggerLayer)
-                    .layer(AuthLayer::new(self.user_use_case.clone())),
-            )
+            .layer(ServiceBuilder::new().layer(RequestIdLayer).layer(AuthLayer))
             .with_state(self.clone())
     }
 }

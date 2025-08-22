@@ -42,6 +42,7 @@ impl UserUseCase {
         }
     }
 
+    #[instrument("UserUseCase.auth_user_login_by_email_and_password")]
     pub async fn auth_user_login_by_email_and_password(
         &mut self,
         request_id: String,
@@ -57,6 +58,7 @@ impl UserUseCase {
         }
     }
 
+    #[instrument("UserUseCase.auth_user_verify_otp")]
     pub async fn auth_user_verify_otp(
         &mut self,
         request_id: String,
@@ -72,6 +74,7 @@ impl UserUseCase {
         }
     }
 
+    #[instrument("UserUseCase.auth_service_verify_is_excluded")]
     pub async fn auth_service_verify_is_excluded(
         &mut self,
         request_id: String,

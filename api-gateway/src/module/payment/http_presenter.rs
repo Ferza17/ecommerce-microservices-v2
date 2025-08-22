@@ -1,21 +1,20 @@
-use crate::interceptor::{auth::AuthLayer, logger::LoggerLayer, request_id::RequestIdLayer};
+use crate::interceptor::{auth::AuthLayer, request_id::RequestIdLayer};
 use crate::model::rpc::payment::{
     CreatePaymentRequest, CreatePaymentResponse, FindPaymentProvidersRequest,
     FindPaymentProvidersResponse,
 };
-use crate::model::rpc::user::AuthUserRegisterResponse;
 use crate::module::{payment::usecase::PaymentUseCase, user::usecase::UserUseCase};
 use crate::package::context::{
     auth::get_request_authorization_token_from_header, request_id::get_request_id_from_header,
 };
 use crate::util;
+use axum::routing::post;
 use axum::{
     Router,
     extract::{Query, State},
     http::HeaderMap,
     routing::get,
 };
-use axum::routing::post;
 use prost_validate::NoopValidator;
 use tower::ServiceBuilder;
 use tracing::instrument;
@@ -37,24 +36,14 @@ impl PaymentPresenterHttp {
     pub fn payment_provider_router(&self) -> Router {
         Router::new()
             .route("/", get(find_payment_providers))
-            .layer(
-                ServiceBuilder::new()
-                    .layer(RequestIdLayer)
-                    .layer(LoggerLayer)
-                    .layer(AuthLayer::new(self.user_use_case.clone())),
-            )
+            .layer(ServiceBuilder::new().layer(RequestIdLayer).layer(AuthLayer))
             .with_state(self.clone())
     }
 
     pub fn payment_router(self) -> Router {
         Router::new()
             .route("/", post(create_payment))
-            .layer(
-                ServiceBuilder::new()
-                    .layer(RequestIdLayer)
-                    .layer(LoggerLayer)
-                    .layer(AuthLayer::new(self.user_use_case.clone())),
-            )
+            .layer(ServiceBuilder::new().layer(RequestIdLayer).layer(AuthLayer))
             .with_state(self.clone())
     }
 }
@@ -72,7 +61,7 @@ impl PaymentPresenterHttp {
     responses(
         (status = OK, body = FindPaymentProvidersResponse, content_type = "application/json" ))
 )]
-#[instrument(skip(state))]
+#[instrument("PaymentPresenterHttp.find_payment_providers")]
 pub async fn find_payment_providers(
     State(mut state): State<PaymentPresenterHttp>,
     headers: HeaderMap,
@@ -131,14 +120,14 @@ pub async fn find_payment_providers(
         (status = OK, body = CreatePaymentResponse, content_type = "application/json" )
     )
 )]
-#[instrument(skip(state))]
+#[instrument("PaymentPresenterHttp.create_payment")]
 pub async fn create_payment(
     State(mut state): State<PaymentPresenterHttp>,
     headers: HeaderMap,
     axum::Json(payload): axum::Json<CreatePaymentRequest>,
 ) -> Result<(axum::http::StatusCode, axum::Json<CreatePaymentResponse>), axum::http::StatusCode> {
     // TODO: Validate RBAC
-    
+
     let request = tonic::Request::new(payload);
     match request.validate() {
         Ok(_) => {}

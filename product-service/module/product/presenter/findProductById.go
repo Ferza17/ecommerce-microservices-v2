@@ -12,19 +12,12 @@ import (
 func (p *ProductPresenter) FindProductById(ctx context.Context, req *productRpc.FindProductByIdRequest) (*productRpc.Product, error) {
 	ctx, span := p.telemetryInfrastructure.StartSpanFromContext(ctx, "ProductPresenter.FindProductById")
 	defer span.End()
-	requestID := pkgContext.GetRequestIDFromContext(ctx)
-
-	if err := p.userService.AuthUserVerifyAccessControl(ctx, requestID); err != nil {
-		p.logger.Error("ProductPresenter.CreateProduct", zap.String("requestID", requestID), zap.Error(err))
-		return nil, err
-	}
-
 	if err := req.Validate(); err != nil {
-		p.logger.Error("ProductPresenter.FindProductById", zap.String("requestID", requestID), zap.Error(err))
+		p.logger.Error("ProductPresenter.FindProductById", zap.String("requestID", pkgContext.GetRequestIDFromContext(ctx)), zap.Error(err))
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	res, err := p.productUseCase.FindProductById(ctx, requestID, req)
+	res, err := p.productUseCase.FindProductById(ctx, pkgContext.GetRequestIDFromContext(ctx), req)
 	if err != nil {
 		return nil, err
 	}

@@ -76,7 +76,7 @@ func (srv *GrpcTransport) Serve(ctx context.Context) error {
 			requestIdInterceptor.RequestIDRPCInterceptor(),
 			telemetryInterceptor.TelemetryRPCInterceptor(srv.telemetryInfrastructure),
 			loggerInterceptor.LoggerRPCInterceptor(srv.logger),
-			authInterceptor.AuthRPCUnaryInterceptor(srv.logger, srv.userService),
+			authInterceptor.AuthRPCUnaryInterceptor(srv.logger),
 		),
 	}
 	srv.grpcServer = grpc.NewServer(opts...)

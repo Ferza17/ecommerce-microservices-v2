@@ -1,4 +1,4 @@
-use crate::interceptor::{auth::AuthLayer, logger::LoggerLayer, request_id::RequestIdLayer};
+use crate::interceptor::{auth::AuthLayer, request_id::RequestIdLayer};
 use crate::model::rpc::product::{
     FindProductsWithPaginationRequest, FindProductsWithPaginationResponse,
 };
@@ -29,12 +29,7 @@ impl ProductPresenterHttp {
     pub fn router(&self) -> Router {
         Router::new()
             .route("/", get(find_products_with_pagination))
-            .layer(
-                ServiceBuilder::new()
-                    .layer(RequestIdLayer)
-                    .layer(LoggerLayer)
-                    .layer(AuthLayer::new(self.user_use_case.clone())),
-            )
+            .layer(ServiceBuilder::new().layer(RequestIdLayer).layer(AuthLayer))
             .with_state(self.clone())
     }
 }
@@ -55,7 +50,7 @@ impl ProductPresenterHttp {
     responses(
         (status = OK, body = FindProductsWithPaginationResponse, content_type = "application/json" ))
 )]
-#[instrument(skip(state))]
+#[instrument("ProductPresenterHttp.find_products_with_pagination")]
 pub async fn find_products_with_pagination(
     State(state): State<ProductPresenterHttp>,
     headers: HeaderMap,
@@ -68,7 +63,7 @@ pub async fn find_products_with_pagination(
     axum::http::StatusCode,
 > {
     // TODO: Validate RBAC
-    
+
     let request = tonic::Request::new(query);
     match request.validate() {
         Ok(_) => {}

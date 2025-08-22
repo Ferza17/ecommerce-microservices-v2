@@ -1,24 +1,21 @@
-use axum::http::StatusCode;
-use tonic::Code;
-
-pub fn tonic_to_http_status(status: Code) -> StatusCode {
+pub fn tonic_to_http_status(status: tonic::Code) -> axum::http::StatusCode {
     match status {
-        Code::Ok => StatusCode::OK,
-        Code::Cancelled => StatusCode::REQUEST_TIMEOUT,
-        Code::Unknown => StatusCode::INTERNAL_SERVER_ERROR,
-        Code::InvalidArgument => StatusCode::BAD_REQUEST,
-        Code::DeadlineExceeded => StatusCode::GATEWAY_TIMEOUT,
-        Code::NotFound => StatusCode::NOT_FOUND,
-        Code::AlreadyExists => StatusCode::CONFLICT,
-        Code::PermissionDenied => StatusCode::FORBIDDEN,
-        Code::Unauthenticated => StatusCode::UNAUTHORIZED,
-        Code::ResourceExhausted => StatusCode::TOO_MANY_REQUESTS,
-        Code::FailedPrecondition => StatusCode::PRECONDITION_FAILED,
-        Code::Aborted => StatusCode::CONFLICT,
-        Code::OutOfRange => StatusCode::BAD_REQUEST,
-        Code::Unimplemented => StatusCode::NOT_IMPLEMENTED,
-        Code::Internal => StatusCode::INTERNAL_SERVER_ERROR,
-        Code::Unavailable => StatusCode::SERVICE_UNAVAILABLE,
-        Code::DataLoss => StatusCode::INTERNAL_SERVER_ERROR,
+        tonic::Code::Ok => axum::http::StatusCode::OK,
+        tonic::Code::Cancelled => axum::http::StatusCode::REQUEST_TIMEOUT,
+        tonic::Code::Unknown => axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+        tonic::Code::InvalidArgument => axum::http::StatusCode::BAD_REQUEST,
+        tonic::Code::DeadlineExceeded => axum::http::StatusCode::GATEWAY_TIMEOUT,
+        tonic::Code::NotFound => axum::http::StatusCode::NOT_FOUND,
+        tonic::Code::AlreadyExists => axum::http::StatusCode::CONFLICT,
+        tonic::Code::PermissionDenied => axum::http::StatusCode::FORBIDDEN,
+        tonic::Code::Unauthenticated => axum::http::StatusCode::UNAUTHORIZED,
+        tonic::Code::ResourceExhausted => axum::http::StatusCode::TOO_MANY_REQUESTS,
+        tonic::Code::FailedPrecondition => axum::http::StatusCode::PRECONDITION_FAILED,
+        tonic::Code::Aborted => axum::http::StatusCode::CONFLICT,
+        tonic::Code::OutOfRange => axum::http::StatusCode::BAD_REQUEST,
+        tonic::Code::Unimplemented => axum::http::StatusCode::NOT_IMPLEMENTED,
+        tonic::Code::Internal => axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+        tonic::Code::Unavailable => axum::http::StatusCode::SERVICE_UNAVAILABLE,
+        tonic::Code::DataLoss => axum::http::StatusCode::INTERNAL_SERVER_ERROR,
     }
 }

@@ -124,7 +124,7 @@ func (s *HttpTransport) Serve(ctx context.Context) error {
 	router.Use(requestIdInterceptor.RequestIDHTTPMiddleware())
 	router.Use(telemetryInterceptor.TelemetryHTTPMiddleware(s.telemetryInfrastructure))
 	router.Use(loggerInterceptor.LoggerHTTPMiddleware(s.logger))
-	router.Use(authInterceptor.AuthHTTPMiddleware(s.logger, s.userService))
+	router.Use(authInterceptor.AuthHTTPMiddleware(s.logger))
 
 	router.PathPrefix("/v1/product").Handler(gwMux)
 
