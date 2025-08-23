@@ -1,4 +1,4 @@
-use crate::interceptor::{auth::AuthLayer, request_id::RequestIdLayer};
+use crate::interceptor::auth::AuthLayer;
 use crate::model::rpc::product::{
     FindProductsWithPaginationRequest, FindProductsWithPaginationResponse,
 };
@@ -26,10 +26,11 @@ impl ProductPresenterHttp {
         }
     }
 
+    #[instrument]
     pub fn router(&self) -> Router {
         Router::new()
             .route("/", get(find_products_with_pagination))
-            .layer(ServiceBuilder::new().layer(RequestIdLayer).layer(AuthLayer))
+            .layer(ServiceBuilder::new().layer(AuthLayer))
             .with_state(self.clone())
     }
 }

@@ -4,13 +4,10 @@ use crate::model::rpc::shipping::{
     GetShippingProviderByIdRequest, GetShippingProviderByIdResponse, ListShippingProvidersRequest,
     ListShippingProvidersResponse,
 };
-use crate::model::rpc::user::AuthUserVerifyAccessControlRequest;
 use crate::module::shipping_provider::usecase::{
     ShippingProviderUseCase, ShippingProviderUseCaseImpl,
 };
-use crate::package::context::auth::get_request_authorization_token_from_metadata;
 use crate::package::context::request_id::get_request_id_from_metadata;
-use crate::package::context::url_path::get_url_path_from_metadata;
 use prost_validate::NoopValidator;
 use tonic::{Code, Request, Response, Status};
 use tracing::instrument;
@@ -57,20 +54,6 @@ impl ShippingProviderService for ShippingProviderGrpcPresenter {
         request
             .validate()
             .map_err(|e| Status::new(Code::InvalidArgument, e.field.to_string()))?;
-        // Validate access control
-        self.user_service
-            .clone()
-            .auth_user_verify_access_control(
-                get_request_id_from_metadata(request.metadata()),
-                tonic::Request::new(AuthUserVerifyAccessControlRequest {
-                    token: get_request_authorization_token_from_metadata(request.metadata()),
-                    full_method_name: Some(get_url_path_from_metadata(request.metadata())),
-                    http_url: None,
-                    http_method: None,
-                }),
-            )
-            .await
-            .map_err(|e| Status::from_error(Box::new(e)))?;
 
         // Execute a use case
         self.shipping_provider_use_case

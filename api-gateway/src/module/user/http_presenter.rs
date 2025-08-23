@@ -1,5 +1,4 @@
 use crate::interceptor::auth::AuthLayer;
-use crate::interceptor::request_id::RequestIdLayer;
 use crate::model::rpc::{
     response::Response,
     user::{
@@ -25,18 +24,19 @@ impl UserPresenterHttp {
         Self { user_use_case }
     }
 
+    #[instrument]
     pub fn auth_router(&self) -> axum::Router {
         axum::Router::new()
             .route("/register", post(auth_register))
             .route("/login", post(auth_user_login_by_email_and_password))
             .route("/verify-otp", post(auth_user_verify_otp))
-            .layer(ServiceBuilder::new().layer(RequestIdLayer).layer(AuthLayer))
             .with_state(self.clone())
     }
 
+    #[instrument]
     pub fn user_router(&self) -> axum::Router {
         axum::Router::new()
-            .layer(ServiceBuilder::new().layer(RequestIdLayer).layer(AuthLayer))
+            .layer(ServiceBuilder::new().layer(AuthLayer))
             .with_state(self.clone())
     }
 }

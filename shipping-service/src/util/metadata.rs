@@ -1,4 +1,4 @@
-use opentelemetry::propagation::Injector;
+use opentelemetry::propagation::{Extractor, Injector};
 use tonic::metadata::{MetadataKey, MetadataMap, MetadataValue};
 use tracing::warn;
 
@@ -16,5 +16,16 @@ impl Injector for MetadataInjector<'_> {
 
             Err(error) => warn!(key, error = format!("{error:#}"), "parse metadata key"),
         }
+    }
+}
+
+pub struct HeaderExtractor<'a>(pub &'a hyper::HeaderMap);
+
+impl<'a> Extractor for HeaderExtractor<'a> {
+    fn get(&self, key: &str) -> Option<&str> {
+        self.0.get(key).and_then(|v| v.to_str().ok())
+    }
+    fn keys(&self) -> Vec<&str> {
+        self.0.keys().map(|k| k.as_str()).collect()
     }
 }

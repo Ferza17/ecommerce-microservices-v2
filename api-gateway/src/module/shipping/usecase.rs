@@ -1,9 +1,5 @@
-use crate::model::rpc::product::{
-    FindProductsWithPaginationRequest, FindProductsWithPaginationResponse,
-};
 use crate::model::rpc::shipping::{ListShippingProvidersRequest, ListShippingProvidersResponse};
 use crate::module::shipping::transport_grpc::ShippingTransportGrpc;
-use tonic::Status;
 use tracing::instrument;
 
 #[derive(Debug, Clone)]

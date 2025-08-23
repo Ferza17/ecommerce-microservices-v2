@@ -1,12 +1,10 @@
 use crate::interceptor::auth::AuthLayer;
-use crate::interceptor::request_id::RequestIdLayer;
 use crate::model::rpc::shipping::{ListShippingProvidersRequest, ListShippingProvidersResponse};
 use crate::module::shipping::usecase::ShippingUseCase;
 use crate::module::user::usecase::UserUseCase;
 use crate::package::context::auth::get_request_authorization_token_from_header;
 use crate::package::context::request_id::get_request_id_from_header;
 use crate::util;
-use axum::Router;
 use axum::extract::{Query, State};
 use axum::http::HeaderMap;
 use axum::routing::get;
@@ -27,15 +25,17 @@ impl ShippingPresenterHttp {
         }
     }
 
+    #[instrument]
     pub fn shipping_route(&self) -> axum::Router {
-        Router::new()
-            .layer(ServiceBuilder::new().layer(RequestIdLayer).layer(AuthLayer))
+        axum::Router::new()
+            .layer(ServiceBuilder::new().layer(AuthLayer))
             .with_state(self.clone())
     }
+    #[instrument]
     pub fn shipping_provider_route(&self) -> axum::Router {
-        Router::new()
+        axum::Router::new()
             .route("/", get(list_shipping_providers))
-            .layer(ServiceBuilder::new().layer(RequestIdLayer).layer(AuthLayer))
+            .layer(ServiceBuilder::new().layer(AuthLayer))
             .with_state(self.clone())
     }
 }

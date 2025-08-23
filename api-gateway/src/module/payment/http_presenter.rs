@@ -1,4 +1,4 @@
-use crate::interceptor::{auth::AuthLayer, request_id::RequestIdLayer};
+use crate::interceptor::auth::AuthLayer;
 use crate::model::rpc::payment::{
     CreatePaymentRequest, CreatePaymentResponse, FindPaymentProvidersRequest,
     FindPaymentProvidersResponse,
@@ -33,17 +33,19 @@ impl PaymentPresenterHttp {
         }
     }
 
+    #[instrument]
     pub fn payment_provider_router(&self) -> Router {
         Router::new()
             .route("/", get(find_payment_providers))
-            .layer(ServiceBuilder::new().layer(RequestIdLayer).layer(AuthLayer))
+            .layer(ServiceBuilder::new().layer(AuthLayer))
             .with_state(self.clone())
     }
 
+    #[instrument]
     pub fn payment_router(self) -> Router {
         Router::new()
             .route("/", post(create_payment))
-            .layer(ServiceBuilder::new().layer(RequestIdLayer).layer(AuthLayer))
+            .layer(ServiceBuilder::new().layer(AuthLayer))
             .with_state(self.clone())
     }
 }

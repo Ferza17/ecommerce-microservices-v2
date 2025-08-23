@@ -11,13 +11,17 @@ use crate::module::shipping_provider::{
     usecase::ShippingProviderUseCaseImpl,
 };
 use crate::package::context::request_id::X_REQUEST_ID_HEADER;
+use crate::package::context::traceparent::TRACEPARENT_HEADER;
 use crate::transport::http::api_docs::ApiDocs;
+use crate::util::metadata::HeaderExtractor;
 use axum::http::HeaderValue;
 use axum::http::header::{AUTHORIZATION, CONTENT_TYPE};
 use axum::{Router, http::StatusCode, response::Json, routing::get};
+use opentelemetry::global;
 use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 use tracing::info_span;
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
@@ -80,16 +84,25 @@ impl HttpTransport {
                 CorsLayer::new()
                     .allow_methods(Any)
                     .allow_origin("*".parse::<HeaderValue>()?)
-                    .allow_headers([AUTHORIZATION, CONTENT_TYPE, X_REQUEST_ID_HEADER.parse()?]),
+                    .allow_headers([
+                        AUTHORIZATION,
+                        CONTENT_TYPE,
+                        X_REQUEST_ID_HEADER.parse()?,
+                        TRACEPARENT_HEADER.parse()?,
+                    ]),
             )
             .layer(
                 TraceLayer::new_for_http()
                     .make_span_with(|request: &hyper::Request<_>| {
-                        info_span!(
-                            "http-request",
+                        let span = info_span!(
+                            "HTTP REQUEST",
                             method = ?request.method(),
                             path = %request.uri().path(),
-                        )
+                        );
+                        span.set_parent(global::get_text_map_propagator(|prop| {
+                            prop.extract(&HeaderExtractor(request.headers()))
+                        }));
+                        span
                     })
                     .on_request(|request: &hyper::Request<_>, _span: &tracing::Span| {
                         tracing::info!("started {} {}", request.method(), request.uri().path());

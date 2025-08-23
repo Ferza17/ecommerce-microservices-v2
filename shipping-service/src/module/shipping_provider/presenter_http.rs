@@ -89,47 +89,6 @@ pub async fn list_shipping_providers(
             ));
         }
     }
-    // Validate ACL
-    match state
-        .user_service
-        .clone()
-        .auth_user_verify_access_control(
-            get_request_id_from_header(&headers),
-            tonic::Request::new(AuthUserVerifyAccessControlRequest {
-                token: get_request_authorization_token_from_header(&headers),
-                full_method_name: Some(
-                    "/shipping.ShippingProviderService/ListShippingProviders".to_string(),
-                ),
-                http_url: None,
-                http_method: None,
-            }),
-        )
-        .await
-    {
-        Ok(response) => {
-            if !response.data.unwrap().is_valid {
-                return Ok((
-                    util::convert_status::tonic_to_http_status(Code::PermissionDenied),
-                    Json(ListShippingProvidersResponse {
-                        message: "forbidden".to_string(),
-                        status: "error".to_string(),
-                        data: None,
-                    }),
-                ));
-            }
-        }
-        Err(err) => {
-            error!("AuthUserVerifyAccessControl failed: {}", err.message());
-            return Ok((
-                util::convert_status::tonic_to_http_status(err.code()),
-                Json(ListShippingProvidersResponse {
-                    message: err.message().to_string(),
-                    status: "error".to_string(),
-                    data: None,
-                }),
-            ));
-        }
-    }
 
     let result = state
         .shipping_provider_use_case
@@ -181,48 +140,6 @@ pub async fn get_shipping_provider_by_id(
                 util::convert_status::tonic_to_http_status(Code::InvalidArgument),
                 Json(GetShippingProviderByIdResponse {
                     message: format!("Invalid argument: {}", e.field),
-                    status: "error".to_string(),
-                    data: None,
-                }),
-            ));
-        }
-    }
-
-    // Validate ACL
-    match state
-        .user_service
-        .clone()
-        .auth_user_verify_access_control(
-            get_request_id_from_header(&headers),
-            tonic::Request::new(AuthUserVerifyAccessControlRequest {
-                token: get_request_authorization_token_from_header(&headers),
-                full_method_name: Some(
-                    "/shipping.ShippingProviderService/GetShippingProviderById".to_string(),
-                ),
-                http_url: None,
-                http_method: None,
-            }),
-        )
-        .await
-    {
-        Ok(response) => {
-            if !response.data.unwrap().is_valid {
-                return Ok((
-                    util::convert_status::tonic_to_http_status(Code::PermissionDenied),
-                    Json(GetShippingProviderByIdResponse {
-                        message: "forbidden".to_string(),
-                        status: "error".to_string(),
-                        data: None,
-                    }),
-                ));
-            }
-        }
-        Err(err) => {
-            error!("AuthUserVerifyAccessControl failed: {}", err.message());
-            return Ok((
-                util::convert_status::tonic_to_http_status(err.code()),
-                Json(GetShippingProviderByIdResponse {
-                    message: err.message().to_string(),
                     status: "error".to_string(),
                     data: None,
                 }),

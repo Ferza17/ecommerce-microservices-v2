@@ -184,51 +184,6 @@ pub async fn get_shipping_provider_by_id(
         }
     }
 
-    // VALIDATE ACL
-    match state
-        .user_service
-        .clone()
-        .auth_user_verify_access_control(
-            get_request_id_from_header(&headers),
-            tonic::Request::new(AuthUserVerifyAccessControlRequest {
-                token: get_request_authorization_token_from_header(&headers),
-                full_method_name: Some(
-                    http::uri::PathAndQuery::from_static(
-                        "/shipping.ShippingService/GetShippingById",
-                    )
-                    .to_string(),
-                ),
-                http_url: None,
-                http_method: None,
-            }),
-        )
-        .await
-    {
-        Ok(response) => {
-            if !response.data.unwrap().is_valid {
-                return Ok((
-                    util::convert_status::tonic_to_http_status(Code::PermissionDenied),
-                    Json(GetShippingByIdResponse {
-                        message: "forbidden".to_string(),
-                        status: "error".to_string(),
-                        data: None,
-                    }),
-                ));
-            }
-        }
-        Err(err) => {
-            error!("AuthUserVerifyAccessControl failed: {}", err.message());
-            return Ok((
-                util::convert_status::tonic_to_http_status(err.code()),
-                Json(GetShippingByIdResponse {
-                    message: err.message().to_string(),
-                    status: "error".to_string(),
-                    data: None,
-                }),
-            ));
-        }
-    }
-
     let result = state
         .shipping_use_case
         .get_shipping_by_id(
@@ -286,48 +241,6 @@ pub async fn list_shipping_providers(
                 util::convert_status::tonic_to_http_status(Code::InvalidArgument),
                 Json(ListShippingResponse {
                     message: format!("Invalid argument: {}", e.field),
-                    status: "error".to_string(),
-                    data: vec![],
-                }),
-            ));
-        }
-    }
-    // VALIDATE ACL
-    match state
-        .user_service
-        .clone()
-        .auth_user_verify_access_control(
-            get_request_id_from_header(&headers),
-            tonic::Request::new(AuthUserVerifyAccessControlRequest {
-                token: get_request_authorization_token_from_header(&headers),
-                full_method_name: Some(
-                    http::uri::PathAndQuery::from_static("/shipping.ShippingService/ListShipping")
-                        .to_string(),
-                ),
-                http_url: None,
-                http_method: None,
-            }),
-        )
-        .await
-    {
-        Ok(response) => {
-            if !response.data.unwrap().is_valid {
-                return Ok((
-                    util::convert_status::tonic_to_http_status(Code::PermissionDenied),
-                    Json(ListShippingResponse {
-                        message: "forbidden".to_string(),
-                        status: "error".to_string(),
-                        data: vec![],
-                    }),
-                ));
-            }
-        }
-        Err(err) => {
-            error!("AuthUserVerifyAccessControl failed: {}", err.message());
-            return Ok((
-                util::convert_status::tonic_to_http_status(err.code()),
-                Json(ListShippingResponse {
-                    message: err.message().to_string(),
                     status: "error".to_string(),
                     data: vec![],
                 }),
@@ -397,50 +310,7 @@ pub async fn update_shipping(
             ));
         }
     }
-    // VALIDATE ACL
-    match state
-        .user_service
-        .clone()
-        .auth_user_verify_access_control(
-            get_request_id_from_header(&headers),
-            tonic::Request::new(AuthUserVerifyAccessControlRequest {
-                token: get_request_authorization_token_from_header(&headers),
-                full_method_name: Some(
-                    http::uri::PathAndQuery::from_static(
-                        "/shipping.ShippingService/UpdateShipping",
-                    )
-                    .to_string(),
-                ),
-                http_url: None,
-                http_method: None,
-            }),
-        )
-        .await
-    {
-        Ok(response) => {
-            if !response.data.unwrap().is_valid {
-                return Ok((
-                    util::convert_status::tonic_to_http_status(Code::PermissionDenied),
-                    Json(UpdateShippingResponse {
-                        message: "forbidden".to_string(),
-                        status: "error".to_string(),
-                        data: None,
-                    }),
-                ));
-            }
-        }
-        Err(err) => {
-            error!("AuthUserVerifyAccessControl failed: {}", err.message());
-            return Ok((
-                util::convert_status::tonic_to_http_status(err.code()),
-                Json(UpdateShippingResponse {
-                    message: err.message().to_string(),
-                    status: "error".to_string(),
-                    data: None,
-                }),
-            ));
-        }
-    }
+
     let result = state
         .shipping_use_case
         .update_shipping(

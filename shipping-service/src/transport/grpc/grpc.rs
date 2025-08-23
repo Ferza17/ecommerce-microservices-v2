@@ -12,8 +12,13 @@ use crate::module::shipping::usecase::ShippingUseCaseImpl;
 use crate::module::shipping_provider::presenter_grpc::ShippingProviderGrpcPresenter;
 use crate::module::shipping_provider::repository_postgres::ShippingProviderPostgresRepositoryImpl;
 use crate::module::shipping_provider::usecase::ShippingProviderUseCaseImpl;
+use crate::util::metadata::HeaderExtractor;
+use opentelemetry::global;
 use tonic::transport::Server;
 use tower::ServiceBuilder;
+use tower_http::trace::TraceLayer;
+use tracing::{Instrument, info_span};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 pub struct GrpcTransport {
     config: AppConfig,
@@ -64,8 +69,48 @@ impl GrpcTransport {
             self.config.shipping_service_service_rpc_port
         )
         .parse()?;
+
         Server::builder()
-            .layer(AuthLayer)
+            .layer(
+                ServiceBuilder::new()
+                    .layer(
+                        TraceLayer::new_for_grpc()
+                            .make_span_with(|request: &hyper::Request<_>| {
+                                let span = info_span!(
+                                    "GRPC REQUEST",
+                                    method = ?request.method(),
+                                    path = %request.uri().path(),
+                                );
+                                span.set_parent(global::get_text_map_propagator(|prop| {
+                                    prop.extract(&HeaderExtractor(request.headers()))
+                                }));
+                                span
+                            })
+                            .on_request(
+                                |request: &hyper::Request<tonic::body::BoxBody>,
+                                 _span: &tracing::Span| {
+                                    tracing::info!(
+                                        "started {} {}",
+                                        request.method(),
+                                        request.uri().path()
+                                    );
+                                },
+                            )
+                            .on_response(
+                                |response: &hyper::Response<tonic::body::BoxBody>,
+                                 latency: std::time::Duration,
+                                 _span: &tracing::Span| {
+                                    tracing::info!(
+                                        "response {} in {:?}",
+                                        response.status(),
+                                        latency
+                                    );
+                                },
+                            ),
+                    )
+                    .layer(RequestIdLayer)
+                    .layer(AuthLayer),
+            )
             .add_service(ShippingProviderServiceServer::new(
                 shipping_provider_presenter,
             ))

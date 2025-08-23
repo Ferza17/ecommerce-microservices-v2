@@ -1,4 +1,5 @@
 use crate::config::config::AppConfig;
+use crate::interceptor::request_id::RequestIdLayer;
 use crate::module::payment::http_presenter::PaymentPresenterHttp;
 use crate::module::payment::usecase::PaymentUseCase;
 use crate::module::product::usecase::ProductUseCase;
@@ -14,6 +15,7 @@ use crate::module::{
     product::transport_grpc::ProductTransportGrpc,
 };
 use crate::package::context::request_id::X_REQUEST_ID_HEADER;
+use crate::package::context::traceparent::TRACEPARENT_HEADER;
 use crate::transport::http::api_docs::ApiDocs;
 use axum::{
     Router,
@@ -24,13 +26,16 @@ use axum::{
     response::Json,
     routing::get,
 };
+use opentelemetry::global;
 use tower_http::{
     cors::{Any, CorsLayer},
     trace::TraceLayer,
 };
 use tracing::info_span;
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
+use crate::util::metadata::HeaderExtractor;
 
 pub struct HttpTransport {
     config: AppConfig,
@@ -96,19 +101,17 @@ impl HttpTransport {
             .route("/api/v1/checks", get(health_check_handler))
             .merge(SwaggerUi::new("/api/v1/docs").url("/api-docs/openapi.json", ApiDocs::openapi()))
             .layer(
-                CorsLayer::new()
-                    .allow_methods(Any)
-                    .allow_origin("*".parse::<HeaderValue>()?)
-                    .allow_headers([AUTHORIZATION, CONTENT_TYPE, X_REQUEST_ID_HEADER.parse()?]),
-            )
-            .layer(
                 TraceLayer::new_for_http()
                     .make_span_with(|request: &hyper::Request<_>| {
-                        info_span!(
-                            "http-request",
+                        let span = info_span!(
+                            "HTTP REQUEST",
                             method = ?request.method(),
                             path = %request.uri().path(),
-                        )
+                        );
+                        span.set_parent(global::get_text_map_propagator(|prop| {
+                            prop.extract(&HeaderExtractor(request.headers()))
+                        }));
+                        span
                     })
                     .on_request(|request: &hyper::Request<_>, _span: &tracing::Span| {
                         tracing::info!("started {} {}", request.method(), request.uri().path());
@@ -120,7 +123,19 @@ impl HttpTransport {
                             tracing::info!("response {} in {:?}", response.status(), latency);
                         },
                     ),
-            );
+            )
+            .layer(
+                CorsLayer::new()
+                    .allow_methods(Any)
+                    .allow_origin("*".parse::<HeaderValue>()?)
+                    .allow_headers([
+                        AUTHORIZATION,
+                        CONTENT_TYPE,
+                        X_REQUEST_ID_HEADER.parse()?,
+                        TRACEPARENT_HEADER.parse()?,
+                    ]),
+            )
+            .layer(RequestIdLayer);
 
         let listener = tokio::net::TcpListener::bind(addr.as_str()).await?;
         eprintln!("Starting HTTP server on {}", addr.as_str());

@@ -1,6 +1,7 @@
 use std::task::{Context, Poll};
+use tracing::instrument;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct AuthLayer;
 impl<S> tower::Layer<S> for AuthLayer {
     type Service = AuthLayerService<S>;
@@ -9,7 +10,7 @@ impl<S> tower::Layer<S> for AuthLayer {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct AuthLayerService<S> {
     pub inner: S,
 }
@@ -23,6 +24,7 @@ where
             Response = axum::http::Response<axum::body::Body>,
         > + Clone
         + Send
+        + std::fmt::Debug
         + 'static,
     S::Response: Send + 'static,
     S::Future: Send + 'static,
@@ -36,9 +38,12 @@ where
         >,
     >;
 
+    #[instrument("AuthLayer.poll_ready")]
     fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
         self.inner.poll_ready(cx)
     }
+
+    #[instrument("AuthLayer.call")]
 
     fn call(&mut self, mut req: axum::http::Request<axum::body::Body>) -> Self::Future {
         fn unauthorize_response(
@@ -124,7 +129,7 @@ where
     S: tower::Service<
             hyper::Request<tonic::body::BoxBody>,
             Response = hyper::Response<tonic::body::BoxBody>,
-        >,
+        > + std::fmt::Debug,
     S::Future: Send + 'static,
     S::Error: Into<Box<dyn std::error::Error + Send + Sync>>,
 {
@@ -134,10 +139,13 @@ where
         S::Future,
         futures::future::Ready<Result<Self::Response, Self::Error>>,
     >;
+
+    #[instrument("AuthLayer.poll_ready")]
     fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
         self.inner.poll_ready(cx)
     }
 
+    #[instrument("AuthLayer.call")]
     fn call(&mut self, mut req: hyper::Request<tonic::body::BoxBody>) -> Self::Future {
         // VERIFY TOKEN
         let token_from_header = match req

@@ -1,5 +1,5 @@
 use opentelemetry::global;
-use opentelemetry::propagation::Injector;
+use opentelemetry::propagation::{Extractor, Injector};
 use std::str::FromStr;
 use tonic::metadata::{MetadataKey, MetadataMap, MetadataValue};
 use tracing::warn;
@@ -29,4 +29,15 @@ pub fn inject_trace_context<T>(
         propagator.inject_context(&ctx, &mut MetadataInjector(request.metadata_mut()))
     });
     request
+}
+
+
+pub struct HeaderExtractor<'a>(pub &'a hyper::HeaderMap);
+impl<'a> Extractor for HeaderExtractor<'a> {
+    fn get(&self, key: &str) -> Option<&str> {
+        self.0.get(key).and_then(|v| v.to_str().ok())
+    }
+    fn keys(&self) -> Vec<&str> {
+        self.0.keys().map(|k| k.as_str()).collect()
+    }
 }

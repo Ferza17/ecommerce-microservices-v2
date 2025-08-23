@@ -1,8 +1,8 @@
-use crate::interceptor::auth::AuthLayerService;
 use std::task::{Context, Poll};
+use tracing::instrument;
 use uuid::Uuid;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct RequestIdLayer;
 impl<S> tower::Layer<S> for RequestIdLayer {
     type Service = RequestIdLayerService<S>;
@@ -11,7 +11,7 @@ impl<S> tower::Layer<S> for RequestIdLayer {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct RequestIdLayerService<S> {
     pub inner: S,
 }
@@ -24,6 +24,7 @@ where
             Response = axum::http::Response<axum::body::Body>,
         > + Clone
         + Send
+        + std::fmt::Debug
         + Sync
         + 'static,
 {
@@ -31,10 +32,12 @@ where
     type Error = S::Error;
     type Future = S::Future;
 
+    #[instrument("RequestIdLayer.poll_ready")]
     fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
         self.inner.poll_ready(cx)
     }
 
+    #[instrument("RequestIdLayer.call")]
     fn call(&mut self, mut req: axum::http::Request<axum::body::Body>) -> Self::Future {
         let request_id = req
             .headers()
@@ -55,16 +58,18 @@ where
     S: tower::Service<
             hyper::Request<tonic::body::BoxBody>,
             Response = hyper::Response<tonic::body::BoxBody>,
-        >,
+        > + std::fmt::Debug,
 {
     type Response = S::Response;
     type Error = S::Error;
     type Future = S::Future;
 
+    #[instrument("RequestIdLayer.poll_ready")]
     fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
         self.inner.poll_ready(cx)
     }
 
+    #[instrument("RequestIdLayer.call")]
     fn call(&mut self, mut req: hyper::Request<tonic::body::BoxBody>) -> Self::Future {
         let request_id = req
             .headers()

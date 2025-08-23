@@ -1,6 +1,7 @@
 use std::task::{Context, Poll};
+use tracing::instrument;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct AuthLayer;
 impl<S> tower::Layer<S> for AuthLayer {
     type Service = AuthLayerService<S>;
@@ -9,7 +10,7 @@ impl<S> tower::Layer<S> for AuthLayer {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct AuthLayerService<S> {
     pub inner: S,
 }
@@ -23,6 +24,7 @@ where
             Response = axum::http::Response<axum::body::Body>,
         > + Clone
         + Send
+        + std::fmt::Debug
         + 'static,
     S::Response: Send + 'static,
     S::Future: Send + 'static,
@@ -36,10 +38,12 @@ where
         >,
     >;
 
+    #[instrument("AuthLayer.poll_ready")]
     fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
         self.inner.poll_ready(cx)
     }
 
+    #[instrument("AuthLayer.call")]
     fn call(&mut self, mut req: axum::http::Request<axum::body::Body>) -> Self::Future {
         fn unauthorize_response(
             status: tonic::Code,
@@ -107,61 +111,6 @@ where
             return futures::future::Either::Right(futures::future::ready(unauthorize_response(
                 tonic::Code::Unauthenticated,
                 "invalid bearer token format",
-            )));
-        }
-
-        req.headers_mut().insert(
-            crate::package::context::auth::AUTHORIZATION_HEADER,
-            token.parse().unwrap(),
-        );
-        futures::future::Either::Left(self.inner.call(req))
-    }
-}
-
-// GRPC
-impl<S> tower::Service<hyper::Request<tonic::body::BoxBody>> for AuthLayerService<S>
-where
-    S: tower::Service<
-            hyper::Request<tonic::body::BoxBody>,
-            Response = hyper::Response<tonic::body::BoxBody>,
-        >,
-    S::Future: Send + 'static,
-    S::Error: Into<Box<dyn std::error::Error + Send + Sync>>,
-{
-    type Response = hyper::Response<tonic::body::BoxBody>;
-    type Error = S::Error;
-    type Future = futures::future::Either<
-        S::Future,
-        futures::future::Ready<Result<Self::Response, Self::Error>>,
-    >;
-    fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
-        self.inner.poll_ready(cx)
-    }
-
-    fn call(&mut self, mut req: hyper::Request<tonic::body::BoxBody>) -> Self::Future {
-        // VERIFY TOKEN
-        let token_from_header = match req
-            .headers()
-            .get(crate::package::context::auth::AUTHORIZATION_HEADER)
-        {
-            Some(val) => val.to_str().unwrap_or_default().to_string(),
-            None => {
-                return futures::future::Either::Right(futures::future::ready(Ok(
-                    tonic::Status::unauthenticated("No authorization header").into_http(),
-                )));
-            }
-        };
-
-        if !token_from_header.starts_with("Bearer ") {
-            return futures::future::Either::Right(futures::future::ready(Ok(
-                tonic::Status::unauthenticated("Invalid authorization header").into_http(),
-            )));
-        }
-
-        let token = token_from_header.trim_start_matches("Bearer ").trim();
-        if token.is_empty() {
-            return futures::future::Either::Right(futures::future::ready(Ok(
-                tonic::Status::unauthenticated("missing token").into_http(),
             )));
         }
 

@@ -9,8 +9,6 @@ use crate::model::rpc::user::{
 };
 use crate::package::context::auth::AUTHORIZATION_HEADER;
 use crate::package::context::request_id::X_REQUEST_ID_HEADER;
-use opentelemetry::trace::FutureExt;
-use tonic::{Response, Status};
 use tracing::{Level, Span, event, instrument};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 use crate::util::metadata::inject_trace_context;

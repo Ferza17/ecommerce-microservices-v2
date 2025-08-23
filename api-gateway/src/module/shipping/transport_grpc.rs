@@ -8,7 +8,7 @@ use crate::model::rpc::shipping::{
 use crate::package::context::auth::AUTHORIZATION_HEADER;
 use crate::package::context::request_id::X_REQUEST_ID_HEADER;
 use crate::util::metadata::inject_trace_context;
-use tonic::{Response, Status};
+use opentelemetry::trace::FutureExt;
 use tracing::{Level, Span, event, instrument};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
@@ -56,6 +56,7 @@ impl ShippingTransportGrpc {
         match self
             .shipping_provider_service_client
             .list_shipping_providers(inject_trace_context(request, Span::current().context()))
+            .with_context(Span::current().context())
             .await
         {
             Ok(response) => {
@@ -95,6 +96,7 @@ impl ShippingTransportGrpc {
         match self
             .shipping_provider_service_client
             .get_shipping_provider_by_id(inject_trace_context(request, Span::current().context()))
+            .with_context(Span::current().context())
             .await
         {
             Ok(response) => {
