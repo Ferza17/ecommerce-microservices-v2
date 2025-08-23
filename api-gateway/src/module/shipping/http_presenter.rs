@@ -28,14 +28,14 @@ impl ShippingPresenterHttp {
     #[instrument]
     pub fn shipping_route(&self) -> axum::Router {
         axum::Router::new()
-            .layer(ServiceBuilder::new().layer(AuthLayer))
+            .layer(ServiceBuilder::new().layer(AuthLayer::new(self.user_use_case.clone())))
             .with_state(self.clone())
     }
     #[instrument]
     pub fn shipping_provider_route(&self) -> axum::Router {
         axum::Router::new()
             .route("/", get(list_shipping_providers))
-            .layer(ServiceBuilder::new().layer(AuthLayer))
+            .layer(ServiceBuilder::new().layer(AuthLayer::new(self.user_use_case.clone())))
             .with_state(self.clone())
     }
 }

@@ -2,6 +2,7 @@ pub mod context {
     pub mod auth;
     pub mod request_id;
     pub mod traceparent;
+    pub mod user_id;
 }
 
 pub mod worker_pool {

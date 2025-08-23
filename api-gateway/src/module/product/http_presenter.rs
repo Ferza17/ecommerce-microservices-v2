@@ -30,7 +30,7 @@ impl ProductPresenterHttp {
     pub fn router(&self) -> Router {
         Router::new()
             .route("/", get(find_products_with_pagination))
-            .layer(ServiceBuilder::new().layer(AuthLayer))
+            .layer(ServiceBuilder::new().layer(AuthLayer::new(self.user_use_case.clone())))
             .with_state(self.clone())
     }
 }

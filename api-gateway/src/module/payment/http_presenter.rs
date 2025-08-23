@@ -37,7 +37,7 @@ impl PaymentPresenterHttp {
     pub fn payment_provider_router(&self) -> Router {
         Router::new()
             .route("/", get(find_payment_providers))
-            .layer(ServiceBuilder::new().layer(AuthLayer))
+            .layer(ServiceBuilder::new().layer(AuthLayer::new(self.user_use_case.clone())))
             .with_state(self.clone())
     }
 
@@ -45,7 +45,7 @@ impl PaymentPresenterHttp {
     pub fn payment_router(self) -> Router {
         Router::new()
             .route("/", post(create_payment))
-            .layer(ServiceBuilder::new().layer(AuthLayer))
+            .layer(ServiceBuilder::new().layer(AuthLayer::new(self.user_use_case.clone())))
             .with_state(self.clone())
     }
 }

@@ -1,12 +1,13 @@
 use crate::model::rpc::user::{
     AuthServiceVerifyIsExcludedRequest, AuthServiceVerifyIsExcludedResponse,
+    AuthUserFindUserByTokenRequest, AuthUserFindUserByTokenResponse,
     AuthUserLoginByEmailAndPasswordRequest, AuthUserRegisterRequest, AuthUserRegisterResponse,
     AuthUserVerifyOtpRequest, AuthUserVerifyOtpResponse,
 };
 use crate::module::user::{
     transport_grpc::UserTransportGrpc, transport_rabbitmq::UserTransportRabbitMQ,
 };
-use futures::future::{Either, ready};
+use tonic::Status;
 use tracing::instrument;
 
 #[derive(Debug, Clone)]
@@ -98,6 +99,23 @@ impl UserUseCase {
 
                 Ok(resp)
             }
+        }
+    }
+
+    #[instrument("UserUseCase.auth_user_find_user_by_token")]
+    pub async fn auth_user_find_user_by_token(
+        &mut self,
+        request_id: String,
+        token: String,
+        request: tonic::Request<AuthUserFindUserByTokenRequest>,
+    ) -> Result<AuthUserFindUserByTokenResponse, tonic::Status> {
+        match self
+            .user_service_grpc
+            .auth_user_find_user_by_token(request_id, token, request)
+            .await
+        {
+            Err(e) => Err(e.into()),
+            response => Ok(response?),
         }
     }
 }

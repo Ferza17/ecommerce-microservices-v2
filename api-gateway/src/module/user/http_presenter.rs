@@ -36,7 +36,7 @@ impl UserPresenterHttp {
     #[instrument]
     pub fn user_router(&self) -> axum::Router {
         axum::Router::new()
-            .layer(ServiceBuilder::new().layer(AuthLayer))
+            .layer(ServiceBuilder::new().layer(AuthLayer::new(self.user_use_case.clone())))
             .with_state(self.clone())
     }
 }

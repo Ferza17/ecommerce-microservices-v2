@@ -1,18 +1,36 @@
+use crate::model::rpc::user::AuthUserFindUserByTokenResponse;
+use crate::module::user::usecase::UserUseCase;
+use crate::package::context::request_id::get_request_id_from_header;
 use std::task::{Context, Poll};
+use tokio::runtime::Runtime;
+use tonic::Status;
 use tracing::instrument;
 
 #[derive(Clone, Debug)]
-pub struct AuthLayer;
+pub struct AuthLayer {
+    user_use_case: UserUseCase,
+}
+
+impl AuthLayer {
+    pub fn new(user_use_case: UserUseCase) -> Self {
+        Self { user_use_case }
+    }
+}
+
 impl<S> tower::Layer<S> for AuthLayer {
     type Service = AuthLayerService<S>;
     fn layer(&self, inner: S) -> Self::Service {
-        AuthLayerService { inner }
+        AuthLayerService {
+            inner,
+            user_use_case: self.user_use_case.clone(),
+        }
     }
 }
 
 #[derive(Clone, Debug)]
 pub struct AuthLayerService<S> {
     pub inner: S,
+    pub user_use_case: UserUseCase,
 }
 
 // HTTP
@@ -113,6 +131,9 @@ where
                 "invalid bearer token format",
             )));
         }
+
+        // Validate Expiration Token ON USER SERVICE
+       
 
         req.headers_mut().insert(
             crate::package::context::auth::AUTHORIZATION_HEADER,

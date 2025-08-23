@@ -1,17 +1,17 @@
 use crate::config::config::AppConfig;
-use crate::model::rpc::user::auth_service_client::AuthServiceClient;
-use crate::model::rpc::user::user_service_client::UserServiceClient;
 use crate::model::rpc::user::{
     AuthServiceVerifyIsExcludedRequest, AuthServiceVerifyIsExcludedResponse,
+    AuthUserFindUserByTokenRequest, AuthUserFindUserByTokenResponse,
     AuthUserLoginByEmailAndPasswordRequest, AuthUserRegisterRequest, AuthUserRegisterResponse,
     AuthUserVerifyAccessControlRequest, AuthUserVerifyOtpRequest, AuthUserVerifyOtpResponse,
-    FindUserByIdRequest, FindUserByIdResponse,
+    FindUserByIdRequest, FindUserByIdResponse, auth_service_client::AuthServiceClient,
+    user_service_client::UserServiceClient,
 };
-use crate::package::context::auth::AUTHORIZATION_HEADER;
-use crate::package::context::request_id::X_REQUEST_ID_HEADER;
+use crate::package::context::{auth::AUTHORIZATION_HEADER, request_id::X_REQUEST_ID_HEADER};
+use crate::util::metadata::inject_trace_context;
+use opentelemetry::trace::FutureExt;
 use tracing::{Level, Span, event, instrument};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
-use crate::util::metadata::inject_trace_context;
 
 #[derive(Debug, Clone)]
 pub struct UserTransportGrpc {
@@ -51,8 +51,10 @@ impl UserTransportGrpc {
 
         match self
             .auth_service_client
-            .auth_service_verify_is_excluded(inject_trace_context(request, Span::current().context()))
-            
+            .auth_service_verify_is_excluded(inject_trace_context(
+                request,
+                Span::current().context(),
+            ))
             .await
         {
             Ok(response) => {
@@ -107,7 +109,6 @@ impl UserTransportGrpc {
         match self
             .auth_service_client
             .auth_user_register(inject_trace_context(request, Span::current().context()))
-            
             .await
         {
             Ok(response) => {
@@ -143,8 +144,10 @@ impl UserTransportGrpc {
 
         match self
             .auth_service_client
-            .auth_user_login_by_email_and_password(inject_trace_context(request, Span::current().context()))
-            
+            .auth_user_login_by_email_and_password(inject_trace_context(
+                request,
+                Span::current().context(),
+            ))
             .await
         {
             Ok(response) => {
@@ -181,7 +184,6 @@ impl UserTransportGrpc {
         match self
             .auth_service_client
             .auth_user_verify_otp(inject_trace_context(request, Span::current().context()))
-            
             .await
         {
             Ok(response) => {
@@ -222,7 +224,7 @@ impl UserTransportGrpc {
         match self
             .user_service_client
             .find_user_by_id(inject_trace_context(request, Span::current().context()))
-            
+            .with_current_context()
             .await
         {
             Ok(response) => {
@@ -239,6 +241,47 @@ impl UserTransportGrpc {
                     request_id = request_id,
                     error = %err,
                     "Failed to get find_user_by_id"
+                );
+                Err(err.into())
+            }
+        }
+    }
+
+    #[instrument("UserTransportGrpc.auth_user_find_user_by_token")]
+    pub async fn auth_user_find_user_by_token(
+        &mut self,
+        request_id: String,
+        token: String,
+        mut request: tonic::Request<AuthUserFindUserByTokenRequest>,
+    ) -> Result<AuthUserFindUserByTokenResponse, tonic::Status> {
+        request
+            .metadata_mut()
+            .insert(X_REQUEST_ID_HEADER, request_id.parse().unwrap());
+        request.metadata_mut().insert(
+            AUTHORIZATION_HEADER,
+            format!("Bearer {}", token).parse().unwrap(),
+        );
+
+        match self
+            .auth_service_client
+            .auth_user_find_user_by_token(inject_trace_context(request, Span::current().context()))
+            .with_current_context()
+            .await
+        {
+            Ok(response) => {
+                event!(
+                    Level::INFO,
+                    request_id = request_id,
+                    data=?response
+                );
+                Ok(response.into_inner())
+            }
+            Err(err) => {
+                event!(
+                    Level::ERROR,
+                    request_id = request_id,
+                    error = %err,
+                    "Failed to get auth_user_find_user_by_token"
                 );
                 Err(err.into())
             }
