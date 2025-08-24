@@ -1,19 +1,15 @@
-use crate::model::rpc::user::AuthUserFindUserByTokenResponse;
-use crate::module::user::usecase::UserUseCase;
+use crate::model::rpc::user::AuthUserFindUserByTokenRequest;
 use crate::package::context::request_id::get_request_id_from_header;
 use std::task::{Context, Poll};
-use tokio::runtime::Runtime;
-use tonic::Status;
-use tracing::instrument;
 
 #[derive(Clone, Debug)]
 pub struct AuthLayer {
-    user_use_case: UserUseCase,
+    auth_use_case: crate::module::auth::usecase::UseCase,
 }
 
 impl AuthLayer {
-    pub fn new(user_use_case: UserUseCase) -> Self {
-        Self { user_use_case }
+    pub fn new(auth_use_case: crate::module::auth::usecase::UseCase) -> Self {
+        Self { auth_use_case }
     }
 }
 
@@ -22,7 +18,7 @@ impl<S> tower::Layer<S> for AuthLayer {
     fn layer(&self, inner: S) -> Self::Service {
         AuthLayerService {
             inner,
-            user_use_case: self.user_use_case.clone(),
+            auth_use_case: self.auth_use_case.clone(),
         }
     }
 }
@@ -30,7 +26,7 @@ impl<S> tower::Layer<S> for AuthLayer {
 #[derive(Clone, Debug)]
 pub struct AuthLayerService<S> {
     pub inner: S,
-    pub user_use_case: UserUseCase,
+    pub auth_use_case: crate::module::auth::usecase::UseCase,
 }
 
 // HTTP
@@ -56,12 +52,12 @@ where
         >,
     >;
 
-    #[instrument("AuthLayer.poll_ready")]
+    #[tracing::instrument("AuthLayer.poll_ready")]
     fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
         self.inner.poll_ready(cx)
     }
 
-    #[instrument("AuthLayer.call")]
+    #[tracing::instrument("AuthLayer.call")]
     fn call(&mut self, mut req: axum::http::Request<axum::body::Body>) -> Self::Future {
         fn unauthorize_response(
             status: tonic::Code,
@@ -132,13 +128,47 @@ where
             )));
         }
 
-        // Validate Expiration Token ON USER SERVICE
-       
-
         req.headers_mut().insert(
             crate::package::context::auth::AUTHORIZATION_HEADER,
-            token.parse().unwrap(),
+            token.clone().parse().unwrap(),
         );
+
+        // Validate Expiration Token ON USER SERVICE
+        let mut cloned_user_service = self.auth_use_case.clone();
+        let request_id = get_request_id_from_header(req.headers());
+        match tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async move {
+                let cloned_token = token.clone();
+                cloned_user_service
+                    .auth_user_find_user_by_token(
+                        request_id.clone(),
+                        cloned_token.clone(),
+                        tonic::Request::new(AuthUserFindUserByTokenRequest {
+                            token: cloned_token.clone(),
+                        }),
+                    )
+                    .await
+            })
+        }) {
+            Ok(val) => {
+                if val.data.is_none() {
+                    return futures::future::Either::Right(futures::future::ready(
+                        unauthorize_response(tonic::Code::Unauthenticated, "invalid bearer token"),
+                    ));
+                }
+
+                req.headers_mut().insert(
+                    crate::package::context::user_id::X_USER_ID_HEADER,
+                    val.data.unwrap().user.unwrap().id.parse().unwrap(),
+                );
+            }
+            Err(err) => {
+                return futures::future::Either::Right(futures::future::ready(
+                    unauthorize_response(err.code(), err.message()),
+                ));
+            }
+        }
+
         futures::future::Either::Left(self.inner.call(req))
     }
 }

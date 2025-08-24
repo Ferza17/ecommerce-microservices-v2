@@ -1,11 +1,11 @@
 use crate::config::config::AppConfig;
 
 #[derive(Debug, Clone)]
-pub struct UserTransportRabbitMQ {
+pub struct Transport {
     app_config: AppConfig,
 }
 
-impl UserTransportRabbitMQ {
+impl Transport {
     pub fn new(app_config: AppConfig) -> Self {
         Self { app_config }
     }

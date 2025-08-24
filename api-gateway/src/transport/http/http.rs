@@ -1,22 +1,9 @@
 use crate::config::config::AppConfig;
 use crate::interceptor::request_id::RequestIdLayer;
-use crate::module::payment::http_presenter::PaymentPresenterHttp;
-use crate::module::payment::usecase::PaymentUseCase;
-use crate::module::product::usecase::ProductUseCase;
-use crate::module::shipping::http_presenter::ShippingPresenterHttp;
-use crate::module::shipping::transport_grpc::ShippingTransportGrpc;
-use crate::module::shipping::usecase::ShippingUseCase;
-use crate::module::user::{
-    http_presenter::UserPresenterHttp, transport_grpc::UserTransportGrpc,
-    transport_rabbitmq::UserTransportRabbitMQ, usecase::UserUseCase,
-};
-use crate::module::{
-    payment::transport_grpc::PaymentTransportGrpc, product::http_presenter::ProductPresenterHttp,
-    product::transport_grpc::ProductTransportGrpc,
-};
 use crate::package::context::request_id::X_REQUEST_ID_HEADER;
 use crate::package::context::traceparent::TRACEPARENT_HEADER;
 use crate::transport::http::api_docs::ApiDocs;
+use crate::util::metadata::HeaderExtractor;
 use axum::{
     Router,
     http::{
@@ -35,7 +22,6 @@ use tracing::info_span;
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
-use crate::util::metadata::HeaderExtractor;
 
 pub struct HttpTransport {
     config: AppConfig,
@@ -55,51 +41,116 @@ impl HttpTransport {
         .to_string();
 
         // Transport Layer
-        let user_transport_grpc = UserTransportGrpc::new(self.config.clone()).await?;
-        let user_transport_rabbitmq = UserTransportRabbitMQ::new(self.config.clone());
-        let product_transport_grpc = ProductTransportGrpc::new(self.config.clone()).await?;
-        let payment_transport_grpc = PaymentTransportGrpc::new(self.config.clone()).await?;
-        let shipping_transport_grpc = ShippingTransportGrpc::new(self.config.clone()).await?;
+        let user_transport_grpc =
+            crate::module::user::transport_grpc::Transport::new(self.config.clone()).await?;
+        let auth_transport_grpc =
+            crate::module::auth::transport_grpc::Transport::new(self.config.clone()).await?;
+        let user_transport_rabbitmq =
+            crate::module::user::transport_rabbitmq::Transport::new(self.config.clone());
+
+        let product_transport_grpc =
+            crate::module::product::transport_grpc::Transport::new(self.config.clone()).await?;
+
+        let payment_provider_transport_grpc =
+            crate::module::payment_providers::transport_grpc::Transport::new(self.config.clone())
+                .await?;
+        let payment_transport_grpc =
+            crate::module::payment::transport_grpc::Transport::new(self.config.clone()).await?;
+
+        let shipping_provider_transport_grpc =
+            crate::module::shipping_provider::transport_grpc::Transport::new(self.config.clone())
+                .await?;
+        let shipping_transport_grpc =
+            crate::module::shipping::transport_grpc::Transport::new(self.config.clone()).await?;
 
         // Use case layer
-        let user_use_case = UserUseCase::new(user_transport_grpc.clone(), user_transport_rabbitmq);
-        let product_use_case = ProductUseCase::new(product_transport_grpc.clone());
-        let shipping_use_case = ShippingUseCase::new(shipping_transport_grpc.clone());
-        let payment_use_case = PaymentUseCase::new(
-            payment_transport_grpc,
-            shipping_transport_grpc,
+        let auth_use_case = crate::module::auth::usecase::UseCase::new(auth_transport_grpc);
+        let user_use_case = crate::module::user::usecase::UseCase::new(
+            user_transport_grpc.clone(),
+            user_transport_rabbitmq,
+        );
+        let product_use_case =
+            crate::module::product::usecase::UseCase::new(product_transport_grpc.clone());
+        let shipping_provider_use_case = crate::module::shipping_provider::usecase::UseCase::new(
+            shipping_provider_transport_grpc.clone(),
+        );
+        let shipping_use_case =
+            crate::module::shipping::usecase::UseCase::new(shipping_transport_grpc.clone());
+        let payment_use_case = crate::module::payment::usecase::UseCase::new(
+            payment_transport_grpc.clone(),
+            payment_provider_transport_grpc.clone(),
+            shipping_provider_transport_grpc,
             user_transport_grpc,
             product_transport_grpc,
         );
+        let payment_provider_use_case = crate::module::payment_providers::usecase::UseCase::new(
+            payment_provider_transport_grpc,
+        );
 
         // Presenter layer
-        let user_presenter = UserPresenterHttp::new(user_use_case.clone());
-        let product_presenter = ProductPresenterHttp::new(product_use_case, user_use_case.clone());
-        let payment_presenter = PaymentPresenterHttp::new(payment_use_case, user_use_case.clone());
-        let shipping_presenter = ShippingPresenterHttp::new(shipping_use_case, user_use_case);
+        let auth_presenter =
+            crate::module::auth::http_presenter::Presenter::new(auth_use_case.clone());
+        let user_presenter = crate::module::user::http_presenter::Presenter::new(
+            user_use_case.clone(),
+            auth_use_case.clone(),
+        );
+        let product_presenter = crate::module::product::http_presenter::Presenter::new(
+            product_use_case,
+            auth_use_case.clone(),
+        );
+        let payment_provider_presenter =
+            crate::module::payment_providers::http_presenter::Presenter::new(
+                payment_provider_use_case,
+                auth_use_case.clone(),
+            );
+        let payment_presenter = crate::module::payment::http_presenter::Presenter::new(
+            payment_use_case,
+            auth_use_case.clone(),
+        );
+        let shipping_provider_presenter =
+            crate::module::shipping_provider::http_presenter::Presenter::new(
+                shipping_provider_use_case,
+                auth_use_case.clone(),
+            );
+        let shipping_presenter = crate::module::shipping::http_presenter::Presenter::new(
+            shipping_use_case,
+            auth_use_case,
+        );
 
         let app = Router::new()
-            .nest("/api/v1/auth", user_presenter.clone().auth_router())
-            .nest("/api/v1/users", user_presenter.user_router())
-            .nest("/api/v1/products", product_presenter.router())
             .nest(
-                "/api/v1/payments",
-                payment_presenter.clone().payment_router(),
+                crate::module::auth::http_presenter::ROUTE_PREFIX,
+                auth_presenter.router(),
             )
             .nest(
-                "/api/v1/payment-providers",
-                payment_presenter.payment_provider_router(),
+                crate::module::user::http_presenter::ROUTE_PREFIX,
+                user_presenter.router(),
             )
             .nest(
-                "/api/v1/shippings",
-                shipping_presenter.clone().shipping_route(),
+                crate::module::product::http_presenter::ROUTE_PREFIX,
+                product_presenter.router(),
             )
             .nest(
-                "/api/v1/shipping-providers",
-                shipping_presenter.shipping_provider_route(),
+                crate::module::payment::http_presenter::ROUTE_PREFIX,
+                payment_presenter.clone().router(),
+            )
+            .nest(
+                crate::module::payment_providers::http_presenter::ROUTE_PREFIX,
+                payment_provider_presenter.router(),
+            )
+            .nest(
+                crate::module::shipping_provider::http_presenter::ROUTE_PREFIX,
+                shipping_provider_presenter.router(),
+            )
+            .nest(
+                crate::module::shipping::http_presenter::ROUTE_PREFIX,
+                shipping_presenter.router(),
             )
             .route("/api/v1/checks", get(health_check_handler))
-            .merge(SwaggerUi::new("/api/v1/docs").url("/api-docs/openapi.json", ApiDocs::openapi()))
+            .merge(
+                SwaggerUi::new(crate::transport::http::api_docs::ROUTE_PREFIX)
+                    .url("/api-docs/openapi.json", ApiDocs::openapi()),
+            )
             .layer(
                 TraceLayer::new_for_http()
                     .make_span_with(|request: &hyper::Request<_>| {

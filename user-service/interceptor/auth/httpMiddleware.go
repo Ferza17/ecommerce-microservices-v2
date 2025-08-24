@@ -7,9 +7,7 @@ import (
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/response"
-	"github.com/gorilla/mux"
 	"go.uber.org/zap"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -24,24 +22,25 @@ func AuthHTTPMiddleware(
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
 			requestId := pkgContext.GetRequestIDFromContext(ctx)
-			method := strings.ToLower(r.Method)
-			url := strings.ToLower(r.URL.Path)
+			//method := strings.ToLower(r.Method)
+			//url := strings.ToLower(r.URL.Path)
 
-			route, _ := mux.CurrentRoute(r).GetPathTemplate()
-			log.Printf("Request Path: %s, Matched Path Template: %s", r.URL.Path, route)
+			//route, _ := mux.CurrentRoute(r).GetPathTemplate()
+			//log.Printf("Request Path: %s, Matched Path Template: %s", r.URL.Path, route)
 
+			// DEPRECATED
 			// Validate is excluded method
-			isExcluded, _ := accessControlUseCase.IsExcludedHTTP(
-				ctx,
-				pkgContext.GetRequestIDFromContext(ctx),
-				method,
-				url,
-			)
-			// Bypass if excluded methods
-			if isExcluded {
-				next.ServeHTTP(w, r)
-				return
-			}
+			//isExcluded, _ := accessControlUseCase.IsExcludedHTTP(
+			//	ctx,
+			//	pkgContext.GetRequestIDFromContext(ctx),
+			//	method,
+			//	url,
+			//)
+			//// Bypass if excluded methods
+			//if isExcluded {
+			//	next.ServeHTTP(w, r)
+			//	return
+			//}
 
 			authHeader := r.Header.Get("Authorization")
 			if authHeader == "" {

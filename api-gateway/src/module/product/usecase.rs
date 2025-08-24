@@ -1,22 +1,21 @@
-use tracing::instrument;
 use crate::model::rpc::product::{
     FindProductsWithPaginationRequest, FindProductsWithPaginationResponse,
 };
-use crate::module::product::transport_grpc::ProductTransportGrpc;
+use tracing::instrument;
 
 #[derive(Debug, Clone)]
-pub struct ProductUseCase {
-    product_transport_grpc: ProductTransportGrpc,
+pub struct UseCase {
+    product_transport_grpc: crate::module::product::transport_grpc::Transport,
 }
 
-impl ProductUseCase {
-    pub fn new(product_transport_grpc: ProductTransportGrpc) -> Self {
+impl UseCase {
+    pub fn new(product_transport_grpc: crate::module::product::transport_grpc::Transport) -> Self {
         Self {
             product_transport_grpc,
         }
     }
 
-    #[instrument("ProductUseCase.find_products_with_pagination")]
+    #[instrument("product.usecase.find_products_with_pagination")]
     pub async fn find_products_with_pagination(
         &mut self,
         request_id: String,

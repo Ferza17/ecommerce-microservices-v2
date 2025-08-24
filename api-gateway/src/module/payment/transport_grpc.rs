@@ -5,20 +5,18 @@ use crate::model::rpc::payment::{
     payment_provider_service_client::PaymentProviderServiceClient,
     payment_service_client::PaymentServiceClient,
 };
-use crate::package::context::auth::AUTHORIZATION_HEADER;
-use crate::package::context::request_id::X_REQUEST_ID_HEADER;
-use opentelemetry::trace::FutureExt;
+use crate::package::context::{auth::AUTHORIZATION_HEADER, request_id::X_REQUEST_ID_HEADER};
+use crate::util::metadata::inject_trace_context;
 use tracing::{Level, Span, event, instrument};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
-use crate::util::metadata::inject_trace_context;
 
 #[derive(Debug, Clone)]
-pub struct PaymentTransportGrpc {
+pub struct Transport {
     payment_service_client: PaymentServiceClient<tonic::transport::Channel>,
     payment_provider_service_client: PaymentProviderServiceClient<tonic::transport::Channel>,
 }
 
-impl PaymentTransportGrpc {
+impl Transport {
     pub async fn new(config: AppConfig) -> Result<Self, anyhow::Error> {
         let channel = tonic::transport::Channel::from_shared(
             format!(
@@ -38,88 +36,7 @@ impl PaymentTransportGrpc {
         })
     }
 
-    #[instrument("PaymentTransportGrpc.find_payment_providers")]
-    pub async fn find_payment_providers(
-        &mut self,
-        request_id: String,
-        token: String,
-        mut request: tonic::Request<FindPaymentProvidersRequest>,
-    ) -> Result<FindPaymentProvidersResponse, tonic::Status> {
-        request
-            .metadata_mut()
-            .insert(X_REQUEST_ID_HEADER, request_id.parse().unwrap());
-        request.metadata_mut().insert(
-            AUTHORIZATION_HEADER,
-            format!("Bearer {}", token).parse().unwrap(),
-        );
-
-        match self
-            .payment_provider_service_client
-            .find_payment_providers(inject_trace_context(request, Span::current().context()))
-            .with_context(Span::current().context())
-            .await
-        {
-            Ok(response) => {
-                event!(
-                    Level::INFO,
-                    request_id = request_id,
-                    data=?response
-                );
-                Ok(response.into_inner())
-            }
-            Err(err) => {
-                event!(
-                    Level::ERROR,
-                    request_id = request_id,
-                    error = %err,
-                    "Failed to get find_payment_providers"
-                );
-                Err(err.into())
-            }
-        }
-    }
-
-    #[instrument("PaymentTransportGrpc.find_payment_provider_by_id")]
-    pub async fn find_payment_provider_by_id(
-        &mut self,
-        request_id: String,
-        token: String,
-        mut request: tonic::Request<FindPaymentProviderByIdRequest>,
-    ) -> Result<FindPaymentProviderByIdResponse, tonic::Status> {
-        request
-            .metadata_mut()
-            .insert(X_REQUEST_ID_HEADER, request_id.parse().unwrap());
-        request.metadata_mut().insert(
-            AUTHORIZATION_HEADER,
-            format!("Bearer {}", token).parse().unwrap(),
-        );
-
-        match self
-            .payment_provider_service_client
-            .find_payment_provider_by_id(inject_trace_context(request, Span::current().context()))
-            .await
-        {
-            Ok(response) => {
-                event!(
-                    Level::INFO,
-                    request_id = request_id,
-                    data=?response
-                );
-                Ok(response.into_inner())
-            }
-            Err(err) => {
-                event!(
-                    Level::ERROR,
-                    request_id = request_id,
-                    error = %err,
-                    "Failed to find_payment_provider_by_id"
-                );
-                Err(err.into())
-            }
-        }
-    }
-
-    #[instrument("PaymentTransportGrpc.create_payment")]
+    #[instrument("payment.transport_grpc.create_payment")]
     pub async fn create_payment(
         &mut self,
         request_id: String,

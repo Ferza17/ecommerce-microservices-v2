@@ -1,9 +1,5 @@
 use crate::config::config::AppConfig;
 use crate::model::rpc::user::{
-    AuthServiceVerifyIsExcludedRequest, AuthServiceVerifyIsExcludedResponse,
-    AuthUserFindUserByTokenRequest, AuthUserFindUserByTokenResponse,
-    AuthUserLoginByEmailAndPasswordRequest, AuthUserRegisterRequest, AuthUserRegisterResponse,
-    AuthUserVerifyAccessControlRequest, AuthUserVerifyOtpRequest, AuthUserVerifyOtpResponse,
     FindUserByIdRequest, FindUserByIdResponse, auth_service_client::AuthServiceClient,
     user_service_client::UserServiceClient,
 };
@@ -14,12 +10,12 @@ use tracing::{Level, Span, event, instrument};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 #[derive(Debug, Clone)]
-pub struct UserTransportGrpc {
+pub struct Transport {
     pub(crate) auth_service_client: AuthServiceClient<tonic::transport::Channel>,
     user_service_client: UserServiceClient<tonic::transport::Channel>,
 }
 
-impl UserTransportGrpc {
+impl Transport {
     #[instrument]
     pub async fn new(config: AppConfig) -> Result<Self, anyhow::Error> {
         let addr = format!(
@@ -38,175 +34,7 @@ impl UserTransportGrpc {
         })
     }
 
-    #[instrument("UserTransportGrpc.auth_service_verify_is_excluded")]
-    pub async fn auth_service_verify_is_excluded(
-        &mut self,
-        request_id: String,
-        mut request: tonic::Request<AuthServiceVerifyIsExcludedRequest>,
-    ) -> Result<AuthServiceVerifyIsExcludedResponse, tonic::Status> {
-        // REQUEST ID TO HEADER
-        request
-            .metadata_mut()
-            .insert(X_REQUEST_ID_HEADER, request_id.parse().unwrap());
-
-        match self
-            .auth_service_client
-            .auth_service_verify_is_excluded(inject_trace_context(
-                request,
-                Span::current().context(),
-            ))
-            .await
-        {
-            Ok(response) => {
-                event!(
-                    Level::INFO,
-                    request_id = request_id,
-                    data=?response
-                );
-                Ok(response.into_inner())
-            }
-            Err(err) => {
-                event!(
-                    Level::ERROR,
-                    request_id = request_id,
-                    error = %err,
-                    "Failed to get auth_service_verify_is_excluded"
-                );
-                Err(err)
-            }
-        }
-    }
-
-    #[instrument("UserTransportGrpc.auth_service_verify_is_excluded")]
-    pub async fn auth_user_verify_access_control(
-        &mut self,
-        request_id: String,
-        mut request: tonic::Request<AuthUserVerifyAccessControlRequest>,
-    ) {
-        // TOKEN TO HEADER
-        let token = request.get_ref().token.clone();
-        request.metadata_mut().insert(
-            AUTHORIZATION_HEADER,
-            format!("Bearer {}", token).parse().unwrap(),
-        );
-        // REQUEST ID TO HEADER
-        request
-            .metadata_mut()
-            .insert(X_REQUEST_ID_HEADER, request_id.parse().unwrap());
-    }
-
-    #[instrument("UserTransportGrpc.auth_register")]
-    pub async fn auth_register(
-        &mut self,
-        request_id: String,
-        mut request: tonic::Request<AuthUserRegisterRequest>,
-    ) -> Result<AuthUserRegisterResponse, tonic::Status> {
-        // REQUEST ID TO HEADER
-        request
-            .metadata_mut()
-            .insert(X_REQUEST_ID_HEADER, request_id.parse().unwrap());
-
-        match self
-            .auth_service_client
-            .auth_user_register(inject_trace_context(request, Span::current().context()))
-            .await
-        {
-            Ok(response) => {
-                event!(
-                    Level::INFO,
-                    request_id = request_id,
-                    data=?response
-                );
-                Ok(response.into_inner())
-            }
-            Err(err) => {
-                event!(
-                    Level::ERROR,
-                    request_id = request_id,
-                    error = %err,
-                    "Failed to get auth_user_register"
-                );
-                Err(err)
-            }
-        }
-    }
-
-    #[instrument("UserTransportGrpc.auth_user_login_by_email_and_password")]
-    pub async fn auth_user_login_by_email_and_password(
-        &mut self,
-        request_id: String,
-        mut request: tonic::Request<AuthUserLoginByEmailAndPasswordRequest>,
-    ) -> Result<(), tonic::Status> {
-        // REQUEST ID TO HEADER
-        request
-            .metadata_mut()
-            .insert(X_REQUEST_ID_HEADER, request_id.parse().unwrap());
-
-        match self
-            .auth_service_client
-            .auth_user_login_by_email_and_password(inject_trace_context(
-                request,
-                Span::current().context(),
-            ))
-            .await
-        {
-            Ok(response) => {
-                event!(
-                    Level::INFO,
-                    request_id = request_id,
-                    data=?response
-                );
-                Ok(response.into_inner())
-            }
-            Err(err) => {
-                event!(
-                    Level::ERROR,
-                    request_id = request_id,
-                    error = %err,
-                    "Failed to get auth_user_login_by_email_and_password"
-                );
-                Err(err)
-            }
-        }
-    }
-
-    #[instrument("UserTransportGrpc.auth_user_verify_otp")]
-    pub async fn auth_user_verify_otp(
-        &mut self,
-        request_id: String,
-        mut request: tonic::Request<AuthUserVerifyOtpRequest>,
-    ) -> Result<AuthUserVerifyOtpResponse, tonic::Status> {
-        // REQUEST ID TO HEADER
-        request
-            .metadata_mut()
-            .insert(X_REQUEST_ID_HEADER, request_id.parse().unwrap());
-
-        match self
-            .auth_service_client
-            .auth_user_verify_otp(inject_trace_context(request, Span::current().context()))
-            .await
-        {
-            Ok(response) => {
-                event!(
-                    Level::INFO,
-                    request_id = request_id,
-                    data=?response
-                );
-                Ok(response.into_inner())
-            }
-            Err(err) => {
-                event!(
-                    Level::ERROR,
-                    request_id = request_id,
-                    error = %err,
-                    "Failed to get auth_user_verify_otp"
-                );
-                Err(err)
-            }
-        }
-    }
-
-    #[instrument("UserTransportGrpc.find_user_by_id")]
+    #[instrument("user.transport_grpc.find_user_by_id")]
     pub async fn find_user_by_id(
         &mut self,
         request_id: String,
@@ -241,47 +69,6 @@ impl UserTransportGrpc {
                     request_id = request_id,
                     error = %err,
                     "Failed to get find_user_by_id"
-                );
-                Err(err.into())
-            }
-        }
-    }
-
-    #[instrument("UserTransportGrpc.auth_user_find_user_by_token")]
-    pub async fn auth_user_find_user_by_token(
-        &mut self,
-        request_id: String,
-        token: String,
-        mut request: tonic::Request<AuthUserFindUserByTokenRequest>,
-    ) -> Result<AuthUserFindUserByTokenResponse, tonic::Status> {
-        request
-            .metadata_mut()
-            .insert(X_REQUEST_ID_HEADER, request_id.parse().unwrap());
-        request.metadata_mut().insert(
-            AUTHORIZATION_HEADER,
-            format!("Bearer {}", token).parse().unwrap(),
-        );
-
-        match self
-            .auth_service_client
-            .auth_user_find_user_by_token(inject_trace_context(request, Span::current().context()))
-            .with_current_context()
-            .await
-        {
-            Ok(response) => {
-                event!(
-                    Level::INFO,
-                    request_id = request_id,
-                    data=?response
-                );
-                Ok(response.into_inner())
-            }
-            Err(err) => {
-                event!(
-                    Level::ERROR,
-                    request_id = request_id,
-                    error = %err,
-                    "Failed to get auth_user_find_user_by_token"
                 );
                 Err(err.into())
             }

@@ -6,53 +6,36 @@ use crate::model::{
     rpc::shipping::GetShippingProviderByIdRequest,
     rpc::user::FindUserByIdRequest,
 };
-use crate::module::{
-    payment::transport_grpc::PaymentTransportGrpc, product::transport_grpc::ProductTransportGrpc,
-    shipping::transport_grpc::ShippingTransportGrpc, user::transport_grpc::UserTransportGrpc,
-};
+
 use tonic::Status;
 use tracing::instrument;
 
 #[derive(Debug, Clone)]
-pub struct PaymentUseCase {
-    payment_transport_grpc: PaymentTransportGrpc,
-    shipping_transport_grpc: ShippingTransportGrpc,
-    user_transport_grpc: UserTransportGrpc,
-    products_transport_grpc: ProductTransportGrpc,
+pub struct UseCase {
+    payment_transport_grpc: crate::module::payment::transport_grpc::Transport,
+    payment_provider_transport_grpc: crate::module::payment_providers::transport_grpc::Transport,
+    shipping_provider_transport_grpc: crate::module::shipping_provider::transport_grpc::Transport,
+    user_transport_grpc: crate::module::user::transport_grpc::Transport,
+    products_transport_grpc: crate::module::product::transport_grpc::Transport,
 }
-impl PaymentUseCase {
+impl UseCase {
     pub fn new(
-        payment_transport_grpc: PaymentTransportGrpc,
-        shipping_transport_grpc: ShippingTransportGrpc,
-        user_transport_grpc: UserTransportGrpc,
-        products_transport_grpc: ProductTransportGrpc,
+        payment_transport_grpc: crate::module::payment::transport_grpc::Transport,
+        payment_provider_transport_grpc: crate::module::payment_providers::transport_grpc::Transport,
+        shipping_provider_transport_grpc: crate::module::shipping_provider::transport_grpc::Transport,
+        user_transport_grpc: crate::module::user::transport_grpc::Transport,
+        products_transport_grpc: crate::module::product::transport_grpc::Transport,
     ) -> Self {
         Self {
             payment_transport_grpc,
-            shipping_transport_grpc,
+            payment_provider_transport_grpc,
+            shipping_provider_transport_grpc,
             user_transport_grpc,
             products_transport_grpc,
         }
     }
 
-    #[instrument("PaymentUseCase.find_payment_providers")]
-    pub async fn find_payment_providers(
-        &mut self,
-        request_id: String,
-        token: String,
-        request: tonic::Request<FindPaymentProvidersRequest>,
-    ) -> Result<FindPaymentProvidersResponse, tonic::Status> {
-        match self
-            .payment_transport_grpc
-            .find_payment_providers(request_id, token, request)
-            .await
-        {
-            Err(e) => Err(e.into()),
-            response => Ok(response?),
-        }
-    }
-
-    #[instrument("PaymentUseCase.create_payment")]
+    #[instrument("payment.usecase.create_payment")]
     pub async fn create_payment(
         &mut self,
         request_id: String,
@@ -77,7 +60,7 @@ impl PaymentUseCase {
 
         // validate payment provider
         match self
-            .payment_transport_grpc
+            .payment_provider_transport_grpc
             .find_payment_provider_by_id(
                 request_id.clone(),
                 token.clone(),
@@ -93,7 +76,7 @@ impl PaymentUseCase {
 
         // validate shipping Provider
         match self
-            .shipping_transport_grpc
+            .shipping_provider_transport_grpc
             .get_shipping_provider_by_id(
                 request_id.clone(),
                 token.clone(),

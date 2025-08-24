@@ -1,20 +1,24 @@
 use crate::model::rpc::{
-    payment::{FindPaymentProvidersRequest, FindPaymentProvidersResponse, CreatePaymentRequest, CreatePaymentResponse},
+    payment::{
+        CreatePaymentRequest, CreatePaymentResponse, FindPaymentProvidersRequest,
+        FindPaymentProvidersResponse,
+    },
     product::{FindProductsWithPaginationRequest, FindProductsWithPaginationResponse},
     response::Response,
+    shipping::{ListShippingProvidersRequest, ListShippingProvidersResponse},
     user::{
         AuthUserRegisterRequest, AuthUserRegisterResponse, AuthUserVerifyOtpRequest,
         AuthUserVerifyOtpResponse,
     },
-    shipping::{
-        ListShippingProvidersRequest, ListShippingProvidersResponse,
-    }
 };
 use crate::package::context::auth::AUTHORIZATION_HEADER;
 use utoipa::{
     Modify, OpenApi,
     openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme},
 };
+
+
+pub const ROUTE_PREFIX: &str = "/api/v1/docs";
 
 #[allow(unused_imports)]
 #[derive(OpenApi)]
@@ -25,21 +29,21 @@ use utoipa::{
     ),
     paths(
         // AUTH
-        crate::module::user::http_presenter::auth_register,
-        crate::module::user::http_presenter::auth_user_login_by_email_and_password,
-        crate::module::user::http_presenter::auth_user_verify_otp,
+        crate::module::auth::http_presenter::auth_register,
+        crate::module::auth::http_presenter::auth_user_login_by_email_and_password,
+        crate::module::auth::http_presenter::auth_user_verify_otp,
 
         // PRODUCT
         crate::module::product::http_presenter::find_products_with_pagination,
 
         // PAYMENT PROVIDERS
-        crate::module::payment::http_presenter::find_payment_providers,
+        crate::module::payment_providers::http_presenter::find_payment_providers,
 
         // PAYMENT
         crate::module::payment::http_presenter::create_payment,
-    
+
         // SHIPPING PROVIDERS
-        crate::module::shipping::http_presenter::list_shipping_providers,
+        crate::module::shipping_provider::http_presenter::list_shipping_providers,
     ),
     components(
         schemas(
@@ -65,12 +69,12 @@ use utoipa::{
         ),
     ),
     tags(
-        (name = "Auth", description = "Authentication route API"),
-        (name = "Product", description = "Product route API"),
-        (name = "ShippingProviders", description = "Shipping Providers route API"),
-        (name = "Shipping", description = "Shipping route API"),
-        (name = "PaymentProviders", description = "Payment Providers route API"),
-        (name = "Payment", description = "Payment route API"),
+        (name = crate::module::auth::http_presenter::TAG, description = "Authentication route API"),
+        (name = crate::module::product::http_presenter::TAG, description = "Product route API"),
+        (name = crate::module::shipping_provider::http_presenter::TAG, description = "Shipping Providers route API"),
+        (name = crate::module::shipping::http_presenter::TAG, description = "Shipping route API"),
+        (name = crate::module::payment_providers::http_presenter::TAG, description = "Payment Providers route API"),
+        (name = crate::module::payment::http_presenter::TAG, description = "Payment route API"),
     ),
     modifiers(&SecurityAddon)
 )]

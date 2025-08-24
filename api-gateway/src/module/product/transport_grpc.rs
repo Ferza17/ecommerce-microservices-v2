@@ -10,11 +10,11 @@ use tracing::{Level, Span, error, event, info, instrument};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 #[derive(Debug, Clone)]
-pub struct ProductTransportGrpc {
+pub struct Transport {
     product_service_client: ProductServiceClient<tonic::transport::Channel>,
 }
 
-impl ProductTransportGrpc {
+impl Transport {
     pub async fn new(config: AppConfig) -> Result<Self, anyhow::Error> {
         let addr = format!(
             "http://{}:{}",
@@ -32,7 +32,7 @@ impl ProductTransportGrpc {
         })
     }
 
-    #[instrument("ProductTransportGrpc.find_products_with_pagination")]
+    #[instrument("product.transport_grpc.find_products_with_pagination")]
     pub async fn find_products_with_pagination(
         &mut self,
         request_id: String,
@@ -53,6 +53,7 @@ impl ProductTransportGrpc {
         match self
             .product_service_client
             .find_products_with_pagination(inject_trace_context(request, Span::current().context()))
+            .with_current_context()
             .await
         {
             Ok(response) => {
@@ -70,7 +71,7 @@ impl ProductTransportGrpc {
         }
     }
 
-    #[instrument("ProductTransportGrpc.find_product_by_id")]
+    #[instrument("product.transport_grpc.find_product_by_id")]
     pub async fn find_product_by_id(
         &mut self,
         request_id: String,
@@ -89,6 +90,7 @@ impl ProductTransportGrpc {
         match self
             .product_service_client
             .find_product_by_id(inject_trace_context(request, Span::current().context()))
+            .with_current_context()
             .await
         {
             Ok(response) => {
