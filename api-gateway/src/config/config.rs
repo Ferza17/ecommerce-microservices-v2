@@ -57,6 +57,9 @@ pub struct AppConfig {
     // FROM CONSUL RABBITMQ QUEUE
     pub queue_shipping_created: String,
     pub queue_shipping_updated: String,
+
+    // FROM CONSUL OPEN POLICY CONFIG
+    pub opa_path: String,
 }
 
 impl Default for AppConfig {
@@ -90,6 +93,7 @@ impl Default for AppConfig {
             queue_shipping_created: "".to_string(),
             queue_shipping_updated: "".to_string(),
             shipping_service_service_name: "".to_string(),
+            opa_path: "".to_string(),
         }
     }
 }
@@ -174,6 +178,11 @@ impl AppConfig {
             .await
             .map_err(|e| anyhow::anyhow!("Error Consul :  {:?}", e))
             .expect("error : get_config_rabbitmq_queue");
+        app_config
+            .get_config_opa(&client)
+            .await
+            .map_err(|e| anyhow::anyhow!("Error Consul :  {:?}", e))
+            .expect("error : get_config_opa");
 
         // Register Consul Config
         app_config
@@ -189,6 +198,14 @@ impl AppConfig {
         Ok(app_config)
     }
 
+    async fn get_config_opa(&mut self, client: &ConsulClient) -> Result<(), anyhow::Error> {
+        self.opa_path =
+            Self::get_kv(client, format!("{}/policy/opa/PATH", self.env))
+                .await
+                .parse()
+                .map_err(|e| anyhow::anyhow!("Error Consul :  {:?}", e))?;
+        Ok(())
+    }
     async fn get_config_api_gateway_service(
         &mut self,
         client: &ConsulClient,
@@ -232,11 +249,13 @@ impl AppConfig {
         &mut self,
         client: &ConsulClient,
     ) -> Result<(), anyhow::Error> {
-        self.shipping_service_service_name =
-            Self::get_kv(client, format!("{}/services/shipping/SERVICE_NAME", self.env))
-                .await
-                .parse()
-                .map_err(|e| anyhow::anyhow!("Error Consul :  {:?}", e))?;
+        self.shipping_service_service_name = Self::get_kv(
+            client,
+            format!("{}/services/shipping/SERVICE_NAME", self.env),
+        )
+        .await
+        .parse()
+        .map_err(|e| anyhow::anyhow!("Error Consul :  {:?}", e))?;
         self.shipping_service_service_rpc_host =
             Self::get_kv(client, format!("{}/services/shipping/RPC_HOST", self.env))
                 .await

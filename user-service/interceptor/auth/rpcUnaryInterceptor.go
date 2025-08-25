@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	accessControlUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/usecase"
 	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
@@ -20,6 +21,13 @@ func AuthRPCUnaryInterceptor(
 	authUseCase authUseCase.IAuthUseCase,
 ) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
+
+		// EXCLUDED Full Method
+		if info.FullMethod == pb.AuthService_AuthUserRegister_FullMethodName ||
+			info.FullMethod == pb.AuthService_AuthUserLoginByEmailAndPassword_FullMethodName ||
+			info.FullMethod == pb.AuthService_AuthUserVerifyOtp_FullMethodName {
+			return handler(ctx, req)
+		}
 
 		// DEPRECATED
 		// Validate is excluded method

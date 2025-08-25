@@ -1,6 +1,8 @@
-use crate::model::rpc::user::AuthUserFindUserByTokenRequest;
+use crate::model::rpc::user::{AuthUserFindUserByTokenRequest, User};
 use crate::package::context::request_id::get_request_id_from_header;
+use axum::extract::OriginalUri;
 use std::task::{Context, Poll};
+use tracing::info;
 
 #[derive(Clone, Debug)]
 pub struct AuthLayer {
@@ -134,12 +136,14 @@ where
         );
 
         // Validate Expiration Token ON USER SERVICE
-        let mut cloned_user_service = self.auth_use_case.clone();
         let request_id = get_request_id_from_header(req.headers());
-        match tokio::task::block_in_place(|| {
+
+        let inner_user = self.auth_use_case.clone();
+        let user = match tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(async move {
                 let cloned_token = token.clone();
-                cloned_user_service
+                inner_user
+                    .clone()
                     .auth_user_find_user_by_token(
                         request_id.clone(),
                         cloned_token.clone(),
@@ -157,17 +161,38 @@ where
                     ));
                 }
 
-                req.headers_mut().insert(
-                    crate::package::context::user_id::X_USER_ID_HEADER,
-                    val.data.unwrap().user.unwrap().id.parse().unwrap(),
-                );
+                val.data.unwrap().user.unwrap()
             }
             Err(err) => {
                 return futures::future::Either::Right(futures::future::ready(
                     unauthorize_response(err.code(), err.message()),
                 ));
             }
-        }
+        };
+
+        // VALIDATE ACCESS ON OPA
+        let inner_user_validate = self.auth_use_case.clone();
+        let path = match req.extensions().get::<OriginalUri>() {
+            None => "".to_string(),
+            Some(original_uri) => original_uri.path().to_string(),
+        };
+
+        let method = req.method().to_string().to_uppercase();
+        match tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async move {
+                inner_user_validate
+                    .clone()
+                    .auth_validate_access(method.clone(), path, User::from(user.clone()))
+                    .await
+            })
+        }) {
+            Ok(_) => {}
+            Err(err) => {
+                return futures::future::Either::Right(futures::future::ready(
+                    unauthorize_response(err.code(), err.message()),
+                ));
+            }
+        };
 
         futures::future::Either::Left(self.inner.call(req))
     }

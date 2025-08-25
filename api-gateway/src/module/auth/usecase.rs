@@ -1,19 +1,25 @@
+use crate::infrastructure::opa::opa::OpaInput;
 use crate::model::rpc::user::{
     AuthUserFindUserByTokenRequest, AuthUserFindUserByTokenResponse,
     AuthUserLoginByEmailAndPasswordRequest, AuthUserRegisterRequest, AuthUserRegisterResponse,
-    AuthUserVerifyOtpRequest, AuthUserVerifyOtpResponse,
+    AuthUserVerifyOtpRequest, AuthUserVerifyOtpResponse, EnumRole, User,
 };
 use tracing::instrument;
 
 #[derive(Debug, Clone)]
 pub struct UseCase {
     auth_transport_grpc: crate::module::auth::transport_grpc::Transport,
+    opa_infrastructure: crate::infrastructure::opa::opa::OPA,
 }
 
 impl UseCase {
-    pub fn new(auth_transport_grpc: crate::module::auth::transport_grpc::Transport) -> Self {
+    pub fn new(
+        auth_transport_grpc: crate::module::auth::transport_grpc::Transport,
+        opa_infrastructure: crate::infrastructure::opa::opa::OPA,
+    ) -> Self {
         Self {
             auth_transport_grpc,
+            opa_infrastructure,
         }
     }
 
@@ -79,6 +85,36 @@ impl UseCase {
         {
             Err(e) => Err(e.into()),
             response => Ok(response?),
+        }
+    }
+
+    pub async fn auth_validate_access(
+        &mut self,
+        method: String,
+        path: String,
+        request: User,
+    ) -> Result<(), tonic::Status> {
+        match self
+            .opa_infrastructure
+            .validate_http_access(OpaInput {
+                method: method.to_uppercase(),
+                path: path.to_lowercase(),
+                user_id: request.id,
+                user_role: EnumRole::from_i32(request.role.unwrap().role)
+                    .unwrap()
+                    .as_str_name()
+                    .to_string(),
+            })
+            .await
+        {
+            Ok(is_valid) => {
+                if !is_valid {
+                    Err(tonic::Status::permission_denied("Access denied"))
+                } else {
+                    Ok(())
+                }
+            }
+            Err(e) => Err(tonic::Status::permission_denied(e.to_string()))?,
         }
     }
 }

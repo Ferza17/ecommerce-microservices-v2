@@ -22,7 +22,7 @@ consul services register \
 -tag=mailhog \
 
 
-# Health check for Jaeger Collector
+# Health check for Mailhog
 curl -s -X PUT http://consul-local:8500/v1/agent/check/register \
 -H "Content-Type: application/json" \
 -d '{

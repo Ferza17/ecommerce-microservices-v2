@@ -18,7 +18,7 @@ use tower_http::{
     cors::{Any, CorsLayer},
     trace::TraceLayer,
 };
-use tracing::info_span;
+use tracing::{info_span, span};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
@@ -39,6 +39,9 @@ impl HttpTransport {
             self.config.api_gateway_service_service_http_port
         )
         .to_string();
+
+        // Infrastructure Layer
+        let opa = crate::infrastructure::opa::opa::OPA::new(self.config.clone());
 
         // Transport Layer
         let user_transport_grpc =
@@ -64,7 +67,7 @@ impl HttpTransport {
             crate::module::shipping::transport_grpc::Transport::new(self.config.clone()).await?;
 
         // Use case layer
-        let auth_use_case = crate::module::auth::usecase::UseCase::new(auth_transport_grpc);
+        let auth_use_case = crate::module::auth::usecase::UseCase::new(auth_transport_grpc, opa);
         let user_use_case = crate::module::user::usecase::UseCase::new(
             user_transport_grpc.clone(),
             user_transport_rabbitmq,
@@ -155,10 +158,11 @@ impl HttpTransport {
                 TraceLayer::new_for_http()
                     .make_span_with(|request: &hyper::Request<_>| {
                         let span = info_span!(
-                            "HTTP REQUEST",
-                            method = ?request.method(),
+                            "HTTP REQUEST", // <-- convert String -> &str
+                            method = %request.method(),
                             path = %request.uri().path(),
                         );
+
                         span.set_parent(global::get_text_map_propagator(|prop| {
                             prop.extract(&HeaderExtractor(request.headers()))
                         }));

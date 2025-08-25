@@ -217,6 +217,7 @@ services:
       - ./entrypoint/consul/telemetry:/telemetry:ro
       - ./entrypoint/consul/traefik:/traefik:ro
       - ./entrypoint/consul/postgres-exporter:/postgres-exporter:ro
+      - ./entrypoint/consul/opa:/opa:ro
     entrypoint: [ "/bin/sh", "-c", "consul agent -dev -client=0.0.0.0 -ui & sleep 5 && sh /init.sh && tail -f /dev/null" ]
     networks:
       - local
@@ -235,6 +236,31 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./entrypoint/traefik:/etc/traefik:ro
+    networks:
+      - local
+
+  # OPEN POLICY AGENT
+  # FOR RBAC
+  opa-local:
+    image: openpolicyagent/opa:latest
+    ports:
+      - "8181:8181"
+    command:
+      - "run"
+      - "--server"
+      - "--log-level=debug"
+      - "--addr=0.0.0.0:8181"
+      - "/policies"
+    volumes:
+      - ./entrypoint/opa:/policies:ro
+    environment:
+      - OPA_LOG_LEVEL=debug
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://opa-local:8181/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - local
 

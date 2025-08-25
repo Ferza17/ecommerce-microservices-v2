@@ -6,7 +6,7 @@ pub struct Presenter {
     shipping_use_case: crate::module::shipping::usecase::UseCase,
     auth_use_case: crate::module::auth::usecase::UseCase,
 }
-pub const ROUTE_PREFIX: &'static str = "/api/v1/shipping-providers";
+pub const ROUTE_PREFIX: &'static str = "/api/v1/shippings";
 pub const TAG: &str = "Shipping";
 
 impl Presenter {
