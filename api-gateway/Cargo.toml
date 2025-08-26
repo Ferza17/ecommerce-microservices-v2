@@ -5,7 +5,6 @@ edition = "2024"
 
 [build-dependencies]
 tonic-build = "0.12"
-prost-build = "0.12"
 prost-validate-build = "0.2.5"
 
 [dependencies]
@@ -37,7 +36,6 @@ thiserror = "1.0.69"
 
 # GRPC SERVER
 tonic = "0.12.3"
-tonic-reflection = "0.12.0"
 prost = "0.13.5"
 prost-wkt-types = "0.6.1"
 prost-validate = { version = "0.2.5", features = ["derive"] }
