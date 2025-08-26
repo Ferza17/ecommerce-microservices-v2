@@ -1,61 +1,48 @@
 package authz
+
+import data.common.audit
+import data.common.security
+
 default allow = false
 
-# --- COMMON
-import data.common.base
-import data.common.http_method
-import data.common.role
-
-# Collect denies from base
-deny[msg] if {
-    base.deny[msg]
-}
-
+# Aggregate all audit logs
 audit_log[msg] if {
-    base.audit_log[msg]
+    audit.log[msg]
 }
 
-# --- HTTP
+# Aggregate all deny rules
+deny[msg] if {
+    security.deny[msg]
+}
+
+# Aggregate all allow rules
 import data.http.auth
-import data.http.payment
-import data.http.payment_providers
-import data.http.product
-import data.http.shipping
-import data.http.shipping_providers
-
-
 allow if {
-    http_method.allow
-    role.allow
     auth.allow
 }
 
+import data.http.payment
 allow if {
-    http_method.allow
-    role.allow
     payment.allow
 }
 
+import data.http.payment_provider
 allow if {
-    http_method.allow
-    role.allow
-    payment_providers.allow
+    payment_provider.allow
 }
 
+import data.http.product
 allow if {
-    http_method.allow
-    role.allow
     product.allow
 }
 
+import data.http.shipping
 allow if {
-    http_method.allow
-    role.allow
     shipping.allow
 }
 
+import data.http.shipping_provider
 allow if {
-    http_method.allow
-    role.allow
-    shipping_providers.allow
+    shipping_provider.allow
 }
+

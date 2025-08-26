@@ -1,20 +1,14 @@
 package common.http_method
-default allow = false
+import rego.v1
 
-
-# --- POLICY
-allow if {
-    input.method = "GET"
+valid_http_method := {
+    "GET", "POST", "PUT", "DELETE"
 }
 
-allow if {
-    input.method = "POST"
+access_allowed if {
+    input.method in valid_http_method
 }
 
-allow if {
-    input.method = "PUT"
-}
-
-allow if {
-    input.method = "DELETE"
+has(allowed_methods) if {
+    input.method in allowed_methods
 }

@@ -1,9 +1,12 @@
 package http.product
-default allow = false
+
+import rego.v1
+import data.common.role
+import data.common.http_method
 
 allow if {
     startswith(input.path, "/api/v1/products")
-    input.method == "GET"
-    input.user_role in ["CUSTOMER", "CUSTOMER_MEMBERSHIP", "ADMIN"]
+    http_method.has({"GET"})
+    role.has({"CUSTOMER", "CUSTOMER_MEMBERSHIP", "ADMIN"})
+    role.access_allowed
 }
-

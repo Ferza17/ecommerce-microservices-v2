@@ -1,9 +1,12 @@
 package http.payment
-default allow = false
+
+import rego.v1
+import data.common.role
+import data.common.http_method
 
 allow if {
     startswith(input.path, "/api/v1/payments")
-    input.method == "POST"
-    input.user_role in ["CUSTOMER","CUSTOMER_MEMBERSHIP","ADMIN"]
+    http_method.has({"POST"})
+    role.has({"CUSTOMER", "CUSTOMER_MEMBERSHIP"})
+    role.access_allowed
 }
-

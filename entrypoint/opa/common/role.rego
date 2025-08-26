@@ -1,19 +1,17 @@
-package common.roles
-default allow = false
+package common.role
+import rego.v1
 
-# --- helper role checks
-allow if {
-    input.user_role == "ADMIN"
+valid_roles := {
+    "ADMIN",
+    "SUPER_ADMIN",
+    "CUSTOMER",
+    "CUSTOMER_MEMBERSHIP"
 }
 
-allow if {
-    input.user_role == "SUPER_ADMIN"
+access_allowed if {
+    input.user_role in valid_roles
 }
 
-allow if {
-    input.user_role == "CUSTOMER"
-}
-
-allow if {
-    input.user_role == "CUSTOMER_MEMBERSHIP"
+has(allowed_roles) if {
+    input.user_role in allowed_roles
 }
