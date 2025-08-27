@@ -1,7 +1,7 @@
 use crate::config::config::AppConfig;
 use crate::model::rpc::user::{
-    FindUserByIdRequest, FindUserByIdResponse, auth_service_client::AuthServiceClient,
-    user_service_client::UserServiceClient,
+    FindUserByEmailRequest, FindUserByEmailResponse, FindUserByIdRequest, FindUserByIdResponse,
+    auth_service_client::AuthServiceClient, user_service_client::UserServiceClient,
 };
 use crate::package::context::{auth::AUTHORIZATION_HEADER, request_id::X_REQUEST_ID_HEADER};
 use crate::util::metadata::inject_trace_context;
@@ -69,6 +69,46 @@ impl Transport {
                     request_id = request_id,
                     error = %err,
                     "Failed to get find_user_by_id"
+                );
+                Err(err.into())
+            }
+        }
+    }
+
+    #[instrument("user.transport_grpc.find_user_by_email")]
+    pub async fn find_user_by_email(
+        &mut self,
+        request_id: String,
+        token: String,
+        mut request: tonic::Request<FindUserByEmailRequest>,
+    ) -> Result<FindUserByEmailResponse, tonic::Status> {
+        request
+            .metadata_mut()
+            .insert(X_REQUEST_ID_HEADER, request_id.parse().unwrap());
+        request.metadata_mut().insert(
+            AUTHORIZATION_HEADER,
+            format!("Bearer {}", token).parse().unwrap(),
+        );
+        match self
+            .user_service_client
+            .find_user_by_email(inject_trace_context(request, Span::current().context()))
+            .with_current_context()
+            .await
+        {
+            Ok(response) => {
+                event!(
+                    Level::INFO,
+                    request_id = request_id,
+                    data=?response
+                );
+                Ok(response.into_inner())
+            }
+            Err(err) => {
+                event!(
+                    Level::ERROR,
+                    request_id = request_id,
+                    error = %err,
+                    "Failed to get find_user_by_email"
                 );
                 Err(err.into())
             }

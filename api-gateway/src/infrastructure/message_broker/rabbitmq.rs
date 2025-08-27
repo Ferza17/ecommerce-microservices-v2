@@ -1,6 +1,7 @@
 use crate::config::config::AppConfig;
 use lapin::{BasicProperties, Channel, Connection, ConnectionProperties, options::*};
 use std::sync::Arc;
+use tracing::instrument;
 
 #[derive(Debug, Clone)]
 pub struct RabbitMQInfrastructure {
@@ -25,27 +26,30 @@ impl RabbitMQInfrastructure {
         }
     }
 
+    #[instrument("message_broker.rabbitmq.publish")]
     pub async fn publish(
         &self,
         exchange: &str,
         queue: &str,
-        message: tonic::Request<tonic::body::BoxBody>,
+        properties: BasicProperties,
+        message: &[u8],
     ) -> Result<(), anyhow::Error> {
-        let body = message.into_inner();
-
         match self
             .ch
             .basic_publish(
                 exchange,
                 queue,
                 BasicPublishOptions::default(),
-                b"",
-                BasicProperties::default(),
+                message,
+                properties,
             )
             .await
         {
             Ok(_) => Ok(()),
-            Err(_) => Err(anyhow::Error::msg("Error")),
+            Err(_) => Err(anyhow::Error::msg(format!(
+                "Cannot publish message to RabbitMQ exchange:{} , queue:{}",
+                exchange, queue
+            ))),
         }
     }
 }

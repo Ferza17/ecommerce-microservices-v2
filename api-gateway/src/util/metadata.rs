@@ -3,6 +3,7 @@ use opentelemetry::propagation::{Extractor, Injector};
 use std::str::FromStr;
 use tonic::metadata::{MetadataKey, MetadataMap, MetadataValue};
 use tracing::warn;
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 pub struct MetadataInjector<'a>(pub &'a mut MetadataMap);
 
@@ -31,7 +32,6 @@ pub fn inject_trace_context<T>(
     request
 }
 
-
 pub struct HeaderExtractor<'a>(pub &'a hyper::HeaderMap);
 impl<'a> Extractor for HeaderExtractor<'a> {
     fn get(&self, key: &str) -> Option<&str> {
@@ -40,4 +40,26 @@ impl<'a> Extractor for HeaderExtractor<'a> {
     fn keys(&self) -> Vec<&str> {
         self.0.keys().map(|k| k.as_str()).collect()
     }
+}
+
+pub struct AmqpInjector<'a>(&'a mut std::collections::HashMap<String, String>);
+impl<'a> Injector for AmqpInjector<'a> {
+    fn set(&mut self, key: &str, value: String) {
+        self.0.insert(key.to_string(), value);
+    }
+}
+
+pub fn inject_trace_context_to_lapin_table(
+    mut request: lapin::types::FieldTable,
+    ctx: opentelemetry::Context,
+) -> lapin::types::FieldTable {
+    let mut headers = std::collections::HashMap::new();
+    global::get_text_map_propagator(|propagator| {
+        propagator.inject_context(&ctx, &mut AmqpInjector(&mut headers));
+    });
+
+    for (k, v) in headers {
+        request.insert(k.into(), lapin::types::AMQPValue::LongString(v.into()));
+    }
+    request
 }

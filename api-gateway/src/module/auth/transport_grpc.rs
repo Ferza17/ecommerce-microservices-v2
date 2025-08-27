@@ -66,46 +66,6 @@ impl Transport {
         }
     }
 
-    #[instrument("auth.transport_grpc.auth_user_login_by_email_and_password")]
-    pub async fn auth_user_login_by_email_and_password(
-        &mut self,
-        request_id: String,
-        mut request: tonic::Request<AuthUserLoginByEmailAndPasswordRequest>,
-    ) -> Result<(), tonic::Status> {
-        // REQUEST ID TO HEADER
-        request
-            .metadata_mut()
-            .insert(X_REQUEST_ID_HEADER, request_id.parse().unwrap());
-
-        match self
-            .client
-            .auth_user_login_by_email_and_password(inject_trace_context(
-                request,
-                Span::current().context(),
-            ))
-            .with_current_context()
-            .await
-        {
-            Ok(response) => {
-                event!(
-                    Level::INFO,
-                    request_id = request_id,
-                    data=?response
-                );
-                Ok(response.into_inner())
-            }
-            Err(err) => {
-                event!(
-                    Level::ERROR,
-                    request_id = request_id,
-                    error = %err,
-                    "Failed to get auth_user_login_by_email_and_password"
-                );
-                Err(err)
-            }
-        }
-    }
-
     #[instrument("auth.transport_grpc.auth_user_verify_otp")]
     pub async fn auth_user_verify_otp(
         &mut self,

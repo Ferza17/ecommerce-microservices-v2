@@ -35,13 +35,17 @@ impl HttpTransport {
     pub async fn serve(self) -> Result<(), anyhow::Error> {
         let addr = format!(
             "{}:{}",
-            self.config.service_api_gateway.http_host,
-            self.config.service_api_gateway.http_port,
+            self.config.service_api_gateway.http_host, self.config.service_api_gateway.http_port,
         )
         .to_string();
 
         // Infrastructure Layer
         let opa = crate::infrastructure::opa::opa::OPA::new(self.config.clone());
+        let rabbitmq =
+            crate::infrastructure::message_broker::rabbitmq::RabbitMQInfrastructure::new(
+                self.config.clone(),
+            )
+            .await;
 
         // Transport Layer
         let user_transport_grpc =
@@ -49,7 +53,7 @@ impl HttpTransport {
         let auth_transport_grpc =
             crate::module::auth::transport_grpc::Transport::new(self.config.clone()).await?;
         let user_transport_rabbitmq =
-            crate::module::user::transport_rabbitmq::Transport::new(self.config.clone());
+            crate::module::user::transport_rabbitmq::Transport::new(self.config.clone(), rabbitmq);
 
         let product_transport_grpc =
             crate::module::product::transport_grpc::Transport::new(self.config.clone()).await?;
@@ -67,7 +71,12 @@ impl HttpTransport {
             crate::module::shipping::transport_grpc::Transport::new(self.config.clone()).await?;
 
         // Use case layer
-        let auth_use_case = crate::module::auth::usecase::UseCase::new(auth_transport_grpc, opa);
+        let auth_use_case = crate::module::auth::usecase::UseCase::new(
+            auth_transport_grpc,
+            user_transport_grpc.clone(),
+            user_transport_rabbitmq.clone(),
+            opa,
+        );
         let user_use_case = crate::module::user::usecase::UseCase::new(
             user_transport_grpc.clone(),
             user_transport_rabbitmq,

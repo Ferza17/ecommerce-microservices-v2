@@ -1,21 +1,17 @@
+use crate::config::{
+    message_broker_rabbitmq::MessageBrokerRabbitMQ, open_policy_agent::OpenPolicyAgent,
+    service_api_gateway::ServiceApiGateway, service_payment::ServicePayment,
+    service_product::ServiceProduct, service_shipping::ServiceShipping,
+    service_shipping_rabbitmq::ServiceShippingRabbitMQ, service_user::ServiceUser,
+    service_user_rabbitmq::ServiceUserRabbitMQ, telemetry_jaeger::TelemetryJaeger,
+};
 use config::{Config, ConfigError, Environment, File};
-use consulrs::client::{ConsulClient, ConsulClientSettingsBuilder};
-use consulrs::{kv, service};
-
-use crate::config::message_broker_rabbitmq::MessageBrokerRabbitMQ;
-use crate::config::open_policy_agent::OpenPolicyAgent;
-use crate::config::service_api_gateway::ServiceApiGateway;
-use crate::config::service_payment::ServicePayment;
-use crate::config::service_product::ServiceProduct;
-use crate::config::service_shipping::ServiceShipping;
-use crate::config::service_shipping_rabbitmq::ServiceShippingRabbitMQ;
-use crate::config::service_user::ServiceUser;
-use crate::config::telemetry_jaeger::TelemetryJaeger;
 use consulrs::api::check::common::AgentServiceCheckBuilder;
 use consulrs::api::service::requests::RegisterServiceRequest;
+use consulrs::client::{ConsulClient, ConsulClientSettingsBuilder};
+use consulrs::{kv, service};
 use serde::Deserialize;
 use std::env;
-use tracing::error;
 
 #[derive(Clone, Debug)]
 pub struct AppConfig {
@@ -28,6 +24,7 @@ pub struct AppConfig {
     pub service_shipping_rabbitmq: ServiceShippingRabbitMQ,
     // FROM CONSUL KV SERVICE/USER
     pub service_user: ServiceUser,
+    pub service_user_rabbitmq: ServiceUserRabbitMQ,
     // FROM CONSUL KV SERVICE/PRODUCT
     pub service_product: ServiceProduct,
     // FROM CONSUL KV SERVICE/USER
@@ -49,6 +46,7 @@ impl Default for AppConfig {
             service_shipping_rabbitmq: ServiceShippingRabbitMQ::default(),
             service_api_gateway: ServiceApiGateway::default(),
             service_user: ServiceUser::default(),
+            service_user_rabbitmq: ServiceUserRabbitMQ::default(),
             service_product: ServiceProduct::default(),
             service_payment: ServicePayment::default(),
             telemetry_jaeger: TelemetryJaeger::default(),
@@ -106,6 +104,7 @@ impl AppConfig {
             .with_open_policy_agent(&client)
             .with_service_shipping_rabbitmq(&client)
             .with_service_user(&client)
+            .with_service_user_rabbitmq(&client)
             .with_service_payment(&client)
             .with_service_product(&client)
             .with_message_broker_rabbitmq(&client)
@@ -154,6 +153,20 @@ impl AppConfig {
                     .await
                     .unwrap_or_else(|e| {
                         panic!("Error with_service_user :  {:?}", e);
+                    });
+            });
+        });
+        self
+    }
+
+    fn with_service_user_rabbitmq(mut self, client: &ConsulClient) -> Self {
+        tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                self.service_user_rabbitmq = ServiceUserRabbitMQ::default()
+                    .with_consul_client(self.config_env.env.clone(), client)
+                    .await
+                    .unwrap_or_else(|e| {
+                        panic!("Error with_service_user_rabbitmq :  {:?}", e);
                     });
             });
         });

@@ -3,6 +3,7 @@ pub mod context {
     pub mod request_id;
     pub mod traceparent;
     pub mod user_id;
+    pub mod content_type;
 }
 
 pub mod worker_pool {
