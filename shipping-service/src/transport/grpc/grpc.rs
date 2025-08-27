@@ -17,7 +17,7 @@ use opentelemetry::global;
 use tonic::transport::Server;
 use tower::ServiceBuilder;
 use tower_http::trace::TraceLayer;
-use tracing::{Instrument, info_span};
+use tracing::info_span;
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 pub struct GrpcTransport {
@@ -65,8 +65,7 @@ impl GrpcTransport {
 
         let addr = format!(
             "{}:{}",
-            self.config.shipping_service_service_rpc_host,
-            self.config.shipping_service_service_rpc_port
+            self.config.service_shipping.rpc_host, self.config.service_shipping.rpc_port,
         )
         .parse()?;
 

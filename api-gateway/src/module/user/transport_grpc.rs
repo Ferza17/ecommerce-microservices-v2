@@ -20,7 +20,7 @@ impl Transport {
     pub async fn new(config: AppConfig) -> Result<Self, anyhow::Error> {
         let addr = format!(
             "http://{}:{}",
-            config.user_service_service_rpc_host, config.user_service_service_rpc_port
+            config.service_user.rpc_host, config.service_user.rpc_port
         );
         let channel = tonic::transport::Channel::from_shared(addr.to_string())
             .expect("Failed to connect to user service")

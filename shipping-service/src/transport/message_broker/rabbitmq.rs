@@ -50,13 +50,21 @@ impl RabbitMQTransport {
         let mut handles: Vec<(String, String, Result<JoinHandle<()>, WorkerPoolError>)> =
             Vec::new();
         {
-            let queue_shipping_created = self.config.queue_shipping_created.clone();
-            let exchange_shipping = self.config.exchange_shipping.clone();
+            let queue_shipping_created = self
+                .config
+                .service_shipping_rabbitmq
+                .queue_shipping_created
+                .clone();
+            let exchange_shipping = self
+                .config
+                .service_shipping_rabbitmq
+                .exchange_shipping
+                .clone();
             let rabbitmq_infra_clone = Arc::clone(&rabbitmq_infrastructure);
             let consumer_clone = Arc::clone(&shipping_rabbitmq_consumer);
             handles.push((
-                self.config.clone().exchange_shipping,
-                self.config.clone().queue_shipping_created,
+                self.config.clone().service_shipping_rabbitmq.exchange_shipping,
+                self.config.clone().service_shipping_rabbitmq.queue_shipping_created,
                 Ok(self
                     .pool
                     .spawn(move || async move {
@@ -86,8 +94,16 @@ impl RabbitMQTransport {
             ));
         }
         {
-            let queue_shipping_updated = self.config.queue_shipping_updated.clone();
-            let exchange_shipping = self.config.exchange_shipping.clone();
+            let queue_shipping_updated = self
+                .config
+                .service_shipping_rabbitmq
+                .queue_shipping_updated
+                .clone();
+            let exchange_shipping = self
+                .config
+                .service_shipping_rabbitmq
+                .exchange_shipping
+                .clone();
             let rabbitmq_infra_clone = Arc::clone(&rabbitmq_infrastructure);
             let consumer_clone = Arc::clone(&shipping_rabbitmq_consumer);
 
@@ -118,8 +134,14 @@ impl RabbitMQTransport {
                 })
                 .await?;
             handles.push((
-                self.config.clone().exchange_shipping,
-                self.config.clone().queue_shipping_created,
+                self.config
+                    .clone()
+                    .service_shipping_rabbitmq
+                    .exchange_shipping,
+                self.config
+                    .clone()
+                    .service_shipping_rabbitmq
+                    .queue_shipping_created,
                 Ok(handle),
             ));
         }

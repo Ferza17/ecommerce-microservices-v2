@@ -18,7 +18,7 @@ pub struct OpaInput {
 impl OPA {
     pub fn new(app_config: AppConfig) -> Self {
         Self {
-            path: app_config.opa_path,
+            path: app_config.open_policy_agent.path,
             client: reqwest::Client::new(),
         }
     }

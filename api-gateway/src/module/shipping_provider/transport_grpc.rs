@@ -1,12 +1,15 @@
-use opentelemetry::trace::FutureExt;
-use tracing::{event, instrument, Level, Span};
-use tracing_opentelemetry::OpenTelemetrySpanExt;
 use crate::config::config::AppConfig;
-use crate::model::rpc::shipping::{GetShippingProviderByIdRequest, GetShippingProviderByIdResponse, ListShippingProvidersRequest, ListShippingProvidersResponse};
 use crate::model::rpc::shipping::shipping_provider_service_client::ShippingProviderServiceClient;
+use crate::model::rpc::shipping::{
+    GetShippingProviderByIdRequest, GetShippingProviderByIdResponse, ListShippingProvidersRequest,
+    ListShippingProvidersResponse,
+};
 use crate::package::context::auth::AUTHORIZATION_HEADER;
 use crate::package::context::request_id::X_REQUEST_ID_HEADER;
 use crate::util::metadata::inject_trace_context;
+use opentelemetry::trace::FutureExt;
+use tracing::{Level, Span, event, instrument};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 #[derive(Debug, Clone)]
 pub struct Transport {
@@ -18,7 +21,7 @@ impl Transport {
         let channel = tonic::transport::Channel::from_shared(
             format!(
                 "http://{}:{}",
-                config.shipping_service_service_rpc_host, config.shipping_service_service_rpc_port
+                config.service_shipping.rpc_host, config.service_shipping.rpc_port
             )
             .to_string(),
         )

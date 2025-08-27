@@ -13,10 +13,10 @@ impl RabbitMQInfrastructure {
     pub async fn new(config: AppConfig) -> Self {
         let addr = format!(
             "amqp://{}:{}@{}:{}",
-            config.rabbitmq_username,
-            config.rabbitmq_password,
-            config.rabbitmq_host,
-            config.rabbitmq_port
+            config.message_broker_rabbitmq.username,
+            config.message_broker_rabbitmq.password,
+            config.message_broker_rabbitmq.host,
+            config.message_broker_rabbitmq.port
         );
         let conn = Connection::connect(&addr, ConnectionProperties::default())
             .await

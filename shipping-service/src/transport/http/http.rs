@@ -37,8 +37,7 @@ impl HttpTransport {
     pub async fn serve(&self) -> Result<(), Box<dyn std::error::Error>> {
         let addr = format!(
             "{}:{}",
-            self.config.shipping_service_service_http_host,
-            self.config.shipping_service_service_http_port
+            self.config.service_shipping.http_host, self.config.service_shipping.http_port,
         )
         .to_string();
 

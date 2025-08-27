@@ -15,7 +15,7 @@ pub fn init_tracing(config: AppConfig) -> Result<(), Box<dyn std::error::Error>>
             opentelemetry_otlp::new_exporter().tonic().with_endpoint(
                 format!(
                     "http://{}:{}",
-                    config.jaeger_telemetry_host, config.jaeger_telemetry_rpc_port
+                    config.telemetry_jaeger.host, config.telemetry_jaeger.rpc_port
                 )
                 .to_string(),
             ),
@@ -23,7 +23,7 @@ pub fn init_tracing(config: AppConfig) -> Result<(), Box<dyn std::error::Error>>
         .with_trace_config(
             sdktrace::config().with_resource(Resource::new(vec![KeyValue::new(
                 opentelemetry_semantic_conventions::resource::SERVICE_NAME,
-                config.api_gateway_service_service_name,
+                config.service_api_gateway.name,
             )])),
         )
         .install_batch(opentelemetry::runtime::Tokio)?;

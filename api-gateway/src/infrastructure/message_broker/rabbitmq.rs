@@ -1,89 +1,51 @@
 use crate::config::config::AppConfig;
-use lapin::{
-    Connection, ConnectionProperties, Consumer, ExchangeKind, options::*, types::FieldTable,
-};
+use lapin::{BasicProperties, Channel, Connection, ConnectionProperties, options::*};
 use std::sync::Arc;
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct RabbitMQInfrastructure {
-    pub connection: Arc<Connection>,
+    pub ch: Arc<Channel>,
 }
 
 impl RabbitMQInfrastructure {
     pub async fn new(config: AppConfig) -> Self {
         let addr = format!(
             "amqp://{}:{}@{}:{}",
-            config.rabbitmq_username,
-            config.rabbitmq_password,
-            config.rabbitmq_host,
-            config.rabbitmq_port
+            config.message_broker_rabbitmq.username,
+            config.message_broker_rabbitmq.password,
+            config.message_broker_rabbitmq.host,
+            config.message_broker_rabbitmq.port
         );
         let conn = Connection::connect(&addr, ConnectionProperties::default())
             .await
             .map_err(|e| panic!("Cannot connect to RabbitMQ: {}", e))
             .unwrap();
         Self {
-            connection: Arc::new(conn),
+            ch: Arc::new(conn.create_channel().await.unwrap()),
         }
     }
 
-    pub async fn binding(&self, queue: &str, exchange: &str) -> &RabbitMQInfrastructure {
-        self.connection
-            .create_channel()
-            .await
-            .unwrap()
-            .exchange_declare(
-                exchange,
-                ExchangeKind::Direct,
-                ExchangeDeclareOptions {
-                    passive: true,
-                    durable: true,
-                    auto_delete: true,
-                    internal: true,
-                    nowait: true,
-                },
-                FieldTable::default(),
-            )
-            .await
-            .map_err(|e| panic!("Cannot Declare Exchange: {}", e))
-            .unwrap();
+    pub async fn publish(
+        &self,
+        exchange: &str,
+        queue: &str,
+        message: tonic::Request<tonic::body::BoxBody>,
+    ) -> Result<(), anyhow::Error> {
+        let body = message.into_inner();
 
-        self.connection
-            .create_channel()
-            .await
-            .unwrap()
-            .queue_declare(
-                queue,
-                QueueDeclareOptions {
-                    passive: true,
-                    durable: true,
-                    exclusive: true,
-                    auto_delete: true,
-                    nowait: true,
-                },
-                FieldTable::default(),
-            )
-            .await
-            .map_err(|e| panic!("Cannot declare Queue: {}", e))
-            .unwrap();
-
-        self.connection
-            .create_channel()
-            .await
-            .unwrap()
-            .queue_bind(
-                queue,
+        match self
+            .ch
+            .basic_publish(
                 exchange,
-                "",
-                QueueBindOptions {
-                    nowait: true,
-                    ..Default::default()
-                },
-                FieldTable::default(),
+                queue,
+                BasicPublishOptions::default(),
+                b"",
+                BasicProperties::default(),
             )
             .await
-            .map_err(|e| panic!("Cannot binding queue: {}", e))
-            .unwrap();
-        self
+        {
+            Ok(_) => Ok(()),
+            Err(_) => Err(anyhow::Error::msg("Error")),
+        }
     }
 }

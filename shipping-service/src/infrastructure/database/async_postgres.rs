@@ -10,15 +10,14 @@ pub type AsyncPgDeadPool = deadpool::managed::Pool<
 >;
 
 pub async fn get_connection(config: &AppConfig) -> AsyncPgDeadPool {
-    // create a new connection pool with the default config
     let config = AsyncDieselConnectionManager::<AsyncPgConnection>::new(
         format!(
             "postgres://{}:{}@{}:{}/{}",
-            config.database_postgres_username,
-            config.database_postgres_password,
-            config.database_postgres_host,
-            config.database_postgres_port,
-            config.database_postgres_database,
+            config.database_postgres.username,
+            config.database_postgres.password,
+            config.database_postgres.host,
+            config.database_postgres.port,
+            config.database_postgres.database,
         )
         .as_str(),
     );

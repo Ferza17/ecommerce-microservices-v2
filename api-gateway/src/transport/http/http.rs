@@ -35,8 +35,8 @@ impl HttpTransport {
     pub async fn serve(self) -> Result<(), anyhow::Error> {
         let addr = format!(
             "{}:{}",
-            self.config.api_gateway_service_service_http_host,
-            self.config.api_gateway_service_service_http_port
+            self.config.service_api_gateway.http_host,
+            self.config.service_api_gateway.http_port,
         )
         .to_string();
 

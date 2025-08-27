@@ -21,7 +21,7 @@ impl Transport {
         let channel = tonic::transport::Channel::from_shared(
             format!(
                 "http://{}:{}",
-                config.payment_service_service_rpc_host, config.payment_service_service_rpc_port
+                config.service_payment.rpc_host, config.service_payment.rpc_port
             )
             .to_string(),
         )

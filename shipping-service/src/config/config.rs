@@ -2,103 +2,67 @@ use config::{Config, ConfigError, Environment, File};
 use consulrs::client::{ConsulClient, ConsulClientSettingsBuilder};
 use consulrs::{kv, service};
 
+use crate::config::database_postgres::DatabasePostgres;
+use crate::config::message_broker_rabbitmq::MessageBrokerRabbitMQ;
+use crate::config::service_payment::ServicePayment;
+use crate::config::service_shipping_rabbitmq::ServiceShippingRabbitMQ;
+use crate::config::service_shipping::ServiceShipping;
+use crate::config::service_user::ServiceUser;
+use crate::config::telemetry_jaeger::TelemetryJaeger;
 use consulrs::api::check::common::AgentServiceCheckBuilder;
 use consulrs::api::service::requests::RegisterServiceRequest;
 use serde::Deserialize;
 use std::env;
-use tracing::error;
 
 #[derive(Clone, Debug)]
 pub struct AppConfig {
     // FROM CONFIG/CONFIG.TOML
-    pub env: String,
-    pub consul_host: String,
-    pub consul_port: String,
-
+    pub config_env: ConfigEnv,
     // FROM CONSUL DATABASE POSTGRES
-    pub database_postgres_host: String,
-    pub database_postgres_port: String,
-    pub database_postgres_username: String,
-    pub database_postgres_password: String,
-    pub database_postgres_database: String,
-
+    pub database_postgres: DatabasePostgres,
     // FROM CONSUL KV SERVICES/SHIPPING
-    pub shipping_service_service_name: String,
-    pub shipping_service_service_rpc_host: String,
-    pub shipping_service_service_rpc_port: String,
-    pub shipping_service_service_http_host: String,
-    pub shipping_service_service_http_port: String,
-    pub shipping_service_service_metric_http_port: String,
-
+    pub service_shipping: ServiceShipping,
+    pub service_shipping_rabbitmq: ServiceShippingRabbitMQ,
     // FROM CONSUL KV SERVICE/USER
-    pub user_service_service_name: String,
-    pub user_service_service_rpc_host: String,
-    pub user_service_service_rpc_port: String,
-
+    pub service_user: ServiceUser,
     // FROM CONSUL KV SERVICE/USER
-    pub payment_service_service_name: String,
-    pub payment_service_service_rpc_host: String,
-    pub payment_service_service_rpc_port: String,
-
+    pub service_payment: ServicePayment,
     // FROM CONSUL JAEGER TELEMETRY
-    pub jaeger_telemetry_host: String,
-    pub jaeger_telemetry_rpc_port: String,
-
+    pub telemetry_jaeger: TelemetryJaeger,
     // FROM CONSUL RABBITMQ
-    pub rabbitmq_username: String,
-    pub rabbitmq_password: String,
-    pub rabbitmq_host: String,
-    pub rabbitmq_port: String,
-
-    // FROM CONSUL RABBITMQ EXCHANGE
-    pub exchange_shipping: String,
-
-    // FROM CONSUL RABBITMQ QUEUE
-    pub queue_shipping_created: String,
-    pub queue_shipping_updated: String,
+    pub message_broker_rabbitmq: MessageBrokerRabbitMQ,
 }
 
 impl Default for AppConfig {
     fn default() -> Self {
         Self {
-            env: "".to_string(),
-            consul_host: "".to_string(),
-            consul_port: "".to_string(),
-            database_postgres_host: "".to_string(),
-            database_postgres_port: "".to_string(),
-            database_postgres_username: "".to_string(),
-            database_postgres_password: "".to_string(),
-            database_postgres_database: "".to_string(),
-            shipping_service_service_name: "".to_string(),
-            shipping_service_service_rpc_host: "".to_string(),
-            shipping_service_service_rpc_port: "".to_string(),
-            shipping_service_service_http_host: "".to_string(),
-            shipping_service_service_http_port: "".to_string(),
-            shipping_service_service_metric_http_port: "".to_string(),
-            user_service_service_name: "".to_string(),
-            user_service_service_rpc_host: "".to_string(),
-            user_service_service_rpc_port: "".to_string(),
-            payment_service_service_name: "".to_string(),
-            payment_service_service_rpc_host: "".to_string(),
-            payment_service_service_rpc_port: "".to_string(),
-            jaeger_telemetry_host: "".to_string(),
-            jaeger_telemetry_rpc_port: "".to_string(),
-            rabbitmq_username: "".to_string(),
-            rabbitmq_password: "".to_string(),
-            rabbitmq_host: "".to_string(),
-            rabbitmq_port: "".to_string(),
-            exchange_shipping: "".to_string(),
-            queue_shipping_created: "".to_string(),
-            queue_shipping_updated: "".to_string(),
+            config_env: ConfigEnv::default(),
+            database_postgres: DatabasePostgres::default(),
+            service_shipping: ServiceShipping::default(),
+            service_shipping_rabbitmq: ServiceShippingRabbitMQ::default(),
+            service_user: ServiceUser::default(),
+            service_payment: ServicePayment::default(),
+            telemetry_jaeger: TelemetryJaeger::default(),
+            message_broker_rabbitmq: MessageBrokerRabbitMQ::default(),
         }
     }
 }
 
-#[derive(Deserialize)]
-struct ConfigEnv {
+#[derive(Deserialize, Clone, Debug)]
+pub struct ConfigEnv {
     env: String,
     consul_host: String,
     consul_port: String,
+}
+
+impl Default for ConfigEnv {
+    fn default() -> Self {
+        Self {
+            env: "".to_string(),
+            consul_host: "".to_string(),
+            consul_port: "".to_string(),
+        }
+    }
 }
 
 impl AppConfig {
@@ -126,267 +90,171 @@ impl AppConfig {
         )
         .unwrap();
 
-        // GET CONSUL CONFIG
-        let mut app_config = AppConfig::default();
-        app_config.env = cfg_env.env;
-        app_config.get_config_shipping_service(&client).await;
-        app_config.get_config_user_service(&client).await;
-        app_config.get_config_payment_service(&client).await;
-        app_config.get_config_database_postgres(&client).await;
-        app_config.get_config_jaeger_telemetry(&client).await;
-        app_config.get_config_rabbitmq(&client).await;
-        app_config.get_config_rabbitmq_exchange(&client).await;
-        app_config.get_config_rabbitmq_queue(&client).await;
-
-        // Register Consul Config
-        app_config
-            .register_consul_service(&app_config.clone(), &client)
-            .await
-            .expect("TODO: panic message");
-
-        eprintln!(
-            "Done Loading Config {} From Consul {} : {} ",
-            app_config.env, app_config.consul_host, app_config.consul_port
-        );
-
-        Ok(app_config)
+        Ok(AppConfig::default()
+            .with_config_env(cfg_env)
+            .with_database_postgres(&client)
+            .with_message_broker_rabbitmq(&client)
+            .with_service_payment(&client)
+            .with_service_shipping(&client)
+            .with_service_shipping_rabbitmq(&client)
+            .with_service_user(&client)
+            .with_telemetry_jaeger(&client)
+            .with_register_consul_service(&client))
     }
 
-    async fn get_config_shipping_service(&mut self, client: &ConsulClient) {
-        self.shipping_service_service_name = Self::get_kv(
-            client,
-            format!("{}/services/shipping/SERVICE_NAME", self.env),
-        )
-        .await
-        .parse()
-        .unwrap_or_else(|_| "".to_string());
-
-        self.shipping_service_service_rpc_host =
-            Self::get_kv(client, format!("{}/services/shipping/RPC_HOST", self.env))
-                .await
-                .parse()
-                .unwrap_or_else(|_| "".to_string());
-
-        self.shipping_service_service_rpc_port =
-            Self::get_kv(client, format!("{}/services/shipping/RPC_PORT", self.env))
-                .await
-                .parse()
-                .unwrap_or_else(|_| "".to_string());
-
-        self.shipping_service_service_http_host =
-            Self::get_kv(client, format!("{}/services/shipping/HTTP_HOST", self.env))
-                .await
-                .parse()
-                .unwrap_or_else(|_| "".to_string());
-
-        self.shipping_service_service_http_port =
-            Self::get_kv(client, format!("{}/services/shipping/HTTP_PORT", self.env))
-                .await
-                .parse()
-                .unwrap_or_else(|_| "".to_string());
-
-        self.shipping_service_service_metric_http_port = Self::get_kv(
-            client,
-            format!("{}/services/shipping/METRIC_HTTP_PORT", self.env),
-        )
-        .await
-        .parse()
-        .unwrap_or_else(|_| "".to_string());
+    fn with_config_env(mut self, env: ConfigEnv) -> Self {
+        self.config_env = env;
+        self
     }
 
-    async fn get_config_user_service(&mut self, client: &ConsulClient) {
-        self.user_service_service_name =
-            Self::get_kv(client, format!("{}/services/user/SERVICE_NAME", self.env))
-                .await
-                .parse()
-                .unwrap_or_else(|_| "".to_string());
-
-        self.user_service_service_rpc_host =
-            Self::get_kv(client, format!("{}/services/user/RPC_HOST", self.env))
-                .await
-                .parse()
-                .unwrap_or_else(|_| "".to_string());
-
-        self.user_service_service_rpc_port =
-            Self::get_kv(client, format!("{}/services/user/RPC_PORT", self.env))
-                .await
-                .parse()
-                .unwrap_or_else(|_| "".to_string());
+    fn with_database_postgres(mut self, client: &ConsulClient) -> Self {
+        tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                self.database_postgres = DatabasePostgres::default()
+                    .with_consul_client(self.config_env.env.clone(), client)
+                    .await
+                    .unwrap_or_else(|e| {
+                        panic!("Error with_database_postgres :  {:?}", e);
+                    });
+            });
+        });
+        self
     }
 
-    async fn get_config_payment_service(&mut self, client: &ConsulClient) {
-        self.payment_service_service_name = Self::get_kv(
-            client,
-            format!("{}/services/payment/SERVICE_NAME", self.env),
-        )
-        .await
-        .parse()
-        .unwrap_or_else(|_| "".to_string());
-
-        self.payment_service_service_rpc_host =
-            Self::get_kv(client, format!("{}/services/payment/RPC_HOST", self.env))
-                .await
-                .parse()
-                .unwrap_or_else(|_| "".to_string());
-
-        self.payment_service_service_rpc_port =
-            Self::get_kv(client, format!("{}/services/payment/RPC_PORT", self.env))
-                .await
-                .parse()
-                .unwrap_or_else(|_| "".to_string());
+    fn with_message_broker_rabbitmq(mut self, client: &ConsulClient) -> Self {
+        tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                self.message_broker_rabbitmq = MessageBrokerRabbitMQ::default()
+                    .with_consul_client(self.config_env.env.clone(), client)
+                    .await
+                    .unwrap_or_else(|e| {
+                        panic!("Error with_message_broker_rabbitmq :  {:?}", e);
+                    });
+            });
+        });
+        self
     }
 
-    async fn get_config_database_postgres(&mut self, client: &ConsulClient) {
-        self.database_postgres_host = Self::get_kv(
-            client,
-            format!("{}/database/postgres/POSTGRES_HOST", self.env),
-        )
-        .await
-        .parse()
-        .unwrap_or_else(|_| "".to_string());
-
-        self.database_postgres_port = Self::get_kv(
-            client,
-            format!("{}/database/postgres/POSTGRES_PORT", self.env),
-        )
-        .await
-        .parse()
-        .unwrap_or_else(|_| "".to_string());
-
-        self.database_postgres_username = Self::get_kv(
-            client,
-            format!("{}/database/postgres/POSTGRES_USERNAME", self.env),
-        )
-        .await
-        .parse()
-        .unwrap_or_else(|_| "".to_string());
-
-        self.database_postgres_password = Self::get_kv(
-            client,
-            format!("{}/database/postgres/POSTGRES_PASSWORD", self.env),
-        )
-        .await
-        .parse()
-        .unwrap_or_else(|_| "".to_string());
-
-        self.database_postgres_database = Self::get_kv(
-            client,
-            format!(
-                "{}/database/postgres/POSTGRES_DATABASE_NAME/SHIPPINGS",
-                self.env
-            ),
-        )
-        .await
-        .parse()
-        .unwrap_or_else(|_| "".to_string());
+    fn with_service_payment(mut self, client: &ConsulClient) -> Self {
+        tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                self.service_payment = ServicePayment::default()
+                    .with_consul_client(self.config_env.env.clone(), client)
+                    .await
+                    .unwrap_or_else(|e| {
+                        panic!("Error with_service_payment :  {:?}", e);
+                    });
+            });
+        });
+        self
     }
 
-    async fn get_config_jaeger_telemetry(&mut self, client: &ConsulClient) {
-        self.jaeger_telemetry_host = Self::get_kv(
-            client,
-            format!("{}/telemetry/jaeger/JAEGER_TELEMETRY_HOST", self.env),
-        )
-        .await;
-
-        self.jaeger_telemetry_rpc_port = Self::get_kv(
-            client,
-            format!("{}/telemetry/jaeger/JAEGER_TELEMETRY_RPC_PORT", self.env),
-        )
-        .await;
+    fn with_service_shipping(mut self, client: &ConsulClient) -> Self {
+        tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                self.service_shipping = ServiceShipping::default()
+                    .with_consul_client(self.config_env.env.clone(), client)
+                    .await
+                    .unwrap_or_else(|e| {
+                        panic!("Error with_service_shipping :  {:?}", e);
+                    });
+            });
+        });
+        self
     }
 
-    async fn get_config_rabbitmq(&mut self, client: &ConsulClient) {
-        self.rabbitmq_username = Self::get_kv(
-            client,
-            format!("{}/broker/rabbitmq/RABBITMQ_USERNAME", self.env),
-        )
-        .await;
-        self.rabbitmq_password = Self::get_kv(
-            client,
-            format!("{}/broker/rabbitmq/RABBITMQ_PASSWORD", self.env),
-        )
-        .await;
-        self.rabbitmq_host = Self::get_kv(
-            client,
-            format!("{}/broker/rabbitmq/RABBITMQ_HOST", self.env),
-        )
-        .await;
-        self.rabbitmq_port = Self::get_kv(
-            client,
-            format!("{}/broker/rabbitmq/RABBITMQ_PORT", self.env),
-        )
-        .await;
+    fn with_service_shipping_rabbitmq(mut self, client: &ConsulClient) -> Self {
+        tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                self.service_shipping_rabbitmq = ServiceShippingRabbitMQ::default()
+                    .with_consul_client(self.config_env.env.clone(), client)
+                    .await
+                    .unwrap_or_else(|e| {
+                        panic!("Error with_service_shipping_rabbitmq : {:?}", e);
+                    });
+            });
+        });
+        self
     }
 
-    async fn get_config_rabbitmq_exchange(&mut self, client: &ConsulClient) {
-        self.exchange_shipping = Self::get_kv(
-            client,
-            format!("{}/broker/rabbitmq/EXCHANGE/SHIPPING", self.env),
-        )
-        .await;
+    fn with_service_user(mut self, client: &ConsulClient) -> Self {
+        tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                self.service_user = ServiceUser::default()
+                    .with_consul_client(self.config_env.env.clone(), client)
+                    .await
+                    .unwrap_or_else(|e| {
+                        panic!("Error with_service_user :  {:?}", e);
+                    });
+            });
+        });
+        self
     }
 
-    async fn get_config_rabbitmq_queue(&mut self, client: &ConsulClient) {
-        self.queue_shipping_created = Self::get_kv(
-            client,
-            format!("{}/broker/rabbitmq/QUEUE/SHIPPING/CREATED", self.env),
-        )
-        .await;
-        self.queue_shipping_updated = Self::get_kv(
-            client,
-            format!("{}/broker/rabbitmq/QUEUE/SHIPPING/UPDATED", self.env),
-        )
-        .await;
+    fn with_telemetry_jaeger(mut self, client: &ConsulClient) -> Self {
+        tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                self.telemetry_jaeger = TelemetryJaeger::default()
+                    .with_consul_client(self.config_env.env.clone(), client)
+                    .await
+                    .unwrap_or_else(|e| {
+                        panic!("Error with_telemetry_jaeger :  {:?}", e);
+                    });
+            });
+        });
+        self
     }
 
-    async fn register_consul_service(
-        &mut self,
-        config: &AppConfig,
-        client: &ConsulClient,
-    ) -> Result<(), Box<dyn std::error::Error>> {
-        let svc_addr = format!(
-            "{}:{}",
-            config.shipping_service_service_http_host, config.shipping_service_service_http_port
-        )
-        .to_string();
+    fn with_register_consul_service(self, client: &ConsulClient) -> Self {
+        tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                let svc_addr = format!(
+                    "{}:{}",
+                    self.service_shipping.http_host, self.service_shipping.http_port
+                )
+                .to_string();
 
-        service::register(
-            client,
-            config.shipping_service_service_name.as_str(),
-            Some(
-                RegisterServiceRequest::builder()
-                    .address(svc_addr.as_str())
-                    .port(
-                        config
-                            .shipping_service_service_http_port
-                            .parse::<u64>()
-                            .unwrap(),
-                    )
-                    .check(
-                        AgentServiceCheckBuilder::default()
-                            .name("health_check")
-                            .interval("30s")
-                            .http(format!("{}/v1/shipping/checks", svc_addr.as_str()).as_str())
-                            .build()
-                            .unwrap(),
+                service::register(
+                    client,
+                    self.service_shipping.name.as_str(),
+                    Some(
+                        RegisterServiceRequest::builder()
+                            .address(svc_addr.as_str())
+                            .port(self.service_shipping.http_port.parse::<u64>().unwrap())
+                            .check(
+                                AgentServiceCheckBuilder::default()
+                                    .name("health_check")
+                                    .interval("30s")
+                                    .http(
+                                        format!("{}/v1/shipping/checks", svc_addr.as_str())
+                                            .as_str(),
+                                    )
+                                    .build()
+                                    .unwrap(),
+                            ),
                     ),
-            ),
-        )
-        .await?;
-        Ok(())
+                )
+                .await
+                .unwrap_or_else(|e| {
+                    panic!("Error Register Consul :  {:?}", e);
+                });
+            });
+        });
+        self
     }
-    async fn get_kv(client: &ConsulClient, formatted_key: String) -> String {
-        kv::read(client, &*formatted_key, None)
-            .await
-            .map_err(|e| error!("Error Consul :  {:?}", e))
-            .unwrap()
-            .response
-            .pop()
-            .unwrap()
-            .value
-            .unwrap()
-            .try_into()
-            .map_err(|e| error!("Error Consul :  {:?}", e))
-            .unwrap()
-    }
+}
+
+pub async fn get_kv(client: &ConsulClient, formatted_key: String) -> String {
+    kv::read(client, &*formatted_key, None)
+        .await
+        .map_err(|e| panic!("Error Consul :  {:?}", e))
+        .unwrap()
+        .response
+        .pop()
+        .unwrap()
+        .value
+        .unwrap()
+        .try_into()
+        .map_err(|e| panic!("Error Consul :  {:?}", e))
+        .unwrap()
 }

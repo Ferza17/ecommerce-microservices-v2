@@ -6,7 +6,7 @@ pub async fn serve_metric_http_collector(
 ) -> std::result::Result<(), Box<dyn std::error::Error>> {
     let end_point = format!(
         "{}:{}",
-        config.shipping_service_service_http_host, config.shipping_service_service_metric_http_port
+        config.service_shipping.http_host, config.service_shipping.metric_http_port
     )
     .to_string();
 
