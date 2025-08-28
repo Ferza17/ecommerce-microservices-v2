@@ -20,7 +20,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// AUTH RESPONSE DEFINITION
+// ============= AUTH RESPONSE DEFINITION
 type AuthUserRegisterResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -399,7 +399,7 @@ func (x *AuthServiceVerifyIsExcludedResponse) GetData() *AuthServiceVerifyIsExcl
 	return nil
 }
 
-// USER RESPONSE DEFINITION
+// ============= USER RESPONSE DEFINITION
 type UpdateUserByIdResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -589,6 +589,69 @@ func (x *FindUserByEmailAndPasswordResponse) GetData() *FindUserByEmailAndPasswo
 	return nil
 }
 
+type FindUserByEmailResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Status  string                                               `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	Message string                                               `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Data    *FindUserByEmailResponse_FindUserByEmailResponseData `protobuf:"bytes,4,opt,name=data,proto3" json:"data,omitempty"`
+}
+
+func (x *FindUserByEmailResponse) Reset() {
+	*x = FindUserByEmailResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_v1_user_response_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *FindUserByEmailResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FindUserByEmailResponse) ProtoMessage() {}
+
+func (x *FindUserByEmailResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_user_response_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FindUserByEmailResponse.ProtoReflect.Descriptor instead.
+func (*FindUserByEmailResponse) Descriptor() ([]byte, []int) {
+	return file_v1_user_response_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *FindUserByEmailResponse) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *FindUserByEmailResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *FindUserByEmailResponse) GetData() *FindUserByEmailResponse_FindUserByEmailResponseData {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
 type AuthUserRegisterResponse_AuthUserRegisterResponseData struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -602,7 +665,7 @@ type AuthUserRegisterResponse_AuthUserRegisterResponseData struct {
 func (x *AuthUserRegisterResponse_AuthUserRegisterResponseData) Reset() {
 	*x = AuthUserRegisterResponse_AuthUserRegisterResponseData{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_user_response_proto_msgTypes[9]
+		mi := &file_v1_user_response_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -615,7 +678,7 @@ func (x *AuthUserRegisterResponse_AuthUserRegisterResponseData) String() string 
 func (*AuthUserRegisterResponse_AuthUserRegisterResponseData) ProtoMessage() {}
 
 func (x *AuthUserRegisterResponse_AuthUserRegisterResponseData) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_user_response_proto_msgTypes[9]
+	mi := &file_v1_user_response_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -664,7 +727,7 @@ type AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData struct {
 func (x *AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData) Reset() {
 	*x = AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_user_response_proto_msgTypes[10]
+		mi := &file_v1_user_response_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -677,7 +740,7 @@ func (x *AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData) String() strin
 func (*AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData) ProtoMessage() {}
 
 func (x *AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_user_response_proto_msgTypes[10]
+	mi := &file_v1_user_response_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -718,7 +781,7 @@ type AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData struct {
 func (x *AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData) Reset() {
 	*x = AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_user_response_proto_msgTypes[11]
+		mi := &file_v1_user_response_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -731,7 +794,7 @@ func (x *AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData) String
 func (*AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData) ProtoMessage() {}
 
 func (x *AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_user_response_proto_msgTypes[11]
+	mi := &file_v1_user_response_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -768,7 +831,7 @@ type AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData
 func (x *AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData) Reset() {
 	*x = AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_user_response_proto_msgTypes[12]
+		mi := &file_v1_user_response_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -781,7 +844,7 @@ func (x *AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponse
 func (*AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData) ProtoMessage() {}
 
 func (x *AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_user_response_proto_msgTypes[12]
+	mi := &file_v1_user_response_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -836,7 +899,7 @@ type AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData struct 
 func (x *AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData) Reset() {
 	*x = AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_user_response_proto_msgTypes[13]
+		mi := &file_v1_user_response_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -849,7 +912,7 @@ func (x *AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData) St
 func (*AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData) ProtoMessage() {}
 
 func (x *AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_user_response_proto_msgTypes[13]
+	mi := &file_v1_user_response_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -883,7 +946,7 @@ type AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData
 func (x *AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData) Reset() {
 	*x = AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_user_response_proto_msgTypes[14]
+		mi := &file_v1_user_response_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -896,7 +959,7 @@ func (x *AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponse
 func (*AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData) ProtoMessage() {}
 
 func (x *AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_user_response_proto_msgTypes[14]
+	mi := &file_v1_user_response_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -930,7 +993,7 @@ type UpdateUserByIdResponse_UpdateUserByIdResponseData struct {
 func (x *UpdateUserByIdResponse_UpdateUserByIdResponseData) Reset() {
 	*x = UpdateUserByIdResponse_UpdateUserByIdResponseData{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_user_response_proto_msgTypes[15]
+		mi := &file_v1_user_response_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -943,7 +1006,7 @@ func (x *UpdateUserByIdResponse_UpdateUserByIdResponseData) String() string {
 func (*UpdateUserByIdResponse_UpdateUserByIdResponseData) ProtoMessage() {}
 
 func (x *UpdateUserByIdResponse_UpdateUserByIdResponseData) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_user_response_proto_msgTypes[15]
+	mi := &file_v1_user_response_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -977,7 +1040,7 @@ type FindUserByIdResponse_FindUserByIdResponseData struct {
 func (x *FindUserByIdResponse_FindUserByIdResponseData) Reset() {
 	*x = FindUserByIdResponse_FindUserByIdResponseData{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_user_response_proto_msgTypes[16]
+		mi := &file_v1_user_response_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -990,7 +1053,7 @@ func (x *FindUserByIdResponse_FindUserByIdResponseData) String() string {
 func (*FindUserByIdResponse_FindUserByIdResponseData) ProtoMessage() {}
 
 func (x *FindUserByIdResponse_FindUserByIdResponseData) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_user_response_proto_msgTypes[16]
+	mi := &file_v1_user_response_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1024,7 +1087,7 @@ type FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData s
 func (x *FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData) Reset() {
 	*x = FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_v1_user_response_proto_msgTypes[17]
+		mi := &file_v1_user_response_proto_msgTypes[18]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1037,7 +1100,7 @@ func (x *FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseDa
 func (*FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData) ProtoMessage() {}
 
 func (x *FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_user_response_proto_msgTypes[17]
+	mi := &file_v1_user_response_proto_msgTypes[18]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1054,6 +1117,53 @@ func (*FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData
 }
 
 func (x *FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData) GetUser() *User {
+	if x != nil {
+		return x.User
+	}
+	return nil
+}
+
+type FindUserByEmailResponse_FindUserByEmailResponseData struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	User *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+}
+
+func (x *FindUserByEmailResponse_FindUserByEmailResponseData) Reset() {
+	*x = FindUserByEmailResponse_FindUserByEmailResponseData{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_v1_user_response_proto_msgTypes[19]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *FindUserByEmailResponse_FindUserByEmailResponseData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FindUserByEmailResponse_FindUserByEmailResponseData) ProtoMessage() {}
+
+func (x *FindUserByEmailResponse_FindUserByEmailResponseData) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_user_response_proto_msgTypes[19]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FindUserByEmailResponse_FindUserByEmailResponseData.ProtoReflect.Descriptor instead.
+func (*FindUserByEmailResponse_FindUserByEmailResponseData) Descriptor() ([]byte, []int) {
+	return file_v1_user_response_proto_rawDescGZIP(), []int{9, 0}
+}
+
+func (x *FindUserByEmailResponse_FindUserByEmailResponseData) GetUser() *User {
 	if x != nil {
 		return x.User
 	}
@@ -1216,12 +1326,26 @@ var file_v1_user_response_proto_rawDesc = []byte{
 	0x6e, 0x64, 0x50, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
 	0x73, 0x65, 0x44, 0x61, 0x74, 0x61, 0x12, 0x1e, 0x0a, 0x04, 0x75, 0x73, 0x65, 0x72, 0x18, 0x01,
 	0x20, 0x01, 0x28, 0x0b, 0x32, 0x0a, 0x2e, 0x75, 0x73, 0x65, 0x72, 0x2e, 0x55, 0x73, 0x65, 0x72,
-	0x52, 0x04, 0x75, 0x73, 0x65, 0x72, 0x42, 0x4b, 0x0a, 0x08, 0x63, 0x6f, 0x6d, 0x2e, 0x75, 0x73,
-	0x65, 0x72, 0x42, 0x0d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x50, 0x72, 0x6f, 0x74,
-	0x6f, 0x48, 0x02, 0x50, 0x01, 0xa2, 0x02, 0x03, 0x55, 0x58, 0x58, 0xaa, 0x02, 0x04, 0x55, 0x73,
-	0x65, 0x72, 0xca, 0x02, 0x04, 0x55, 0x73, 0x65, 0x72, 0xe2, 0x02, 0x10, 0x55, 0x73, 0x65, 0x72,
-	0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x04, 0x55,
-	0x73, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x52, 0x04, 0x75, 0x73, 0x65, 0x72, 0x22, 0xd9, 0x01, 0x0a, 0x17, 0x46, 0x69, 0x6e, 0x64, 0x55,
+	0x73, 0x65, 0x72, 0x42, 0x79, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x65,
+	0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x65, 0x73,
+	0x73, 0x61, 0x67, 0x65, 0x12, 0x4d, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x04, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x39, 0x2e, 0x75, 0x73, 0x65, 0x72, 0x2e, 0x46, 0x69, 0x6e, 0x64, 0x55, 0x73,
+	0x65, 0x72, 0x42, 0x79, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x2e, 0x46, 0x69, 0x6e, 0x64, 0x55, 0x73, 0x65, 0x72, 0x42, 0x79, 0x45, 0x6d, 0x61, 0x69,
+	0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x61, 0x74, 0x61, 0x52, 0x04, 0x64,
+	0x61, 0x74, 0x61, 0x1a, 0x3d, 0x0a, 0x1b, 0x46, 0x69, 0x6e, 0x64, 0x55, 0x73, 0x65, 0x72, 0x42,
+	0x79, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x44, 0x61,
+	0x74, 0x61, 0x12, 0x1e, 0x0a, 0x04, 0x75, 0x73, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x0a, 0x2e, 0x75, 0x73, 0x65, 0x72, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x52, 0x04, 0x75, 0x73,
+	0x65, 0x72, 0x42, 0x4b, 0x0a, 0x08, 0x63, 0x6f, 0x6d, 0x2e, 0x75, 0x73, 0x65, 0x72, 0x42, 0x0d,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x48, 0x02, 0x50,
+	0x01, 0xa2, 0x02, 0x03, 0x55, 0x58, 0x58, 0xaa, 0x02, 0x04, 0x55, 0x73, 0x65, 0x72, 0xca, 0x02,
+	0x04, 0x55, 0x73, 0x65, 0x72, 0xe2, 0x02, 0x10, 0x55, 0x73, 0x65, 0x72, 0x5c, 0x47, 0x50, 0x42,
+	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x04, 0x55, 0x73, 0x65, 0x72, 0x62,
+	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1236,7 +1360,7 @@ func file_v1_user_response_proto_rawDescGZIP() []byte {
 	return file_v1_user_response_proto_rawDescData
 }
 
-var file_v1_user_response_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_v1_user_response_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_v1_user_response_proto_goTypes = []interface{}{
 	(*AuthUserRegisterResponse)(nil),                                                    // 0: user.AuthUserRegisterResponse
 	(*AuthUserVerifyOtpResponse)(nil),                                                   // 1: user.AuthUserVerifyOtpResponse
@@ -1247,43 +1371,47 @@ var file_v1_user_response_proto_goTypes = []interface{}{
 	(*UpdateUserByIdResponse)(nil),                                                      // 6: user.UpdateUserByIdResponse
 	(*FindUserByIdResponse)(nil),                                                        // 7: user.FindUserByIdResponse
 	(*FindUserByEmailAndPasswordResponse)(nil),                                          // 8: user.FindUserByEmailAndPasswordResponse
-	(*AuthUserRegisterResponse_AuthUserRegisterResponseData)(nil),                       // 9: user.AuthUserRegisterResponse.AuthUserRegisterResponseData
-	(*AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData)(nil),                     // 10: user.AuthUserVerifyOtpResponse.AuthUserVerifyOtpResponseData
-	(*AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData)(nil),             // 11: user.AuthUserLogoutByTokenResponse.AuthUserLogoutByTokenResponseData
-	(*AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData)(nil), // 12: user.AuthUserVerifyAccessControlResponse.AuthUserVerifyAccessControlResponseData
-	(*AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData)(nil),         // 13: user.AuthUserFindUserByTokenResponse.AuthUserFindUserByTokenResponseData
-	(*AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData)(nil), // 14: user.AuthServiceVerifyIsExcludedResponse.AuthServiceVerifyIsExcludedResponseData
-	(*UpdateUserByIdResponse_UpdateUserByIdResponseData)(nil),                           // 15: user.UpdateUserByIdResponse.UpdateUserByIdResponseData
-	(*FindUserByIdResponse_FindUserByIdResponseData)(nil),                               // 16: user.FindUserByIdResponse.FindUserByIdResponseData
-	(*FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData)(nil),   // 17: user.FindUserByEmailAndPasswordResponse.FindUserByEmailAndPasswordResponseData
-	(*User)(nil),          // 18: user.User
-	(*Role)(nil),          // 19: user.Role
-	(*AccessControl)(nil), // 20: user.AccessControl
+	(*FindUserByEmailResponse)(nil),                                                     // 9: user.FindUserByEmailResponse
+	(*AuthUserRegisterResponse_AuthUserRegisterResponseData)(nil),                       // 10: user.AuthUserRegisterResponse.AuthUserRegisterResponseData
+	(*AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData)(nil),                     // 11: user.AuthUserVerifyOtpResponse.AuthUserVerifyOtpResponseData
+	(*AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData)(nil),             // 12: user.AuthUserLogoutByTokenResponse.AuthUserLogoutByTokenResponseData
+	(*AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData)(nil), // 13: user.AuthUserVerifyAccessControlResponse.AuthUserVerifyAccessControlResponseData
+	(*AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData)(nil),         // 14: user.AuthUserFindUserByTokenResponse.AuthUserFindUserByTokenResponseData
+	(*AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData)(nil), // 15: user.AuthServiceVerifyIsExcludedResponse.AuthServiceVerifyIsExcludedResponseData
+	(*UpdateUserByIdResponse_UpdateUserByIdResponseData)(nil),                           // 16: user.UpdateUserByIdResponse.UpdateUserByIdResponseData
+	(*FindUserByIdResponse_FindUserByIdResponseData)(nil),                               // 17: user.FindUserByIdResponse.FindUserByIdResponseData
+	(*FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData)(nil),   // 18: user.FindUserByEmailAndPasswordResponse.FindUserByEmailAndPasswordResponseData
+	(*FindUserByEmailResponse_FindUserByEmailResponseData)(nil),                         // 19: user.FindUserByEmailResponse.FindUserByEmailResponseData
+	(*User)(nil),          // 20: user.User
+	(*Role)(nil),          // 21: user.Role
+	(*AccessControl)(nil), // 22: user.AccessControl
 }
 var file_v1_user_response_proto_depIdxs = []int32{
-	9,  // 0: user.AuthUserRegisterResponse.data:type_name -> user.AuthUserRegisterResponse.AuthUserRegisterResponseData
-	10, // 1: user.AuthUserVerifyOtpResponse.data:type_name -> user.AuthUserVerifyOtpResponse.AuthUserVerifyOtpResponseData
-	11, // 2: user.AuthUserLogoutByTokenResponse.data:type_name -> user.AuthUserLogoutByTokenResponse.AuthUserLogoutByTokenResponseData
-	12, // 3: user.AuthUserVerifyAccessControlResponse.data:type_name -> user.AuthUserVerifyAccessControlResponse.AuthUserVerifyAccessControlResponseData
-	13, // 4: user.AuthUserFindUserByTokenResponse.data:type_name -> user.AuthUserFindUserByTokenResponse.AuthUserFindUserByTokenResponseData
-	14, // 5: user.AuthServiceVerifyIsExcludedResponse.data:type_name -> user.AuthServiceVerifyIsExcludedResponse.AuthServiceVerifyIsExcludedResponseData
-	15, // 6: user.UpdateUserByIdResponse.data:type_name -> user.UpdateUserByIdResponse.UpdateUserByIdResponseData
-	16, // 7: user.FindUserByIdResponse.data:type_name -> user.FindUserByIdResponse.FindUserByIdResponseData
-	17, // 8: user.FindUserByEmailAndPasswordResponse.data:type_name -> user.FindUserByEmailAndPasswordResponse.FindUserByEmailAndPasswordResponseData
-	18, // 9: user.AuthUserRegisterResponse.AuthUserRegisterResponseData.user:type_name -> user.User
-	19, // 10: user.AuthUserRegisterResponse.AuthUserRegisterResponseData.role:type_name -> user.Role
-	20, // 11: user.AuthUserRegisterResponse.AuthUserRegisterResponseData.access_control:type_name -> user.AccessControl
-	18, // 12: user.AuthUserVerifyAccessControlResponse.AuthUserVerifyAccessControlResponseData.user:type_name -> user.User
-	19, // 13: user.AuthUserVerifyAccessControlResponse.AuthUserVerifyAccessControlResponseData.role:type_name -> user.Role
-	20, // 14: user.AuthUserVerifyAccessControlResponse.AuthUserVerifyAccessControlResponseData.access_controls:type_name -> user.AccessControl
-	18, // 15: user.AuthUserFindUserByTokenResponse.AuthUserFindUserByTokenResponseData.user:type_name -> user.User
-	18, // 16: user.FindUserByIdResponse.FindUserByIdResponseData.user:type_name -> user.User
-	18, // 17: user.FindUserByEmailAndPasswordResponse.FindUserByEmailAndPasswordResponseData.user:type_name -> user.User
-	18, // [18:18] is the sub-list for method output_type
-	18, // [18:18] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	10, // 0: user.AuthUserRegisterResponse.data:type_name -> user.AuthUserRegisterResponse.AuthUserRegisterResponseData
+	11, // 1: user.AuthUserVerifyOtpResponse.data:type_name -> user.AuthUserVerifyOtpResponse.AuthUserVerifyOtpResponseData
+	12, // 2: user.AuthUserLogoutByTokenResponse.data:type_name -> user.AuthUserLogoutByTokenResponse.AuthUserLogoutByTokenResponseData
+	13, // 3: user.AuthUserVerifyAccessControlResponse.data:type_name -> user.AuthUserVerifyAccessControlResponse.AuthUserVerifyAccessControlResponseData
+	14, // 4: user.AuthUserFindUserByTokenResponse.data:type_name -> user.AuthUserFindUserByTokenResponse.AuthUserFindUserByTokenResponseData
+	15, // 5: user.AuthServiceVerifyIsExcludedResponse.data:type_name -> user.AuthServiceVerifyIsExcludedResponse.AuthServiceVerifyIsExcludedResponseData
+	16, // 6: user.UpdateUserByIdResponse.data:type_name -> user.UpdateUserByIdResponse.UpdateUserByIdResponseData
+	17, // 7: user.FindUserByIdResponse.data:type_name -> user.FindUserByIdResponse.FindUserByIdResponseData
+	18, // 8: user.FindUserByEmailAndPasswordResponse.data:type_name -> user.FindUserByEmailAndPasswordResponse.FindUserByEmailAndPasswordResponseData
+	19, // 9: user.FindUserByEmailResponse.data:type_name -> user.FindUserByEmailResponse.FindUserByEmailResponseData
+	20, // 10: user.AuthUserRegisterResponse.AuthUserRegisterResponseData.user:type_name -> user.User
+	21, // 11: user.AuthUserRegisterResponse.AuthUserRegisterResponseData.role:type_name -> user.Role
+	22, // 12: user.AuthUserRegisterResponse.AuthUserRegisterResponseData.access_control:type_name -> user.AccessControl
+	20, // 13: user.AuthUserVerifyAccessControlResponse.AuthUserVerifyAccessControlResponseData.user:type_name -> user.User
+	21, // 14: user.AuthUserVerifyAccessControlResponse.AuthUserVerifyAccessControlResponseData.role:type_name -> user.Role
+	22, // 15: user.AuthUserVerifyAccessControlResponse.AuthUserVerifyAccessControlResponseData.access_controls:type_name -> user.AccessControl
+	20, // 16: user.AuthUserFindUserByTokenResponse.AuthUserFindUserByTokenResponseData.user:type_name -> user.User
+	20, // 17: user.FindUserByIdResponse.FindUserByIdResponseData.user:type_name -> user.User
+	20, // 18: user.FindUserByEmailAndPasswordResponse.FindUserByEmailAndPasswordResponseData.user:type_name -> user.User
+	20, // 19: user.FindUserByEmailResponse.FindUserByEmailResponseData.user:type_name -> user.User
+	20, // [20:20] is the sub-list for method output_type
+	20, // [20:20] is the sub-list for method input_type
+	20, // [20:20] is the sub-list for extension type_name
+	20, // [20:20] is the sub-list for extension extendee
+	0,  // [0:20] is the sub-list for field type_name
 }
 
 func init() { file_v1_user_response_proto_init() }
@@ -1402,7 +1530,7 @@ func file_v1_user_response_proto_init() {
 			}
 		}
 		file_v1_user_response_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AuthUserRegisterResponse_AuthUserRegisterResponseData); i {
+			switch v := v.(*FindUserByEmailResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1414,7 +1542,7 @@ func file_v1_user_response_proto_init() {
 			}
 		}
 		file_v1_user_response_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData); i {
+			switch v := v.(*AuthUserRegisterResponse_AuthUserRegisterResponseData); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1426,7 +1554,7 @@ func file_v1_user_response_proto_init() {
 			}
 		}
 		file_v1_user_response_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData); i {
+			switch v := v.(*AuthUserVerifyOtpResponse_AuthUserVerifyOtpResponseData); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1438,7 +1566,7 @@ func file_v1_user_response_proto_init() {
 			}
 		}
 		file_v1_user_response_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData); i {
+			switch v := v.(*AuthUserLogoutByTokenResponse_AuthUserLogoutByTokenResponseData); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1450,7 +1578,7 @@ func file_v1_user_response_proto_init() {
 			}
 		}
 		file_v1_user_response_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData); i {
+			switch v := v.(*AuthUserVerifyAccessControlResponse_AuthUserVerifyAccessControlResponseData); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1462,7 +1590,7 @@ func file_v1_user_response_proto_init() {
 			}
 		}
 		file_v1_user_response_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData); i {
+			switch v := v.(*AuthUserFindUserByTokenResponse_AuthUserFindUserByTokenResponseData); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1474,7 +1602,7 @@ func file_v1_user_response_proto_init() {
 			}
 		}
 		file_v1_user_response_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdateUserByIdResponse_UpdateUserByIdResponseData); i {
+			switch v := v.(*AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcludedResponseData); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1486,7 +1614,7 @@ func file_v1_user_response_proto_init() {
 			}
 		}
 		file_v1_user_response_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*FindUserByIdResponse_FindUserByIdResponseData); i {
+			switch v := v.(*UpdateUserByIdResponse_UpdateUserByIdResponseData); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1498,7 +1626,31 @@ func file_v1_user_response_proto_init() {
 			}
 		}
 		file_v1_user_response_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*FindUserByIdResponse_FindUserByIdResponseData); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_v1_user_response_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_v1_user_response_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*FindUserByEmailResponse_FindUserByEmailResponseData); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1516,7 +1668,7 @@ func file_v1_user_response_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_v1_user_response_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   18,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

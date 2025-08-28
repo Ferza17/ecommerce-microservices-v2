@@ -1,6 +1,6 @@
 apiVersion: v1
 data:
-  register.sh: |
+  service_register.sh: |
     #!/bin/bash
 
     echo "Registering PostgresSQL Exporter as proxy service in Consul ..."

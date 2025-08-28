@@ -2,7 +2,7 @@ package presenter
 
 import (
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
-	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
+	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
 	"github.com/google/wire"
 
@@ -11,7 +11,7 @@ import (
 )
 
 type UserPresenter struct {
-	userRpc.UnimplementedUserServiceServer
+	pb.UnimplementedUserServiceServer
 
 	userUseCase             usecase.IUserUseCase
 	authUseCase             authUseCase.IAuthUseCase

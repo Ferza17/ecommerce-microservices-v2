@@ -8,7 +8,9 @@ consul kv put local/broker/rabbitmq/QUEUE/USER/CREATED/FAILED "user.created.fail
 consul kv put local/broker/rabbitmq/QUEUE/USER/UPDATED "user.updated"
 consul kv put local/broker/rabbitmq/QUEUE/USER/UPDATED/FAILED "user.updated.failed"
 consul kv put local/broker/rabbitmq/QUEUE/USER/LOGIN "user.login"
+consul kv put local/broker/rabbitmq/QUEUE/USER/LOGIN/FAILED "user.login.failed"
 consul kv put local/broker/rabbitmq/QUEUE/USER/LOGOUT "user.logout"
+consul kv put local/broker/rabbitmq/QUEUE/USER/LOGOUT/FAILED "user.logout.failed"
 
 #QUEUE PRODUCTION USER
 consul kv put production/broker/rabbitmq/QUEUE/USER/CREATED "user.created"
@@ -16,7 +18,9 @@ consul kv put production/broker/rabbitmq/QUEUE/USER/CREATED/FAILED "user.created
 consul kv put production/broker/rabbitmq/QUEUE/USER/UPDATED "user.updated"
 consul kv put production/broker/rabbitmq/QUEUE/USER/UPDATED/FAILED "user.updated.failed"
 consul kv put production/broker/rabbitmq/QUEUE/USER/LOGIN "user.login"
+consul kv put production/broker/rabbitmq/QUEUE/USER/LOGIN/FAILED "user.login.failed"
 consul kv put production/broker/rabbitmq/QUEUE/USER/LOGOUT "user.logout"
+consul kv put production/broker/rabbitmq/QUEUE/USER/LOGOUT/FAILED "user.logout.failed"
 
 # QUEUE LOCAL PRODUCT
 consul kv put local/broker/rabbitmq/QUEUE/PRODUCT/CREATED "product.created"
@@ -72,11 +76,15 @@ consul kv put production/broker/rabbitmq/QUEUE/COMMERCE/CART/DELETED/FAILED "car
 consul kv put local/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED "payment.order.created"
 consul kv put local/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED/FAILED "payment.order.created.failed"
 consul kv put local/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED "payment.order.delayed.cancelled"
+consul kv put local/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED/FAILED "payment.order.delayed.cancelled.failed"
+
 
 # QUEUE PRODUCTION PAYMENT
 consul kv put production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED "payment.order.created"
 consul kv put production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED/FAILED "payment.order.created.failed"
 consul kv put production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED "payment.order.delayed.cancelled"
+consul kv put production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED/FAILED "payment.order.delayed.cancelled.failed"
+
 
 #QUEUE LOCAL SHIPPING
 consul kv put local/broker/rabbitmq/QUEUE/SHIPPING/CREATED "shipping.created"

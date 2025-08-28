@@ -121,6 +121,38 @@
         ]
       }
     },
+    "/user.UserService/FindUserByEmail": {
+      "post": {
+        "operationId": "UserService_FindUserByEmail",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userFindUserByEmailResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/userFindUserByEmailRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
     "/user.UserService/FindUserByEmailAndPassword": {
       "post": {
         "operationId": "UserService_FindUserByEmailAndPassword",
@@ -482,6 +514,14 @@
         }
       }
     },
+    "FindUserByEmailResponseFindUserByEmailResponseData": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/userUser"
+        }
+      }
+    },
     "FindUserByIdResponseFindUserByIdResponseData": {
       "type": "object",
       "properties": {
@@ -651,7 +691,7 @@
           "$ref": "#/definitions/AuthUserRegisterResponseAuthUserRegisterResponseData"
         }
       },
-      "title": "AUTH RESPONSE DEFINITION"
+      "title": "============= AUTH RESPONSE DEFINITION"
     },
     "userAuthUserVerifyAccessControlRequest": {
       "type": "object",
@@ -738,6 +778,28 @@
         },
         "data": {
           "$ref": "#/definitions/FindUserByEmailAndPasswordResponseFindUserByEmailAndPasswordResponseData"
+        }
+      }
+    },
+    "userFindUserByEmailRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "userFindUserByEmailResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/FindUserByEmailResponseFindUserByEmailResponseData"
         }
       }
     },

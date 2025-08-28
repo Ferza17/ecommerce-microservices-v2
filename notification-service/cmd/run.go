@@ -40,6 +40,15 @@ var runCommand = &cobra.Command{
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
+			if err := http.ServeHttpHealthCheckHandler(); err != nil {
+				log.Fatal(err)
+				return
+			}
+		}()
+
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
 			if err := http.ServeHttpPrometheusMetricCollector(); err != nil {
 				log.Fatal(err)
 				return

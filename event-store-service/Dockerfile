@@ -9,7 +9,7 @@ RUN go mod download
 COPY . ./
 EXPOSE 50052
 
-RUN go build -o event-store-service
+RUN CGO_ENABLED=0 GOOS=linux go build -o event-store-service
 
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates

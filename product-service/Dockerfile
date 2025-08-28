@@ -7,7 +7,7 @@ COPY go.sum ./
 RUN go mod download
 
 COPY . ./
-RUN go build -o product-service
+RUN CGO_ENABLED=0 GOOS=linux go build -o product-service
 
 FROM alpine:latest
 

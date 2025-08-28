@@ -3,7 +3,7 @@ package user;
 
 import "v1/user/model.proto";
 
-// AUTH RESPONSE DEFINITION
+// ============= AUTH RESPONSE DEFINITION
 message AuthUserRegisterResponse {
   string status = 1;
   string message = 2;
@@ -64,7 +64,7 @@ message AuthServiceVerifyIsExcludedResponse {
   AuthServiceVerifyIsExcludedResponseData data = 4;
 }
 
-// USER RESPONSE DEFINITION
+// ============= USER RESPONSE DEFINITION
 message UpdateUserByIdResponse {
   string status = 1;
   string message = 2;
@@ -90,4 +90,13 @@ message FindUserByEmailAndPasswordResponse{
     user.User user = 1;
   }
   FindUserByEmailAndPasswordResponseData data = 4;
+}
+
+message FindUserByEmailResponse {
+  string status = 1;
+  string message = 2;
+  message FindUserByEmailResponseData {
+    user.User user = 1;
+  }
+  FindUserByEmailResponseData data = 4;
 }

@@ -10,7 +10,7 @@ import { EnumRole, enumRoleFromJSON, enumRoleToJSON } from "./enum";
 
 export const protobufPackage = "user";
 
-/** NEW */
+/** COMMAND */
 export interface AuthUserRegisterRequest {
   name: string;
   email: string;
@@ -48,7 +48,7 @@ export interface AuthServiceVerifyIsExcludedRequest {
   httpMethod?: string | undefined;
 }
 
-/** USER REQUEST DEFINITION */
+/** ============= USER REQUEST DEFINITION */
 export interface FindUserByIdRequest {
   id: string;
 }
@@ -64,6 +64,10 @@ export interface UpdateUserByIdRequest {
 export interface FindUserByEmailAndPasswordRequest {
   email: string;
   password: string;
+}
+
+export interface FindUserByEmailRequest {
+  email: string;
 }
 
 function createBaseAuthUserRegisterRequest(): AuthUserRegisterRequest {
@@ -878,6 +882,64 @@ export const FindUserByEmailAndPasswordRequest: MessageFns<FindUserByEmailAndPas
     const message = createBaseFindUserByEmailAndPasswordRequest();
     message.email = object.email ?? "";
     message.password = object.password ?? "";
+    return message;
+  },
+};
+
+function createBaseFindUserByEmailRequest(): FindUserByEmailRequest {
+  return { email: "" };
+}
+
+export const FindUserByEmailRequest: MessageFns<FindUserByEmailRequest> = {
+  encode(message: FindUserByEmailRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.email !== "") {
+      writer.uint32(10).string(message.email);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): FindUserByEmailRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseFindUserByEmailRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.email = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): FindUserByEmailRequest {
+    return { email: isSet(object.email) ? globalThis.String(object.email) : "" };
+  },
+
+  toJSON(message: FindUserByEmailRequest): unknown {
+    const obj: any = {};
+    if (message.email !== "") {
+      obj.email = message.email;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<FindUserByEmailRequest>): FindUserByEmailRequest {
+    return FindUserByEmailRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<FindUserByEmailRequest>): FindUserByEmailRequest {
+    const message = createBaseFindUserByEmailRequest();
+    message.email = object.email ?? "";
     return message;
   },
 };

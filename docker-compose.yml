@@ -38,7 +38,6 @@ services:
       - local
     restart: unless-stopped
 
-
   # MONGODB DATABASE
   mongo-local:
     container_name: mongo-local
@@ -265,65 +264,95 @@ services:
       - local
 
   # USER-SERVICE
-#  user-service:
-#    container_name: user-service
-#    build:
-#      context: ./user-service
-#      dockerfile: Dockerfile
-#    ports:
-#      - "50056:50056" # GRPC
-#      - "40056:40056" # HTTP
-#      - "30056:30056" # HTTP METRIC COLLECTOR
-#    restart: always
-#    depends_on:
-#      postgres-local:
-#        condition: service_healthy
-#    networks:
-#      - local
-#
-#  # NOTIFICATION-SERVICE
-#  notification-service:
-#    container_name: notification-service
-#    build:
-#      context: ./notification-service
-#      dockerfile: Dockerfile
-#    ports:
-#      - "50053" # GRPC
-#      - "40053" # HTTP
-#      - "30053" # HTTP METRIC COLLECTOR
-#    restart: always
-#    networks:
-#      - local
-#
-#  # PRODUCT-SERVICE
-#  product-service:
-#    container_name: product-service
-#    build:
-#      context: ./product-service
-#      dockerfile: Dockerfile
-#    ports:
-#      - "50055" # GRPC
-#      - "40055" # HTTP
-#      - "30055" # HTTP METRIC COLLECTOR
-#    restart: always
-#    depends_on:
-#      - prometheus-local
-#    networks:
-#      - local
-#
-#  # PAYMENT-SERVICE
-#  payment-service:
-#    container_name: payment-service
-#    build:
-#      context: ./payment-service
-#      dockerfile: Dockerfile
-#    ports:
-#      - "50054" # GRPC
-#      - "40054" # HTTP
-#      - "30054" # HTTP METRIC COLLECTOR
-#    restart: always
-#    networks:
-#      - local
+  user-service:
+    container_name: user-service
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    ports:
+      - "50056:50056" # GRPC
+      - "40056:40056" # HTTP
+      - "30056:30056" # HTTP METRIC COLLECTOR
+    restart: always
+    depends_on:
+      consul-local:
+        condition: service_healthy
+      postgres-local:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "user-service:40056/v1/user/check" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - local
+
+  # NOTIFICATION-SERVICE
+  notification-service:
+    container_name: notification-service
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    ports:
+      - "50053:50053" # GRPC
+      - "40053:40053" # HTTP
+      - "30053:30053" # HTTP METRIC COLLECTOR
+    restart: always
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "notification-service:40055/v1/notification/check" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - local
+
+  # PRODUCT-SERVICE
+  product-service:
+    container_name: product-service
+    build:
+      context: ./product-service
+      dockerfile: Dockerfile
+    ports:
+      - "50055:50055" # GRPC
+      - "40055:4055" # HTTP
+      - "30055:30055" # HTTP METRIC COLLECTOR
+    restart: always
+    depends_on:
+      postgres-local:
+        condition: service_healthy
+      consul-local:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "product-service:40055/v1/product/check" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - local
+
+  # PAYMENT-SERVICE
+  payment-service:
+    container_name: payment-service
+    build:
+      context: ./payment-service
+      dockerfile: Dockerfile
+    ports:
+      - "50054:50054" # GRPC
+      - "40054:40054" # HTTP
+      - "30054:30054" # HTTP METRIC COLLECTOR
+    restart: always
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "payment-service:40055/v1/payment/check" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      postgres-local:
+        condition: service_healthy
+      consul-local:
+        condition: service_healthy
+    networks:
+      - local
 
 networks:
   local:

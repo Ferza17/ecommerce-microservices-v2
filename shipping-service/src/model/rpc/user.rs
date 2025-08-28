@@ -192,7 +192,7 @@ pub struct Broker {
     #[validate(name = "user.Broker.event_type")]
     pub event_type: ::prost::alloc::string::String,
 }
-/// NEW
+/// COMMAND
 #[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
@@ -212,7 +212,7 @@ pub struct AuthUserRegisterRequest {
     pub password: ::prost::alloc::string::String,
     #[prost(enumeration = "EnumRole", tag = "5")]
     #[validate(name = "user.AuthUserRegisterRequest.Role")]
-    #[validate(r#type(r#enum(defined_only = true)))]
+    #[validate(r#type(r#enum(defined_only = true, r#in = [0, 1, 5505, 5506])))]
     pub role: i32,
 }
 #[derive(::prost_validate::Validator)]
@@ -293,7 +293,7 @@ pub struct AuthServiceVerifyIsExcludedRequest {
     #[validate(name = "user.AuthServiceVerifyIsExcludedRequest.http_method")]
     pub http_method: ::core::option::Option<::prost::alloc::string::String>,
 }
-/// USER REQUEST DEFINITION
+/// ============= USER REQUEST DEFINITION
 #[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
@@ -340,7 +340,17 @@ pub struct FindUserByEmailAndPasswordRequest {
     #[validate(r#type(string(min_len = 8)))]
     pub password: ::prost::alloc::string::String,
 }
-/// AUTH RESPONSE DEFINITION
+#[derive(::prost_validate::Validator)]
+#[derive(utoipa::ToSchema)]
+#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct FindUserByEmailRequest {
+    #[prost(string, tag = "1")]
+    #[validate(name = "user.FindUserByEmailRequest.email")]
+    #[validate(r#type(string(well_known(email = true))))]
+    pub email: ::prost::alloc::string::String,
+}
+/// ============= AUTH RESPONSE DEFINITION
 #[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
@@ -557,7 +567,7 @@ pub mod auth_service_verify_is_excluded_response {
         pub is_excluded: bool,
     }
 }
-/// USER RESPONSE DEFINITION
+/// ============= USER RESPONSE DEFINITION
 #[derive(::prost_validate::Validator)]
 #[derive(utoipa::ToSchema)]
 #[derive(serde::Serialize, serde::Deserialize)]
@@ -641,6 +651,37 @@ pub mod find_user_by_email_and_password_response {
         #[prost(message, optional, tag = "1")]
         #[validate(
             name = "user.FindUserByEmailAndPasswordResponse.FindUserByEmailAndPasswordResponseData.user"
+        )]
+        pub user: ::core::option::Option<super::User>,
+    }
+}
+#[derive(::prost_validate::Validator)]
+#[derive(utoipa::ToSchema)]
+#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct FindUserByEmailResponse {
+    #[prost(string, tag = "1")]
+    #[validate(name = "user.FindUserByEmailResponse.status")]
+    pub status: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    #[validate(name = "user.FindUserByEmailResponse.message")]
+    pub message: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "4")]
+    #[validate(name = "user.FindUserByEmailResponse.data")]
+    pub data: ::core::option::Option<
+        find_user_by_email_response::FindUserByEmailResponseData,
+    >,
+}
+/// Nested message and enum types in `FindUserByEmailResponse`.
+pub mod find_user_by_email_response {
+    #[derive(::prost_validate::Validator)]
+    #[derive(utoipa::ToSchema)]
+    #[derive(serde::Serialize, serde::Deserialize)]
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct FindUserByEmailResponseData {
+        #[prost(message, optional, tag = "1")]
+        #[validate(
+            name = "user.FindUserByEmailResponse.FindUserByEmailResponseData.user"
         )]
         pub user: ::core::option::Option<super::User>,
     }
@@ -807,6 +848,30 @@ pub mod user_service_client {
                 .insert(
                     GrpcMethod::new("user.UserService", "FindUserByEmailAndPassword"),
                 );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn find_user_by_email(
+            &mut self,
+            request: impl tonic::IntoRequest<super::FindUserByEmailRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::FindUserByEmailResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/user.UserService/FindUserByEmail",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("user.UserService", "FindUserByEmail"));
             self.inner.unary(req, path, codec).await
         }
     }
@@ -1115,6 +1180,13 @@ pub mod user_service_server {
             tonic::Response<super::FindUserByEmailAndPasswordResponse>,
             tonic::Status,
         >;
+        async fn find_user_by_email(
+            &self,
+            request: tonic::Request<super::FindUserByEmailRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::FindUserByEmailResponse>,
+            tonic::Status,
+        >;
     }
     #[derive(Debug)]
     pub struct UserServiceServer<T> {
@@ -1319,6 +1391,52 @@ pub mod user_service_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let method = FindUserByEmailAndPasswordSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/user.UserService/FindUserByEmail" => {
+                    #[allow(non_camel_case_types)]
+                    struct FindUserByEmailSvc<T: UserService>(pub Arc<T>);
+                    impl<
+                        T: UserService,
+                    > tonic::server::UnaryService<super::FindUserByEmailRequest>
+                    for FindUserByEmailSvc<T> {
+                        type Response = super::FindUserByEmailResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::FindUserByEmailRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as UserService>::find_user_by_email(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = FindUserByEmailSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

@@ -15,3 +15,35 @@ pub struct Response {
     #[schema(value_type = serde_json::Value)]
     pub data: ::core::option::Option<::prost_wkt_types::Struct>,
 }
+#[derive(::prost_validate::Validator)]
+#[derive(utoipa::ToSchema)]
+#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ResponseCommand {
+    #[prost(string, tag = "1")]
+    #[validate(name = "response.ResponseCommand.status")]
+    pub status: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    #[validate(name = "response.ResponseCommand.message")]
+    pub message: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    #[validate(name = "response.ResponseCommand.data")]
+    pub data: ::core::option::Option<response_command::ResponseCommandData>,
+}
+/// Nested message and enum types in `ResponseCommand`.
+pub mod response_command {
+    #[derive(::prost_validate::Validator)]
+    #[derive(utoipa::ToSchema)]
+    #[derive(serde::Serialize, serde::Deserialize)]
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct ResponseCommandData {
+        #[prost(string, tag = "3")]
+        #[validate(name = "response.ResponseCommand.ResponseCommandData.request_id")]
+        pub request_id: ::prost::alloc::string::String,
+        #[prost(string, tag = "4")]
+        #[validate(
+            name = "response.ResponseCommand.ResponseCommandData.websocket_notification_url"
+        )]
+        pub websocket_notification_url: ::prost::alloc::string::String,
+    }
+}

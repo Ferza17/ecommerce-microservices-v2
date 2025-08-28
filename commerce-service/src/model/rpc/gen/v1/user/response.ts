@@ -10,7 +10,7 @@ import { AccessControl, Role, User } from "./model";
 
 export const protobufPackage = "user";
 
-/** AUTH RESPONSE DEFINITION */
+/** ============= AUTH RESPONSE DEFINITION */
 export interface AuthUserRegisterResponse {
   status: string;
   message: string;
@@ -77,7 +77,7 @@ export interface AuthServiceVerifyIsExcludedResponse_AuthServiceVerifyIsExcluded
   IsExcluded: boolean;
 }
 
-/** USER RESPONSE DEFINITION */
+/** ============= USER RESPONSE DEFINITION */
 export interface UpdateUserByIdResponse {
   status: string;
   message: string;
@@ -105,6 +105,16 @@ export interface FindUserByEmailAndPasswordResponse {
 }
 
 export interface FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData {
+  user: User | undefined;
+}
+
+export interface FindUserByEmailResponse {
+  status: string;
+  message: string;
+  data: FindUserByEmailResponse_FindUserByEmailResponseData | undefined;
+}
+
+export interface FindUserByEmailResponse_FindUserByEmailResponseData {
   user: User | undefined;
 }
 
@@ -1712,6 +1722,167 @@ export const FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordRespon
     object: DeepPartial<FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData>,
   ): FindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData {
     const message = createBaseFindUserByEmailAndPasswordResponse_FindUserByEmailAndPasswordResponseData();
+    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    return message;
+  },
+};
+
+function createBaseFindUserByEmailResponse(): FindUserByEmailResponse {
+  return { status: "", message: "", data: undefined };
+}
+
+export const FindUserByEmailResponse: MessageFns<FindUserByEmailResponse> = {
+  encode(message: FindUserByEmailResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.status !== "") {
+      writer.uint32(10).string(message.status);
+    }
+    if (message.message !== "") {
+      writer.uint32(18).string(message.message);
+    }
+    if (message.data !== undefined) {
+      FindUserByEmailResponse_FindUserByEmailResponseData.encode(message.data, writer.uint32(34).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): FindUserByEmailResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseFindUserByEmailResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.status = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.data = FindUserByEmailResponse_FindUserByEmailResponseData.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): FindUserByEmailResponse {
+    return {
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
+      message: isSet(object.message) ? globalThis.String(object.message) : "",
+      data: isSet(object.data) ? FindUserByEmailResponse_FindUserByEmailResponseData.fromJSON(object.data) : undefined,
+    };
+  },
+
+  toJSON(message: FindUserByEmailResponse): unknown {
+    const obj: any = {};
+    if (message.status !== "") {
+      obj.status = message.status;
+    }
+    if (message.message !== "") {
+      obj.message = message.message;
+    }
+    if (message.data !== undefined) {
+      obj.data = FindUserByEmailResponse_FindUserByEmailResponseData.toJSON(message.data);
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<FindUserByEmailResponse>): FindUserByEmailResponse {
+    return FindUserByEmailResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<FindUserByEmailResponse>): FindUserByEmailResponse {
+    const message = createBaseFindUserByEmailResponse();
+    message.status = object.status ?? "";
+    message.message = object.message ?? "";
+    message.data = (object.data !== undefined && object.data !== null)
+      ? FindUserByEmailResponse_FindUserByEmailResponseData.fromPartial(object.data)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseFindUserByEmailResponse_FindUserByEmailResponseData(): FindUserByEmailResponse_FindUserByEmailResponseData {
+  return { user: undefined };
+}
+
+export const FindUserByEmailResponse_FindUserByEmailResponseData: MessageFns<
+  FindUserByEmailResponse_FindUserByEmailResponseData
+> = {
+  encode(
+    message: FindUserByEmailResponse_FindUserByEmailResponseData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
+    if (message.user !== undefined) {
+      User.encode(message.user, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): FindUserByEmailResponse_FindUserByEmailResponseData {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseFindUserByEmailResponse_FindUserByEmailResponseData();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.user = User.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): FindUserByEmailResponse_FindUserByEmailResponseData {
+    return { user: isSet(object.user) ? User.fromJSON(object.user) : undefined };
+  },
+
+  toJSON(message: FindUserByEmailResponse_FindUserByEmailResponseData): unknown {
+    const obj: any = {};
+    if (message.user !== undefined) {
+      obj.user = User.toJSON(message.user);
+    }
+    return obj;
+  },
+
+  create(
+    base?: DeepPartial<FindUserByEmailResponse_FindUserByEmailResponseData>,
+  ): FindUserByEmailResponse_FindUserByEmailResponseData {
+    return FindUserByEmailResponse_FindUserByEmailResponseData.fromPartial(base ?? {});
+  },
+  fromPartial(
+    object: DeepPartial<FindUserByEmailResponse_FindUserByEmailResponseData>,
+  ): FindUserByEmailResponse_FindUserByEmailResponseData {
+    const message = createBaseFindUserByEmailResponse_FindUserByEmailResponseData();
     message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
     return message;
   },

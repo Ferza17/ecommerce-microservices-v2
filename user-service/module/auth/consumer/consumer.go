@@ -31,11 +31,10 @@ func NewAuthConsumer(
 	logger logger.IZapLogger,
 
 ) IAuthConsumer {
-	c := &authConsumer{
+	return &authConsumer{
 		rabbitmqInfrastructure:  rabbitmqInfrastructure,
 		authUseCase:             authUseCase,
 		telemetryInfrastructure: telemetryInfrastructure,
 		logger:                  logger,
 	}
-	return c
 }

@@ -1,0 +1,56 @@
+apiVersion: v1
+data:
+  authz.rego: |+
+    package authz
+
+    import data.common.audit
+    import data.common.security
+
+    default allow = false
+
+    # Aggregate all audit logs
+    audit_log[msg] if {
+        audit.log[msg]
+    }
+
+    # Aggregate all deny rules
+    deny[msg] if {
+        security.deny[msg]
+    }
+
+    # Aggregate all allow rules
+    import data.http.auth
+    allow if {
+        auth.allow
+    }
+
+    import data.http.payment
+    allow if {
+        payment.allow
+    }
+
+    import data.http.payment_provider
+    allow if {
+        payment_provider.allow
+    }
+
+    import data.http.product
+    allow if {
+        product.allow
+    }
+
+    import data.http.shipping
+    allow if {
+        shipping.allow
+    }
+
+    import data.http.shipping_provider
+    allow if {
+        shipping_provider.allow
+    }
+
+kind: ConfigMap
+metadata:
+  labels:
+    io.kompose.service: opa-local
+  name: opa-local-cm0

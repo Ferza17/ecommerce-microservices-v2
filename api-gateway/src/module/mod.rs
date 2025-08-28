@@ -5,6 +5,11 @@ pub mod auth {
     pub mod usecase;
 }
 
+pub mod notification {
+    pub mod http_presenter;
+    pub mod usecase;
+}
+
 pub mod user {
     pub mod http_presenter;
     pub mod transport_grpc;

@@ -55,11 +55,12 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 		false,
 		false,
 		amqp091.Publishing{
-			ContentType:  enum.XProtobuf.String(),
-			DeliveryMode: amqp091.Transient,
-			Timestamp:    time.Now(),
-			Body:         message,
-			Headers:      headers,
+			ContentType:   enum.XProtobuf.String(),
+			CorrelationId: pkgContext.GetTokenAuthorizationFromContext(ctx),
+			DeliveryMode:  amqp091.Transient,
+			Timestamp:     time.Now(),
+			Body:          message,
+			Headers:       headers,
 		},
 	); err != nil {
 		c.logger.Error(fmt.Sprintf("Failed to publish a message: %v", err))

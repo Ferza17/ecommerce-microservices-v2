@@ -126,6 +126,11 @@ data:
           "durable": true
         },
         {
+          "name": "user.login.failed",
+          "vhost": "/",
+          "durable": true
+        },
+        {
           "name": "user.logout",
           "vhost": "/",
           "durable": true
@@ -136,7 +141,17 @@ data:
           "durable": true
         },
         {
+          "name": "product.created.failed",
+          "vhost": "/",
+          "durable": true
+        },
+        {
           "name": "product.updated",
+          "vhost": "/",
+          "durable": true
+        },
+        {
+          "name": "product.updated.failed",
           "vhost": "/",
           "durable": true
         },
@@ -146,12 +161,27 @@ data:
           "durable": true
         },
         {
+          "name": "product.deleted.failed",
+          "vhost": "/",
+          "durable": true
+        },
+        {
           "name": "notification.email.otp.created",
           "vhost": "/",
           "durable": true
         },
         {
+          "name": "notification.email.otp.created.failed",
+          "vhost": "/",
+          "durable": true
+        },
+        {
           "name": "notification.email.payment.order.created",
+          "vhost": "/",
+          "durable": true
+        },
+        {
+          "name": "notification.email.payment.order.created.failed",
           "vhost": "/",
           "durable": true
         },
@@ -181,7 +211,17 @@ data:
           "durable": true
         },
         {
+          "name": "payment.order.created.failed",
+          "vhost": "/",
+          "durable": true
+        },
+        {
           "name": "payment.order.delayed.cancelled",
+          "vhost": "/",
+          "durable": true
+        },
+        {
+          "name": "payment.order.delayed.cancelled.failed",
           "vhost": "/",
           "durable": true
         },
@@ -191,7 +231,17 @@ data:
           "durable": true
         },
         {
+          "name": "shipping.created.failed",
+          "vhost": "/",
+          "durable": true
+        },
+        {
           "name": "shipping.updated",
+          "vhost": "/",
+          "durable": true
+        },
+        {
+          "name": "shipping.updated.failed",
           "vhost": "/",
           "durable": true
         }

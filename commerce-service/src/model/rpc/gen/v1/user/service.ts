@@ -27,6 +27,7 @@ import {
   AuthUserVerifyAccessControlRequest,
   AuthUserVerifyOtpRequest,
   FindUserByEmailAndPasswordRequest,
+  FindUserByEmailRequest,
   FindUserByIdRequest,
   UpdateUserByIdRequest,
 } from "./request";
@@ -38,6 +39,7 @@ import {
   AuthUserVerifyAccessControlResponse,
   AuthUserVerifyOtpResponse,
   FindUserByEmailAndPasswordResponse,
+  FindUserByEmailResponse,
   FindUserByIdResponse,
 } from "./response";
 
@@ -76,6 +78,15 @@ export const UserServiceService = {
       Buffer.from(FindUserByEmailAndPasswordResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => FindUserByEmailAndPasswordResponse.decode(value),
   },
+  findUserByEmail: {
+    path: "/user.UserService/FindUserByEmail",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: FindUserByEmailRequest) => Buffer.from(FindUserByEmailRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => FindUserByEmailRequest.decode(value),
+    responseSerialize: (value: FindUserByEmailResponse) => Buffer.from(FindUserByEmailResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => FindUserByEmailResponse.decode(value),
+  },
 } as const;
 
 export interface UserServiceServer extends UntypedServiceImplementation {
@@ -84,6 +95,7 @@ export interface UserServiceServer extends UntypedServiceImplementation {
   /** QUERY */
   findUserById: handleUnaryCall<FindUserByIdRequest, FindUserByIdResponse>;
   findUserByEmailAndPassword: handleUnaryCall<FindUserByEmailAndPasswordRequest, FindUserByEmailAndPasswordResponse>;
+  findUserByEmail: handleUnaryCall<FindUserByEmailRequest, FindUserByEmailResponse>;
 }
 
 export interface UserServiceClient extends Client {
@@ -133,6 +145,21 @@ export interface UserServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: FindUserByEmailAndPasswordResponse) => void,
+  ): ClientUnaryCall;
+  findUserByEmail(
+    request: FindUserByEmailRequest,
+    callback: (error: ServiceError | null, response: FindUserByEmailResponse) => void,
+  ): ClientUnaryCall;
+  findUserByEmail(
+    request: FindUserByEmailRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: FindUserByEmailResponse) => void,
+  ): ClientUnaryCall;
+  findUserByEmail(
+    request: FindUserByEmailRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: FindUserByEmailResponse) => void,
   ): ClientUnaryCall;
 }
 

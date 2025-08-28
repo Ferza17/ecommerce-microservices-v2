@@ -1,6 +1,5 @@
 package consumer
 
-import "C"
 import (
 	"context"
 	"encoding/json"

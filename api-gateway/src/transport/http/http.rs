@@ -98,6 +98,7 @@ impl HttpTransport {
         let payment_provider_use_case = crate::module::payment_providers::usecase::UseCase::new(
             payment_provider_transport_grpc,
         );
+        let notification_use_case = crate::module::notification::usecase::UseCase::new();
 
         // Presenter layer
         let auth_presenter =
@@ -128,6 +129,8 @@ impl HttpTransport {
             shipping_use_case,
             auth_use_case,
         );
+        let notification_presenter =
+            crate::module::notification::http_presenter::Presenter::new(notification_use_case);
 
         let app = Router::new()
             .nest(
@@ -157,6 +160,10 @@ impl HttpTransport {
             .nest(
                 crate::module::shipping::http_presenter::ROUTE_PREFIX,
                 shipping_presenter.router(),
+            )
+            .nest(
+                crate::module::notification::http_presenter::ROUTE_PREFIX,
+                notification_presenter.router(),
             )
             .route("/api/v1/checks", get(health_check_handler))
             .merge(

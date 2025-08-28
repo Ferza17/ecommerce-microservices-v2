@@ -166,3 +166,245 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ResponseValidationError{}
+
+// Validate checks the field values on ResponseCommand with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *ResponseCommand) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ResponseCommand with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ResponseCommandMultiError, or nil if none found.
+func (m *ResponseCommand) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ResponseCommand) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Status
+
+	// no validation rules for Message
+
+	if all {
+		switch v := interface{}(m.GetData()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ResponseCommandValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ResponseCommandValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ResponseCommandValidationError{
+				field:  "Data",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return ResponseCommandMultiError(errors)
+	}
+
+	return nil
+}
+
+// ResponseCommandMultiError is an error wrapping multiple validation errors
+// returned by ResponseCommand.ValidateAll() if the designated constraints
+// aren't met.
+type ResponseCommandMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ResponseCommandMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ResponseCommandMultiError) AllErrors() []error { return m }
+
+// ResponseCommandValidationError is the validation error returned by
+// ResponseCommand.Validate if the designated constraints aren't met.
+type ResponseCommandValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ResponseCommandValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ResponseCommandValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ResponseCommandValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ResponseCommandValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ResponseCommandValidationError) ErrorName() string { return "ResponseCommandValidationError" }
+
+// Error satisfies the builtin error interface
+func (e ResponseCommandValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sResponseCommand.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ResponseCommandValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ResponseCommandValidationError{}
+
+// Validate checks the field values on ResponseCommand_ResponseCommandData with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *ResponseCommand_ResponseCommandData) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ResponseCommand_ResponseCommandData
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// ResponseCommand_ResponseCommandDataMultiError, or nil if none found.
+func (m *ResponseCommand_ResponseCommandData) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ResponseCommand_ResponseCommandData) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for RequestId
+
+	// no validation rules for WebsocketNotificationUrl
+
+	if len(errors) > 0 {
+		return ResponseCommand_ResponseCommandDataMultiError(errors)
+	}
+
+	return nil
+}
+
+// ResponseCommand_ResponseCommandDataMultiError is an error wrapping multiple
+// validation errors returned by
+// ResponseCommand_ResponseCommandData.ValidateAll() if the designated
+// constraints aren't met.
+type ResponseCommand_ResponseCommandDataMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ResponseCommand_ResponseCommandDataMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ResponseCommand_ResponseCommandDataMultiError) AllErrors() []error { return m }
+
+// ResponseCommand_ResponseCommandDataValidationError is the validation error
+// returned by ResponseCommand_ResponseCommandData.Validate if the designated
+// constraints aren't met.
+type ResponseCommand_ResponseCommandDataValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ResponseCommand_ResponseCommandDataValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ResponseCommand_ResponseCommandDataValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ResponseCommand_ResponseCommandDataValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ResponseCommand_ResponseCommandDataValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ResponseCommand_ResponseCommandDataValidationError) ErrorName() string {
+	return "ResponseCommand_ResponseCommandDataValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ResponseCommand_ResponseCommandDataValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sResponseCommand_ResponseCommandData.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ResponseCommand_ResponseCommandDataValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ResponseCommand_ResponseCommandDataValidationError{}

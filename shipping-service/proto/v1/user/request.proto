@@ -8,14 +8,13 @@ import "v1/user/enum.proto";
 // ============= AUTH REQUEST DEFINITION
 
 // COMMAND
-
-// NEW
 message AuthUserRegisterRequest {
   string name = 2 [(validate.rules).string.min_len = 0];
   string email = 3 [(validate.rules).string.email = true];
   string password = 4 [(validate.rules).string.min_len = 8];
   user.EnumRole Role = 5 [(validate.rules).enum = {
     defined_only: true,
+    in: [0, 1, 5505, 5506]
   }];
 }
 
@@ -49,17 +48,7 @@ message AuthServiceVerifyIsExcludedRequest {
   optional string http_method = 4;
 }
 
-// END NEW
-
-
-
-
-
-
-
-// QUERY
-
-// USER REQUEST DEFINITION
+// ============= USER REQUEST DEFINITION
 message FindUserByIdRequest {
   string id = 1 [(validate.rules).string.min_len = 1];
 }
@@ -75,4 +64,8 @@ message UpdateUserByIdRequest {
 message FindUserByEmailAndPasswordRequest {
   string email = 1 [(validate.rules).string.email = true];
   string password = 2 [(validate.rules).string.min_len = 8];
+}
+
+message FindUserByEmailRequest {
+  string email = 1 [(validate.rules).string.email = true];
 }

@@ -5,7 +5,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/postgres"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
-	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
+	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/google/wire"
 
@@ -16,9 +16,10 @@ import (
 
 type (
 	IUserUseCase interface {
-		FindUserById(ctx context.Context, requestId string, req *userRpc.FindUserByIdRequest) (*userRpc.FindUserByIdResponse, error)
-		UpdateUserById(ctx context.Context, requestId string, req *userRpc.UpdateUserByIdRequest) (*userRpc.UpdateUserByIdResponse, error)
-		FindUserByEmailAndPassword(context.Context, string, *userRpc.FindUserByEmailAndPasswordRequest) (*userRpc.FindUserByEmailAndPasswordResponse, error)
+		FindUserById(ctx context.Context, requestId string, req *pb.FindUserByIdRequest) (*pb.FindUserByIdResponse, error)
+		UpdateUserById(ctx context.Context, requestId string, req *pb.UpdateUserByIdRequest) (*pb.UpdateUserByIdResponse, error)
+		FindUserByEmailAndPassword(ctx context.Context, requestId string, req *pb.FindUserByEmailAndPasswordRequest) (*pb.FindUserByEmailAndPasswordResponse, error)
+		FindUserByEmail(ctx context.Context, requestId string, req *pb.FindUserByEmailRequest) (*pb.FindUserByEmailResponse, error)
 	}
 
 	userUseCase struct {

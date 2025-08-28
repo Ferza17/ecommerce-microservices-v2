@@ -76,6 +76,9 @@ spec:
             - mountPath: /postgres-exporter
               name: consul-local-cm8
               readOnly: true
+            - mountPath: /opa
+              name: consul-local-cm9
+              readOnly: true
       restartPolicy: Always
       volumes:
         - configMap:
@@ -105,3 +108,6 @@ spec:
         - configMap:
             name: consul-local-cm8
           name: consul-local-cm8
+        - configMap:
+            name: consul-local-cm9
+          name: consul-local-cm9

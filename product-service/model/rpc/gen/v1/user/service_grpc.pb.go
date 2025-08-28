@@ -23,6 +23,7 @@ const (
 	UserService_UpdateUserById_FullMethodName             = "/user.UserService/UpdateUserById"
 	UserService_FindUserById_FullMethodName               = "/user.UserService/FindUserById"
 	UserService_FindUserByEmailAndPassword_FullMethodName = "/user.UserService/FindUserByEmailAndPassword"
+	UserService_FindUserByEmail_FullMethodName            = "/user.UserService/FindUserByEmail"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -34,6 +35,7 @@ type UserServiceClient interface {
 	// QUERY
 	FindUserById(ctx context.Context, in *FindUserByIdRequest, opts ...grpc.CallOption) (*FindUserByIdResponse, error)
 	FindUserByEmailAndPassword(ctx context.Context, in *FindUserByEmailAndPasswordRequest, opts ...grpc.CallOption) (*FindUserByEmailAndPasswordResponse, error)
+	FindUserByEmail(ctx context.Context, in *FindUserByEmailRequest, opts ...grpc.CallOption) (*FindUserByEmailResponse, error)
 }
 
 type userServiceClient struct {
@@ -74,6 +76,16 @@ func (c *userServiceClient) FindUserByEmailAndPassword(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *userServiceClient) FindUserByEmail(ctx context.Context, in *FindUserByEmailRequest, opts ...grpc.CallOption) (*FindUserByEmailResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FindUserByEmailResponse)
+	err := c.cc.Invoke(ctx, UserService_FindUserByEmail_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations should embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -83,6 +95,7 @@ type UserServiceServer interface {
 	// QUERY
 	FindUserById(context.Context, *FindUserByIdRequest) (*FindUserByIdResponse, error)
 	FindUserByEmailAndPassword(context.Context, *FindUserByEmailAndPasswordRequest) (*FindUserByEmailAndPasswordResponse, error)
+	FindUserByEmail(context.Context, *FindUserByEmailRequest) (*FindUserByEmailResponse, error)
 }
 
 // UnimplementedUserServiceServer should be embedded to have
@@ -100,6 +113,9 @@ func (UnimplementedUserServiceServer) FindUserById(context.Context, *FindUserByI
 }
 func (UnimplementedUserServiceServer) FindUserByEmailAndPassword(context.Context, *FindUserByEmailAndPasswordRequest) (*FindUserByEmailAndPasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindUserByEmailAndPassword not implemented")
+}
+func (UnimplementedUserServiceServer) FindUserByEmail(context.Context, *FindUserByEmailRequest) (*FindUserByEmailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindUserByEmail not implemented")
 }
 func (UnimplementedUserServiceServer) testEmbeddedByValue() {}
 
@@ -175,6 +191,24 @@ func _UserService_FindUserByEmailAndPassword_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_FindUserByEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindUserByEmailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).FindUserByEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_FindUserByEmail_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).FindUserByEmail(ctx, req.(*FindUserByEmailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -193,6 +227,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FindUserByEmailAndPassword",
 			Handler:    _UserService_FindUserByEmailAndPassword_Handler,
+		},
+		{
+			MethodName: "FindUserByEmail",
+			Handler:    _UserService_FindUserByEmail_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

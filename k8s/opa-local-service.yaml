@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --file docker-compose.yml --out k8s/
+    kompose.version: 1.36.0 (HEAD)
+  labels:
+    io.kompose.service: opa-local
+  name: opa-local
+spec:
+  ports:
+    - name: "8181"
+      port: 8181
+      targetPort: 8181
+  selector:
+    io.kompose.service: opa-local

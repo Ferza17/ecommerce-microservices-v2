@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/context"
 	"github.com/rabbitmq/amqp091-go"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
@@ -65,11 +66,12 @@ func (c *RabbitMQInfrastructure) Publish(ctx context.Context, requestId string, 
 		false,
 		false,
 		amqp091.Publishing{
-			ContentType:  enum.XProtobuf.String(),
-			DeliveryMode: amqp091.Transient,
-			Timestamp:    time.Now(),
-			Body:         message,
-			Headers:      headers,
+			ContentType:   enum.XProtobuf.String(),
+			DeliveryMode:  amqp091.Transient,
+			CorrelationId: pkgContext.GetTokenAuthorizationFromContext(ctx),
+			Timestamp:     time.Now(),
+			Body:          message,
+			Headers:       headers,
 		},
 	); err != nil {
 		c.logger.Error(fmt.Sprintf("Failed to publish a message: %v", err))

@@ -11,60 +11,64 @@ data:
 
     # LOAD CONFIG RABBITMQ
     ##########################################################################################################################################################################################################################
-    sh ./rabbitmq/init-rabbitmq.sh
-    sh ./rabbitmq/init-rabbitmq-exchange.sh
-    sh ./rabbitmq/init-rabbitmq-queue.sh
-    sh ./rabbitmq/init-rabbitmq-proxy.sh
+    sh ./rabbitmq/kv_register.sh
+    sh ./rabbitmq/kv_register_exchange.sh
+    sh ./rabbitmq/kv_register_queue.sh
+    sh ./rabbitmq/service_register.sh
 
     # LOAD CONFIG DATABASE
     ##########################################################################################################################################################################################################################
     # ELASTICSEARCH
     sh ./database/elasticsearch/init-database-elasticsearch.sh
-    sh ./database/elasticsearch/init-database-elasticsearch-proxy.sh
+    sh ./database/elasticsearch/service_register.sh
 
     # POSTGRES
     sh ./database/postgres/init-database-postgresql.sh
-    sh ./database/postgres/init-database-postgresql-proxy.sh
+    sh ./database/postgres/service_register.sh
 
     # REDIS
     sh ./database/redis/init-database-redis.sh
-    sh ./database/redis/init-database-redis-proxy.sh
+    sh ./database/redis/service_register.sh
 
     # MONGODB
     sh ./database/mongodb/init-database-mongodb.sh
-    sh ./database/mongodb/init-database-mongodb-proxy.sh
+    sh ./database/mongodb/service_register.sh
 
 
     # LOAD CONFIG SMTP
     ##########################################################################################################################################################################################################################
     sh ./smtp/init-smtp.sh
-    sh ./smtp/init-smtp-proxy.sh
+    sh ./smtp/service_register.sh
 
     # LOAD CONFIG TELEMETRY
     ##########################################################################################################################################################################################################################
-    sh ./telemetry/init-telemetry.sh
-    sh ./telemetry/init-telemetry-proxy.sh
+     sh ./telemetry/init-telemetry.sh
+     sh ./telemetry/service_register.sh
 
     # LOAD CONFIG PROMETHEUS AND METRICS COLLECTOR
     ##########################################################################################################################################################################################################################
-    sh ./prometheus/init-prometheus-proxy.sh
-    sh ./postgres-exporter/register.sh
+    sh ./prometheus/service_register.sh
+    sh ./postgres-exporter/service_register.sh
 
+    # LOAD CONFIG OPEN POLICY AGENT
+    ##########################################################################################################################################################################################################################
+     sh ./opa/kv_register,sh
+    # sh ./opa/register.sh
 
     # LOAD CONFIG TRAEFIK
     ##########################################################################################################################################################################################################################
-    sh ./traefik/init-traefik-proxy.sh
+    sh ./traefik/service_register.sh
 
     # LOAD CONFIG SERVICES
     ##########################################################################################################################################################################################################################
-    sh ./services/init-api-gateway-service.sh
-    sh ./services/init-commerce-service.sh
-    sh ./services/init-event-store-service.sh
-    sh ./services/init-notification-service.sh
-    sh ./services/init-payment-service.sh
-    sh ./services/init-product-service.sh
-    sh ./services/init-user-service.sh
-    sh ./services/init-shipping-service.sh
+    sh ./services/kv_register_api_gateway.sh
+    sh ./services/kv_register_commerce.sh
+    sh ./services/kv_register_event_store.sh
+    sh ./services/kv_register_notification.sh
+    sh ./services/kv_register_payment.sh
+    sh ./services/kv_register_product.sh
+    sh ./services/kv_register_shipping.sh
+    sh ./services/kv_register_user.sh
 
     ##########################################################################################################################################################################################################################
 

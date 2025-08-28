@@ -296,7 +296,7 @@ impl AppConfig {
 pub async fn get_kv(client: &ConsulClient, formatted_key: String) -> String {
     kv::read(client, &*formatted_key, None)
         .await
-        .map_err(|e| panic!("Error Consul :  {:?}", e))
+        .map_err(|e| panic!("Error key {} Consul :  {:?}", formatted_key, e))
         .unwrap()
         .response
         .pop()

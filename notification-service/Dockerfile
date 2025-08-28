@@ -7,9 +7,8 @@ COPY go.sum ./
 RUN go mod download
 
 COPY . ./
-RUN go build -o notification-service
+RUN CGO_ENABLED=0 GOOS=linux go build -o notification-service
 
-# Final stage
 FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates

@@ -67,7 +67,7 @@ pub async fn auth_register(
         .auth_register(get_request_id_from_header(&headers), request)
         .await
     {
-        Ok(response) => Ok((axum::http::StatusCode::OK.into(), axum::Json(response))),
+        Ok(response) => Ok((axum::http::StatusCode::ACCEPTED.into(), axum::Json(response))),
         Err(err) => Ok((
             util::convert_status::tonic_to_http_status(err.code()),
             axum::Json(AuthUserRegisterResponse {
@@ -114,7 +114,7 @@ pub async fn auth_user_login_by_email_and_password(
         .await
     {
         Ok(_) => Ok((
-            axum::http::StatusCode::OK.into(),
+            axum::http::StatusCode::ACCEPTED.into(),
             axum::Json(Response {
                 status: "success".to_string(),
                 message: "auth_user_login_by_email_and_password".to_string(),
