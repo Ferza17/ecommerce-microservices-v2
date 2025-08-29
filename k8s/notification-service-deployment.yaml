@@ -22,6 +22,15 @@ spec:
     spec:
       containers:
         - image: notification-service
+          livenessProbe:
+            exec:
+              command:
+                - curl
+                - -f
+                - notification-service:40055/v1/notification/check
+            failureThreshold: 3
+            periodSeconds: 30
+            timeoutSeconds: 10
           name: notification-service
           ports:
             - containerPort: 50053

@@ -226,7 +226,7 @@ impl AppConfig {
                                     .name("health_check")
                                     .interval("30s")
                                     .http(
-                                        format!("{}/v1/shipping/checks", svc_addr.as_str())
+                                        format!("http://{}/v1/shipping/check", svc_addr.as_str())
                                             .as_str(),
                                     )
                                     .build()

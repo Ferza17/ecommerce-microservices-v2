@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --file docker-compose.yml --out k8s/
+    kompose.version: 1.36.0 (HEAD)
+  labels:
+    io.kompose.service: shipping-service
+  name: shipping-service
+spec:
+  containers:
+    - env:
+        - name: DATABASE_URL
+          value: postgres://postgres:1234@postgres-local:5432/shippings
+      image: shipping-service
+      livenessProbe:
+        exec:
+          command:
+            - curl
+            - -f
+            - shipping-service:40057/v1/shipping/checks
+        failureThreshold: 3
+        periodSeconds: 30
+        timeoutSeconds: 10
+      name: shipping-service
+      ports:
+        - containerPort: 50057
+          protocol: TCP
+        - containerPort: 40057
+          protocol: TCP
+        - containerPort: 30057
+          protocol: TCP
+  restartPolicy: Never

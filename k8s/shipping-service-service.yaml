@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --file docker-compose.yml --out k8s/
+    kompose.version: 1.36.0 (HEAD)
+  labels:
+    io.kompose.service: shipping-service
+  name: shipping-service
+spec:
+  ports:
+    - name: "50057"
+      port: 50057
+      targetPort: 50057
+    - name: "40057"
+      port: 40057
+      targetPort: 40057
+    - name: "30057"
+      port: 30057
+      targetPort: 30057
+  selector:
+    io.kompose.service: shipping-service

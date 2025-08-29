@@ -78,7 +78,7 @@ impl HttpTransport {
                 shipping_provider_presenter.router(),
             )
             .nest("/v1/shipping/shippings", shipping_presenter.router())
-            .route("/v1/shipping/checks", get(health_check_handler))
+            .route("/v1/shipping/check", get(health_check_handler))
             .layer(
                 CorsLayer::new()
                     .allow_methods(Any)

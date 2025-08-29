@@ -80,4 +80,10 @@ consul kv put production/common/SAGA_STATUS/PENDING 'PENDING'
 consul kv put production/common/SAGA_STATUS/SUCCESS 'SUCCESS'
 consul kv put production/common/SAGA_STATUS/FAILED 'FAILED'
 
+
+# --- Set a flag in Consul KV to indicate initialization is complete ---
+# This is crucial for the healthcheck to detect successful setup
+echo "Setting Consul KV initialization flag: config/setup/initialized=true"
+consul kv put config/setup/initialized true
+
 echo "✅ Done setting key-values."

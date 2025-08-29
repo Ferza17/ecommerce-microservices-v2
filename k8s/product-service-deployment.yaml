@@ -22,11 +22,20 @@ spec:
     spec:
       containers:
         - image: product-service
+          livenessProbe:
+            exec:
+              command:
+                - curl
+                - -f
+                - product-service:40055/v1/product/check
+            failureThreshold: 3
+            periodSeconds: 30
+            timeoutSeconds: 10
           name: product-service
           ports:
             - containerPort: 50055
               protocol: TCP
-            - containerPort: 40055
+            - containerPort: 4055
               protocol: TCP
             - containerPort: 30055
               protocol: TCP

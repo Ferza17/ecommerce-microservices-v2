@@ -22,6 +22,15 @@ spec:
     spec:
       containers:
         - image: user-service
+          livenessProbe:
+            exec:
+              command:
+                - curl
+                - -f
+                - user-service:40056/v1/user/check
+            failureThreshold: 3
+            periodSeconds: 30
+            timeoutSeconds: 10
           name: user-service
           ports:
             - containerPort: 50056

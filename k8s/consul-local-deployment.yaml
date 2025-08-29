@@ -36,12 +36,13 @@ spec:
           livenessProbe:
             exec:
               command:
-                - consul
-                - members
-            failureThreshold: 3
+                - sh
+                - -c
+                - consul kv get config/setup/initialized | grep -q true
+            failureThreshold: 10
             initialDelaySeconds: 30
-            periodSeconds: 60
-            timeoutSeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
           name: consul-local
           ports:
             - containerPort: 8500

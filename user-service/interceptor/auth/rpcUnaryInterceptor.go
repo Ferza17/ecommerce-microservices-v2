@@ -10,6 +10,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"strings"
@@ -25,7 +26,8 @@ func AuthRPCUnaryInterceptor(
 		// EXCLUDED Full Method
 		if info.FullMethod == pb.AuthService_AuthUserRegister_FullMethodName ||
 			info.FullMethod == pb.AuthService_AuthUserLoginByEmailAndPassword_FullMethodName ||
-			info.FullMethod == pb.AuthService_AuthUserVerifyOtp_FullMethodName {
+			info.FullMethod == pb.AuthService_AuthUserVerifyOtp_FullMethodName ||
+			info.FullMethod == grpc_health_v1.Health_Check_FullMethodName {
 			return handler(ctx, req)
 		}
 
