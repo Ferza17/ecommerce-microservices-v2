@@ -2,11 +2,11 @@ package config
 
 import (
 	"fmt"
+	pkgMetric "github.com/ferza17/ecommerce-microservices-v2/event-store-service/pkg/metric"
 	"github.com/hashicorp/consul/api"
-	"log"
-	"sync"
-
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/viper"
+	"log"
 )
 
 var c *Config
@@ -21,7 +21,12 @@ type Config struct {
 	ConsulPort string `mapstructure:"CONSUL_PORT"`
 
 	// From Consul
-	ServiceName string
+	EventStoreServiceServiceName    string
+	EventStoreServiceRpcHost        string
+	EventStoreServiceRpcPort        string
+	EventStoreServiceHttpHost       string
+	EventStoreServiceHttpPort       string
+	EventStoreServiceMetricHttpPort string
 
 	JaegerTelemetryHost string
 	JaegerTelemetryPort string
@@ -71,130 +76,25 @@ func SetConfig(path string) {
 		log.Fatalf("SetConfig | could not connect to consul: %v", err)
 	}
 
-	// Get Consul Key / Value
-	kv := consulClient.KV()
-	wg := sync.WaitGroup{}
+	c.initTelemetry(consulClient.KV())
+	c.initServiceEventStore(consulClient.KV())
+	c.initRabbitmq(consulClient.KV())
+	c.initDatabaseMongodb(consulClient.KV())
 
-	// Telemetry Config
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		pair, _, err := kv.Get(fmt.Sprintf("%s/telemetry/jaeger/JAEGER_TELEMETRY_HOST", c.Env), nil)
-		if err != nil {
-			log.Fatalf("SetConfig | could not get telemetry host from consul: %v", err)
-		}
-		if pair == nil {
-			log.Fatal("SetConfig | Consul | telemetry host is required")
-		}
-		c.JaegerTelemetryHost = string(pair.Value)
-		pair, _, err = kv.Get(fmt.Sprintf("%s/telemetry/jaeger/JAEGER_TELEMETRY_PORT", c.Env), nil)
-		if err != nil {
-			log.Fatalf("SetConfig | could not get telemetry host from consul: %v", err)
-		}
-		if pair == nil {
-			log.Fatal("SetConfig | Consul | telemetry host is required")
-		}
-		c.JaegerTelemetryPort = string(pair.Value)
-	}()
-
-	// RabbitMQ Config
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		c.initRabbitmq(kv)
-
-		// EXCHANGE
-		pair, _, err := kv.Get(fmt.Sprintf("%s/broker/rabbitmq/EXCHANGE/EVENT", c.Env), nil)
-		if err != nil {
-			log.Fatalf("SetConfig | could not get EXCHANGE/EVENT from consul: %v", err)
-		}
-		if pair == nil {
-			log.Fatal("SetConfig | Consul | EXCHANGE/EVENT is required")
-		}
-		c.ExchangeEvent = string(pair.Value)
-
-		// QUEUE
-		pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/QUEUE/EVENT/CREATED", c.Env), nil)
-		if err != nil {
-			log.Fatalf("SetConfig | could not get QUEUE/EVENT/CREATED host from consul: %v", err)
-		}
-		if pair == nil {
-			log.Fatal("SetConfig | Consul | QUEUE/EVENT/CREATED host is required")
-		}
-		c.QueueEventCreated = string(pair.Value)
-	}()
-
-	// MongoDB Config
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		pair, _, err := kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_USERNAME", c.Env), nil)
-		if err != nil {
-			log.Fatalf("SetConfig | could not get MONGO_USERNAME host from consul: %v", err)
-		}
-		if pair == nil {
-			log.Fatal("SetConfig | Consul | MONGO_USERNAME host is required")
-		}
-		c.MongoUsername = string(pair.Value)
-
-		pair, _, err = kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_PASSWORD", c.Env), nil)
-		if err != nil {
-			log.Fatalf("SetConfig | could not get MONGO_PASSWORD host from consul: %v", err)
-		}
-		if pair == nil {
-			log.Fatal("SetConfig | Consul | MONGO_PASSWORD host is required")
-		}
-		c.MongoPassword = string(pair.Value)
-
-		pair, _, err = kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_HOST", c.Env), nil)
-		if err != nil {
-			log.Fatalf("SetConfig | could not get MONGO_HOST host from consul: %v", err)
-		}
-		if pair == nil {
-			log.Fatal("SetConfig | Consul | MONGO_HOST host is required")
-		}
-		c.MongoHost = string(pair.Value)
-
-		pair, _, err = kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_PORT", c.Env), nil)
-		if err != nil {
-			log.Fatalf("SetConfig | could not get MONGO_PORT host from consul: %v", err)
-		}
-		if pair == nil {
-			log.Fatal("SetConfig | Consul | MONGO_PORT host is required")
-		}
-		c.MongoPort = string(pair.Value)
-
-		pair, _, err = kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_DATABASE_NAME/EVENT_STORE", c.Env), nil)
-		if err != nil {
-			log.Fatalf("SetConfig | could not get MONGO_DATABASE_NAME/EVENT_STORE host from consul: %v", err)
-		}
-		if pair == nil {
-			log.Fatal("SetConfig | Consul | MONGO_DATABASE_NAME/EVENT_STORE host is required")
-		}
-		c.MongoDatabaseName = string(pair.Value)
-	}()
-
-	// Event Store Config
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		pair, _, err := kv.Get(fmt.Sprintf("%s/services/event-store/SERVICE_NAME", c.Env), nil)
-		if err != nil {
-			log.Fatalf("SetConfig | could not get SERVICE_NAME host from consul: %v", err)
-		}
-		if pair == nil {
-			log.Fatal("SetConfig | Consul | SERVICE_NAME host is required")
-		}
-		c.ServiceName = string(pair.Value)
-	}()
-
-	wg.Wait()
-
-	if err = consulClient.Agent().ServiceRegister(&api.AgentServiceRegistration{
-		Name: c.ServiceName,
-		Tags: []string{"v1"},
-	}); err != nil {
-		log.Fatalf("Error registering service: %v", err)
+	if err = c.RegisterConsulService(); err != nil {
+		log.Fatalf("SetConfig | could not register consul service: %v", err)
+		return
 	}
+
+	// Register Prometheus
+	prometheus.MustRegister(
+		pkgMetric.GrpcRequestsTotal,
+		pkgMetric.GrpcRequestDuration,
+		pkgMetric.HttpRequestsTotal,
+		pkgMetric.HttpRequestDuration,
+		pkgMetric.RabbitmqMessagesPublished,
+		pkgMetric.RabbitmqMessagesConsumed,
+	)
+
 	viper.WatchConfig()
 }

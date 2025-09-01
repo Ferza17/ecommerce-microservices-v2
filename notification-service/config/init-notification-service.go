@@ -43,6 +43,15 @@ func (c *Config) initNotificationService(kv *api.KV) {
 	}
 	c.NotificationServiceHttpHost = string(pair.Value)
 
+	pair, _, err = kv.Get(fmt.Sprintf("%s/services/notification/HTTP_PORT", c.Env), nil)
+	if err != nil {
+		log.Fatalf("SetConfig | could not get HTTP_PORT from consul: %v", err)
+	}
+	if pair == nil {
+		log.Fatal("SetConfig | Consul | HTTP_PORT is required")
+	}
+	c.NotificationServiceHttpPort = string(pair.Value)
+
 	pair, _, err = kv.Get(fmt.Sprintf("%s/services/notification/METRIC_HTTP_PORT", c.Env), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get METRIC_HTTP_PORT from consul: %v", err)

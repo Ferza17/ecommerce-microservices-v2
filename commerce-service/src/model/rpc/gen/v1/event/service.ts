@@ -5,5 +5,195 @@
 // source: v1/event/service.proto
 
 /* eslint-disable */
+import {
+  type CallOptions,
+  ChannelCredentials,
+  Client,
+  type ClientOptions,
+  type ClientReadableStream,
+  type ClientUnaryCall,
+  type handleServerStreamingCall,
+  type handleUnaryCall,
+  makeGenericClientConstructor,
+  Metadata,
+  type ServiceError,
+  type UntypedServiceImplementation,
+} from "@grpc/grpc-js";
+import { Event } from "./model";
+import {
+  AppendRequest,
+  GetSnapshotRequest,
+  PutSnapshotRequest,
+  ReadByAggregateRequest,
+  ReadByTypeRequest,
+  SubscribeRequest,
+} from "./request";
+import {
+  AppendResponse,
+  GetSnapshotResponse,
+  PutSnapshotResponse,
+  ReadByAggregateResponse,
+  ReadByTypeResponse,
+} from "./response";
 
 export const protobufPackage = "event";
+
+export type EventStoreService = typeof EventStoreService;
+export const EventStoreService = {
+  append: {
+    path: "/event.EventStore/Append",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: AppendRequest) => Buffer.from(AppendRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => AppendRequest.decode(value),
+    responseSerialize: (value: AppendResponse) => Buffer.from(AppendResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => AppendResponse.decode(value),
+  },
+  readByAggregate: {
+    path: "/event.EventStore/ReadByAggregate",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: ReadByAggregateRequest) => Buffer.from(ReadByAggregateRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => ReadByAggregateRequest.decode(value),
+    responseSerialize: (value: ReadByAggregateResponse) => Buffer.from(ReadByAggregateResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => ReadByAggregateResponse.decode(value),
+  },
+  readByType: {
+    path: "/event.EventStore/ReadByType",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: ReadByTypeRequest) => Buffer.from(ReadByTypeRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => ReadByTypeRequest.decode(value),
+    responseSerialize: (value: ReadByTypeResponse) => Buffer.from(ReadByTypeResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => ReadByTypeResponse.decode(value),
+  },
+  /** Server-streaming: continuous feed for projectors */
+  subscribe: {
+    path: "/event.EventStore/Subscribe",
+    requestStream: false,
+    responseStream: true,
+    requestSerialize: (value: SubscribeRequest) => Buffer.from(SubscribeRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => SubscribeRequest.decode(value),
+    responseSerialize: (value: Event) => Buffer.from(Event.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Event.decode(value),
+  },
+  getSnapshot: {
+    path: "/event.EventStore/GetSnapshot",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetSnapshotRequest) => Buffer.from(GetSnapshotRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetSnapshotRequest.decode(value),
+    responseSerialize: (value: GetSnapshotResponse) => Buffer.from(GetSnapshotResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetSnapshotResponse.decode(value),
+  },
+  putSnapshot: {
+    path: "/event.EventStore/PutSnapshot",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: PutSnapshotRequest) => Buffer.from(PutSnapshotRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => PutSnapshotRequest.decode(value),
+    responseSerialize: (value: PutSnapshotResponse) => Buffer.from(PutSnapshotResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => PutSnapshotResponse.decode(value),
+  },
+} as const;
+
+export interface EventStoreServer extends UntypedServiceImplementation {
+  append: handleUnaryCall<AppendRequest, AppendResponse>;
+  readByAggregate: handleUnaryCall<ReadByAggregateRequest, ReadByAggregateResponse>;
+  readByType: handleUnaryCall<ReadByTypeRequest, ReadByTypeResponse>;
+  /** Server-streaming: continuous feed for projectors */
+  subscribe: handleServerStreamingCall<SubscribeRequest, Event>;
+  getSnapshot: handleUnaryCall<GetSnapshotRequest, GetSnapshotResponse>;
+  putSnapshot: handleUnaryCall<PutSnapshotRequest, PutSnapshotResponse>;
+}
+
+export interface EventStoreClient extends Client {
+  append(
+    request: AppendRequest,
+    callback: (error: ServiceError | null, response: AppendResponse) => void,
+  ): ClientUnaryCall;
+  append(
+    request: AppendRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: AppendResponse) => void,
+  ): ClientUnaryCall;
+  append(
+    request: AppendRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: AppendResponse) => void,
+  ): ClientUnaryCall;
+  readByAggregate(
+    request: ReadByAggregateRequest,
+    callback: (error: ServiceError | null, response: ReadByAggregateResponse) => void,
+  ): ClientUnaryCall;
+  readByAggregate(
+    request: ReadByAggregateRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: ReadByAggregateResponse) => void,
+  ): ClientUnaryCall;
+  readByAggregate(
+    request: ReadByAggregateRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: ReadByAggregateResponse) => void,
+  ): ClientUnaryCall;
+  readByType(
+    request: ReadByTypeRequest,
+    callback: (error: ServiceError | null, response: ReadByTypeResponse) => void,
+  ): ClientUnaryCall;
+  readByType(
+    request: ReadByTypeRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: ReadByTypeResponse) => void,
+  ): ClientUnaryCall;
+  readByType(
+    request: ReadByTypeRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: ReadByTypeResponse) => void,
+  ): ClientUnaryCall;
+  /** Server-streaming: continuous feed for projectors */
+  subscribe(request: SubscribeRequest, options?: Partial<CallOptions>): ClientReadableStream<Event>;
+  subscribe(
+    request: SubscribeRequest,
+    metadata?: Metadata,
+    options?: Partial<CallOptions>,
+  ): ClientReadableStream<Event>;
+  getSnapshot(
+    request: GetSnapshotRequest,
+    callback: (error: ServiceError | null, response: GetSnapshotResponse) => void,
+  ): ClientUnaryCall;
+  getSnapshot(
+    request: GetSnapshotRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetSnapshotResponse) => void,
+  ): ClientUnaryCall;
+  getSnapshot(
+    request: GetSnapshotRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetSnapshotResponse) => void,
+  ): ClientUnaryCall;
+  putSnapshot(
+    request: PutSnapshotRequest,
+    callback: (error: ServiceError | null, response: PutSnapshotResponse) => void,
+  ): ClientUnaryCall;
+  putSnapshot(
+    request: PutSnapshotRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: PutSnapshotResponse) => void,
+  ): ClientUnaryCall;
+  putSnapshot(
+    request: PutSnapshotRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: PutSnapshotResponse) => void,
+  ): ClientUnaryCall;
+}
+
+export const EventStoreClient = makeGenericClientConstructor(EventStoreService, "event.EventStore") as unknown as {
+  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): EventStoreClient;
+  service: typeof EventStoreService;
+  serviceName: string;
+};

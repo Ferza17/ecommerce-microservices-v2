@@ -41,17 +41,26 @@ data:
   kv_register_event_store.sh: |
     #!/bin/sh
 
-
     echo "INIT EVENT-STORE SERVICE"## Local
-    curl --request PUT --data 'local' http://localhost:8500/v1/kv/local/services/event-store/ENV
-    curl --request PUT --data 'event-store-service' http://localhost:8500/v1/kv/local/services/event-store/SERVICE_NAME
-    curl --request PUT --data '127.0.0.1' http://localhost:8500/v1/kv/local/services/event-store/RPC_HOST
-    curl --request PUT --data '50052' http://localhost:8500/v1/kv/local/services/event-store/RPC_PORT
+
+    consul kv put local/services/event-store/ENV 'local'
+    consul kv put local/services/event-store/SERVICE_NAME 'event-store-service'
+    consul kv put local/services/event-store/RPC_HOST '127.0.0.1'
+    consul kv put local/services/event-store/RPC_PORT '50052'
+    consul kv put local/services/event-store/HTTP_HOST '127.0.0.1'
+    consul kv put local/services/event-store/HTTP_PORT '40052'
+    consul kv put local/services/event-store/METRIC_HTTP_PORT '30052'
+
     ## Production
-    curl --request PUT --data 'production' http://localhost:8500/v1/kv/production/services/event-store/ENV
-    curl --request PUT --data 'event-store-service' http://localhost:8500/v1/kv/production/services/event-store/SERVICE_NAME
-    curl --request PUT --data 'event-store-service' http://localhost:8500/v1/kv/production/services/event-store/RPC_HOST
-    curl --request PUT --data '50052' http://localhost:8500/v1/kv/production/services/event-store/RPC_PORT
+
+    consul kv put production/services/event-store/ENV 'local'
+    consul kv put production/services/event-store/SERVICE_NAME 'event-store-service'
+    consul kv put production/services/event-store/RPC_HOST 'event-store-service'
+    consul kv put production/services/event-store/RPC_PORT '50052'
+    consul kv put production/services/event-store/HTTP_HOST 'event-store-service'
+    consul kv put production/services/event-store/HTTP_PORT '40052'
+    consul kv put production/services/event-store/METRIC_HTTP_PORT '30052'
+
     echo "DONE INIT EVENT-STORE SERVICE"
   kv_register_notification.sh: |
     #!/bin/sh
@@ -84,9 +93,9 @@ data:
     consul kv put local/services/payment/ENV 'local'
     consul kv put local/services/payment/SERVICE_NAME 'payment-service'
     consul kv put local/services/payment/PAYMENT_ORDER_CANCELLED_IN_MS '600000'
-    consul kv put local/services/payment/RPC_HOST 'localhost'
+    consul kv put local/services/payment/RPC_HOST '127.0.0.1'
     consul kv put local/services/payment/RPC_PORT '50054'
-    consul kv put local/services/payment/HTTP_HOST 'localhost'
+    consul kv put local/services/payment/HTTP_HOST '127.0.0.1'
     consul kv put local/services/payment/HTTP_PORT '40054'
     consul kv put local/services/payment/METRIC_HTTP_PORT '30054'
     ## PRODUCTION

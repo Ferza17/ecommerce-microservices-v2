@@ -16,10 +16,9 @@ spec:
       livenessProbe:
         exec:
           command:
-            - curl
-            - -f
-            - shipping-service:40057/v1/shipping/checks
+            - curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:40057/v1/shipping/check | grep -q '^200$'
         failureThreshold: 3
+        initialDelaySeconds: 20
         periodSeconds: 30
         timeoutSeconds: 10
       name: shipping-service

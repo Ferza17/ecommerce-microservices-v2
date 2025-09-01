@@ -14,7 +14,7 @@ spec:
       targetPort: 50055
     - name: "40055"
       port: 40055
-      targetPort: 4055
+      targetPort: 40055
     - name: "30055"
       port: 30055
       targetPort: 30055

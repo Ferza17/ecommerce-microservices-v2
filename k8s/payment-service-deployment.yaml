@@ -25,10 +25,9 @@ spec:
           livenessProbe:
             exec:
               command:
-                - curl
-                - -f
-                - payment-service:40055/v1/payment/check
+                - curl -s -o /dev/null -w '%{http_code}' http://payment-service:40054/v1/payment/check | grep -q '^200$'
             failureThreshold: 3
+            initialDelaySeconds: 20
             periodSeconds: 30
             timeoutSeconds: 10
           name: payment-service

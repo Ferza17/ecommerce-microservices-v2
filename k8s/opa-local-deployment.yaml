@@ -36,9 +36,7 @@ spec:
           livenessProbe:
             exec:
               command:
-                - curl
-                - -f
-                - http://opa-local:8181/health
+                - curl -s -o /dev/null -w '%{http_code}' http://opa-local:8181/health | grep -q '^200$'
             failureThreshold: 3
             periodSeconds: 30
             timeoutSeconds: 10

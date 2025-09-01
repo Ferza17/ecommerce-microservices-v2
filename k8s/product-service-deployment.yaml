@@ -25,17 +25,16 @@ spec:
           livenessProbe:
             exec:
               command:
-                - curl
-                - -f
-                - product-service:40055/v1/product/check
+                - curl -s -o /dev/null -w '%{http_code}' http://product-service:40055/v1/product/check | grep -q '^200$'
             failureThreshold: 3
+            initialDelaySeconds: 20
             periodSeconds: 30
             timeoutSeconds: 10
           name: product-service
           ports:
             - containerPort: 50055
               protocol: TCP
-            - containerPort: 4055
+            - containerPort: 40055
               protocol: TCP
             - containerPort: 30055
               protocol: TCP

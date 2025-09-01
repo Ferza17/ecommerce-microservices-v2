@@ -1,2 +1,19 @@
 syntax = "proto3";
 package event;
+
+import "v1/event/request.proto";
+import "v1/event/response.proto";
+import "v1/event/model.proto";
+
+
+service EventStore {
+  rpc Append(event.AppendRequest) returns (event.AppendResponse);
+  rpc ReadByAggregate(event.ReadByAggregateRequest) returns (event.ReadByAggregateResponse);
+  rpc ReadByType(event.ReadByTypeRequest) returns (event.ReadByTypeResponse);
+
+  // Server-streaming: continuous feed for projectors
+  rpc Subscribe(event.SubscribeRequest) returns (stream event.Event);
+
+  rpc GetSnapshot(event.GetSnapshotRequest) returns (event.GetSnapshotResponse);
+  rpc PutSnapshot(event.PutSnapshotRequest) returns (event.PutSnapshotResponse);
+}

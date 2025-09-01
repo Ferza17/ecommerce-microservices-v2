@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/enum"
-	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/pkg"
+	pkgLogger "github.com/ferza17/ecommerce-microservices-v2/event-store-service/pkg/logger"
+	"github.com/google/wire"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -19,12 +20,14 @@ type (
 
 	MongoDBInfrastructure struct {
 		mongoClient *mongo.Client
-		logger      pkg.IZapLogger
+		logger      pkgLogger.IZapLogger
 	}
 )
 
+var Set = wire.NewSet(NewMongoDBInfrastructure)
+
 func NewMongoDBInfrastructure(
-	logger pkg.IZapLogger,
+	logger pkgLogger.IZapLogger,
 ) IMongoDBInfrastructure {
 	conn, err := mongo.Connect(
 		context.Background(),

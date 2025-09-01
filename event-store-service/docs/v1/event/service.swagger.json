@@ -4,14 +4,424 @@
     "title": "v1/event/service.proto",
     "version": "version not set"
   },
+  "tags": [
+    {
+      "name": "EventStore"
+    }
+  ],
   "consumes": [
     "application/json"
   ],
   "produces": [
     "application/json"
   ],
-  "paths": {},
+  "paths": {
+    "/event.EventStore/Append": {
+      "post": {
+        "operationId": "EventStore_Append",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/eventAppendResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/eventAppendRequest"
+            }
+          }
+        ],
+        "tags": [
+          "EventStore"
+        ]
+      }
+    },
+    "/event.EventStore/GetSnapshot": {
+      "post": {
+        "operationId": "EventStore_GetSnapshot",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/eventGetSnapshotResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/eventGetSnapshotRequest"
+            }
+          }
+        ],
+        "tags": [
+          "EventStore"
+        ]
+      }
+    },
+    "/event.EventStore/PutSnapshot": {
+      "post": {
+        "operationId": "EventStore_PutSnapshot",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/eventPutSnapshotResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/eventPutSnapshotRequest"
+            }
+          }
+        ],
+        "tags": [
+          "EventStore"
+        ]
+      }
+    },
+    "/event.EventStore/ReadByAggregate": {
+      "post": {
+        "operationId": "EventStore_ReadByAggregate",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/eventReadByAggregateResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/eventReadByAggregateRequest"
+            }
+          }
+        ],
+        "tags": [
+          "EventStore"
+        ]
+      }
+    },
+    "/event.EventStore/ReadByType": {
+      "post": {
+        "operationId": "EventStore_ReadByType",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/eventReadByTypeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/eventReadByTypeRequest"
+            }
+          }
+        ],
+        "tags": [
+          "EventStore"
+        ]
+      }
+    },
+    "/event.EventStore/Subscribe": {
+      "post": {
+        "summary": "Server-streaming: continuous feed for projectors",
+        "operationId": "EventStore_Subscribe",
+        "responses": {
+          "200": {
+            "description": "A successful response.(streaming responses)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/eventEvent"
+                },
+                "error": {
+                  "$ref": "#/definitions/rpcStatus"
+                }
+              },
+              "title": "Stream result of eventEvent"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/eventSubscribeRequest"
+            }
+          }
+        ],
+        "tags": [
+          "EventStore"
+        ]
+      }
+    }
+  },
   "definitions": {
+    "eventAppendRequest": {
+      "type": "object",
+      "properties": {
+        "aggregateId": {
+          "type": "string"
+        },
+        "aggregateType": {
+          "type": "string"
+        },
+        "expectedVersion": {
+          "type": "string",
+          "format": "int64",
+          "title": "-1 for new stream"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/eventEvent"
+          },
+          "title": "version must be expected_version+1..+n"
+        }
+      }
+    },
+    "eventAppendResponse": {
+      "type": "object",
+      "properties": {
+        "nextVersion": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "eventEvent": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "title": "globally unique (UUID v4)"
+        },
+        "aggregateId": {
+          "type": "string",
+          "title": "e.g., product-123"
+        },
+        "aggregateType": {
+          "type": "string",
+          "title": "e.g., product, user, payment"
+        },
+        "version": {
+          "type": "string",
+          "format": "int64",
+          "title": "1..N (per-aggregate)"
+        },
+        "name": {
+          "type": "string",
+          "title": "e.g., ProductCreated"
+        },
+        "occurredAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "payload": {
+          "type": "string",
+          "format": "byte",
+          "title": "JSON/Proto bytes"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "correlation_id, causation_id, tenant_id, etc."
+        }
+      }
+    },
+    "eventGetSnapshotRequest": {
+      "type": "object",
+      "properties": {
+        "aggregateId": {
+          "type": "string"
+        }
+      }
+    },
+    "eventGetSnapshotResponse": {
+      "type": "object",
+      "properties": {
+        "snapshot": {
+          "$ref": "#/definitions/eventSnapshot"
+        }
+      }
+    },
+    "eventPutSnapshotRequest": {
+      "type": "object",
+      "properties": {
+        "snapshot": {
+          "$ref": "#/definitions/eventSnapshot"
+        }
+      }
+    },
+    "eventPutSnapshotResponse": {
+      "type": "object"
+    },
+    "eventReadByAggregateRequest": {
+      "type": "object",
+      "properties": {
+        "aggregateId": {
+          "type": "string"
+        },
+        "fromVersion": {
+          "type": "string",
+          "format": "int64",
+          "title": "default 0"
+        }
+      }
+    },
+    "eventReadByAggregateResponse": {
+      "type": "object",
+      "properties": {
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/eventEvent"
+          }
+        }
+      }
+    },
+    "eventReadByTypeRequest": {
+      "type": "object",
+      "properties": {
+        "aggregateType": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "string",
+          "format": "int64"
+        },
+        "afterId": {
+          "type": "string",
+          "title": "pagination token"
+        }
+      }
+    },
+    "eventReadByTypeResponse": {
+      "type": "object",
+      "properties": {
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/eventEvent"
+          }
+        },
+        "nextAfterId": {
+          "type": "string"
+        }
+      }
+    },
+    "eventSnapshot": {
+      "type": "object",
+      "properties": {
+        "aggregateId": {
+          "type": "string"
+        },
+        "aggregateType": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string",
+          "format": "int64",
+          "title": "version of aggregate at snapshot"
+        },
+        "state": {
+          "type": "string",
+          "format": "byte",
+          "title": "serialized aggregate state"
+        },
+        "takenAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "eventSubscribeRequest": {
+      "type": "object",
+      "properties": {
+        "aggregateType": {
+          "type": "string",
+          "title": "optional, empty = all"
+        },
+        "fromEventId": {
+          "type": "string",
+          "title": "resume token (optional)"
+        }
+      }
+    },
     "protobufAny": {
       "type": "object",
       "properties": {

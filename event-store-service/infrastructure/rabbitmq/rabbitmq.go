@@ -3,7 +3,8 @@ package rabbitmq
 import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/config"
-	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/pkg"
+	pkgLogger "github.com/ferza17/ecommerce-microservices-v2/event-store-service/pkg/logger"
+	"github.com/google/wire"
 	"github.com/rabbitmq/amqp091-go"
 )
 
@@ -14,12 +15,14 @@ type (
 	}
 	RabbitMQInfrastructure struct {
 		amqpConn *amqp091.Connection
-		logger   pkg.IZapLogger
+		logger   pkgLogger.IZapLogger
 	}
 )
 
+var Set = wire.NewSet(NewRabbitMQInfrastructure)
+
 func NewRabbitMQInfrastructure(
-	logger pkg.IZapLogger,
+	logger pkgLogger.IZapLogger,
 ) IRabbitMQInfrastructure {
 	amqpConn, err := amqp091.Dial(
 		fmt.Sprintf("amqp://%s:%s@%s:%s/",

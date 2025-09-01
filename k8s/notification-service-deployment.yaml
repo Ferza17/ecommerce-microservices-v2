@@ -25,10 +25,9 @@ spec:
           livenessProbe:
             exec:
               command:
-                - curl
-                - -f
-                - notification-service:40055/v1/notification/check
+                - curl -s -o /dev/null -w '%{http_code}' http://notification-service:40053/v1/notification/check | grep -q '^200$'
             failureThreshold: 3
+            initialDelaySeconds: 20
             periodSeconds: 30
             timeoutSeconds: 10
           name: notification-service

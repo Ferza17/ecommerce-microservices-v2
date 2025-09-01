@@ -5,7 +5,8 @@ import (
 	mongodbInfrastructure "github.com/ferza17/ecommerce-microservices-v2/event-store-service/infrastructure/mongodb"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/event-store-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/bson"
-	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/pkg"
+	pkgLogger "github.com/ferza17/ecommerce-microservices-v2/event-store-service/pkg/logger"
+	"github.com/google/wire"
 )
 
 type (
@@ -16,14 +17,16 @@ type (
 	eventRepository struct {
 		mongoDB                 mongodbInfrastructure.IMongoDBInfrastructure
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
-		logger                  pkg.IZapLogger
+		logger                  pkgLogger.IZapLogger
 	}
 )
+
+var Set = wire.NewSet(NewEventRepository)
 
 func NewEventRepository(
 	mongodb mongodbInfrastructure.IMongoDBInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
-	logger pkg.IZapLogger) IEventRepository {
+	logger pkgLogger.IZapLogger) IEventRepository {
 	return &eventRepository{
 		mongoDB:                 mongodb,
 		telemetryInfrastructure: telemetryInfrastructure,

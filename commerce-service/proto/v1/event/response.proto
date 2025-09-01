@@ -1,2 +1,23 @@
 syntax = "proto3";
 package event;
+import "v1/event/model.proto";
+
+message AppendResponse {
+  int64 next_version = 1;
+}
+
+message ReadByAggregateResponse {
+  repeated event.Event events = 1;
+}
+
+message ReadByTypeResponse {
+  repeated Event events = 1;
+  string next_after_id = 2;
+}
+
+
+message GetSnapshotResponse {
+  event.Snapshot snapshot = 1;
+}
+
+message PutSnapshotResponse {}

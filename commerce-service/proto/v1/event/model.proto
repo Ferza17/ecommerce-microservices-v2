@@ -1,15 +1,25 @@
 syntax = "proto3";
 package event;
 
-import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 
 message Event {
+  string event_id = 1;               // globally unique (UUID v4)
+  string aggregate_id = 2;           // e.g., product-123
+  string aggregate_type = 3;         // e.g., product, user, payment
+  int64 version = 4;                 // 1..N (per-aggregate)
+  string name = 5;                   // e.g., ProductCreated
+  google.protobuf.Timestamp occurred_at = 6;
+  bytes payload = 7;                 // JSON/Proto bytes
+  map<string, string> metadata = 8;  // correlation_id, causation_id, tenant_id, etc.
+}
+
+message Snapshot {
   string aggregate_id = 1;
-  string event_type = 2;
-  google.protobuf.Struct last_state = 3;
-  google.protobuf.Struct payload = 4;
-  google.protobuf.Timestamp created_at = 5;
-  google.protobuf.Timestamp updated_at = 6;
+  string aggregate_type = 2;
+  int64 version = 3;            // version of aggregate at snapshot
+  bytes state = 4;              // serialized aggregate state
+  google.protobuf.Timestamp taken_at = 5;
+  map<string, string> metadata = 6;
 }
 
