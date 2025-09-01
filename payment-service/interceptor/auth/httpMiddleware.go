@@ -21,6 +21,11 @@ func AuthHTTPMiddleware(
 			ctx := r.Context()
 			requestId := pkgContext.GetRequestIDFromContext(ctx)
 
+			if strings.ToLower(r.URL.Path) == "/metrics" || strings.ToLower(r.URL.Path) == "/v1/payment/check" {
+				next.ServeHTTP(w, r)
+				return
+			}
+
 			authHeader := r.Header.Get("Authorization")
 			if authHeader == "" {
 				logger.Error("Interceptor.AuthHTTPMiddleware", zap.String("requestId", requestId), zap.Error(errors.New("no authorization header")))

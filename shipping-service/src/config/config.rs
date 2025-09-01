@@ -5,11 +5,12 @@ use consulrs::{kv, service};
 use crate::config::database_postgres::DatabasePostgres;
 use crate::config::message_broker_rabbitmq::MessageBrokerRabbitMQ;
 use crate::config::service_payment::ServicePayment;
-use crate::config::service_shipping_rabbitmq::ServiceShippingRabbitMQ;
 use crate::config::service_shipping::ServiceShipping;
+use crate::config::service_shipping_rabbitmq::ServiceShippingRabbitMQ;
 use crate::config::service_user::ServiceUser;
 use crate::config::telemetry_jaeger::TelemetryJaeger;
 use consulrs::api::check::common::AgentServiceCheckBuilder;
+use consulrs::api::service::common::AgentServiceConnect;
 use consulrs::api::service::requests::RegisterServiceRequest;
 use serde::Deserialize;
 use std::env;
@@ -219,19 +220,35 @@ impl AppConfig {
                     self.service_shipping.name.as_str(),
                     Some(
                         RegisterServiceRequest::builder()
+                            .name(self.service_shipping.name.as_str())
                             .address(svc_addr.as_str())
                             .port(self.service_shipping.http_port.parse::<u64>().unwrap())
+                            .tags(vec!["service".to_string(), "rabbitmq-client".to_string()])
+                            .id(format!(
+                                "{}:{}",
+                                self.service_shipping.http_host, self.service_shipping.http_port
+                            )
+                            .as_str())
                             .check(
                                 AgentServiceCheckBuilder::default()
                                     .name("health_check")
                                     .interval("30s")
-                                    .http(
-                                        format!("http://{}/v1/shipping/check", svc_addr.as_str())
-                                            .as_str(),
+                                    .timeout("5s")
+                                    .deregister_critical_service_after("40s")
+                                    .grpc(
+                                        format!(
+                                            "{}:{}",
+                                            self.service_shipping.name, self.service_user.rpc_port
+                                        )
+                                        .as_str(),
                                     )
                                     .build()
                                     .unwrap(),
-                            ),
+                            )
+                            .connect(AgentServiceConnect {
+                                native: Option::from(true),
+                                sidecar_service: None,
+                            }),
                     ),
                 )
                 .await

@@ -258,7 +258,7 @@ services:
       - OPA_LOG_LEVEL=debug
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://127.0.0.1:8181/health"]
+      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://opa-local:8181/health | grep -q '^200$'" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -282,7 +282,7 @@ services:
       postgres-local:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:40056/v1/user/check | grep -q '^200$'" ]
+      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://user-service:40056/v1/user/check | grep -q '^200$'" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -302,7 +302,7 @@ services:
       - "30053:30053" # HTTP METRIC COLLECTOR
     restart: always
     healthcheck:
-      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:40053/v1/notification/check | grep -q '^200$'" ]
+      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://notification-service:40053/v1/notification/check | grep -q '^200$'" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -327,7 +327,7 @@ services:
       consul-local:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:40055/v1/product/check | grep -q '^200$'" ]
+      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://product-service:40055/v1/product/check | grep -q '^200$'" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -347,7 +347,7 @@ services:
       - "30054:30054" # HTTP METRIC COLLECTOR
     restart: always
     healthcheck:
-      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:40054/v1/payment/check | grep -q '^200$'" ]
+      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://payment-service:40054/v1/payment/check | grep -q '^200$'" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -380,6 +380,8 @@ services:
       retries: 3
       start_period: 20s
     depends_on:
+      user-service:
+        condition: service_healthy
       postgres-local:
         condition: service_healthy
       consul-local:

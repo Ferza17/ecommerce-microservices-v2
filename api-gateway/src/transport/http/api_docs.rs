@@ -4,19 +4,17 @@ use crate::model::rpc::{
         FindPaymentProvidersResponse,
     },
     product::{FindProductsWithPaginationRequest, FindProductsWithPaginationResponse},
-    response::Response,
+    response::{Response, ResponseCommand},
     shipping::{ListShippingProvidersRequest, ListShippingProvidersResponse},
     user::{
         AuthUserRegisterRequest, AuthUserRegisterResponse, AuthUserVerifyOtpRequest,
         AuthUserVerifyOtpResponse,
     },
 };
-use crate::package::context::auth::AUTHORIZATION_HEADER;
 use utoipa::{
     Modify, OpenApi,
     openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme},
 };
-
 
 pub const ROUTE_PREFIX: &str = "/api/v1/docs";
 
@@ -32,6 +30,9 @@ pub const ROUTE_PREFIX: &str = "/api/v1/docs";
         crate::module::auth::http_presenter::auth_register,
         crate::module::auth::http_presenter::auth_user_login_by_email_and_password,
         crate::module::auth::http_presenter::auth_user_verify_otp,
+
+        // NOTIFICATION
+        crate::module::notification::http_presenter::get_notification_with_request_id,
 
         // PRODUCT
         crate::module::product::http_presenter::find_products_with_pagination,
@@ -49,6 +50,7 @@ pub const ROUTE_PREFIX: &str = "/api/v1/docs";
         schemas(
             // COMMON
             Response,
+            ResponseCommand,
             // AUTH
             AuthUserRegisterRequest,
             AuthUserRegisterResponse,
@@ -70,6 +72,7 @@ pub const ROUTE_PREFIX: &str = "/api/v1/docs";
     ),
     tags(
         (name = crate::module::auth::http_presenter::TAG, description = "Authentication route API"),
+        (name = crate::module::notification::http_presenter::TAG, description = "Notification route API"),
         (name = crate::module::product::http_presenter::TAG, description = "Product route API"),
         (name = crate::module::shipping_provider::http_presenter::TAG, description = "Shipping Providers route API"),
         (name = crate::module::shipping::http_presenter::TAG, description = "Shipping route API"),
@@ -85,7 +88,7 @@ impl Modify for SecurityAddon {
     fn modify(&self, openapi: &mut utoipa::openapi::OpenApi) {
         let components = openapi.components.get_or_insert_with(Default::default);
         components.security_schemes.insert(
-            AUTHORIZATION_HEADER.to_string(),
+            crate::package::context::auth::AUTHORIZATION_HEADER.to_string(),
             SecurityScheme::Http(
                 HttpBuilder::new()
                     .scheme(HttpAuthScheme::Bearer)
@@ -93,6 +96,18 @@ impl Modify for SecurityAddon {
                         "Bearer Token (e.g., JWT) for authentication. Format: Bearer <token>",
                     ))
                     .bearer_format("JWT")
+                    .build(),
+            ),
+        );
+        components.security_schemes.insert(
+            crate::package::context::request_id::X_REQUEST_ID_HEADER.to_string(),
+            SecurityScheme::Http(
+                HttpBuilder::new()
+                    .scheme(HttpAuthScheme::Bearer)
+                    .description(Some(
+                        "Request ID (e.g., UUID) for tracing. Format: <uuid>",
+                    ))
+                    .bearer_format("UUID")
                     .build(),
             ),
         );

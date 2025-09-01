@@ -22,25 +22,10 @@ func AuthHTTPMiddleware(
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
 			requestId := pkgContext.GetRequestIDFromContext(ctx)
-			//method := strings.ToLower(r.Method)
-			//url := strings.ToLower(r.URL.Path)
-
-			//route, _ := mux.CurrentRoute(r).GetPathTemplate()
-			//log.Printf("Request Path: %s, Matched Path Template: %s", r.URL.Path, route)
-
-			// DEPRECATED
-			// Validate is excluded method
-			//isExcluded, _ := accessControlUseCase.IsExcludedHTTP(
-			//	ctx,
-			//	pkgContext.GetRequestIDFromContext(ctx),
-			//	method,
-			//	url,
-			//)
-			//// Bypass if excluded methods
-			//if isExcluded {
-			//	next.ServeHTTP(w, r)
-			//	return
-			//}
+			if strings.ToLower(r.URL.Path) == "/metrics" || strings.ToLower(r.URL.Path) == "/v1/user/check" {
+				next.ServeHTTP(w, r)
+				return
+			}
 
 			authHeader := r.Header.Get("Authorization")
 			if authHeader == "" {

@@ -147,6 +147,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "axum 0.8.4",
+ "base64 0.21.7",
  "clap",
  "config",
  "consulrs",
@@ -162,6 +163,7 @@ dependencies = [
  "prost-validate",
  "prost-validate-build",
  "prost-wkt-types",
+ "rand 0.8.5",
  "reqwest",
  "serde",
  "serde_json",

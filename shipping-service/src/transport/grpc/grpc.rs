@@ -63,6 +63,9 @@ impl GrpcTransport {
             .build_v1alpha()
             .unwrap();
 
+        // health check
+        let (_, health_service) = tonic_health::server::health_reporter();
+
         let addr = format!(
             "{}:{}",
             self.config.service_shipping.rpc_host, self.config.service_shipping.rpc_port,
@@ -114,6 +117,7 @@ impl GrpcTransport {
                 shipping_provider_presenter,
             ))
             .add_service(ShippingServiceServer::new(shipping_presenter))
+            .add_service(health_service)
             .add_service(reflection_service)
             .serve(addr)
             .await?;

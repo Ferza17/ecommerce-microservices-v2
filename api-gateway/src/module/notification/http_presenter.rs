@@ -1,7 +1,6 @@
 use crate::model::rpc::response::ResponseCommand;
 use crate::model::rpc::response::response_command::ResponseCommandData;
 use futures::{SinkExt, StreamExt};
-
 #[derive(Debug, Clone)]
 pub struct Presenter {
     notification_use_case: crate::module::notification::usecase::UseCase,
@@ -22,6 +21,9 @@ impl Presenter {
                 "/{request_id}",
                 axum::routing::get(get_notification_with_request_id),
             )
+            .layer(
+                tower::ServiceBuilder::new().layer(crate::interceptor::websocket::WebsocketLayer),
+            )
             .with_state(self.clone())
     }
 }
@@ -34,6 +36,17 @@ pub struct ClientMessage {
     pub payload: serde_json::Value,
 }
 
+#[utoipa::path(
+    get,
+    path =  ROUTE_PREFIX.to_string() + "/{request_id}",
+    tag = TAG,
+    params(
+        ("request_id" = String, Path, description = "request id"),
+    ),
+    responses(
+        (status = OK, body = ResponseCommand, content_type = "application/json" )
+    )
+)]
 #[tracing::instrument("notification.http_presenter.get_notification_with_request_id")]
 pub async fn get_notification_with_request_id(
     ws: axum::extract::ws::WebSocketUpgrade,

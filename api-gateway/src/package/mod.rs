@@ -4,6 +4,7 @@ pub mod context {
     pub mod traceparent;
     pub mod user_id;
     pub mod content_type;
+    pub mod websocket;
 }
 
 pub mod worker_pool {
