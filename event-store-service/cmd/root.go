@@ -1,13 +1,10 @@
 package cmd
 
 import (
-	"context"
-	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/bootstrap"
-	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/config"
-	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/transport/rabbitmq"
-	"github.com/spf13/cobra"
 	"log"
+
+	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/config"
+	"github.com/spf13/cobra"
 )
 
 var rootCommand = &cobra.Command{
@@ -25,28 +22,6 @@ func Run() {
 	}
 }
 
-var (
-	dependency     *bootstrap.Bootstrap
-	rabbitMQServer *rabbitmq.RabbitMQTransport
-)
-
 func init() {
 	config.SetConfig(".")
-	dependency = bootstrap.NewBootstrap()
-	rabbitMQServer = rabbitmq.NewServer(dependency)
-}
-
-func Shutdown(ctx context.Context) (err error) {
-	if err = dependency.RabbitMQInfrastructure.Close(); err != nil {
-		dependency.Logger.Error(fmt.Sprintf("Failed to close a connection: %v", err))
-		return err
-	}
-
-	if err = dependency.MongoDBInfrastructure.Close(ctx); err != nil {
-		dependency.Logger.Error(fmt.Sprintf("Failed to close a connection: %v", err))
-		return err
-	}
-
-	dependency.Logger.Info("Exit...")
-	return
 }

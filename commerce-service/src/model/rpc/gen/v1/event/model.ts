@@ -12,7 +12,7 @@ export const protobufPackage = "event";
 
 export interface Event {
   /** globally unique (UUID v4) */
-  eventId: string;
+  id: string;
   /** e.g., product-123 */
   aggregateId: string;
   /** e.g., product, user, payment */
@@ -53,7 +53,7 @@ export interface Snapshot_MetadataEntry {
 
 function createBaseEvent(): Event {
   return {
-    eventId: "",
+    id: "",
     aggregateId: "",
     aggregateType: "",
     version: 0,
@@ -66,8 +66,8 @@ function createBaseEvent(): Event {
 
 export const Event: MessageFns<Event> = {
   encode(message: Event, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.eventId !== "") {
-      writer.uint32(10).string(message.eventId);
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
     }
     if (message.aggregateId !== "") {
       writer.uint32(18).string(message.aggregateId);
@@ -105,7 +105,7 @@ export const Event: MessageFns<Event> = {
             break;
           }
 
-          message.eventId = reader.string();
+          message.id = reader.string();
           continue;
         }
         case 2: {
@@ -178,7 +178,7 @@ export const Event: MessageFns<Event> = {
 
   fromJSON(object: any): Event {
     return {
-      eventId: isSet(object.eventId) ? globalThis.String(object.eventId) : "",
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
       aggregateId: isSet(object.aggregateId) ? globalThis.String(object.aggregateId) : "",
       aggregateType: isSet(object.aggregateType) ? globalThis.String(object.aggregateType) : "",
       version: isSet(object.version) ? globalThis.Number(object.version) : 0,
@@ -196,8 +196,8 @@ export const Event: MessageFns<Event> = {
 
   toJSON(message: Event): unknown {
     const obj: any = {};
-    if (message.eventId !== "") {
-      obj.eventId = message.eventId;
+    if (message.id !== "") {
+      obj.id = message.id;
     }
     if (message.aggregateId !== "") {
       obj.aggregateId = message.aggregateId;
@@ -234,7 +234,7 @@ export const Event: MessageFns<Event> = {
   },
   fromPartial(object: DeepPartial<Event>): Event {
     const message = createBaseEvent();
-    message.eventId = object.eventId ?? "";
+    message.id = object.id ?? "";
     message.aggregateId = object.aggregateId ?? "";
     message.aggregateType = object.aggregateType ?? "";
     message.version = object.version ?? 0;

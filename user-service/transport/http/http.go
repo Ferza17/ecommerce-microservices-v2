@@ -3,6 +3,8 @@ package http
 import (
 	"context"
 	"fmt"
+	"net/http"
+
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	authInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/auth"
@@ -25,7 +27,6 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
-	"net/http"
 )
 
 type (
@@ -55,7 +56,6 @@ func NewServer(
 	accessControlUseCase accessControlUseCase.IAccessControlUseCase,
 	authUseCase authUseCase.IAuthUseCase,
 ) *Server {
-	//TODO: Add workers from consul config
 	return &Server{
 		address: config.Get().UserServiceHttpHost,
 		port:    config.Get().UserServiceHttpPort,

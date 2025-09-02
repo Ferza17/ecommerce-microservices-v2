@@ -4,7 +4,7 @@ package event;
 import "google/protobuf/timestamp.proto";
 
 message Event {
-  string event_id = 1;               // globally unique (UUID v4)
+  string id = 1;               // globally unique (UUID v4)
   string aggregate_id = 2;           // e.g., product-123
   string aggregate_type = 3;         // e.g., product, user, payment
   int64 version = 4;                 // 1..N (per-aggregate)

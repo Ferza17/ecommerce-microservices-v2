@@ -2,6 +2,8 @@ package rabbitmq
 
 import (
 	"context"
+	"log"
+
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
@@ -13,13 +15,11 @@ import (
 	"github.com/rabbitmq/amqp091-go"
 	"go.opentelemetry.io/otel/attribute"
 	"go.uber.org/zap"
-	"log"
 )
 
 type (
 	RabbitMQTransport struct {
 		workerPool              *pkgWorker.WorkerPool
-		amqpConn                *amqp091.Connection
 		logger                  logger.IZapLogger
 		productConsumer         productConsumer.IProductConsumer
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure

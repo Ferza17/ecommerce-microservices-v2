@@ -2,7 +2,6 @@ use crate::model::rpc::user::{AuthUserFindUserByTokenRequest, User};
 use crate::package::context::request_id::get_request_id_from_header;
 use axum::extract::OriginalUri;
 use std::task::{Context, Poll};
-use tracing::info;
 
 #[derive(Clone, Debug)]
 pub struct AuthLayer {

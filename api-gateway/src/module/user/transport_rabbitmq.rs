@@ -1,8 +1,7 @@
 use crate::config::config::AppConfig;
 use crate::infrastructure::message_broker::rabbitmq::RabbitMQInfrastructure;
 use crate::model::rpc::user::{AuthUserLoginByEmailAndPasswordRequest, AuthUserRegisterRequest};
-
-use crate::package::context::content_type::{APPLICATION_JSON, CONTENT_TYPE};
+use crate::package::context::content_type::{APPLICATION_JSON};
 use crate::package::context::request_id::X_REQUEST_ID_HEADER;
 use crate::util::metadata::inject_trace_context_to_lapin_table;
 use lapin::BasicProperties;

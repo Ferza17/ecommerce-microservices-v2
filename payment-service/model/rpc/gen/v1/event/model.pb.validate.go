@@ -56,7 +56,7 @@ func (m *Event) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for EventId
+	// no validation rules for Id
 
 	// no validation rules for AggregateId
 

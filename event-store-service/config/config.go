@@ -2,11 +2,14 @@ package config
 
 import (
 	"fmt"
+	"log"
+	"os"
+
+	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/enum"
 	pkgMetric "github.com/ferza17/ecommerce-microservices-v2/event-store-service/pkg/metric"
 	"github.com/hashicorp/consul/api"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/viper"
-	"log"
 )
 
 var c *Config
@@ -50,9 +53,16 @@ type Config struct {
 func SetConfig(path string) {
 	viper.SetConfigType("env")
 	viper.AddConfigPath(path)
-	viper.SetConfigName(".env")
 
-	if err := viper.ReadInConfig(); err != nil {
+	switch os.Getenv("ENV") {
+	case enum.CONFIG_ENV_PROD:
+		viper.SetConfigName(".env.production")
+	default:
+		viper.SetConfigName(".env.local")
+	}
+
+	err := viper.ReadInConfig()
+	if err != nil {
 		panic(fmt.Sprintf("config not found: %s", err.Error()))
 	}
 	if err := viper.Unmarshal(&c); err != nil {

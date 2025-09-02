@@ -2,18 +2,19 @@ package cmd
 
 import (
 	"context"
+	"log"
+	"sync"
+
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/transport/grpc"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/transport/http"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/transport/rabbitmq"
 	"github.com/spf13/cobra"
-	"log"
-	"sync"
 )
 
 var runCommand = &cobra.Command{
 	Use: "run",
 	Run: func(cmd *cobra.Command, args []string) {
-		ctx, cancel := context.WithCancel(context.Background())
+		ctx, cancel := context.WithCancel(cmd.Context())
 		defer cancel()
 
 		// Initialize servers

@@ -3,6 +3,7 @@ package mongodb
 import (
 	"context"
 	"fmt"
+
 	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/enum"
 	pkgLogger "github.com/ferza17/ecommerce-microservices-v2/event-store-service/pkg/logger"
@@ -13,7 +14,7 @@ import (
 
 type (
 	IMongoDBInfrastructure interface {
-		GetCollection(database enum.Database, collection enum.Collection) *mongo.Collection
+		GetCollection(database enum.Database, collection string) *mongo.Collection
 		Close(ctx context.Context) error
 		StartSession() (mongo.Session, error)
 	}
@@ -69,6 +70,6 @@ func (m *MongoDBInfrastructure) StartSession() (mongo.Session, error) {
 	return m.mongoClient.StartSession()
 }
 
-func (m *MongoDBInfrastructure) GetCollection(database enum.Database, collection enum.Collection) *mongo.Collection {
-	return m.mongoClient.Database(database.String()).Collection(collection.String())
+func (m *MongoDBInfrastructure) GetCollection(database enum.Database, collection string) *mongo.Collection {
+	return m.mongoClient.Database(database.String()).Collection(collection)
 }

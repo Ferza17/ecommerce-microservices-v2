@@ -1,13 +1,18 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "v1/event/service.proto",
-    "version": "version not set"
+    "title": "EVENT STORE SERVICE API",
+    "description": "API for EVENT STORE ",
+    "version": "1.0.0"
   },
   "tags": [
     {
       "name": "EventStore"
     }
+  ],
+  "schemes": [
+    "https",
+    "http"
   ],
   "consumes": [
     "application/json"
@@ -16,38 +21,6 @@
     "application/json"
   ],
   "paths": {
-    "/event.EventStore/Append": {
-      "post": {
-        "operationId": "EventStore_Append",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/eventAppendResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/eventAppendRequest"
-            }
-          }
-        ],
-        "tags": [
-          "EventStore"
-        ]
-      }
-    },
     "/event.EventStore/GetSnapshot": {
       "post": {
         "operationId": "EventStore_GetSnapshot",
@@ -112,70 +85,6 @@
         ]
       }
     },
-    "/event.EventStore/ReadByAggregate": {
-      "post": {
-        "operationId": "EventStore_ReadByAggregate",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/eventReadByAggregateResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/eventReadByAggregateRequest"
-            }
-          }
-        ],
-        "tags": [
-          "EventStore"
-        ]
-      }
-    },
-    "/event.EventStore/ReadByType": {
-      "post": {
-        "operationId": "EventStore_ReadByType",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/eventReadByTypeResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/eventReadByTypeRequest"
-            }
-          }
-        ],
-        "tags": [
-          "EventStore"
-        ]
-      }
-    },
     "/event.EventStore/Subscribe": {
       "post": {
         "summary": "Server-streaming: continuous feed for projectors",
@@ -217,6 +126,138 @@
           "EventStore"
         ]
       }
+    },
+    "/v1/event-store/events/append": {
+      "post": {
+        "summary": "append event",
+        "operationId": "EventStore_Append",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/eventAppendResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/eventAppendRequest"
+            }
+          }
+        ],
+        "tags": [
+          "EventStoreService"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/v1/event-store/events/type/{aggregateType}": {
+      "get": {
+        "summary": "get event by aggregate type",
+        "operationId": "EventStore_ReadByType",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/eventReadByTypeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "aggregateType",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "afterId",
+            "description": "pagination token",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "EventStoreService"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/v1/event-store/events/{aggregateId}": {
+      "get": {
+        "summary": "get event by aggregate id",
+        "operationId": "EventStore_ReadByAggregate",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/eventReadByAggregateResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "aggregateId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "fromVersion",
+            "description": "default 0",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "EventStoreService"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
     }
   },
   "definitions": {
@@ -256,7 +297,7 @@
     "eventEvent": {
       "type": "object",
       "properties": {
-        "eventId": {
+        "id": {
           "type": "string",
           "title": "globally unique (UUID v4)"
         },
@@ -322,19 +363,6 @@
     "eventPutSnapshotResponse": {
       "type": "object"
     },
-    "eventReadByAggregateRequest": {
-      "type": "object",
-      "properties": {
-        "aggregateId": {
-          "type": "string"
-        },
-        "fromVersion": {
-          "type": "string",
-          "format": "int64",
-          "title": "default 0"
-        }
-      }
-    },
     "eventReadByAggregateResponse": {
       "type": "object",
       "properties": {
@@ -344,22 +372,6 @@
             "type": "object",
             "$ref": "#/definitions/eventEvent"
           }
-        }
-      }
-    },
-    "eventReadByTypeRequest": {
-      "type": "object",
-      "properties": {
-        "aggregateType": {
-          "type": "string"
-        },
-        "limit": {
-          "type": "string",
-          "format": "int64"
-        },
-        "afterId": {
-          "type": "string",
-          "title": "pagination token"
         }
       }
     },
@@ -450,5 +462,18 @@
         }
       }
     }
-  }
+  },
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "description": "Bearer Token (e.g., JWT) for authentication. Format: `Bearer YOUR_TOKEN`",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "Bearer": []
+    }
+  ]
 }

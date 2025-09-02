@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/cmd"
 	"runtime"
+
+	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/cmd"
 )
 
 func main() {

@@ -1,11 +1,15 @@
 package telemetry
 
+// mocktail:ITelemetryInfrastructure
 import (
 	"context"
 	"fmt"
+	"net/http"
+
 	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/config"
-	pkgLogger "github.com/ferza17/ecommerce-microservices-v2/event-store-service/pkg/logger"
+	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/pkg/logger"
 	"github.com/google/wire"
+	"github.com/rabbitmq/amqp091-go"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/jaeger"
 	"go.opentelemetry.io/otel/propagation"
@@ -17,18 +21,24 @@ import (
 
 type (
 	ITelemetryInfrastructure interface {
-		Close(ctx context.Context) error
-		Tracer(ctx context.Context, fnName string) (context.Context, trace.Span)
+		Shutdown(ctx context.Context) error
+		StartSpanFromContext(ctx context.Context, fnName string) (context.Context, trace.Span)
+		StartSpanFromHttpRequest(r *http.Request, fnName string) (context.Context, trace.Span)
+		StartSpanFromRabbitMQHeader(ctx context.Context, headers amqp091.Table, fnName string) (context.Context, trace.Span)
+		StartSpanFromRpcMetadata(ctx context.Context, fnName string) (context.Context, trace.Span)
+
+		InjectSpanToTextMapPropagator(ctx context.Context) propagation.MapCarrier
 	}
 	telemetryInfrastructure struct {
-		logger         pkgLogger.IZapLogger
+		logger         logger.IZapLogger
 		tracerProvider *sdktrace.TracerProvider
+		serviceName    string
 	}
 )
 
 var Set = wire.NewSet(NewTelemetry)
 
-func NewTelemetry(logger pkgLogger.IZapLogger) ITelemetryInfrastructure {
+func NewTelemetry(logger logger.IZapLogger) ITelemetryInfrastructure {
 	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(
 		jaeger.WithEndpoint(fmt.Sprintf("http://%s:%s/api/traces",
 			config.Get().JaegerTelemetryHost,
@@ -47,22 +57,14 @@ func NewTelemetry(logger pkgLogger.IZapLogger) ITelemetryInfrastructure {
 		)),
 	)
 	otel.SetTracerProvider(tp)
-	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(
+		propagation.TraceContext{},
+		propagation.Baggage{},
+	))
 
 	return &telemetryInfrastructure{
 		logger:         logger,
 		tracerProvider: tp,
+		serviceName:    config.Get().EventStoreServiceServiceName,
 	}
-}
-
-func (t *telemetryInfrastructure) Close(ctx context.Context) error {
-	if err := t.tracerProvider.Shutdown(ctx); err != nil {
-		t.logger.Error(fmt.Sprintf("Failed to shutdown tracer provider: %v", err))
-		return err
-	}
-	return nil
-}
-
-func (t *telemetryInfrastructure) Tracer(ctx context.Context, fnName string) (context.Context, trace.Span) {
-	return t.tracerProvider.Tracer(config.Get().EventStoreServiceServiceName).Start(ctx, fnName)
 }
