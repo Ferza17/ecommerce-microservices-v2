@@ -47,7 +47,7 @@ func NewTransport(
 		address: config.Get().EventStoreServiceRpcHost,
 		port:    config.Get().EventStoreServiceRpcPort,
 		workerPool: worker.NewWorkerPool(
-			fmt.Sprintf("HTTP SERVER ON %s:%s", config.Get().EventStoreServiceRpcHost, config.Get().EventStoreServiceRpcPort),
+			fmt.Sprintf("GRPC SERVER ON %s:%s", config.Get().EventStoreServiceRpcHost, config.Get().EventStoreServiceRpcPort),
 			2),
 		logger:                  logger,
 		telemetryInfrastructure: telemetryInfrastructure,
