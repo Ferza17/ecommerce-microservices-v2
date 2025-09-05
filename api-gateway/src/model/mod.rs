@@ -4,4 +4,5 @@ pub mod rpc {
     pub mod user;
     pub mod product;
     pub mod response;
+    pub mod event;
 }

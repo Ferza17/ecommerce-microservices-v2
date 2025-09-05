@@ -6,8 +6,27 @@ import (
 	"log"
 )
 
-func (c *Config) initDatabaseMongodb(kv *api.KV) {
-	pair, _, err := kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_USERNAME", c.Env), nil)
+type DatabaseMongodb struct {
+	MongoUsername     string
+	MongoPassword     string
+	MongoHost         string
+	MongoPort         string
+	MongoDatabaseName string
+}
+
+func DefaultDatabaseMongodb() *DatabaseMongodb {
+	return &DatabaseMongodb{
+		MongoUsername:     "",
+		MongoPassword:     "",
+		MongoHost:         "",
+		MongoPort:         "",
+		MongoDatabaseName: "",
+	}
+}
+
+func (c *DatabaseMongodb) WithConsulClient(env string, kv *api.KV) *DatabaseMongodb {
+
+	pair, _, err := kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_USERNAME", env), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get MONGO_USERNAME host from consul: %v", err)
 	}
@@ -16,7 +35,7 @@ func (c *Config) initDatabaseMongodb(kv *api.KV) {
 	}
 	c.MongoUsername = string(pair.Value)
 
-	pair, _, err = kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_PASSWORD", c.Env), nil)
+	pair, _, err = kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_PASSWORD", env), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get MONGO_PASSWORD host from consul: %v", err)
 	}
@@ -25,7 +44,7 @@ func (c *Config) initDatabaseMongodb(kv *api.KV) {
 	}
 	c.MongoPassword = string(pair.Value)
 
-	pair, _, err = kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_HOST", c.Env), nil)
+	pair, _, err = kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_HOST", env), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get MONGO_HOST host from consul: %v", err)
 	}
@@ -34,7 +53,7 @@ func (c *Config) initDatabaseMongodb(kv *api.KV) {
 	}
 	c.MongoHost = string(pair.Value)
 
-	pair, _, err = kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_PORT", c.Env), nil)
+	pair, _, err = kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_PORT", env), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get MONGO_PORT host from consul: %v", err)
 	}
@@ -43,7 +62,7 @@ func (c *Config) initDatabaseMongodb(kv *api.KV) {
 	}
 	c.MongoPort = string(pair.Value)
 
-	pair, _, err = kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_DATABASE_NAME/EVENT_STORE", c.Env), nil)
+	pair, _, err = kv.Get(fmt.Sprintf("%s/database/mongodb/MONGO_DATABASE_NAME/EVENT_STORE", env), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get MONGO_DATABASE_NAME/EVENT_STORE host from consul: %v", err)
 	}
@@ -51,4 +70,6 @@ func (c *Config) initDatabaseMongodb(kv *api.KV) {
 		log.Fatal("SetConfig | Consul | MONGO_DATABASE_NAME/EVENT_STORE host is required")
 	}
 	c.MongoDatabaseName = string(pair.Value)
+
+	return c
 }

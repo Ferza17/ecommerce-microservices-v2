@@ -69,11 +69,14 @@ impl HttpTransport {
                 .await?;
         let shipping_transport_grpc =
             crate::module::shipping::transport_grpc::Transport::new(self.config.clone()).await?;
+        let event_transport_grpc =
+            crate::module::event::transport_grpc::Transport::new(self.config.clone()).await?;
 
         // Use case layer
         let auth_use_case = crate::module::auth::usecase::UseCase::new(
             auth_transport_grpc,
             user_transport_grpc.clone(),
+            event_transport_grpc,
             user_transport_rabbitmq.clone(),
             opa,
         );

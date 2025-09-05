@@ -290,6 +290,26 @@ services:
     networks:
       - local
 
+  # EVENT-STORE-SERVICE
+  event-store-service:
+    container_name: event-store-service
+    build:
+      context: ./event-store-service
+      dockerfile: Dockerfile
+    ports:
+      - "50052:50052" # GRPC
+      - "40052:40052" # HTTP
+      - "30052:30052" # HTTP METRIC COLLECTOR
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://event-store-service:40052/v1/event-store/check | grep -q '^200$'" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - local
+
   # NOTIFICATION-SERVICE
   notification-service:
     container_name: notification-service

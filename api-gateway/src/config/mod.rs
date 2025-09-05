@@ -10,3 +10,4 @@ mod service_product;
 mod telemetry_jaeger;
 mod open_policy_agent;
 mod service_user_rabbitmq;
+mod service_event;

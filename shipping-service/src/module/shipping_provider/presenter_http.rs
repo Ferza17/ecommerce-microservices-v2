@@ -121,7 +121,7 @@ pub async fn list_shipping_providers(
     params(
         ("id" = String, Path, description = "shipping provider id"),
     ),
-    responses(
+    responses(  
         (status = OK, body = GetShippingProviderByIdResponse, content_type = "application/json" )
     )
 )]

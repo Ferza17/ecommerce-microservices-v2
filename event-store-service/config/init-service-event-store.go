@@ -6,59 +6,80 @@ import (
 	"log"
 )
 
-func (c *Config) initServiceEventStore(kv *api.KV) {
+type ServiceEventStore struct {
+	ServiceName    string
+	RpcHost        string
+	RpcPort        string
+	HttpHost       string
+	HttpPort       string
+	MetricHttpPort string
+}
 
-	pair, _, err := kv.Get(fmt.Sprintf("%s/services/event-store/SERVICE_NAME", c.Env), nil)
+func DefaultServiceEventStore() *ServiceEventStore {
+	return &ServiceEventStore{
+		ServiceName:    "event-store-service",
+		RpcHost:        "",
+		RpcPort:        "",
+		HttpHost:       "",
+		HttpPort:       "",
+		MetricHttpPort: ""}
+}
+
+func (c *ServiceEventStore) WithConsulClient(env string, kv *api.KV) *ServiceEventStore {
+
+	pair, _, err := kv.Get(fmt.Sprintf("%s/services/event-store/SERVICE_NAME", env), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get SERVICE_NAME from consul: %v", err)
 	}
 	if pair == nil {
 		log.Fatal("SetConfig | Consul | SERVICE_NAME is required")
 	}
-	c.EventStoreServiceServiceName = string(pair.Value)
+	c.ServiceName = string(pair.Value)
 
-	pair, _, err = kv.Get(fmt.Sprintf("%s/services/event-store/RPC_HOST", c.Env), nil)
+	pair, _, err = kv.Get(fmt.Sprintf("%s/services/event-store/RPC_HOST", env), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get RPC_HOST from consul: %v", err)
 	}
 	if pair == nil {
 		log.Fatal("SetConfig | Consul | RPC_HOST is required")
 	}
-	c.EventStoreServiceRpcHost = string(pair.Value)
+	c.RpcHost = string(pair.Value)
 
-	pair, _, err = kv.Get(fmt.Sprintf("%s/services/event-store/RPC_PORT", c.Env), nil)
+	pair, _, err = kv.Get(fmt.Sprintf("%s/services/event-store/RPC_PORT", env), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get RPC_PORT from consul: %v", err)
 	}
 	if pair == nil {
 		log.Fatal("SetConfig | Consul | RPC_PORT is required")
 	}
-	c.EventStoreServiceRpcPort = string(pair.Value)
+	c.RpcPort = string(pair.Value)
 
-	pair, _, err = kv.Get(fmt.Sprintf("%s/services/event-store/HTTP_HOST", c.Env), nil)
+	pair, _, err = kv.Get(fmt.Sprintf("%s/services/event-store/HTTP_HOST", env), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get HTTP_HOST from consul: %v", err)
 	}
 	if pair == nil {
 		log.Fatal("SetConfig | Consul | HTTP_HOST is required")
 	}
-	c.EventStoreServiceHttpHost = string(pair.Value)
+	c.HttpHost = string(pair.Value)
 
-	pair, _, err = kv.Get(fmt.Sprintf("%s/services/event-store/HTTP_PORT", c.Env), nil)
+	pair, _, err = kv.Get(fmt.Sprintf("%s/services/event-store/HTTP_PORT", env), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get HTTP_PORT from consul: %v", err)
 	}
 	if pair == nil {
 		log.Fatal("SetConfig | Consul | HTTP_PORT is required")
 	}
-	c.EventStoreServiceHttpPort = string(pair.Value)
+	c.HttpPort = string(pair.Value)
 
-	pair, _, err = kv.Get(fmt.Sprintf("%s/services/event-store/METRIC_HTTP_PORT", c.Env), nil)
+	pair, _, err = kv.Get(fmt.Sprintf("%s/services/event-store/METRIC_HTTP_PORT", env), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get METRIC_HTTP_PORT from consul: %v", err)
 	}
 	if pair == nil {
 		log.Fatal("SetConfig | Consul | METRIC_HTTP_PORT is required")
 	}
-	c.EventStoreServiceMetricHttpPort = string(pair.Value)
+	c.MetricHttpPort = string(pair.Value)
+
+	return c
 }

@@ -1,6 +1,5 @@
 use base64::Engine;
 use rand::Rng;
-use crate::config::config::AppConfig;
 
 pub const CONNECTION_HEADER: &str = "connection";
 const CONNECTION_HEADER_VALUE_UPGRADE: &str = "Upgrade";

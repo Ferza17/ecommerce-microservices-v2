@@ -26,6 +26,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "proto/v1/shipping/request.proto",
         "proto/v1/shipping/response.proto",
         "proto/v1/shipping/model.proto",
+        // EVENT
+        "proto/v1/event/service.proto",
+        "proto/v1/event/request.proto",
+        "proto/v1/event/response.proto",
+        "proto/v1/event/model.proto",
+        "proto/v1/event/enum.proto",
         // COMMON
         "proto/v1/common/response/response.proto",
     ];
@@ -70,6 +76,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         )
         .field_attribute(
             "timestamp",
+            "#[schema(value_type = String, format = \"date-time\")]",
+        )
+        .field_attribute(
+            "occurred_at",
+            "#[schema(value_type = String, format = \"date-time\")]",
+        )
+        .field_attribute(
+            "taken_at",
             "#[schema(value_type = String, format = \"date-time\")]",
         )
         .field_attribute("Response.data", "#[schema(value_type = serde_json::Value)]")

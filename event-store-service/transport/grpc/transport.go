@@ -7,7 +7,6 @@ import (
 
 	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/config"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/event-store-service/infrastructure/telemetry"
-	authInterceptor "github.com/ferza17/ecommerce-microservices-v2/event-store-service/interceptor/auth"
 	loggerInterceptor "github.com/ferza17/ecommerce-microservices-v2/event-store-service/interceptor/logger"
 	requestIdInterceptor "github.com/ferza17/ecommerce-microservices-v2/event-store-service/interceptor/requestid"
 	telemetryInterceptor "github.com/ferza17/ecommerce-microservices-v2/event-store-service/interceptor/telemetry"
@@ -67,7 +66,7 @@ func (s *Transport) Serve(ctx context.Context) error {
 			requestIdInterceptor.RequestIDRPCInterceptor(),
 			telemetryInterceptor.TelemetryRPCInterceptor(s.telemetryInfrastructure),
 			loggerInterceptor.LoggerRPCInterceptor(s.logger),
-			authInterceptor.AuthRPCUnaryInterceptor(s.logger),
+			//authInterceptor.AuthRPCUnaryInterceptor(s.logger),
 		),
 	}...)
 

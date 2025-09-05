@@ -31,9 +31,9 @@
       "arguments": {}
     },
     {
-      "name": "event.direct.exchange",
+      "name": "event.fanout.exchange",
       "vhost": "/",
-      "type": "direct",
+      "type": "fanout",
       "durable": true,
       "auto_delete": false,
       "internal": false,
