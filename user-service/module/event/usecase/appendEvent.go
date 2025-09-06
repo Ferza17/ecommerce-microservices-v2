@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
@@ -23,7 +24,7 @@ func (u *eventUseCase) AppendEvent(ctx context.Context, request *pb.AppendReques
 		return err
 	}
 
-	if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, config.Get().EventStoreServiceRabbitMQ.ExchangeEventFanout, config.Get().EventStoreServiceRabbitMQ.QueueEventCreated, message); err != nil {
+	if err = u.rabbitmqInfrastructure.PublishFanout(ctx, requestId, config.Get().EventStoreServiceRabbitMQ.ExchangeEventFanout, config.Get().EventStoreServiceRabbitMQ.QueueEventCreated, message); err != nil {
 		u.logger.Error(fmt.Sprintf("Failed to publish AppendEvent request, requestId: %s, error: %v", requestId, err))
 	}
 

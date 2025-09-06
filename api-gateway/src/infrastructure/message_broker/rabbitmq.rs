@@ -63,9 +63,9 @@ impl RabbitMQInfrastructure {
                 ExchangeDeclareOptions {
                     passive: true,
                     durable: true,
-                    auto_delete: true,
+                    auto_delete: false,
                     internal: true,
-                    nowait: true,
+                    nowait: false,
                 },
                 FieldTable::default(),
             )
@@ -79,9 +79,9 @@ impl RabbitMQInfrastructure {
                 QueueDeclareOptions {
                     passive: true,
                     durable: true,
-                    exclusive: true,
-                    auto_delete: true,
-                    nowait: true,
+                    exclusive: false,
+                    auto_delete: false,
+                    nowait: false,
                 },
                 FieldTable::default(),
             )
@@ -95,7 +95,7 @@ impl RabbitMQInfrastructure {
                 exchange,
                 "",
                 QueueBindOptions {
-                    nowait: true,
+                    nowait: false,
                     ..Default::default()
                 },
                 FieldTable::default(),
@@ -108,7 +108,12 @@ impl RabbitMQInfrastructure {
 
     pub async fn setup_consumer(&self, queue: &str) -> lapin::Consumer {
         self.ch
-            .basic_consume(queue, "", Default::default(), Default::default())
+            .basic_consume(queue, "api-gateway", BasicConsumeOptions{
+                no_local: false,
+                no_ack: false,
+                exclusive: false,
+                nowait: true,
+            }, Default::default())
             .await
             .unwrap()
     }

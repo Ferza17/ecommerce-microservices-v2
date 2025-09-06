@@ -3,13 +3,14 @@ package rabbitmq
 import (
 	"context"
 	"fmt"
+	"log"
+
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/google/wire"
 	"github.com/rabbitmq/amqp091-go"
 	"go.uber.org/zap"
-	"log"
 )
 
 type (
@@ -18,6 +19,8 @@ type (
 
 		Consume(ctx context.Context, queue string) (<-chan amqp091.Delivery, error)
 		Publish(ctx context.Context, requestId string, exchange string, queue string, message []byte) error
+		PublishFanout(ctx context.Context, requestId string, exchange string, queue string, message []byte) error
+
 		Close() error
 	}
 	RabbitMQInfrastructure struct {
@@ -55,13 +58,12 @@ func NewRabbitMQInfrastructure(
 		log.Fatalf("Failed to set QoS: %s", err)
 	}
 
-	c := &RabbitMQInfrastructure{
+	return &RabbitMQInfrastructure{
 		amqpConn:                amqpConn,
 		channel:                 ch,
 		telemetryInfrastructure: telemetryInfrastructure,
 		logger:                  logger,
 	}
-	return c
 }
 
 func (c *RabbitMQInfrastructure) Close() error {

@@ -2,6 +2,7 @@ package rabbitmq
 
 import (
 	"fmt"
+
 	"go.uber.org/zap"
 )
 
@@ -38,7 +39,7 @@ func (c *RabbitMQInfrastructure) SetupQueue(exchange string, topic string, queue
 	// Bind queue to exchange (optional - depending on your setup)
 	err = c.channel.QueueBind(
 		queue,
-		queue,
+		"",
 		exchange,
 		false,
 		nil,
