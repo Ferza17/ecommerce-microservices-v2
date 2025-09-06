@@ -92,6 +92,9 @@ type Config struct {
 	UserServiceHttpHost       string
 	UserServiceHttpPort       string
 	UserServiceMetricHttpPort string
+
+	// EVENT STORE SERVICE
+	EventStoreServiceRabbitMQ *ServiceEventStoreRabbitMQ
 }
 
 func SetConfig(path string) {
@@ -141,6 +144,8 @@ func SetConfig(path string) {
 	c.initQueueProduct(consulClient.KV())
 	c.initQueueUser(consulClient.KV())
 	c.initQueueNotification(consulClient.KV())
+
+	c.withServiceEventStoreRabbitMQ(consulClient.KV())
 
 	// User Service Config
 	pair, _, err := consulClient.KV().Get(fmt.Sprintf("%s/services/notification/SERVICE_NAME", c.Env), nil)
@@ -233,4 +238,9 @@ func SetConfig(path string) {
 	)
 
 	viper.WatchConfig()
+}
+
+func (c *Config) withServiceEventStoreRabbitMQ(kv *api.KV) *Config {
+	c.EventStoreServiceRabbitMQ = DefaultServiceEventStoreRabbitMQ().WithConsulClient(c.Env, kv)
+	return c
 }

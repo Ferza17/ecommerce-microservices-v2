@@ -4,15 +4,20 @@ use futures::{SinkExt, StreamExt};
 #[derive(Debug, Clone)]
 pub struct Presenter {
     notification_use_case: crate::module::notification::usecase::UseCase,
+    event_consumer_rabbitmq: crate::module::event::consumer_rabbitmq::Consumer,
 }
 
 pub const ROUTE_PREFIX: &str = "/api/v1/notification";
 pub const TAG: &str = "Notification";
 
 impl Presenter {
-    pub fn new(notification_use_case: crate::module::notification::usecase::UseCase) -> Self {
+    pub fn new(
+        notification_use_case: crate::module::notification::usecase::UseCase,
+        event_consumer_rabbitmq: crate::module::event::consumer_rabbitmq::Consumer,
+    ) -> Self {
         Self {
             notification_use_case,
+            event_consumer_rabbitmq,
         }
     }
     pub fn router(&self) -> axum::Router {
@@ -43,6 +48,9 @@ pub struct ClientMessage {
     params(
         ("request_id" = String, Path, description = "request id"),
     ),
+    security(
+       ("x-request-id" = [])
+    ),
     responses(
         (status = OK, body = ResponseCommand, content_type = "application/json" )
     )
@@ -72,54 +80,41 @@ pub async fn get_notification_with_request_id(
     }
 
     ws.on_upgrade(|socket| async move {
-        let (mut sender, mut receiver) = socket.split();
+        let (mut sender, mut _receiver) = socket.split();
         // Send a welcome message
         send_notification_to_client(
             &mut sender,
             ResponseCommand {
                 status: "success".to_string(),
                 message: "waiting response to be ready".to_string(),
-                data: None,
+                data: Option::from(ResponseCommandData {
+                    request_id: request_id.clone(),
+                    websocket_notification_url: "".to_string(),
+                }),
             },
         )
         .await;
 
-        // Handle incoming messages from client
-        tokio::spawn(async move {
-            while let Some(msg) = receiver.next().await {
-                match msg {
-                    Ok(axum::extract::ws::Message::Text(text)) => {
-                        // TODO: Get from redis or rabbitmq
-                        // Require match request_id
-                        // send to client
-
-                        // Handle client messages (e.g., subscription changes, heartbeat)
-                        if let Ok(client_msg) = serde_json::from_str::<ClientMessage>(&text) {
-                            match client_msg.message_type.as_str() {
-                                "heartbeat" => {
-                                    send_notification_to_client(
-                                        &mut sender,
-                                        ResponseCommand {
-                                            status: "pending".to_string(),
-                                            message: "waiting response to be ready".to_string(),
-                                            data: Option::from(ResponseCommandData {
-                                                request_id: request_id.clone(),
-                                                websocket_notification_url: "".to_string(),
-                                            }),
-                                        },
-                                    )
-                                    .await;
-                                }
-                                _ => {
-                                    println!("Received client message: {:?}", client_msg);
-                                }
-                            }
-                        }
-                    }
-                    Ok(_) => {}
-                    Err(_) => {}
+        let mut event_messages = state.event_consumer_rabbitmq.consume_event_created().await;
+        while let Some(result) = event_messages.recv().await {
+            match result {
+                Ok(payload) => {
+                    send_notification_to_client(
+                        &mut sender,
+                        ResponseCommand {
+                            status: "pending".to_string(),
+                            message: "waiting response to be ready".to_string(),
+                            data: Option::from(ResponseCommandData {
+                                request_id: request_id.clone(),
+                                websocket_notification_url: serde_json::to_string(&payload)
+                                    .unwrap(),
+                            }),
+                        },
+                    )
+                    .await;
                 }
-            }
-        });
+                Err(err) => {}
+            };
+        }
     })
 }

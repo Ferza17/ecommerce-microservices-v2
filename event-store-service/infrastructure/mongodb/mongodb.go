@@ -36,11 +36,11 @@ func NewMongoDBInfrastructure(
 			Client().
 			ApplyURI(
 				fmt.Sprintf("mongodb://%s:%s@%s:%s/%s?authSource=admin",
-					config.Get().MongoUsername,
-					config.Get().MongoPassword,
-					config.Get().MongoHost,
-					config.Get().MongoPort,
-					config.Get().MongoDatabaseName,
+					config.Get().DatabaseMongodb.MongoUsername,
+					config.Get().DatabaseMongodb.MongoPassword,
+					config.Get().DatabaseMongodb.MongoHost,
+					config.Get().DatabaseMongodb.MongoPort,
+					config.Get().DatabaseMongodb.MongoDatabaseName,
 				),
 			),
 	)

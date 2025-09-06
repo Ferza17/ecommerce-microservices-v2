@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/transport/rabbitmq"
 	"log"
 	"sync"
 
@@ -18,6 +19,7 @@ var runCommand = &cobra.Command{
 
 		grpcServer := grpcTransport.Provide()
 		httpServer := http.Provide()
+		rabbitmqServer := rabbitmq.Provide()
 
 		wg := new(sync.WaitGroup)
 
@@ -35,6 +37,15 @@ var runCommand = &cobra.Command{
 			defer wg.Done()
 			if err := httpServer.Serve(ctx); err != nil {
 				log.Fatalf("error serving http server: %v", err)
+				return
+			}
+		}()
+
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if err := rabbitmqServer.Serve(ctx); err != nil {
+				log.Fatalf("error serving rabbitmq server: %v", err)
 				return
 			}
 		}()

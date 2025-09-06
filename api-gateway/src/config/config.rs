@@ -1,3 +1,4 @@
+use crate::config::service_event_rabbitmq::ServiceEventRabbitMQ;
 use crate::config::{
     message_broker_rabbitmq::MessageBrokerRabbitMQ, open_policy_agent::OpenPolicyAgent,
     service_api_gateway::ServiceApiGateway, service_event::ServiceEvent,
@@ -32,6 +33,7 @@ pub struct AppConfig {
     pub service_payment: ServicePayment,
     // FROM CONSUL KV SERVICE/EVENT-STORE
     pub service_event: ServiceEvent,
+    pub service_event_rabbitmq: ServiceEventRabbitMQ,
     // FROM CONSUL JAEGER TELEMETRY
     pub telemetry_jaeger: TelemetryJaeger,
     // FROM CONSUL RABBITMQ
@@ -53,6 +55,7 @@ impl Default for AppConfig {
             service_product: ServiceProduct::default(),
             service_payment: ServicePayment::default(),
             service_event: ServiceEvent::default(),
+            service_event_rabbitmq: ServiceEventRabbitMQ::default(),
             telemetry_jaeger: TelemetryJaeger::default(),
             message_broker_rabbitmq: MessageBrokerRabbitMQ::default(),
             open_policy_agent: OpenPolicyAgent::default(),
@@ -111,6 +114,7 @@ impl AppConfig {
             .with_service_user_rabbitmq(&client)
             .with_service_payment(&client)
             .with_service_event(&client)
+            .with_service_event_rabbitmq(&client)
             .with_service_product(&client)
             .with_message_broker_rabbitmq(&client)
             .with_telemetry_jaeger(&client)
@@ -214,6 +218,20 @@ impl AppConfig {
                     .await
                     .unwrap_or_else(|e| {
                         panic!("Error with_service_payment :  {:?}", e);
+                    });
+            });
+        });
+        self
+    }
+
+    fn with_service_event_rabbitmq(mut self, client: &ConsulClient) -> Self {
+        tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                self.service_event_rabbitmq = ServiceEventRabbitMQ::default()
+                    .with_consul_client(self.config_env.env.clone(), client)
+                    .await
+                    .unwrap_or_else(|e| {
+                        panic!("Error with_service_event_rabbitmq :  {:?}", e);
                     });
             });
         });

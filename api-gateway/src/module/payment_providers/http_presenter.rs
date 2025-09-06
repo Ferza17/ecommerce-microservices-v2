@@ -45,6 +45,7 @@ impl Presenter {
         ("name" = String, Query, description = "Optional providers names (?name=abc)"),
     ),
     security(
+       ("x-request-id" = []),
        ("authorization" = [])
     ),
     tag = TAG,

@@ -41,8 +41,8 @@ var Set = wire.NewSet(NewTelemetry)
 func NewTelemetry(logger logger.IZapLogger) ITelemetryInfrastructure {
 	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(
 		jaeger.WithEndpoint(fmt.Sprintf("http://%s:%s/api/traces",
-			config.Get().JaegerTelemetryHost,
-			config.Get().JaegerTelemetryPort,
+			config.Get().ConfigTelemetry.JaegerTelemetryHost,
+			config.Get().ConfigTelemetry.JaegerTelemetryPort,
 		)),
 	))
 	if err != nil {
@@ -53,7 +53,7 @@ func NewTelemetry(logger logger.IZapLogger) ITelemetryInfrastructure {
 		sdktrace.WithBatcher(exp),
 		sdktrace.WithResource(resource.NewWithAttributes(
 			semconv.SchemaURL,
-			semconv.ServiceNameKey.String(config.Get().EventStoreServiceServiceName),
+			semconv.ServiceNameKey.String(config.Get().EventStoreService.ServiceName),
 		)),
 	)
 	otel.SetTracerProvider(tp)
@@ -65,6 +65,6 @@ func NewTelemetry(logger logger.IZapLogger) ITelemetryInfrastructure {
 	return &telemetryInfrastructure{
 		logger:         logger,
 		tracerProvider: tp,
-		serviceName:    config.Get().EventStoreServiceServiceName,
+		serviceName:    config.Get().EventStoreService.ServiceName,
 	}
 }

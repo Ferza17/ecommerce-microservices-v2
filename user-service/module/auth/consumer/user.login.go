@@ -6,12 +6,16 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
+	eventPb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	pkgMetric "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/metric"
+	"github.com/google/uuid"
 	"github.com/rabbitmq/amqp091-go"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"time"
 )
 
 func (c *authConsumer) UserLogin(ctx context.Context, d *amqp091.Delivery) error {
@@ -24,11 +28,36 @@ func (c *authConsumer) UserLogin(ctx context.Context, d *amqp091.Delivery) error
 		err       error
 	)
 
+	// TESTING
 	defer func(err error) {
+		var AppendEvent = eventPb.AppendRequest{
+			AggregateId:     requestId,
+			AggregateType:   config.Get().QueueUserLogin,
+			ExpectedVersion: 0,
+			Events: []*eventPb.Event{
+				{
+					Id:            uuid.NewString(),
+					AggregateId:   requestId,
+					AggregateType: config.Get().QueueUserLogin,
+					Version:       0,
+					Name:          config.Get().QueueUserLogin,
+					OccurredAt:    timestamppb.New(time.Now()),
+					Payload:       d.Body,
+				},
+			},
+		}
+
 		if err != nil {
 			span.RecordError(err)
 			pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserLogin, "failed").Inc()
+		} else {
+			pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserLogin, "success").Inc()
+			c.logger.Info(fmt.Sprintf("success to consume message : %s", d.Body))
+			if err = c.eventUseCase.AppendEvent(ctx, &AppendEvent); err != nil {
+				c.logger.Error(fmt.Sprintf("failed to append event : %v", zap.Error(err)))
+			}
 		}
+
 		span.End()
 	}(err)
 

@@ -23,10 +23,10 @@ pub async fn handle_run_command(args: RunArgs) {
         })
         .unwrap();
 
-    match init_tracing(cfg.clone()) {
-        Ok(_) => {}
-        Err(_) => panic!("Failed to init tracing"),
-    }
+    // match init_tracing(cfg.clone()) {
+    //     Ok(_) => {}
+    //     Err(_) => panic!("Failed to init tracing"),
+    // }
 
     // ======= WORKER POOLS ===========
     // Create specialized worker pools

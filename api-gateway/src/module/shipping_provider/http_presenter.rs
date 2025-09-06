@@ -47,6 +47,7 @@ impl Presenter {
         ("limit" = u32, Query, description = "required limit $gt 0")
     ),
     security(
+       ("x-request-id" = []),
        ("authorization" = [])
     ),
     tag = TAG,

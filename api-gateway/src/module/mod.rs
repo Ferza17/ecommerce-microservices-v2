@@ -50,6 +50,7 @@ pub mod payment {
 }
 
 pub mod event {
+    pub mod consumer_rabbitmq;
     pub mod transport_grpc;
     pub mod transport_rabbitmq;
 }

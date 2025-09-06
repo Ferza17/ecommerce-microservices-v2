@@ -8,7 +8,6 @@ use crate::util;
 use axum::{extract::State, http::HeaderMap, routing::post};
 use prost_validate::NoopValidator;
 use tracing::instrument;
-
 #[derive(Debug, Clone)]
 pub struct Presenter {
     auth_use_case: crate::module::auth::usecase::UseCase,
@@ -35,6 +34,9 @@ impl Presenter {
     path =format!("{}/register", ROUTE_PREFIX.to_string()),
     tag = TAG,
     request_body = AuthUserRegisterRequest,
+    security(
+       ("x-request-id" = [])
+    ),
     responses(
         (status = OK, body = AuthUserRegisterResponse, content_type = "application/json" )
     )
@@ -83,6 +85,9 @@ pub async fn auth_register(
     post,
     path =format!("{}/login", ROUTE_PREFIX.to_string()),
     tag = TAG,
+    security(
+       ("x-request-id" = [])
+    ),
     request_body = AuthUserLoginByEmailAndPasswordRequest,
     responses(
         (status = OK, body = Response, content_type = "application/json" )
@@ -137,6 +142,9 @@ pub async fn auth_user_login_by_email_and_password(
     path =format!("{}/verify-otp", ROUTE_PREFIX.to_string()),
     tag = TAG,
     request_body = AuthUserVerifyOtpRequest,
+    security(
+       ("x-request-id" = [])
+    ),
     responses(
         (status = OK, body = AuthUserVerifyOtpResponse, content_type = "application/json" )
     )

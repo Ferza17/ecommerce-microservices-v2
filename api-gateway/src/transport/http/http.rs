@@ -18,7 +18,7 @@ use tower_http::{
     cors::{Any, CorsLayer},
     trace::TraceLayer,
 };
-use tracing::{info_span, span};
+use tracing::info_span;
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
@@ -46,6 +46,12 @@ impl HttpTransport {
                 self.config.clone(),
             )
             .await;
+
+        // Consumer Layer
+        let event_consumer_rabbitmq = crate::module::event::consumer_rabbitmq::Consumer::new(
+            self.config.clone(),
+            rabbitmq.clone(),
+        );
 
         // Transport Layer
         let user_transport_grpc =
@@ -132,8 +138,10 @@ impl HttpTransport {
             shipping_use_case,
             auth_use_case,
         );
-        let notification_presenter =
-            crate::module::notification::http_presenter::Presenter::new(notification_use_case);
+        let notification_presenter = crate::module::notification::http_presenter::Presenter::new(
+            notification_use_case,
+            event_consumer_rabbitmq,
+        );
 
         let app = Router::new()
             .nest(

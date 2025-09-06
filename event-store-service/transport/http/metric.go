@@ -12,9 +12,9 @@ import (
 func ServeHttpPrometheusMetricCollector() error {
 	handler := http.NewServeMux()
 	handler.Handle("/v1/event-store/metrics", promhttp.Handler())
-	log.Printf("Starting HTTP Metric Server on %s:%s", config.Get().EventStoreServiceHttpHost, config.Get().EventStoreServiceMetricHttpPort)
+	log.Printf("Starting HTTP Metric Server on %s:%s", config.Get().EventStoreService.HttpHost, config.Get().EventStoreService.MetricHttpPort)
 	if err := http.ListenAndServe(
-		fmt.Sprintf("%s:%s", config.Get().EventStoreServiceHttpHost, config.Get().EventStoreServiceMetricHttpPort),
+		fmt.Sprintf("%s:%s", config.Get().EventStoreService.HttpHost, config.Get().EventStoreService.MetricHttpPort),
 		handler,
 	); err != nil {
 		return err

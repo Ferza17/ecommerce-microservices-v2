@@ -25,27 +25,26 @@ type Config struct {
 	ConsulPort string `mapstructure:"CONSUL_PORT"`
 
 	// Service Config
-	EventStoreService *ServiceEventStore
+	EventStoreService         *ServiceEventStore
+	EventStoreServiceRabbitMQ *ServiceEventStoreRabbitMQ
 	// Database MongoDB
 	DatabaseMongodb *DatabaseMongodb
 	// Telemetry
 	ConfigTelemetry *ConfigTelemetry
 	// MESSAGE BROKER RABBITMQ
 	MessageBrokerRabbitMQ *MessageBrokerRabbitMQ
-
-	ExchangeEvent     string
-	QueueEventCreated string
 }
 
 func DefaultConfig() *Config {
 	return &Config{
-		Env:                   "",
-		ConsulHost:            "",
-		ConsulPort:            "",
-		EventStoreService:     DefaultServiceEventStore(),
-		DatabaseMongodb:       DefaultDatabaseMongodb(),
-		ConfigTelemetry:       DefaultConfigTelemetry(),
-		MessageBrokerRabbitMQ: DefaultMessageBrokerRabbitMQ(),
+		Env:                       "",
+		ConsulHost:                "",
+		ConsulPort:                "",
+		EventStoreService:         DefaultServiceEventStore(),
+		EventStoreServiceRabbitMQ: DefaultServiceEventStoreRabbitMQ(),
+		DatabaseMongodb:           DefaultDatabaseMongodb(),
+		ConfigTelemetry:           DefaultConfigTelemetry(),
+		MessageBrokerRabbitMQ:     DefaultMessageBrokerRabbitMQ(),
 	}
 }
 
@@ -86,6 +85,7 @@ func SetConfig(path string) {
 
 	c.
 		withServiceEventStore(consulClient.KV()).
+		withServiceEventStoreRabbitMQ(consulClient.KV()).
 		withDatabaseMongoDB(consulClient.KV()).
 		withConfigTelemetry(consulClient.KV()).
 		withMessageBrokerRabbitMQ(consulClient.KV()).
@@ -106,6 +106,11 @@ func SetConfig(path string) {
 
 func (c *Config) withServiceEventStore(kv *api.KV) *Config {
 	c.EventStoreService = DefaultServiceEventStore().WithConsulClient(c.Env, kv)
+	return c
+}
+
+func (c *Config) withServiceEventStoreRabbitMQ(kv *api.KV) *Config {
+	c.EventStoreServiceRabbitMQ = DefaultServiceEventStoreRabbitMQ().WithConsulClient(c.Env, kv)
 	return c
 }
 

@@ -46,10 +46,10 @@ func NewTransport(
 	eventPresenter presenter.IEventPresenter,
 ) *Transport {
 	return &Transport{
-		address: config.Get().EventStoreServiceHttpHost,
-		port:    config.Get().EventStoreServiceHttpPort,
+		address: config.Get().EventStoreService.HttpHost,
+		port:    config.Get().EventStoreService.HttpPort,
 		workerPool: worker.NewWorkerPool(
-			fmt.Sprintf("HTTP SERVER ON %s:%s", config.Get().EventStoreServiceHttpHost, config.Get().EventStoreServiceHttpPort),
+			fmt.Sprintf("HTTP SERVER ON %s:%s", config.Get().EventStoreService.HttpHost, config.Get().EventStoreService.HttpPort),
 			2),
 		logger:                  logger,
 		telemetryInfrastructure: telemetryInfrastructure,
@@ -102,7 +102,7 @@ func (s *Transport) Serve(ctx context.Context) error {
 					Kind: &structpb.Value_StringValue{StringValue: "OK"},
 				},
 				"service": &structpb.Value{
-					Kind: &structpb.Value_StringValue{StringValue: config.Get().EventStoreServiceServiceName},
+					Kind: &structpb.Value_StringValue{StringValue: config.Get().EventStoreService.ServiceName},
 				},
 			},
 		})

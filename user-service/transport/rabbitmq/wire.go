@@ -14,6 +14,7 @@ import (
 	authConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/consumer"
 	userRedisRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
 	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
+	eventUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/usecase"
 	rolePostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/repository/postgres"
 	userConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/consumer"
 	userPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/postgres"
@@ -44,6 +45,7 @@ func ProvideRabbitMQServer() *Server {
 		userUseCase.Set,
 		authUseCase.Set,
 		accessControlUseCase.Set,
+		eventUseCase.Set,
 
 		// Presenter Layer
 		authConsumer.Set,

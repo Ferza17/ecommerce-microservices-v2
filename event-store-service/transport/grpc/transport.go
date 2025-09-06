@@ -43,10 +43,10 @@ func NewTransport(
 	eventPresenter presenter.IEventPresenter,
 ) *Transport {
 	return &Transport{
-		address: config.Get().EventStoreServiceRpcHost,
-		port:    config.Get().EventStoreServiceRpcPort,
+		address: config.Get().EventStoreService.RpcHost,
+		port:    config.Get().EventStoreService.RpcPort,
 		workerPool: worker.NewWorkerPool(
-			fmt.Sprintf("GRPC SERVER ON %s:%s", config.Get().EventStoreServiceRpcHost, config.Get().EventStoreServiceRpcPort),
+			fmt.Sprintf("GRPC SERVER ON %s:%s", config.Get().EventStoreService.RpcHost, config.Get().EventStoreService.RpcPort),
 			2),
 		logger:                  logger,
 		telemetryInfrastructure: telemetryInfrastructure,
@@ -76,7 +76,7 @@ func (s *Transport) Serve(ctx context.Context) error {
 	// Mark the service as healthy
 	healthServer := health.NewServer()
 	grpc_health_v1.RegisterHealthServer(s.server, healthServer)
-	healthServer.SetServingStatus(config.Get().EventStoreServiceServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
+	healthServer.SetServingStatus(config.Get().EventStoreService.ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
 
 	reflection.Register(s.server)
 	if err = s.server.Serve(listen); err != nil {

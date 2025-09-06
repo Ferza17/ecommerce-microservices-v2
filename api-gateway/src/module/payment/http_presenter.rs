@@ -44,6 +44,10 @@ impl Presenter {
     path = ROUTE_PREFIX.to_string(),
     tag = TAG,
     request_body = CreatePaymentRequest,
+    security(
+       ("x-request-id" = []),
+       ("authorization" = [])
+    ),
     responses(
         (status = OK, body = CreatePaymentResponse, content_type = "application/json" )
     )

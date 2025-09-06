@@ -11,6 +11,9 @@ use crate::model::rpc::{
         AuthUserVerifyOtpResponse,
     },
 };
+use utoipa::openapi::Required;
+use utoipa::openapi::path::{ParameterBuilder, ParameterIn};
+use utoipa::openapi::security::{ApiKey, ApiKeyValue};
 use utoipa::{
     Modify, OpenApi,
     openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme},
@@ -99,17 +102,12 @@ impl Modify for SecurityAddon {
                     .build(),
             ),
         );
+
         components.security_schemes.insert(
             crate::package::context::request_id::X_REQUEST_ID_HEADER.to_string(),
-            SecurityScheme::Http(
-                HttpBuilder::new()
-                    .scheme(HttpAuthScheme::Bearer)
-                    .description(Some(
-                        "Request ID (e.g., UUID) for tracing. Format: <uuid>",
-                    ))
-                    .bearer_format("UUID")
-                    .build(),
-            ),
+            SecurityScheme::ApiKey(ApiKey::Header(ApiKeyValue::new(
+                crate::package::context::request_id::X_REQUEST_ID_HEADER.to_string(),
+            ))),
         );
     }
 }

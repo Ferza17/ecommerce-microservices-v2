@@ -2,10 +2,13 @@ package rabbitmq
 
 import (
 	"context"
+	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/config"
+	"github.com/rabbitmq/amqp091-go"
 	"log"
 
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/event-store-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/event-store-service/infrastructure/telemetry"
+	eventConsumer "github.com/ferza17/ecommerce-microservices-v2/event-store-service/module/event/consumer"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/event-store-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/pkg/logger"
 	"github.com/ferza17/ecommerce-microservices-v2/event-store-service/pkg/worker"
@@ -20,6 +23,7 @@ type (
 		logger                  logger.IZapLogger
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 		rabbitmqInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
+		eventConsumer           eventConsumer.IEventConsumer
 	}
 )
 
@@ -29,6 +33,7 @@ func NewTransport(
 	logger logger.IZapLogger,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
+	eventConsumer eventConsumer.IEventConsumer,
 ) *Transport {
 	return &Transport{
 		workerPool: worker.NewWorkerPoolTaskQueue(
@@ -36,6 +41,7 @@ func NewTransport(
 		logger:                  logger,
 		telemetryInfrastructure: telemetryInfrastructure,
 		rabbitmqInfrastructure:  rabbitmqInfrastructure,
+		eventConsumer:           eventConsumer,
 	}
 }
 
@@ -45,7 +51,13 @@ func (s *Transport) Serve(ctx context.Context) error {
 		Queue    string
 		Exchange string
 		Topic    string
-	}{}
+	}{
+		{
+			Queue:    config.Get().EventStoreServiceRabbitMQ.QueueEventCreated,
+			Exchange: config.Get().EventStoreServiceRabbitMQ.ExchangeEventFanout,
+			Topic:    amqp091.ExchangeFanout,
+		},
+	}
 
 	for _, queue := range queues {
 		if err := s.rabbitmqInfrastructure.SetupQueue(
@@ -100,6 +112,10 @@ func (s *Transport) Serve(ctx context.Context) error {
 
 					// REGISTER HANDLER
 					switch queue {
+					case config.Get().EventStoreServiceRabbitMQ.QueueEventCreated:
+						task.Handler = func(ctx context.Context, d *amqp091.Delivery) error {
+							return s.eventConsumer.EventCreated(ctx, d)
+						}
 					default:
 						log.Fatalf("invalid queue %s", queue)
 					}
