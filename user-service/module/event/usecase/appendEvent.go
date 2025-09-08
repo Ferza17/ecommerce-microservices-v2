@@ -24,7 +24,16 @@ func (u *eventUseCase) AppendEvent(ctx context.Context, request *pb.AppendReques
 		return err
 	}
 
-	if err = u.rabbitmqInfrastructure.PublishFanout(ctx, requestId, config.Get().EventStoreServiceRabbitMQ.ExchangeEventFanout, config.Get().EventStoreServiceRabbitMQ.QueueEventCreated, message); err != nil {
+	if err = u.rabbitmqInfrastructure.PublishFanout(
+		ctx,
+		requestId,
+		config.Get().EventStoreServiceRabbitMQ.ExchangeEventFanout,
+		[]string{
+			config.Get().EventStoreServiceRabbitMQ.QueueEventEventCreated,
+			config.Get().EventStoreServiceRabbitMQ.QueueEventApiGatewayEventCreated,
+		},
+		message,
+	); err != nil {
 		u.logger.Error(fmt.Sprintf("Failed to publish AppendEvent request, requestId: %s, error: %v", requestId, err))
 	}
 

@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func (c *RabbitMQInfrastructure) PublishFanout(ctx context.Context, requestId string, exchange string, queue string, message []byte) error {
+func (c *RabbitMQInfrastructure) PublishFanout(ctx context.Context, requestId string, exchange string, queues []string, message []byte) error {
 	ctx, span := c.telemetryInfrastructure.StartSpanFromContext(ctx, "RabbitMQInfrastructure.PublishFanout")
 	defer span.End()
 
@@ -28,15 +28,17 @@ func (c *RabbitMQInfrastructure) PublishFanout(ctx context.Context, requestId st
 		return err
 	}
 
-	if err := c.channel.QueueBind(
-		queue,
-		"",
-		exchange,
-		false,
-		nil,
-	); err != nil {
-		c.logger.Error(fmt.Sprintf("failed to bind queue : %v", zap.Error(err)))
-		return err
+	for _, queue := range queues {
+		if err := c.channel.QueueBind(
+			queue,
+			"",
+			exchange,
+			false,
+			nil,
+		); err != nil {
+			c.logger.Error(fmt.Sprintf("failed to bind queue : %v", zap.Error(err)))
+			return err
+		}
 	}
 
 	carrier := c.telemetryInfrastructure.InjectSpanToTextMapPropagator(ctx)

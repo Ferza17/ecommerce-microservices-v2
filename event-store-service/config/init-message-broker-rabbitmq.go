@@ -7,54 +7,56 @@ import (
 )
 
 type MessageBrokerRabbitMQ struct {
-	RabbitMQUsername string
-	RabbitMQPassword string
-	RabbitMQHost     string
-	RabbitMQPort     string
+	Username  string
+	Password  string
+	Host      string
+	Port      string
+	keyPrefix string
 }
 
 func DefaultMessageBrokerRabbitMQ() *MessageBrokerRabbitMQ {
 	return &MessageBrokerRabbitMQ{
-		RabbitMQUsername: "",
-		RabbitMQPassword: "",
-		RabbitMQHost:     "",
-		RabbitMQPort:     "",
+		Username:  "",
+		Password:  "",
+		Host:      "",
+		Port:      "",
+		keyPrefix: "%s/broker/rabbitmq/%s",
 	}
 }
 
 func (c *MessageBrokerRabbitMQ) WithConsulClient(env string, kv *api.KV) *MessageBrokerRabbitMQ {
-	pair, _, err := kv.Get(fmt.Sprintf("%s/broker/rabbitmq/RABBITMQ_USERNAME", env), nil)
+	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "RABBITMQ_USERNAME"), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get RABBITMQ_USERNAME host from consul: %v", err)
 	}
 	if pair == nil {
 		log.Fatal("SetConfig | Consul | RABBITMQ_USERNAME host is required")
 	}
-	c.RabbitMQUsername = string(pair.Value)
-	pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/RABBITMQ_PASSWORD", env), nil)
+	c.Username = string(pair.Value)
+	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "RABBITMQ_PASSWORD"), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get RABBITMQ_PASSWORD host from consul: %v", err)
 	}
 	if pair == nil {
 		log.Fatal("SetConfig | Consul | RABBITMQ_PASSWORD host is required")
 	}
-	c.RabbitMQPassword = string(pair.Value)
-	pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/RABBITMQ_HOST", env), nil)
+	c.Password = string(pair.Value)
+	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "RABBITMQ_HOST"), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get RABBITMQ_HOST host from consul: %v", err)
 	}
 	if pair == nil {
 		log.Fatal("SetConfig | Consul | RABBITMQ_HOST host is required")
 	}
-	c.RabbitMQHost = string(pair.Value)
-	pair, _, err = kv.Get(fmt.Sprintf("%s/broker/rabbitmq/RABBITMQ_PORT", env), nil)
+	c.Host = string(pair.Value)
+	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "RABBITMQ_PORT"), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get RABBITMQ_PORT host from consul: %v", err)
 	}
 	if pair == nil {
 		log.Fatal("SetConfig | Consul | RABBITMQ_PORT host is required")
 	}
-	c.RabbitMQPort = string(pair.Value)
+	c.Port = string(pair.Value)
 
 	return c
 }

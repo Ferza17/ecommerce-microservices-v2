@@ -1,6 +1,5 @@
 use crate::config::config::AppConfig;
 use crate::infrastructure::message_broker::rabbitmq::RabbitMQInfrastructure;
-use crate::model::rpc::event::AppendRequest;
 use crate::package::context::auth::AUTHORIZATION_HEADER;
 use crate::package::context::request_id::X_REQUEST_ID_HEADER;
 use futures::StreamExt;
@@ -36,7 +35,7 @@ impl Consumer {
             .binding(
                 self.app_config
                     .service_event_rabbitmq
-                    .queue_event_created
+                    .queue_event_api_gateway_event_created
                     .as_str(),
                 self.app_config
                     .service_event_rabbitmq
@@ -48,7 +47,7 @@ impl Consumer {
             .setup_consumer(
                 self.app_config
                     .service_event_rabbitmq
-                    .queue_event_created
+                    .queue_event_api_gateway_event_created
                     .as_str(),
             )
             .await;
@@ -78,13 +77,19 @@ impl Consumer {
                                 }
                             }
                         }
+                        
 
-                        let request =
-                            crate::model::rpc::event::AppendRequest::decode(&*delivery.data)
-                                .map_err(|err| DecodeError::new(err.to_string()))
-                                .unwrap();
+                        let data = match crate::model::rpc::event::AppendRequest::decode(
+                            &*delivery.data,
+                        ) {
+                            Ok(data) => data,
+                            Err(err) => {
+                                eprintln!("{:?}", err);
+                                return;
+                            }
+                        };
 
-                        tx.send(Ok(request)).unwrap();
+                        tx.send(Ok(data)).unwrap();
                     }
                     Err(err) => {
                         let _ = tx.send(Err(err));

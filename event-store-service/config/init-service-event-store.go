@@ -13,6 +13,7 @@ type ServiceEventStore struct {
 	HttpHost       string
 	HttpPort       string
 	MetricHttpPort string
+	keyPrefix      string
 }
 
 func DefaultServiceEventStore() *ServiceEventStore {
@@ -22,12 +23,14 @@ func DefaultServiceEventStore() *ServiceEventStore {
 		RpcPort:        "",
 		HttpHost:       "",
 		HttpPort:       "",
-		MetricHttpPort: ""}
+		MetricHttpPort: "",
+		keyPrefix:      "%s/services/event-store/%s",
+	}
 }
 
 func (c *ServiceEventStore) WithConsulClient(env string, kv *api.KV) *ServiceEventStore {
 
-	pair, _, err := kv.Get(fmt.Sprintf("%s/services/event-store/SERVICE_NAME", env), nil)
+	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "SERVICE_NAME"), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get SERVICE_NAME from consul: %v", err)
 	}
@@ -36,7 +39,7 @@ func (c *ServiceEventStore) WithConsulClient(env string, kv *api.KV) *ServiceEve
 	}
 	c.ServiceName = string(pair.Value)
 
-	pair, _, err = kv.Get(fmt.Sprintf("%s/services/event-store/RPC_HOST", env), nil)
+	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "RPC_HOST"), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get RPC_HOST from consul: %v", err)
 	}
@@ -45,7 +48,7 @@ func (c *ServiceEventStore) WithConsulClient(env string, kv *api.KV) *ServiceEve
 	}
 	c.RpcHost = string(pair.Value)
 
-	pair, _, err = kv.Get(fmt.Sprintf("%s/services/event-store/RPC_PORT", env), nil)
+	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "RPC_PORT"), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get RPC_PORT from consul: %v", err)
 	}
@@ -54,7 +57,7 @@ func (c *ServiceEventStore) WithConsulClient(env string, kv *api.KV) *ServiceEve
 	}
 	c.RpcPort = string(pair.Value)
 
-	pair, _, err = kv.Get(fmt.Sprintf("%s/services/event-store/HTTP_HOST", env), nil)
+	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "HTTP_HOST"), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get HTTP_HOST from consul: %v", err)
 	}
@@ -63,7 +66,7 @@ func (c *ServiceEventStore) WithConsulClient(env string, kv *api.KV) *ServiceEve
 	}
 	c.HttpHost = string(pair.Value)
 
-	pair, _, err = kv.Get(fmt.Sprintf("%s/services/event-store/HTTP_PORT", env), nil)
+	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "HTTP_PORT"), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get HTTP_PORT from consul: %v", err)
 	}
@@ -72,7 +75,7 @@ func (c *ServiceEventStore) WithConsulClient(env string, kv *api.KV) *ServiceEve
 	}
 	c.HttpPort = string(pair.Value)
 
-	pair, _, err = kv.Get(fmt.Sprintf("%s/services/event-store/METRIC_HTTP_PORT", env), nil)
+	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "METRIC_HTTP_PORT"), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get METRIC_HTTP_PORT from consul: %v", err)
 	}

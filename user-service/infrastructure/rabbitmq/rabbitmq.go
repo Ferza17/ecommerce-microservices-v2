@@ -19,7 +19,7 @@ type (
 
 		Consume(ctx context.Context, queue string) (<-chan amqp091.Delivery, error)
 		Publish(ctx context.Context, requestId string, exchange string, queue string, message []byte) error
-		PublishFanout(ctx context.Context, requestId string, exchange string, queue string, message []byte) error
+		PublishFanout(ctx context.Context, requestId string, exchange string, queues []string, message []byte) error
 
 		Close() error
 	}
