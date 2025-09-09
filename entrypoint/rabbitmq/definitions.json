@@ -137,6 +137,8 @@
       "vhost": "/",
       "durable": true
     },
+
+
     {
       "name": "direct.product.exchange.product.product_created.queue",
       "vhost": "/",
@@ -167,6 +169,7 @@
       "vhost": "/",
       "durable": true
     },
+
     {
       "name": "direct.notification.exchange.notification.notification_email_otp_created.queue",
       "vhost": "/",
@@ -187,6 +190,7 @@
       "vhost": "/",
       "durable": true
     },
+
     {
       "name": "fanout.event.exchange.event.event_created.queue",
       "vhost": "/",
@@ -197,6 +201,7 @@
       "vhost": "/",
       "durable": true
     },
+
     {
       "name": "direct.commerce.exchange.commerce.cart_created.queue",
       "vhost": "/",
@@ -227,6 +232,7 @@
       "vhost": "/",
       "durable": true
     },
+
     {
       "name": "direct.payment.exchange.payment.payment_order_created.queue",
       "vhost": "/",
@@ -247,6 +253,7 @@
       "vhost": "/",
       "durable": true
     },
+
     {
       "name": "direct.shipping.exchange.shipping.shipping_created.queue",
       "vhost": "/",
