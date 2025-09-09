@@ -1,6 +1,6 @@
 # GO
 - plugin: go
-  out: notification-service/model/rpc/gen
+  out: services/notification-service/model/rpc/gen
   opt:
     - paths=source_relative
       

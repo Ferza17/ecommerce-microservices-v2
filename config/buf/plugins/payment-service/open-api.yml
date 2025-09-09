@@ -1,5 +1,5 @@
 - plugin: openapiv2
-  out: payment-service/docs
+  out: services/payment-service/docs
   opt:
     - generate_unbound_methods=true
 

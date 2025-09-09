@@ -1,5 +1,5 @@
 - plugin: openapiv2
-  out: user-service/docs
+  out: services/user-service/docs
   opt:
     - generate_unbound_methods=true
 

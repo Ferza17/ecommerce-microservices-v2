@@ -1,5 +1,5 @@
 - plugin: buf.build/bufbuild/validate-go
-  out: user-service/model/rpc/gen
+  out: services/user-service/model/rpc/gen
   opt:
     - paths=source_relative
       

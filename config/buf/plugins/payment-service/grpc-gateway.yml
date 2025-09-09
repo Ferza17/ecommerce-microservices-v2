@@ -1,5 +1,5 @@
 - plugin: grpc-gateway
-  out: payment-service/model/rpc/gen
+  out: services/payment-service/model/rpc/gen
   opt:
     - paths=source_relative
 

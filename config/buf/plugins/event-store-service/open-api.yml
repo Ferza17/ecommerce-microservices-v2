@@ -1,5 +1,5 @@
 - plugin: openapiv2
-  out: event-store-service/docs
+  out: services/event-store-service/docs
   opt:
     - generate_unbound_methods=true
 

@@ -1,5 +1,5 @@
 - plugin: grpc-gateway
-  out: event-store-service/model/rpc/gen
+  out: services/event-store-service/model/rpc/gen
   opt:
     - paths=source_relative
 

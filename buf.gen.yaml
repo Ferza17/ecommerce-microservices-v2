@@ -4,7 +4,7 @@ managed:
   optimize_for: CODE_SIZE
 plugins:
   - plugin: buf.build/community/stephenh-ts-proto
-    out: commerce-service/src/model/rpc/gen
+    out: services/commerce-service/src/model/rpc/gen
     opt:
       - esModuleInterop=true
       - outputServices=grpc-js
@@ -12,7 +12,7 @@ plugins:
       - import_style=relative
       - env=node
   - plugin: go-grpc
-    out: event-store-service/model/rpc/gen
+    out: services/event-store-service/model/rpc/gen
     opt:
       - paths=source_relative
       - require_unimplemented_servers=false
@@ -59,7 +59,7 @@ plugins:
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/shipping
   # GO
   - plugin: go
-    out: event-store-service/model/rpc/gen
+    out: services/event-store-service/model/rpc/gen
     opt:
       - paths=source_relative
       # EXTERNAL
@@ -104,7 +104,7 @@ plugins:
       - Mv1/shipping/response.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/shipping
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/shipping
   - plugin: grpc-gateway
-    out: event-store-service/model/rpc/gen
+    out: services/event-store-service/model/rpc/gen
     opt:
       - paths=source_relative
       # EXTERNAL
@@ -149,7 +149,7 @@ plugins:
       - Mv1/shipping/response.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/shipping
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/shipping
   - plugin: openapiv2
-    out: event-store-service/docs
+    out: services/event-store-service/docs
     opt:
       - generate_unbound_methods=true
       # EXTERNAL
@@ -194,7 +194,7 @@ plugins:
       - Mv1/shipping/response.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/shipping
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/shipping
   - plugin: buf.build/bufbuild/validate-go
-    out: event-store-service/model/rpc/gen
+    out: services/event-store-service/model/rpc/gen
     opt:
       - paths=source_relative
       # EXTERNAL
@@ -239,7 +239,7 @@ plugins:
       - Mv1/shipping/response.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/shipping
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/event-store-service/model/rpc/gen/v1/shipping
   - plugin: go-grpc
-    out: notification-service/model/rpc/gen
+    out: services/notification-service/model/rpc/gen
     opt:
       - paths=source_relative
       - require_unimplemented_servers=false
@@ -286,7 +286,7 @@ plugins:
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/shipping
   # GO
   - plugin: go
-    out: notification-service/model/rpc/gen
+    out: services/notification-service/model/rpc/gen
     opt:
       - paths=source_relative
       # EXTERNAL
@@ -331,7 +331,7 @@ plugins:
       - Mv1/shipping/response.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/shipping
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/shipping
   - plugin: grpc-gateway
-    out: notification-service/model/rpc/gen
+    out: services/notification-service/model/rpc/gen
     opt:
       - paths=source_relative
       # EXTERNAL
@@ -376,7 +376,7 @@ plugins:
       - Mv1/shipping/response.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/shipping
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/shipping
   - plugin: openapiv2
-    out: notification-service/docs
+    out: services/notification-service/docs
     opt:
       - generate_unbound_methods=true
       # EXTERNAL
@@ -421,7 +421,7 @@ plugins:
       - Mv1/shipping/response.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/shipping
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/shipping
   - plugin: buf.build/bufbuild/validate-go
-    out: notification-service/model/rpc/gen
+    out: services/notification-service/model/rpc/gen
     opt:
       - paths=source_relative
       # EXTERNAL
@@ -466,7 +466,7 @@ plugins:
       - Mv1/shipping/response.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/shipping
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/shipping
   - plugin: go-grpc
-    out: payment-service/model/rpc/gen
+    out: services/payment-service/model/rpc/gen
     opt:
       - paths=source_relative
       - require_unimplemented_servers=false
@@ -513,7 +513,7 @@ plugins:
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/shipping
   # GO
   - plugin: go
-    out: payment-service/model/rpc/gen
+    out: services/payment-service/model/rpc/gen
     opt:
       - paths=source_relative
       # EXTERNAL
@@ -558,7 +558,7 @@ plugins:
       - Mv1/shipping/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/shipping
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/shipping
   - plugin: grpc-gateway
-    out: payment-service/model/rpc/gen
+    out: services/payment-service/model/rpc/gen
     opt:
       - paths=source_relative
       # EXTERNAL
@@ -603,7 +603,7 @@ plugins:
       - Mv1/shipping/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/shipping
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/shipping
   - plugin: openapiv2
-    out: payment-service/docs
+    out: services/payment-service/docs
     opt:
       - generate_unbound_methods=true
       # EXTERNAL
@@ -648,7 +648,7 @@ plugins:
       - Mv1/shipping/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/shipping
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/shipping
   - plugin: buf.build/bufbuild/validate-go
-    out: payment-service/model/rpc/gen
+    out: services/payment-service/model/rpc/gen
     opt:
       - paths=source_relative
       # EXTERNAL
@@ -693,7 +693,7 @@ plugins:
       - Mv1/shipping/response.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/shipping
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/shipping
   - plugin: go-grpc
-    out: product-service/model/rpc/gen
+    out: services/product-service/model/rpc/gen
     opt:
       - paths=source_relative
       - require_unimplemented_servers=false
@@ -740,7 +740,7 @@ plugins:
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/shipping
   # GO
   - plugin: go
-    out: product-service/model/rpc/gen
+    out: services/product-service/model/rpc/gen
     opt:
       - paths=source_relative
       # EXTERNAL
@@ -785,7 +785,7 @@ plugins:
       - Mv1/shipping/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/shipping
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/shipping
   - plugin: grpc-gateway
-    out: product-service/model/rpc/gen
+    out: services/product-service/model/rpc/gen
     opt:
       - paths=source_relative
       # EXTERNAL
@@ -830,7 +830,7 @@ plugins:
       - Mv1/shipping/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/shipping
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/shipping
   - plugin: openapiv2
-    out: product-service/docs
+    out: services/product-service/docs
     opt:
       - generate_unbound_methods=true
       # EXTERNAL
@@ -875,7 +875,7 @@ plugins:
       - Mv1/shipping/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/shipping
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/shipping
   - plugin: buf.build/bufbuild/validate-go
-    out: product-service/model/rpc/gen
+    out: services/product-service/model/rpc/gen
     opt:
       - paths=source_relative
       # EXTERNAL
@@ -920,7 +920,7 @@ plugins:
       - Mv1/shipping/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/shipping
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/shipping
   - plugin: go-grpc
-    out: user-service/model/rpc/gen
+    out: services/user-service/model/rpc/gen
     opt:
       - paths=source_relative
       - require_unimplemented_servers=false
@@ -967,7 +967,7 @@ plugins:
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/shipping
   # GO
   - plugin: go
-    out: user-service/model/rpc/gen
+    out: services/user-service/model/rpc/gen
     opt:
       - paths=source_relative
       # EXTERNAL
@@ -1012,7 +1012,7 @@ plugins:
       - Mv1/shipping/response.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/shipping
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/shipping
   - plugin: grpc-gateway
-    out: user-service/model/rpc/gen
+    out: services/user-service/model/rpc/gen
     opt:
       - paths=source_relative
       # EXTERNAL
@@ -1057,7 +1057,7 @@ plugins:
       - Mv1/shipping/response.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/shipping
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/shipping
   - plugin: openapiv2
-    out: user-service/docs
+    out: services/user-service/docs
     opt:
       - generate_unbound_methods=true
       # EXTERNAL
@@ -1102,7 +1102,7 @@ plugins:
       - Mv1/shipping/response.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/shipping
       - Mv1/shipping/service.proto=github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/shipping
   - plugin: buf.build/bufbuild/validate-go
-    out: user-service/model/rpc/gen
+    out: services/user-service/model/rpc/gen
     opt:
       - paths=source_relative
       # EXTERNAL

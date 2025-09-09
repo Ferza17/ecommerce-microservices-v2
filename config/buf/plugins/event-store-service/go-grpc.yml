@@ -1,6 +1,6 @@
 # GO-GRPC
 - plugin: go-grpc
-  out: event-store-service/model/rpc/gen
+  out: services/event-store-service/model/rpc/gen
   opt:
     - paths=source_relative
     - require_unimplemented_servers=false

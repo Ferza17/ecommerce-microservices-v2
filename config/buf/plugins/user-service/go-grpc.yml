@@ -1,6 +1,6 @@
 # GO-GRPC
 - plugin: go-grpc
-  out: user-service/model/rpc/gen
+  out: services/user-service/model/rpc/gen
   opt:
     - paths=source_relative
     - require_unimplemented_servers=false

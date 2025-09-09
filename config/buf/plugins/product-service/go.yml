@@ -1,6 +1,6 @@
 # GO
 - plugin: go
-  out: product-service/model/rpc/gen
+  out: services/product-service/model/rpc/gen
   opt:
     - paths=source_relative
       

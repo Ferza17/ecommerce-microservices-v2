@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --file docker-compose.yml --out k8s/
+    kompose.version: 1.36.0 (HEAD)
+  labels:
+    io.kompose.service: zookeeper-local
+  name: zookeeper-local
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: zookeeper-local
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert --file docker-compose.yml --out k8s/
+        kompose.version: 1.36.0 (HEAD)
+      labels:
+        io.kompose.service: zookeeper-local
+    spec:
+      containers:
+        - env:
+            - name: ZOOKEEPER_CLIENT_PORT
+              value: "2181"
+          image: confluentinc/cp-zookeeper:7.2.15
+          livenessProbe:
+            exec:
+              command:
+                - echo ruok | nc zookeeper-local 2181
+            failureThreshold: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          name: zookeeper-local
+          ports:
+            - containerPort: 2181
+              protocol: TCP
+      restartPolicy: Always

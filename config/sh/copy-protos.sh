@@ -2,27 +2,27 @@
 
 
 echo "=================================================="
-echo ">>> copy file .proto to commerce-service/proto <<<"
+echo ">>> copy file .proto to services/commerce-service/proto <<<"
 echo "=================================================="
 
 # COPY TO COMMERCE SERVICE
-TARGET_DIR="commerce-service/proto";
+TARGET_DIR="services/commerce-service/proto";
 mkdir -p "$TARGET_DIR";
 rsync -av --include='*.proto' --include='*/' --exclude='*' "proto/" "$TARGET_DIR";
 
 echo "=================================================="
-echo ">>> copy file .proto to shipping-service/proto <<<"
+echo ">>> copy file .proto to services/shipping-service/proto <<<"
 echo "=================================================="
 
-TARGET_DIR="shipping-service/proto";
+TARGET_DIR="services/shipping-service/proto";
 mkdir -p "$TARGET_DIR";
 rsync -av --include='*.proto' --include='*/' --exclude='*' "proto/" "$TARGET_DIR";
 
 echo "=================================================="
-echo ">>> copy file .proto to api-gateway/proto <<<"
+echo ">>> copy file .proto to services/api-gateway/proto <<<"
 echo "=================================================="
 
-TARGET_DIR="api-gateway/proto";
+TARGET_DIR="services/api-gateway/proto";
 mkdir -p "$TARGET_DIR";
 rsync -av --include='*.proto' --include='*/' --exclude='*' "proto/" "$TARGET_DIR";
 

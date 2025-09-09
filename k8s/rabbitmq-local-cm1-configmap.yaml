@@ -25,7 +25,7 @@ data:
       ],
       "exchanges": [
         {
-          "name": "commerce.direct.exchange",
+          "name": "direct.commerce.exchange",
           "vhost": "/",
           "type": "direct",
           "durable": true,
@@ -34,7 +34,16 @@ data:
           "arguments": {}
         },
         {
-          "name": "event.direct.exchange",
+          "name": "fanout.event.exchange",
+          "vhost": "/",
+          "type": "fanout",
+          "durable": true,
+          "auto_delete": false,
+          "internal": false,
+          "arguments": {}
+        },
+        {
+          "name": "direct.notification.exchange",
           "vhost": "/",
           "type": "direct",
           "durable": true,
@@ -43,7 +52,7 @@ data:
           "arguments": {}
         },
         {
-          "name": "notification.direct.exchange",
+          "name": "direct.product.exchange",
           "vhost": "/",
           "type": "direct",
           "durable": true,
@@ -52,7 +61,7 @@ data:
           "arguments": {}
         },
         {
-          "name": "product.direct.exchange",
+          "name": "direct.user.exchange",
           "vhost": "/",
           "type": "direct",
           "durable": true,
@@ -61,7 +70,7 @@ data:
           "arguments": {}
         },
         {
-          "name": "user.direct.exchange",
+          "name": "direct.payment.exchange",
           "vhost": "/",
           "type": "direct",
           "durable": true,
@@ -70,16 +79,7 @@ data:
           "arguments": {}
         },
         {
-          "name": "payment.direct.exchange",
-          "vhost": "/",
-          "type": "direct",
-          "durable": true,
-          "auto_delete": false,
-          "internal": false,
-          "arguments": {}
-        },
-        {
-          "name": "payment.delayed.exchange",
+          "name": "delayed.payment.exchange",
           "vhost": "/",
           "type": "x-delayed-message",
           "durable": true,
@@ -90,7 +90,7 @@ data:
           }
         },
         {
-          "name": "shipping.direct.exchange",
+          "name": "direct.shipping.exchange",
           "vhost": "/",
           "type": "direct",
           "durable": true,
@@ -101,147 +101,179 @@ data:
       ],
       "queues": [
         {
-          "name": "user.created",
+          "name": "direct.user.exchange.user.user_created.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "user.created.failed",
+          "name": "direct.user.exchange.user.user_created.failed.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "user.updated",
+          "name": "direct.user.exchange.user.user_updated.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "user.updated.failed",
+          "name": "direct.user.exchange.user.user_updated.failed.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "user.login",
+          "name": "direct.user.exchange.user.user_login.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "user.login.failed",
+          "name": "direct.user.exchange.user.user_login.failed.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "user.logout",
+          "name": "direct.user.exchange.user.user_logout.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "product.created",
+          "name": "direct.user.exchange.user.user_logout.failed.queue",
+          "vhost": "/",
+          "durable": true
+        },
+
+
+        {
+          "name": "direct.product.exchange.product.product_created.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "product.created.failed",
+          "name": "direct.product.exchange.product.product_created.failed.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "product.updated",
+          "name": "direct.product.exchange.product.product_updated.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "product.updated.failed",
+          "name": "direct.product.exchange.product.product_updated.failed.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "product.deleted",
+          "name": "direct.product.exchange.product.product_deleted.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "product.deleted.failed",
+          "name": "direct.product.exchange.product.product_deleted.failed.queue",
+          "vhost": "/",
+          "durable": true
+        },
+
+        {
+          "name": "direct.notification.exchange.notification.notification_email_otp_created.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "notification.email.otp.created",
+          "name": "direct.notification.exchange.notification.notification_email_otp_created.failed.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "notification.email.otp.created.failed",
+          "name": "direct.notification.exchange.notification.notification_email_payment_order_created.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "notification.email.payment.order.created",
+          "name": "direct.notification.exchange.notification.notification_email_payment_order_created.failed.queue",
+          "vhost": "/",
+          "durable": true
+        },
+
+        {
+          "name": "fanout.event.exchange.event.event_created.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "notification.email.payment.order.created.failed",
+          "name": "fanout.event.exchange.api_gateway.event_created.queue",
+          "vhost": "/",
+          "durable": true
+        },
+
+        {
+          "name": "direct.commerce.exchange.commerce.cart_created.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "event.created",
+          "name": "direct.commerce.exchange.commerce.cart_created.failed.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "cart.created",
+          "name": "direct.commerce.exchange.commerce.cart_updated.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "cart.updated",
+          "name": "direct.commerce.exchange.commerce.cart_updated.failed.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "cart.deleted",
+          "name": "direct.commerce.exchange.commerce.cart_deleted.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "payment.order.created",
+          "name": "direct.commerce.exchange.commerce.cart_deleted.failed.queue",
+          "vhost": "/",
+          "durable": true
+        },
+
+        {
+          "name": "direct.payment.exchange.payment.payment_order_created.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "payment.order.created.failed",
+          "name": "direct.payment.exchange.payment.payment_order_created.failed.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "payment.order.delayed.cancelled",
+          "name": "delayed.payment.exchange.payment.payment_order_created.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "payment.order.delayed.cancelled.failed",
+          "name": "delayed.payment.exchange.payment.payment_order_created.failed.queue",
+          "vhost": "/",
+          "durable": true
+        },
+
+        {
+          "name": "direct.shipping.exchange.shipping.shipping_created.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "shipping.created",
+          "name": "direct.shipping.exchange.shipping.shipping_created.failed.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "shipping.created.failed",
+          "name": "direct.shipping.exchange.shipping.shipping_updated.queue",
           "vhost": "/",
           "durable": true
         },
         {
-          "name": "shipping.updated",
-          "vhost": "/",
-          "durable": true
-        },
-        {
-          "name": "shipping.updated.failed",
+          "name": "direct.shipping.exchange.shipping.shipping_updated.failed.queue",
           "vhost": "/",
           "durable": true
         }

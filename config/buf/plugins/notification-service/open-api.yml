@@ -1,5 +1,5 @@
 - plugin: openapiv2
-  out: notification-service/docs
+  out: services/notification-service/docs
   opt:
     - generate_unbound_methods=true
 

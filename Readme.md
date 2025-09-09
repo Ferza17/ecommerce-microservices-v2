@@ -25,7 +25,6 @@
 - SHIPPING-SERVICE
 
 ### TODOS
-- [ ] Rewrite API-GATEWAY to RUST
 - [ ] Rewrite Event Store Service to RUST
 
 ## Author
