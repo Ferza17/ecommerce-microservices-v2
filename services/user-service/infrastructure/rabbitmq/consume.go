@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-func (c RabbitMQInfrastructure) Consume(ctx context.Context, queue string) (<-chan amqp091.Delivery, error) {
+func (c *RabbitMQInfrastructure) Consume(ctx context.Context, queue string) (<-chan amqp091.Delivery, error) {
 	deliveries, err := c.channel.Consume(
 		queue, // queue
 		"",    // consumer

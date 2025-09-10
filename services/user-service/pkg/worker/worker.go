@@ -8,33 +8,33 @@ import (
 )
 
 type WorkerPool struct {
-	workerName string
-	workers    int
-	taskQueue  chan TaskQueue
-	wg         sync.WaitGroup
-	ctx        context.Context
-	cancel     context.CancelFunc
+	workerName        string
+	workers           int
+	rabbitmqTaskQueue chan RabbitMQTaskQueue
+	wg                sync.WaitGroup
+	ctx               context.Context
+	cancel            context.CancelFunc
 }
 
 func NewWorkerPool(workerName string, workers int) *WorkerPool {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &WorkerPool{
-		workerName: workerName,
-		workers:    workers,
-		taskQueue:  make(chan TaskQueue),
-		ctx:        ctx,
-		cancel:     cancel,
+		workerName:        workerName,
+		workers:           workers,
+		rabbitmqTaskQueue: make(chan RabbitMQTaskQueue),
+		ctx:               ctx,
+		cancel:            cancel,
 	}
 }
 
-func NewWorkerPoolTaskQueue(workerName string, workers int, queueSize int) *WorkerPool {
+func NewWorkerPoolRabbitMQTaskQueue(workerName string, workers int, queueSize int) *WorkerPool {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &WorkerPool{
-		workerName: workerName,
-		workers:    workers,
-		taskQueue:  make(chan TaskQueue, queueSize),
-		ctx:        ctx,
-		cancel:     cancel,
+		workerName:        workerName,
+		workers:           workers,
+		rabbitmqTaskQueue: make(chan RabbitMQTaskQueue, queueSize),
+		ctx:               ctx,
+		cancel:            cancel,
 	}
 }
 
@@ -50,7 +50,7 @@ func (wp *WorkerPool) worker(id int) {
 	defer wp.wg.Done()
 	for {
 		select {
-		case task := <-wp.taskQueue:
+		case task := <-wp.rabbitmqTaskQueue:
 			if err := task.Handler(task.Ctx, task.Delivery); err != nil {
 				log.Printf("Worker Queue %s : Task Error: %v", wp.workerName, err)
 				return
@@ -64,6 +64,6 @@ func (wp *WorkerPool) worker(id int) {
 
 func (wp *WorkerPool) Stop() {
 	wp.cancel()
-	close(wp.taskQueue)
+	close(wp.rabbitmqTaskQueue)
 	wp.wg.Wait()
 }

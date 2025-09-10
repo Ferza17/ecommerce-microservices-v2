@@ -31,11 +31,6 @@ type Config struct {
 	JaegerTelemetryHost string
 	JaegerTelemetryPort string
 
-	RabbitMQUsername string
-	RabbitMQPassword string
-	RabbitMQHost     string
-	RabbitMQPort     string
-
 	// EXCHANGE
 	ExchangeCommerce       string
 	ExchangeEvent          string
@@ -66,17 +61,13 @@ type Config struct {
 	CommonSagaStatusSuccess string
 	CommonSagaStatusFailed  string
 
-	PostgresHost         string
-	PostgresPort         string
-	PostgresUsername     string
-	PostgresPassword     string
-	PostgresDatabaseName string
-	PostgresSSLMode      string
+	BrokerKafka      *BrokerKafka
+	BrokerKafkaTopic *BrokerKafkaTopic
 
-	RedisHost     string
-	RedisPort     string
-	RedisPassword string
-	RedisDB       int
+	BrokerRabbitMQ *BrokerRabbitMQ
+
+	DatabasePostgres *DatabasePostgres
+	DatabaseRedis    *DatabaseRedis
 
 	JwtAccessTokenSecret          string
 	JwtAccessTokenExpirationTime  time.Duration
@@ -112,7 +103,7 @@ func SetConfig(path string) {
 	if err != nil {
 		panic(fmt.Sprintf("config not found: %s", err.Error()))
 	}
-	if err := viper.Unmarshal(&c); err != nil {
+	if err = viper.Unmarshal(&c); err != nil {
 		log.Fatalf("SetConfig | could not parse config: %v", err)
 	}
 
@@ -136,16 +127,19 @@ func SetConfig(path string) {
 	// Get Consul Key / ValueconsulClient.KV()
 	c.initTelemetry(consulClient.KV())
 	c.initCommon(consulClient.KV())
-	c.initRabbitmq(consulClient.KV())
-	c.initPostgres(consulClient.KV())
-	c.initRedis(consulClient.KV())
 	c.initUserService(consulClient.KV())
 	c.initExchange(consulClient.KV())
 	c.initQueueProduct(consulClient.KV())
 	c.initQueueUser(consulClient.KV())
 	c.initQueueNotification(consulClient.KV())
 
-	c.withServiceEventStoreRabbitMQ(consulClient.KV())
+	c.
+		withServiceEventStoreRabbitMQ(consulClient.KV()).
+		withDatabasePostgres(consulClient.KV()).
+		withDatabaseRedis(consulClient.KV()).
+		withBrokerRabbitMQ(consulClient.KV()).
+		withBrokerKafka(consulClient.KV()).
+		withBrokerKafkaTopic(consulClient.KV())
 
 	// User Service Config
 	pair, _, err := consulClient.KV().Get(fmt.Sprintf("%s/services/notification/SERVICE_NAME", c.Env), nil)
@@ -242,5 +236,30 @@ func SetConfig(path string) {
 
 func (c *Config) withServiceEventStoreRabbitMQ(kv *api.KV) *Config {
 	c.EventStoreServiceRabbitMQ = DefaultServiceEventStoreRabbitMQ().WithConsulClient(c.Env, kv)
+	return c
+}
+
+func (c *Config) withDatabasePostgres(kv *api.KV) *Config {
+	c.DatabasePostgres = DefaultDatabasePostgres().WithConsulClient(c.Env, kv)
+	return c
+}
+
+func (c *Config) withDatabaseRedis(kv *api.KV) *Config {
+	c.DatabaseRedis = DefaultDatabaseRedis().WithConsulClient(c.Env, kv)
+	return c
+}
+
+func (c *Config) withBrokerRabbitMQ(kv *api.KV) *Config {
+	c.BrokerRabbitMQ = DefaultRabbitMQBroker().WithConsulClient(c.Env, kv)
+	return c
+}
+
+func (c *Config) withBrokerKafka(kv *api.KV) *Config {
+	c.BrokerKafka = DefaultKafkaBroker().WithConsulClient(c.Env, kv)
+	return c
+}
+
+func (c *Config) withBrokerKafkaTopic(kv *api.KV) *Config {
+	c.BrokerKafkaTopic = DefaultKafkaBrokerTopic().WithConsulClient(c.Env, kv)
 	return c
 }

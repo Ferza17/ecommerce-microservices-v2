@@ -25,9 +25,9 @@ var Set = wire.NewSet(NewRedisInfrastructure)
 
 func NewRedisInfrastructure(logger logger.IZapLogger) IRedisInfrastructure {
 	client := redisClient.NewClient(&redisClient.Options{
-		Addr:     fmt.Sprintf("%s:%s", config.Get().RedisHost, config.Get().RedisPort),
-		Password: config.Get().RedisPassword,
-		DB:       config.Get().RedisDB,
+		Addr:     fmt.Sprintf("%s:%s", config.Get().DatabaseRedis.Host, config.Get().DatabaseRedis.Port),
+		Password: config.Get().DatabaseRedis.Password,
+		DB:       config.Get().DatabaseRedis.DB,
 	})
 
 	if err := client.Ping(context.Background()).Err(); err != nil {

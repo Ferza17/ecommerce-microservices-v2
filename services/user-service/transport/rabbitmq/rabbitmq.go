@@ -5,7 +5,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
-	authConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/consumer"
+	authConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/consumer/rabbitmq"
 	userConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/consumer"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
@@ -40,7 +40,7 @@ func NewServer(
 	authConsumer authConsumer.IAuthConsumer,
 ) *Server {
 	return &Server{
-		workerPool: pkgWorker.NewWorkerPoolTaskQueue(
+		workerPool: pkgWorker.NewWorkerPoolRabbitMQTaskQueue(
 			"RabbitMQ Consumer", 9, 1000),
 		amqpInfrastructure:      amqpInfrastructure,
 		logger:                  logger,
@@ -123,7 +123,7 @@ func (srv *Server) Serve(ctx context.Context) error {
 					span.SetAttributes(attribute.String("messaging.destination", queue))
 					span.SetAttributes(attribute.String(pkgContext.CtxKeyRequestID, requestId))
 
-					task := pkgWorker.TaskQueue{
+					task := pkgWorker.RabbitMQTaskQueue{
 						QueueName: queue,
 						Ctx:       newCtx,
 						Delivery:  &d,

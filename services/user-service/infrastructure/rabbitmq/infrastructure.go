@@ -40,10 +40,10 @@ func NewRabbitMQInfrastructure(
 
 	amqpConn, err := amqp091.Dial(
 		fmt.Sprintf("amqp://%s:%s@%s:%s/",
-			config.Get().RabbitMQUsername,
-			config.Get().RabbitMQPassword,
-			config.Get().RabbitMQHost,
-			config.Get().RabbitMQPort,
+			config.Get().BrokerRabbitMQ.Username,
+			config.Get().BrokerRabbitMQ.Password,
+			config.Get().BrokerRabbitMQ.Host,
+			config.Get().BrokerRabbitMQ.Port,
 		))
 	if err != nil {
 		log.Fatalf("Failed to connect to RabbitMQ: %s", err)

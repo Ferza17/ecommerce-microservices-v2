@@ -11,7 +11,7 @@ import (
 	accessControlPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/postgres"
 	accessControlRedisRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/redis"
 	accessControlUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/usecase"
-	authConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/consumer"
+	authConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/consumer/rabbitmq"
 	userRedisRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
 	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
 	eventUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/usecase"

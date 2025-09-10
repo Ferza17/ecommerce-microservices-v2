@@ -14,7 +14,7 @@ import (
 	postgres4 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/postgres"
 	redis3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/redis"
 	usecase2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/usecase"
-	consumer2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/consumer"
+	rabbitmq2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/consumer/rabbitmq"
 	redis2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
 	usecase3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
 	usecase4 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/usecase"
@@ -43,7 +43,7 @@ func ProvideRabbitMQServer() *Server {
 	iAccessControlUseCase := usecase2.NewAccessControlUseCase(iAccessControlPostgresqlRepository, iAccessControlRedisRepository, iTelemetryInfrastructure, iPostgresSQL, iZapLogger)
 	iAuthUseCase := usecase3.NewAuthUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iAuthRedisRepository, iAccessControlUseCase, iRabbitMQInfrastructure, iTelemetryInfrastructure, iPostgresSQL, iZapLogger)
 	iEventUseCase := usecase4.NewEventUseCase(iTelemetryInfrastructure, iRabbitMQInfrastructure, iZapLogger)
-	iAuthConsumer := consumer2.NewAuthConsumer(iRabbitMQInfrastructure, iTelemetryInfrastructure, iAuthUseCase, iEventUseCase, iZapLogger)
+	iAuthConsumer := rabbitmq2.NewAuthConsumer(iRabbitMQInfrastructure, iTelemetryInfrastructure, iAuthUseCase, iEventUseCase, iZapLogger)
 	server := NewServer(iRabbitMQInfrastructure, iTelemetryInfrastructure, iZapLogger, iUserConsumer, iAuthConsumer)
 	return server
 }
