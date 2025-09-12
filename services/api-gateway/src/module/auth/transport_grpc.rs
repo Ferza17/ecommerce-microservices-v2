@@ -1,6 +1,6 @@
 use opentelemetry::trace::FutureExt;
 use crate::config::config::AppConfig;
-use crate::model::rpc::user::{AuthUserLoginByEmailAndPasswordRequest, AuthUserRegisterRequest, AuthUserRegisterResponse, AuthUserVerifyOtpRequest, AuthUserVerifyOtpResponse, auth_service_client::AuthServiceClient, AuthUserFindUserByTokenRequest, AuthUserFindUserByTokenResponse};
+use crate::model::rpc::user::{AuthUserRegisterRequest, AuthUserRegisterResponse, AuthUserVerifyOtpRequest, AuthUserVerifyOtpResponse, auth_service_client::AuthServiceClient, AuthUserFindUserByTokenRequest, AuthUserFindUserByTokenResponse};
 use crate::package::context::request_id::X_REQUEST_ID_HEADER;
 use crate::util::metadata::inject_trace_context;
 use tracing::{Level, Span, event, instrument};

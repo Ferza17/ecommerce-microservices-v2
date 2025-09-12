@@ -13,7 +13,7 @@ services:
     command: agent -dev -client=0.0.0.0 -ui
     depends_on:
       postgres-local:
-        condition: service_healthy
+         condition: service_healthy
       redis-local:
         condition: service_healthy
     healthcheck:
@@ -88,6 +88,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo
       MONGO_INITDB_ROOT_PASSWORD: 1234
+    volumes:
+      - ./entrypoint/mongo:/docker-entrypoint-initdb.d:ro
     networks:
       - local
 
@@ -107,6 +109,11 @@ services:
     ports:
       - '9200:9200' #EXPOSE FOR LOCAL DEVELOPMENT
       - '9300:9300' #EXPOSE FOR LOCAL DEVELOPMENT
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail http://localhost:9200/_cluster/health?wait_for_status=green || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - ./entrypoint/elasticsearch/init-index.sh:/init-index.sh
       - ./entrypoint/elasticsearch/products-mapping.json:/products-mapping.json
@@ -156,26 +163,23 @@ services:
     volumes:
       - ./entrypoint/rabbitmq/plugins:/usr/lib/rabbitmq/plugins
       - ./entrypoint/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
-
     command: >
       sh -c "
       cp /usr/lib/rabbitmq/plugins/rabbitmq_delayed_message_exchange-3.11.1.ez /plugins/ &&
       rabbitmq-plugins enable --offline rabbitmq_delayed_message_exchange &&
       rabbitmq-server
       "
-
     networks:
       - local
 
   # MESSAGE BROKER APACHE KAFKA
-
   ## ZOOKEEPER
   zookeeper-local:
     image: confluentinc/cp-zookeeper:7.2.15
     container_name: zookeeper-local
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME:
+      ZOOKEEPER_TICK_TIME: 2000
     healthcheck:
       test: [ "CMD-SHELL", "echo ruok | nc zookeeper-local 2181" ]
       interval: 10s
@@ -186,7 +190,8 @@ services:
     networks:
       - local
 
-  ## KAFKA
+  ## KAFKA BROKER 1
+
   kafka-local-broker-1:
     image: confluentinc/cp-kafka:7.2.15
     container_name: kafka-local-broker-1
@@ -195,15 +200,28 @@ services:
         condition: service_healthy
     ports:
       - "9092:9092"
-      - "29092:29092"
+      - "9101:9101"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper-local:2181"
-      # For external access (e.g. local apps, Kafka UI)
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-local-broker-1:9092,PLAINTEXT_HOST://localhost:29092
+      # Listeners
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-local-broker-1:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      # Replication & transactions
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      # JMX monitoring
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+
+      # SCHEMA REGISTRY
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry-local:8081
+
+
     volumes:
       - ./entrypoint/kafka/create-topics.sh:/usr/local/bin/create-topics.sh
     command: >
@@ -215,87 +233,165 @@ services:
       - local
     healthcheck:
       # This checks that the broker is ready to list topics
-      test: [ "CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list" ]
+      test: [ "CMD-SHELL", "kafka-topics --bootstrap-server kafka-local-broker-1:9092 --list" ]
       interval: 10s
       timeout: 5s
       retries: 5
 
   ## SCHEMA REGISTRY
+
   schema-registry-local:
     image: confluentinc/cp-schema-registry:7.2.15
     container_name: schema-registry-local
     depends_on:
-      - kafka-local-broker-1
+      kafka-local-broker-1:
+        condition: service_healthy
     ports:
       - "8081:8081"
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry-local
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka-local-broker-1:9092"
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka-local-broker-1:29092"
+      SCHEMA_REGISTRY_LISTENERS:
+      SCHEMA_REGISTRY_JMX_HOSTNAME: "localhost"
+      SCHEMA_REGISTRY_JMX_PORT: 31002
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/subjects" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - local
 
   ## KAFKA CONNECT
+
   kafka-connect-local:
     image: confluentinc/cp-kafka-connect:7.2.15
     container_name: kafka-connect-local
     depends_on:
-      - kafka-local-broker-1
-      - schema-registry-local
+      kafka-local-broker-1:
+        condition: service_healthy
+      schema-registry-local:
+        condition: service_healthy
+      postgres-local:
+        condition: service_healthy
+      elasticsearch-local:
+        condition: service_healthy
     ports:
       - "8083:8083"
+    restart: always
     environment:
-      CONNECT_BOOTSTRAP_SERVERS: "kafka-local-broker-1:9092"
-      CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect
+      CONNECT_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka-local-broker-1:29092"
+      CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect-local
       CONNECT_GROUP_ID: "compose-connect-group"
-      CONNECT_CONFIG_STORAGE_TOPIC: "connect-configs"
-      CONNECT_OFFSET_STORAGE_TOPIC: "connect-offsets"
-      CONNECT_STATUS_STORAGE_TOPIC: "connect-status"
+      CONNECT_CONFIG_STORAGE_TOPIC: "compose-connect-configs"
+      CONNECT_OFFSET_STORAGE_TOPIC: "compose-connect-offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "compose-connect-status"
       CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
       CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
-      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.converters.ByteArrayConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.converters.ByteArrayConverter"
       CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_REST_PORT: 8083
-      CONNECT_PLUGIN_PATH: "/usr/share/java,/etc/kafka-connect/jars"
+      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
+    volumes:
+      - ./entrypoint/kafka-connect/plugins:/usr/share/confluent-hub-components
+    #    command:
+    #      - bash
+    #      - -c
+    #      - |
+    #        confluent-hub install --no-prompt confluentinc/kafka-connect-jdbc:10.8.4 && \
+    #        confluent-hub install --no-prompt confluentinc/kafka-connect-elasticsearch:15.0.1 && \
+    #        confluent-hub install --no-prompt mongodb/kafka-connect-mongodb:1.11.2 && \
+    #        confluent-hub install --no-prompt jcustenborder/kafka-connect-redis:latest && \
+    #        /etc/confluent/docker/run
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://kafka-connect-local:8083/connectors || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     networks:
       - local
+
+  ## KSQLDB-SERVER
 
   ksqldb-server-local:
     image: confluentinc/cp-ksqldb-server:7.2.15
     container_name: ksqldb-server-local
     depends_on:
-      - kafka-local-broker-1
-      - kafka-connect-local
+      kafka-local-broker-1:
+        condition: service_healthy
+      kafka-connect-local:
+        condition: service_healthy
     ports:
       - "8088:8088"
-    environment:
-      KSQL_LISTENERS: "http://0.0.0.0:8088"
-      KSQL_BOOTSTRAP_SERVERS: "kafka-local-broker-1:9092"
-      KSQL_KSQL_CONNECT_URL: "http://kafka-connect-local:8083"
-      KSQL_KSQL_SCHEMA_REGISTRY_URL: "http://schema-registry-local:8081"
-      KSQL_CACHE_MAX_BYTES_BUFFERING: 0
+    working_dir: /etc/ksqldb-server
+    command: [ "ksql-server-start", "ksql-server.properties" ]
+    volumes:
+      - ./entrypoint/ksqldb-server:/etc/ksqldb-server
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail --silent http://localhost:8088/healthcheck || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - local
+
+  ## KSQLDB-CLI
+
+  ksqldb-cli-local:
+    image: confluentinc/ksqldb-cli:0.14.0
+    container_name: ksqldb-cli-local
+    depends_on:
+      kafka-local-broker-1:
+        condition: service_healthy
+      ksqldb-server-local:
+        condition: service_healthy
+      kafka-connect-local:
+        condition: service_healthy
+    platform: linux/amd64
+    volumes:
+      - ./entrypoint/ksqldb-cli/connectors:/connectors
+      - ./entrypoint/ksqldb-cli/streams:/scripts
+      - ./entrypoint/ksqldb-cli/init-all.sh:/init-all.sh
+    entrypoint: /bin/bash
+    command: [ "/init-all.sh" ]
+    tty: true
+    stdin_open: true
+    networks:
+      - local
+
+  ## CONTROL CENTER
 
   control-center-local:
     image: confluentinc/cp-enterprise-control-center:7.2.15
     container_name: control-center-local
     depends_on:
-      - kafka-local-broker-1
-      - schema-registry-local
-      - kafka-connect-local
-      - ksqldb-server-local
+      kafka-local-broker-1:
+        condition: service_healthy
+      schema-registry-local:
+        condition: service_healthy
+      kafka-connect-local:
+        condition: service_healthy
+      ksqldb-server-local:
+        condition: service_healthy
     ports:
       - "9021:9021"
     environment:
-      CONTROL_CENTER_BOOTSTRAP_SERVERS: "kafka-local-broker-1:9092"
+      ## ZOOKEEPER
       CONTROL_CENTER_ZOOKEEPER_CONNECT: "zookeeper-local:2181"
+      ## BOOTSTRAP BROKER
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: "kafka-local-broker-1:29092"
+      ## KAFKA-CONNECT
       CONTROL_CENTER_CONNECT_CONNECT-DEFAULT_CLUSTER: "kafka-connect-local:8083"
-      CONTROL_CENTER_KCONNECT_URL: "kafka-connect-local:8083"
+      CONTROL_CENTER_CONNECT_HEALTHCHECK_ENDPOINT: '/connectors'
+      ## KAFKA-SCHEMA-REGISTRY
       CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry-local:8081"
-      CONTROL_CENTER_KSQL_KSQLDB-CLUSTER_URL: "http://ksqldb-server-local:8088"
+      ## KSQLDB
+      CONTROL_CENTER_KSQL_KSQLDB1_URL: "http://ksqldb-server-local:8088"
+      CONTROL_CENTER_KSQL_KSQLDB1_ADVERTISED_URL: "http://ksqldb-server-local:8088"
+      ## CONTROL-CENTER
       CONTROL_CENTER_REPLICATION_FACTOR: 1
       CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
       CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_REPLICATION: 1
@@ -337,7 +433,6 @@ services:
       - prometheus-local
 
   # FOR METRICS
-
   prometheus-local:
     container_name: prometheus-local
     image: prom/prometheus:latest
@@ -375,24 +470,24 @@ services:
     restart: unless-stopped
 
   # REVERSE PROXY AND LOAD BALANCER
-  #  traefik-local:
-  #    image: traefik:v3.0
-  #    container_name: traefik-local
-  #    command:
-  #      - --configFile=/etc/traefik/traefik.yml
-  #    ports:
-  #      - "80:80"        # HTTP
-  #      - "443:443"      # HTTPS (optional)
-  #      - "9000:9000"    # gRPC entrypoint
-  #      - "8080:8080"    # Traefik dashboard
-  #    volumes:
-  #      - /var/run/docker.sock:/var/run/docker.sock:ro
-  #      - ./entrypoint/traefik:/etc/traefik:ro
-  #    networks:
-  #      - local
 
-  # OPEN POLICY AGENT
-  # FOR RBAC
+#  traefik-local:
+#    image: traefik:v3.0
+#    container_name: traefik-local
+#    command:
+#      - --configFile=/etc/traefik/traefik.yml
+#    ports:
+#      - "80:80"        # HTTP
+#      - "443:443"      # HTTPS (optional)
+#      - "9000:9000"    # gRPC entrypoint
+#      - "8080:8080"    # Traefik dashboard
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock:ro
+#      - ./entrypoint/traefik:/etc/traefik:ro
+#    networks:
+#      - local
+
+  # OPEN POLICY AGENT FOR RBAC
 
   opa-local:
     image: openpolicyagent/opa:latest
@@ -420,6 +515,7 @@ services:
 
 
   # USER-SERVICE
+
   user-service:
     container_name: user-service
     build:
@@ -445,6 +541,7 @@ services:
       - local
 
   # EVENT-STORE-SERVICE
+
   event-store-service:
     container_name: event-store-service
     build:
@@ -465,6 +562,7 @@ services:
       - local
 
   # NOTIFICATION-SERVICE
+
   notification-service:
     container_name: notification-service
     build:
@@ -475,6 +573,9 @@ services:
       - "40053:40053" # HTTP
       - "30053:30053" # HTTP METRIC COLLECTOR
     restart: always
+    depends_on:
+      consul-local:
+        condition: service_healthy
     healthcheck:
       test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://notification-service:40053/v1/notification/check | grep -q '^200$'" ]
       interval: 30s
@@ -485,6 +586,7 @@ services:
       - local
 
   # PRODUCT-SERVICE
+
   product-service:
     container_name: product-service
     build:
@@ -510,6 +612,7 @@ services:
       - local
 
   # PAYMENT-SERVICE
+
   payment-service:
     container_name: payment-service
     build:
@@ -535,6 +638,7 @@ services:
       - local
 
   # SHIPPING-SERVICE
+
   shipping-service:
     container_name: shipping-service
     build:

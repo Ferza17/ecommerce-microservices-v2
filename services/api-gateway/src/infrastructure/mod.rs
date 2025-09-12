@@ -1,4 +1,5 @@
 pub mod message_broker {
+    pub mod kafka;
     pub mod rabbitmq;
 }
 

@@ -1,17 +1,24 @@
 # Naming Convention for RabbitMQ
 ---
-## TOPIC
-naming convention :`<topic_owner_name>.<type>`
+## SNAPSHOT /  CHANGELOG TOPIC
+- naming convention for snapshot / changelog :`<domain>.<type>.snapshot`
 
-example : 
-- `topic.user_register.queue`
-- `topic.user_register.failed.queue`
-- `topic.user_login.queue`
-- `topic.user_login.failed.queue`
-- `direct.payment_service.exchange.payment_service.order_created.queue`
-- `direct.payment_service.exchange.payment_service.order_created.failed.queue`
-- `delayed.payment_service.exchange.payment_service.order_delayed_cancel.queue`
-- `delayed.payment_service.exchange.payment_service.order_delayed_cancel.failed.queue`
-- `direct.event_store_service.exchange.event_store_service.append.queue`
-- `direct.event_store_service.exchange.event_store_service.append.failed.queue`
-- `direct.event_store_service.exchange.api_gateway.append.queue`
+### Example : 
+- `users.login.snapshot`
+- `users.created.snapshot`
+- `users.updated.snapshot`
+---
+
+## SINK CONNECTOR
+- naming convention for snapshot / changelog :`<connector type>.<database provider>.<databases>.<table or collection>`
+
+### Example :
+- `sink.pg.users.users`
+- `sink.pg.users.roles`
+- `sink.pg.products.products`
+- `sink.pg.shippings.shippings`
+- `sink.pg.shippings.shipping_providers`
+- `sink.pg.payments.payments`
+- `sink.pg.payments.payment_providers`
+- `source.mongo.notification.templates`
+---

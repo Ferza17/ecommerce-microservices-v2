@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS users
     role_id      VARCHAR(255),
     created_at   TIMESTAMP    NOT NULL DEFAULT NOW(),
     updated_at   TIMESTAMP    NOT NULL DEFAULT NOW(),
-    discarded_at TIMESTAMP WITH TIME ZONE,
+    discarded_at TIMESTAMP,
 
     -- Foreign Key Constraints
     CONSTRAINT fk_users_role FOREIGN KEY (role_id) REFERENCES roles (id) ON DELETE SET NULL,

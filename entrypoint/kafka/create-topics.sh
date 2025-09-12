@@ -1,27 +1,42 @@
 #!/bin/bash
 
 echo ">>> Creating Kafka topics..."
-KAFKA_BROKER="kafka-local:9092"
+KAFKA_BROKER="kafka-local-broker-1:9092"
 
 # Define topics (name:partitions:replication-factor)
 TOPICS=(
-  "user.user_created:3:1"
-  "user.user_updated:3:1"
-  "user.user_login:3:1"
-  "user.user_logout:1:1"
-  "product.product_created:3:1"
-  "product.product_updated:3:1"
-  "product.product_deleted:3:1"
-  "notification.email_otp_created:2:1"
-  "notification.email_payment_order_created:2:1"
-  "event.event_created:3:1"
-  "commerce.cart_created:3:1"
-  "commerce.cart_updated:3:1"
-  "commerce.cart_deleted:3:1"
-  "payment.payment_order_created:3:1"
-  "payment.payment_order_created.delayed:2:1"
-  "shipping.shipping_created:3:1"
-  "shipping.shipping_updated:3:1"
+  "sink.pg.users.users:3:1"
+  "sink.pg.users.roles:3:1"
+  "users.user_created.snapshot:3:1"
+  "users.user_updated.snapshot:3:1"
+  "users.user_login.snapshot:3:1"
+  "users.user_logout.snapshot:3:1"
+
+  "sink.pg.products.products:3:1"
+  "sink.es.products.products:3:1"
+  "products.product_created.snapshot:3:1"
+  "products.product_updated.snapshot:3:1"
+  "products.product_deleted.snapshot:3:1"
+
+  "source.mongo.notifications.notification_templates:3:1"
+  "notifications.email_otp_created.snapshot:2:1"
+  "notifications.email_payment_order_created.snapshot:2:1"
+
+  "commerce.cart_created.snapshot:3:1"
+  "commerce.cart_updated.snapshot:3:1"
+  "commerce.cart_deleted.snapshot:3:1"
+  "commerce.wishlist_created.snapshot:3:1"
+  "commerce.wishlist_updated.snapshot:3:1"
+  "commerce.wishlist_deleted.snapshot:3:1"
+
+  "sink.pg.payments.payments:3:1"
+  "payments.payment_order_created.snapshot:3:1"
+  "payments.payment_order_cancelled_delayed.snapshot:2:1"
+
+  "sink.pg.shippings.shippings:3:1"
+  "sink.pg.shippings.shipping_providers:3:1"
+  "shippings.shipping_created.snapshot:3:1"
+  "shippings.shipping_updated.snapshot:3:1"
 )
 
 for t in "${TOPICS[@]}"; do
