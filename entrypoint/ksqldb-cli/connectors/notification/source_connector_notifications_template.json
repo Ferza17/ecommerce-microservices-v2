@@ -9,6 +9,10 @@
     "publish.full.document.only": "true",
     "output.format.value": "json",
     "output.format.key": "json",
-    "topic.prefix": "source.mongo.notifications.notification_templates"
+    "topic.prefix": "",
+    "topics": "source.mongo.notifications.notification_templates",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false"
   }
 }

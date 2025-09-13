@@ -90,6 +90,11 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: 1234
     volumes:
       - ./entrypoint/mongo:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: [ "CMD", "mongosh", "--username", "mongo", "--password", "1234", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - local
 
@@ -104,7 +109,7 @@ services:
       - "cluster.name=products"
       - "node.name=node1"
       - "bootstrap.memory_lock=false"
-      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - "xpack.security.enabled=false"
     ports:
       - '9200:9200' #EXPOSE FOR LOCAL DEVELOPMENT
@@ -114,6 +119,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
     volumes:
       - ./entrypoint/elasticsearch/init-index.sh:/init-index.sh
       - ./entrypoint/elasticsearch/products-mapping.json:/products-mapping.json
@@ -295,6 +301,7 @@ services:
       CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_REST_PORT: 8083
       CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
+      KAFKA_HEAP_OPTS: "-Xms512M -Xmx2G"
     volumes:
       - ./entrypoint/kafka-connect/plugins:/usr/share/confluent-hub-components
     #    command:
@@ -328,6 +335,7 @@ services:
       - "8088:8088"
     working_dir: /etc/ksqldb-server
     command: [ "ksql-server-start", "ksql-server.properties" ]
+    restart: always
     volumes:
       - ./entrypoint/ksqldb-server:/etc/ksqldb-server
     healthcheck:
@@ -355,6 +363,7 @@ services:
       - ./entrypoint/ksqldb-cli/connectors:/connectors
       - ./entrypoint/ksqldb-cli/streams:/scripts
       - ./entrypoint/ksqldb-cli/init-all.sh:/init-all.sh
+    restart: unless-stopped
     entrypoint: /bin/bash
     command: [ "/init-all.sh" ]
     tty: true
@@ -376,6 +385,7 @@ services:
         condition: service_healthy
       ksqldb-server-local:
         condition: service_healthy
+    restart: always
     ports:
       - "9021:9021"
     environment:
@@ -513,7 +523,6 @@ services:
     networks:
       - local
 
-
   # USER-SERVICE
 
   user-service:
@@ -552,6 +561,11 @@ services:
       - "40052:40052" # HTTP
       - "30052:30052" # HTTP METRIC COLLECTOR
     restart: always
+    depends_on:
+      consul-local:
+        condition: service_healthy
+      mongo-local:
+        condition: service_healthy
     healthcheck:
       test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://event-store-service:40052/v1/event-store/check | grep -q '^200$'" ]
       interval: 30s
@@ -576,6 +590,8 @@ services:
     depends_on:
       consul-local:
         condition: service_healthy
+      mongo-local:
+        condition: service_healthy
     healthcheck:
       test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://notification-service:40053/v1/notification/check | grep -q '^200$'" ]
       interval: 30s
@@ -586,86 +602,86 @@ services:
       - local
 
   # PRODUCT-SERVICE
-
-  product-service:
-    container_name: product-service
-    build:
-      context: ./services/product-service
-      dockerfile: Dockerfile
-    ports:
-      - "50055:50055" # GRPC
-      - "40055:40055" # HTTP
-      - "30055:30055" # HTTP METRIC COLLECTOR
-    restart: always
-    depends_on:
-      postgres-local:
-        condition: service_healthy
-      consul-local:
-        condition: service_healthy
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://product-service:40055/v1/product/check | grep -q '^200$'" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
-    networks:
-      - local
+#
+#  product-service:
+#    container_name: product-service
+#    build:
+#      context: ./services/product-service
+#      dockerfile: Dockerfile
+#    ports:
+#      - "50055:50055" # GRPC
+#      - "40055:40055" # HTTP
+#      - "30055:30055" # HTTP METRIC COLLECTOR
+#    restart: always
+#    depends_on:
+#      postgres-local:
+#        condition: service_healthy
+#      consul-local:
+#        condition: service_healthy
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://product-service:40055/v1/product/check | grep -q '^200$'" ]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 20s
+#    networks:
+#      - local
 
   # PAYMENT-SERVICE
-
-  payment-service:
-    container_name: payment-service
-    build:
-      context: ./services/payment-service
-      dockerfile: Dockerfile
-    ports:
-      - "50054:50054" # GRPC
-      - "40054:40054" # HTTP
-      - "30054:30054" # HTTP METRIC COLLECTOR
-    restart: always
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://payment-service:40054/v1/payment/check | grep -q '^200$'" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
-    depends_on:
-      postgres-local:
-        condition: service_healthy
-      consul-local:
-        condition: service_healthy
-    networks:
-      - local
+#
+#  payment-service:
+#    container_name: payment-service
+#    build:
+#      context: ./services/payment-service
+#      dockerfile: Dockerfile
+#    ports:
+#      - "50054:50054" # GRPC
+#      - "40054:40054" # HTTP
+#      - "30054:30054" # HTTP METRIC COLLECTOR
+#    restart: always
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://payment-service:40054/v1/payment/check | grep -q '^200$'" ]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 20s
+#    depends_on:
+#      postgres-local:
+#        condition: service_healthy
+#      consul-local:
+#        condition: service_healthy
+#    networks:
+#      - local
 
   # SHIPPING-SERVICE
-
-  shipping-service:
-    container_name: shipping-service
-    build:
-      context: ./services/shipping-service
-      dockerfile: Dockerfile
-    ports:
-      - "50057:50057" # GRPC
-      - "40057:40057" # HTTP
-      - "30057:30057" # HTTP METRIC COLLECTOR
-    environment:
-      DATABASE_URL: postgres://postgres:1234@postgres-local:5432/shippings
-    restart: no
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:40057/v1/shipping/check | grep -q '^200$'" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
-    depends_on:
-      user-service:
-        condition: service_healthy
-      postgres-local:
-        condition: service_healthy
-      consul-local:
-        condition: service_healthy
-    networks:
-      - local
+#
+#  shipping-service:
+#    container_name: shipping-service
+#    build:
+#      context: ./services/shipping-service
+#      dockerfile: Dockerfile
+#    ports:
+#      - "50057:50057" # GRPC
+#      - "40057:40057" # HTTP
+#      - "30057:30057" # HTTP METRIC COLLECTOR
+#    environment:
+#      DATABASE_URL: postgres://postgres:1234@postgres-local:5432/shippings
+#    restart: no
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:40057/v1/shipping/check | grep -q '^200$'" ]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 20s
+#    depends_on:
+#      user-service:
+#        condition: service_healthy
+#      postgres-local:
+#        condition: service_healthy
+#      consul-local:
+#        condition: service_healthy
+#    networks:
+#      - local
 
 networks:
   local:
