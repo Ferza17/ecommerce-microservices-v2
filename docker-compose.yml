@@ -90,6 +90,10 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: 1234
     volumes:
       - ./entrypoint/mongo:/docker-entrypoint-initdb.d:ro
+      - ./entrypoint/mongo/mongodb.key:/etc/mongo/mongodb.key:ro
+    command: ["--replSet", "rs0", "--keyFile", "/etc/mongo/mongodb.key"]
+    depends_on:
+      - keyfile-gen
     healthcheck:
       test: [ "CMD", "mongosh", "--username", "mongo", "--password", "1234", "--eval", "db.adminCommand('ping')" ]
       interval: 10s
@@ -97,6 +101,15 @@ services:
       retries: 5
     networks:
       - local
+
+  ## MONGO KEY FOR REPLICATION SET
+  keyfile-gen:
+    container_name: keyfile-gen
+    image: alpine
+    user: "1000:1000"
+    volumes:
+      - ./entrypoint/mongo:/data
+    command: sh -c "openssl rand -base64 741 > /data/mongodb.key && chmod 600 /data/mongodb.key"
 
   # ELASTICSEARCH DATABASE
 
