@@ -3,41 +3,40 @@ services:
 
   # Service Discovery
 
-
-  consul-local:
-    container_name: consul-local
-    image: consul:1.10.0
-    ports:
-      - "8500:8500" # EXPOSE FOR LOCAL DEVELOPMENT
-      - "8600/tcp"
-      - "8600/udp"
-    command: agent -dev -client=0.0.0.0 -ui
-    depends_on:
-      postgres-local:
-         condition: service_healthy
-      redis-local:
-        condition: service_healthy
-    healthcheck:
-      test: [ "CMD", "sh", "-c", "consul kv get config/setup/initialized | grep -q true" ]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
-    volumes:
-      - ./entrypoint/consul/init.sh:/init.sh:ro
-      - ./entrypoint/consul/database:/database:ro
-      - ./entrypoint/consul/prometheus:/prometheus:ro
-      - ./entrypoint/consul/rabbitmq:/rabbitmq:ro
-      - ./entrypoint/consul/kafka:/kafka:ro
-      - ./entrypoint/consul/services:/services:ro
-      - ./entrypoint/consul/smtp:/smtp:ro
-      - ./entrypoint/consul/telemetry:/telemetry:ro
-      - ./entrypoint/consul/traefik:/traefik:ro
-      - ./entrypoint/consul/postgres-exporter:/postgres-exporter:ro
-      - ./entrypoint/consul/opa:/opa:ro
-    entrypoint: [ "/bin/sh", "-c", "consul agent -dev -client=0.0.0.0 -ui & sleep 5 && sh /init.sh && tail -f /dev/null" ]
-    networks:
-      - local
+#  consul-local:
+#    container_name: consul-local
+#    image: consul:1.10.0
+#    ports:
+#      - "8500:8500" # EXPOSE FOR LOCAL DEVELOPMENT
+#      - "8600/tcp"
+#      - "8600/udp"
+#    command: agent -dev -client=0.0.0.0 -ui
+#    depends_on:
+#      postgres-local:
+#         condition: service_healthy
+#      redis-local:
+#        condition: service_healthy
+#    healthcheck:
+#      test: [ "CMD", "sh", "-c", "consul kv get config/setup/initialized | grep -q true" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 10
+#      start_period: 30s
+#    volumes:
+#      - ./entrypoint/consul/init.sh:/init.sh:ro
+#      - ./entrypoint/consul/database:/database:ro
+#      - ./entrypoint/consul/prometheus:/prometheus:ro
+#      - ./entrypoint/consul/rabbitmq:/rabbitmq:ro
+#      - ./entrypoint/consul/kafka:/kafka:ro
+#      - ./entrypoint/consul/services:/services:ro
+#      - ./entrypoint/consul/smtp:/smtp:ro
+#      - ./entrypoint/consul/telemetry:/telemetry:ro
+#      - ./entrypoint/consul/traefik:/traefik:ro
+#      - ./entrypoint/consul/postgres-exporter:/postgres-exporter:ro
+#      - ./entrypoint/consul/opa:/opa:ro
+#    entrypoint: [ "/bin/sh", "-c", "consul agent -dev -client=0.0.0.0 -ui & sleep 5 && sh /init.sh && tail -f /dev/null" ]
+#    networks:
+#      - local
 
   # POSTGRESQL DATABASE
 
@@ -62,7 +61,6 @@ services:
 
   # POSTGRESQL EXPORTER FOR PROMETHEUS METRICS
 
-
   postgres-exporter-local:
     container_name: postgres-exporter-local
     image: prometheuscommunity/postgres-exporter:latest
@@ -82,7 +80,6 @@ services:
 
   # MONGODB DATABASE
 
-
   mongo-local:
     container_name: mongo-local
     image: mongo
@@ -97,7 +94,8 @@ services:
       - ./entrypoint/mongo/mongodb.key:/etc/mongo/mongodb.key:ro
     command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017", "--keyFile", "/etc/mongo/mongodb.key"]
     depends_on:
-      - keyfile-gen
+      keyfile-gen:
+        condition: service_healthy
     healthcheck:
       test: mongosh
         -u mongo
@@ -112,16 +110,26 @@ services:
     networks:
       - local
 
+
   ## MONGO KEY FOR REPLICATION SET
+
   keyfile-gen:
     container_name: keyfile-gen
     image: alpine
     entrypoint: [ "sh", "-c" ]
     command: >
-      "apk add --no-cache openssl &&
-       openssl rand -base64 741 > /data/mongodb.key &&
-       chmod 600 /data/mongodb.key &&
-       chown 999:999 /data/mongodb.key"
+      "
+      apk add --no-cache openssl &&
+      openssl rand -base64 741 > /data/mongodb.key &&
+      chmod 600 /data/mongodb.key &&
+      chown 999:999 /data/mongodb.key &&
+      tail -f /dev/null"
+    healthcheck:
+      test: [ "CMD-SHELL", "[ -f /data/mongodb.key ] && [ -s /data/mongodb.key ] || exit 1" ]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+      start_period: 0s
     volumes:
       - ./entrypoint/mongo:/data
 
@@ -172,38 +180,38 @@ services:
 
   # FOR TEST EMAIL NOTIFICATION
 
-  mailhog-local:
-    image: mailhog/mailhog:latest
-    container_name: mailhog-local
-    ports:
-      - '1025:1025' # EXPOSE FOR LOCAL DEVELOPMENT
-      - '8025:8025' # EXPOSE FOR LOCAL DEVELOPMENT
-    networks:
-      - local
+#  mailhog-local:
+#    image: mailhog/mailhog:latest
+#    container_name: mailhog-local
+#    ports:
+#      - '1025:1025' # EXPOSE FOR LOCAL DEVELOPMENT
+#      - '8025:8025' # EXPOSE FOR LOCAL DEVELOPMENT
+#    networks:
+#      - local
 
   # MESSAGE BROKER RABBIT MQ
 
-  rabbitmq-local:
-    container_name: rabbitmq-local
-    image: rabbitmq:3.11-management
-    ports:
-      - '15672:15672' # EXPOSE FOR LOCAL DEVELOPMENT
-      - '5672:5672' # EXPOSE FOR LOCAL DEVELOPMENT
-    environment:
-      RABBITMQ_DEFAULT_USER: "rabbitmq"
-      RABBITMQ_DEFAULT_PASS: "1234"
-      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbitmq_management load_definitions \"/etc/rabbitmq/definitions.json\""
-    volumes:
-      - ./entrypoint/rabbitmq/plugins:/usr/lib/rabbitmq/plugins
-      - ./entrypoint/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
-    command: >
-      sh -c "
-      cp /usr/lib/rabbitmq/plugins/rabbitmq_delayed_message_exchange-3.11.1.ez /plugins/ &&
-      rabbitmq-plugins enable --offline rabbitmq_delayed_message_exchange &&
-      rabbitmq-server
-      "
-    networks:
-      - local
+#  rabbitmq-local:
+#    container_name: rabbitmq-local
+#    image: rabbitmq:3.11-management
+#    ports:
+#      - '15672:15672' # EXPOSE FOR LOCAL DEVELOPMENT
+#      - '5672:5672' # EXPOSE FOR LOCAL DEVELOPMENT
+#    environment:
+#      RABBITMQ_DEFAULT_USER: "rabbitmq"
+#      RABBITMQ_DEFAULT_PASS: "1234"
+#      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbitmq_management load_definitions \"/etc/rabbitmq/definitions.json\""
+#    volumes:
+#      - ./entrypoint/rabbitmq/plugins:/usr/lib/rabbitmq/plugins
+#      - ./entrypoint/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
+#    command: >
+#      sh -c "
+#      cp /usr/lib/rabbitmq/plugins/rabbitmq_delayed_message_exchange-3.11.1.ez /plugins/ &&
+#      rabbitmq-plugins enable --offline rabbitmq_delayed_message_exchange &&
+#      rabbitmq-server
+#      "
+#    networks:
+#      - local
 
   # MESSAGE BROKER APACHE KAFKA
   ## ZOOKEEPER
@@ -254,7 +262,6 @@ services:
 
       # SCHEMA REGISTRY
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry-local:8081
-
 
     volumes:
       - ./entrypoint/kafka/create-topics.sh:/usr/local/bin/create-topics.sh
@@ -308,6 +315,10 @@ services:
         condition: service_healthy
       postgres-local:
         condition: service_healthy
+      mongo-local:
+        condition: service_healthy
+      redis-local:
+        condition: service_healthy
       elasticsearch-local:
         condition: service_healthy
     ports:
@@ -345,7 +356,8 @@ services:
       test: [ "CMD-SHELL", "curl -f http://kafka-connect-local:8083/connectors || exit 1" ]
       interval: 30s
       timeout: 10s
-      retries: 5
+      retries: 10
+      start_period: 60s
     networks:
       - local
 
@@ -360,17 +372,20 @@ services:
       kafka-connect-local:
         condition: service_healthy
     ports:
-      - "8088:8088"
-    working_dir: /etc/ksqldb-server
-    command: [ "ksql-server-start", "ksql-server.properties" ]
+      - "8088:8088" # KSQLDB SERVER
+#      - "8083:8083" # CONNECTORS
+    command: ["/etc/ksqldb-server/init.sh"]
     restart: always
     volumes:
       - ./entrypoint/ksqldb-server:/etc/ksqldb-server
     healthcheck:
-      test: [ "CMD-SHELL", "curl --fail --silent http://localhost:8088/healthcheck || exit 1" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      test: [
+        "CMD-SHELL",
+        "curl --fail --silent http://localhost:8088/healthcheck || exit 1"
+      ]
+      interval: 15s
+      timeout: 10s
+      retries: 15
     networks:
       - local
 
@@ -384,12 +399,10 @@ services:
         condition: service_healthy
       ksqldb-server-local:
         condition: service_healthy
-      kafka-connect-local:
-        condition: service_healthy
     platform: linux/amd64
     volumes:
       - ./entrypoint/ksqldb-cli/connectors:/connectors
-      - ./entrypoint/ksqldb-cli/streams:/scripts
+      - ./entrypoint/ksqldb-cli/streams:/streams
       - ./entrypoint/ksqldb-cli/init-all.sh:/init-all.sh
     restart: unless-stopped
     entrypoint: /bin/bash
@@ -406,10 +419,6 @@ services:
     container_name: control-center-local
     depends_on:
       kafka-local-broker-1:
-        condition: service_healthy
-      schema-registry-local:
-        condition: service_healthy
-      kafka-connect-local:
         condition: service_healthy
       ksqldb-server-local:
         condition: service_healthy
@@ -442,74 +451,71 @@ services:
 
   # FOR TRACING
 
-
-  jaeger-local:
-    container_name: jaeger-local
-    image: jaegertracing/all-in-one:1.37
-    environment:
-      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
-      - COLLECTOR_OTLP_ENABLED=true
-      # Enable metrics storage dan monitoring
-      - METRICS_STORAGE_TYPE=prometheus
-      - PROMETHEUS_SERVER_URL=http://prometheus-local:9090
-      - PROMETHEUS_QUERY_SUPPORT_SPANMETRICS_CONNECTOR=true
-      # Enable span metrics connector
-      - SPAN_STORAGE_TYPE=memory
-    ports:
-      - '6831:6831/udp' # EXPOSE FOR LOCAL DEVELOPMENT
-      - '6832:6832/udp' # EXPOSE FOR LOCAL DEVELOPMENT
-      - '5778:5778' # EXPOSE FOR LOCAL DEVELOPMENT
-      - '16686:16686' # EXPOSE FOR LOCAL DEVELOPMENT
-      - '4317:4317' # EXPOSE FOR LOCAL DEVELOPMENT
-      - '4318:4318' # EXPOSE FOR LOCAL DEVELOPMENT
-      - '14250:14250' # EXPOSE FOR LOCAL DEVELOPMENT
-      - '14268:14268' # EXPOSE FOR LOCAL DEVELOPMENT
-      - '14269:14269' # EXPOSE FOR LOCAL DEVELOPMENT
-      - '9411:9411' # EXPOSE FOR LOCAL DEVELOPMENT
-    networks:
-      - local
-    depends_on:
-      - prometheus-local
+#  jaeger-local:
+#    container_name: jaeger-local
+#    image: jaegertracing/all-in-one:1.37
+#    environment:
+#      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+#      - COLLECTOR_OTLP_ENABLED=true
+#      # Enable metrics storage dan monitoring
+#      - METRICS_STORAGE_TYPE=prometheus
+#      - PROMETHEUS_SERVER_URL=http://prometheus-local:9090
+#      - PROMETHEUS_QUERY_SUPPORT_SPANMETRICS_CONNECTOR=true
+#      # Enable span metrics connector
+#      - SPAN_STORAGE_TYPE=memory
+#    ports:
+#      - '6831:6831/udp' # EXPOSE FOR LOCAL DEVELOPMENT
+#      - '6832:6832/udp' # EXPOSE FOR LOCAL DEVELOPMENT
+#      - '5778:5778' # EXPOSE FOR LOCAL DEVELOPMENT
+#      - '16686:16686' # EXPOSE FOR LOCAL DEVELOPMENT
+#      - '4317:4317' # EXPOSE FOR LOCAL DEVELOPMENT
+#      - '4318:4318' # EXPOSE FOR LOCAL DEVELOPMENT
+#      - '14250:14250' # EXPOSE FOR LOCAL DEVELOPMENT
+#      - '14268:14268' # EXPOSE FOR LOCAL DEVELOPMENT
+#      - '14269:14269' # EXPOSE FOR LOCAL DEVELOPMENT
+#      - '9411:9411' # EXPOSE FOR LOCAL DEVELOPMENT
+#    networks:
+#      - local
+#    depends_on:
+#      - prometheus-local
 
   # FOR METRICS
 
-
-  prometheus-local:
-    container_name: prometheus-local
-    image: prom/prometheus:latest
-    ports:
-      - '9090:9090' # EXPOSE FOR LOCAL DEVELOPMENT
-    volumes:
-      - ./entrypoint/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=200h'
-      - '--web.enable-lifecycle'
-    networks:
-      - local
+#  prometheus-local:
+#    container_name: prometheus-local
+#    image: prom/prometheus:latest
+#    ports:
+#      - '9090:9090' # EXPOSE FOR LOCAL DEVELOPMENT
+#    volumes:
+#      - ./entrypoint/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+#    command:
+#      - '--config.file=/etc/prometheus/prometheus.yml'
+#      - '--storage.tsdb.path=/prometheus'
+#      - '--web.console.libraries=/etc/prometheus/console_libraries'
+#      - '--web.console.templates=/etc/prometheus/consoles'
+#      - '--storage.tsdb.retention.time=200h'
+#      - '--web.enable-lifecycle'
+#    networks:
+#      - local
 
   # GRAFANA DASHBOARD
 
-
-  grafana-local:
-    container_name: grafana-local
-    image: grafana/grafana:latest
-    ports:
-      - '3000:3000'
-    volumes:
-      - ./entrypoint/grafana/provisioning:/etc/grafana/provisioning
-    environment:
-      - GF_SECURITY_ADMIN_USER=grafana
-      - GF_SECURITY_ADMIN_PASSWORD=12345
-      - GF_USERS_ALLOW_SIGN_UP=false
-    depends_on:
-      - prometheus-local
-    networks:
-      - local
-    restart: unless-stopped
+#  grafana-local:
+#    container_name: grafana-local
+#    image: grafana/grafana:latest
+#    ports:
+#      - '3000:3000'
+#    volumes:
+#      - ./entrypoint/grafana/provisioning:/etc/grafana/provisioning
+#    environment:
+#      - GF_SECURITY_ADMIN_USER=grafana
+#      - GF_SECURITY_ADMIN_PASSWORD=12345
+#      - GF_USERS_ALLOW_SIGN_UP=false
+#    depends_on:
+#      - prometheus-local
+#    networks:
+#      - local
+#    restart: unless-stopped
 
   # REVERSE PROXY AND LOAD BALANCER
 
@@ -531,7 +537,7 @@ services:
 
   # OPEN POLICY AGENT FOR RBAC
 
-#
+
 #  opa-local:
 #    image: openpolicyagent/opa:latest
 #    container_name: "opa-local"
@@ -558,85 +564,84 @@ services:
 
   # USER-SERVICE
 
-
-  user-service:
-    container_name: user-service
-    build:
-      context: ./services/user-service
-      dockerfile: Dockerfile
-    ports:
-      - "50056:50056" # GRPC
-      - "40056:40056" # HTTP
-      - "30056:30056" # HTTP METRIC COLLECTOR
-    restart: always
-    depends_on:
-      consul-local:
-        condition: service_healthy
-      postgres-local:
-        condition: service_healthy
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://user-service:40056/v1/user/check | grep -q '^200$'" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
-    networks:
-      - local
+#  user-service:
+#    container_name: user-service
+#    build:
+#      context: ./services/user-service
+#      dockerfile: Dockerfile
+#    ports:
+#      - "50056:50056" # GRPC
+#      - "40056:40056" # HTTP
+#      - "30056:30056" # HTTP METRIC COLLECTOR
+#    restart: always
+#    depends_on:
+#      consul-local:
+#        condition: service_healthy
+#      postgres-local:
+#        condition: service_healthy
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://user-service:40056/v1/user/check | grep -q '^200$'" ]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 20s
+#    networks:
+#      - local
 
   # EVENT-STORE-SERVICE
 
-  event-store-service:
-    container_name: event-store-service
-    build:
-      context: ./services/event-store-service
-      dockerfile: Dockerfile
-    ports:
-      - "50052:50052" # GRPC
-      - "40052:40052" # HTTP
-      - "30052:30052" # HTTP METRIC COLLECTOR
-    restart: always
-    depends_on:
-      consul-local:
-        condition: service_healthy
-      mongo-local:
-        condition: service_healthy
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://event-store-service:40052/v1/event-store/check | grep -q '^200$'" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
-    networks:
-      - local
+#  event-store-service:
+#    container_name: event-store-service
+#    build:
+#      context: ./services/event-store-service
+#      dockerfile: Dockerfile
+#    ports:
+#      - "50052:50052" # GRPC
+#      - "40052:40052" # HTTP
+#      - "30052:30052" # HTTP METRIC COLLECTOR
+#    restart: always
+#    depends_on:
+#      consul-local:
+#        condition: service_healthy
+#      mongo-local:
+#        condition: service_healthy
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://event-store-service:40052/v1/event-store/check | grep -q '^200$'" ]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 20s
+#    networks:
+#      - local
 
   # NOTIFICATION-SERVICE
 
-  notification-service:
-    container_name: notification-service
-    build:
-      context: ./services/notification-service
-      dockerfile: Dockerfile
-    ports:
-      - "50053:50053" # GRPC
-      - "40053:40053" # HTTP
-      - "30053:30053" # HTTP METRIC COLLECTOR
-    restart: always
-    depends_on:
-      consul-local:
-        condition: service_healthy
-      mongo-local:
-        condition: service_healthy
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://notification-service:40053/v1/notification/check | grep -q '^200$'" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
-    networks:
-      - local
+#  notification-service:
+#    container_name: notification-service
+#    build:
+#      context: ./services/notification-service
+#      dockerfile: Dockerfile
+#    ports:
+#      - "50053:50053" # GRPC
+#      - "40053:40053" # HTTP
+#      - "30053:30053" # HTTP METRIC COLLECTOR
+#    restart: always
+#    depends_on:
+#      consul-local:
+#        condition: service_healthy
+#      mongo-local:
+#        condition: service_healthy
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://notification-service:40053/v1/notification/check | grep -q '^200$'" ]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 20s
+#    networks:
+#      - local
 
   # PRODUCT-SERVICE
-#
+
 #  product-service:
 #    container_name: product-service
 #    build:
@@ -662,7 +667,7 @@ services:
 #      - local
 
   # PAYMENT-SERVICE
-#
+
 #  payment-service:
 #    container_name: payment-service
 #    build:
@@ -688,7 +693,7 @@ services:
 #      - local
 
   # SHIPPING-SERVICE
-#
+
 #  shipping-service:
 #    container_name: shipping-service
 #    build:

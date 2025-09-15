@@ -56,7 +56,8 @@ The test suite requires mongod to be running. Note, the source connector require
 
 ## Maintainers
 
-* Ross Lawley          ross@mongodb.com
+* Andrea Rahmanan   andrea.rahmanan@mongodb.com
+* Calvin Nix        calvin.nix@mongodb.com
 
 Original Sink connector work by: Hans-Peter Grahsl : https://github.com/hpgrahsl/kafka-connect-mongodb
 
@@ -76,3 +77,9 @@ A couple of manual configuration steps are required to run the code in IntelliJ:
       - Run the `compileBuildConfig` task: eg: `./gradlew compileBuildConfig` or via Gradle > mongo-kafka > Tasks > other > compileBuildConfig
       - Set `compileBuildConfig` to execute Before Build. via Gradle > Tasks > other > right click compileBuildConfig - click on "Execute Before Build"
       - Delegate all build actions to Gradle: Settings > Build, Execution, Deployment > Build Tools > Gradle > Runner - tick "Delegate IDE build/run actions to gradle"
+
+## Additional details
+
+- [Docs](./docs/README.md)
+- [Docker](./docker/README.md)
+- [Custom Auth Provider](./src/main/java/com/mongodb/kafka/connect/util/custom/credentials/README.md)

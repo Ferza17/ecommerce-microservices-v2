@@ -3,10 +3,10 @@ echo "Waiting for ksqlDB server to be ready..."
 while ! curl -s http://ksqldb-server-local:8088/info > /dev/null; do
   sleep 5
 done
-echo "ksqlDB server is up! Running initialization scripts..."
+echo "ksqlDB server is up! Running initialization streams..."
 
 # Get the script directory
-SCRIPT_DIR="/scripts"
+SCRIPT_DIR="/streams"
 
 ### NAMESPACE NOTIFICATION
 echo "Running notification initialization..."

@@ -1,0 +1,30 @@
+{
+  "name": "SOURCE_CONNECTOR_MONGO_NOTIFICATIONS_NOTIFICATION_TEMPLATES",
+  "config": {
+    "connector.class": "com.mongodb.kafka.connect.MongoSourceConnector",
+    "tasks.max": "1",
+
+    "connection.uri": "mongodb://mongo:1234@mongo-local:27017",
+    "database": "notification",
+    "collection": "notification_templates",
+    "topic.prefix": "mongo",
+
+    "publish.full.document.only": "true",
+    "pipeline": "[{\"$match\": {\"operationType\": {\"$in\": [\"insert\", \"update\", \"replace\"]}}}]",
+
+    "max.batch.size": "1000",
+    "max.queue.size": "5000",
+    "copy.existing": "true",
+    "copy.existing.pipeline": "[{\"$match\": {}}]",
+
+    "errors.tolerance": "all",
+    "errors.log.enable": "true",
+
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+
+    "output.format.value": "json",
+    "output.format.key": "json"
+  }
+}

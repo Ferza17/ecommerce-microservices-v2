@@ -1,0 +1,35 @@
+{
+  "name": "SINK_PG_CONNECTOR_PAYMENT",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+    "tasks.max": "1",
+
+    "topics": "sink_pg_payments_payment_providers,sink_pg_payments_payments",
+    "connection.url": "jdbc:postgresql://postgres-local:5432/payments",
+    "connection.user": "postgres",
+    "connection.password": "1234",
+
+    "dialect.name": "PostgreSqlDatabaseDialect",
+    "insert.mode": "upsert",
+    "pk.mode": "record_key",
+    "pk.fields": "id",
+
+    "auto.create": "true",
+    "auto.evolve": "true",
+
+    "delete.enabled": "true",
+
+    "table.name.format": "payment_providers,payments",
+
+    "batch.size": "3000",
+    "max.retries": "10",
+    "retry.backoff.ms": "5000",
+
+    "errors.tolerance": "all",
+    "errors.log.enable": "true",
+
+    "transforms": "flatten",
+    "transforms.flatten.type": "org.apache.kafka.connect.transforms.Flatten$Value",
+    "transforms.flatten.delimiter": "_"
+  }
+}

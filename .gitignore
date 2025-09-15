@@ -5,4 +5,5 @@
 *.crt
 *.key
 ./entrypoint/kafka-connect/plugins
+./entrypoint/kafka-connect/plugins/*
 ./entrypoint/mongo/*.key

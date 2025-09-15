@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "Starting all ksqldb-cli initialization scripts..."
+echo "Starting all ksqldb-cli initialization streams..."
 
 # Run connectors init
 if [ -f "/connectors/init.sh" ]; then
@@ -10,11 +10,11 @@ if [ -f "/connectors/init.sh" ]; then
 fi
 
 # Run streams init
-if [ -f "/scripts/init.sh" ]; then
-  echo "Running /scripts/init.sh..."
-  bash /scripts/init.sh
+if [ -f "/streams/init.sh" ]; then
+  echo "Running /streams/init.sh..."
+  bash /streams/init.sh
 fi
 
-echo "All init scripts completed. Keeping container alive..."
+echo "All init streams completed. Keeping container alive..."
 # Keep container running
 tail -f /dev/null

@@ -1,0 +1,38 @@
+{
+  "name": "SINK_CONNECTOR_ES_PRODUCTS_PRODUCTS",
+  "config": {
+    "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+    "tasks.max": "1",
+
+    "topics": "products",
+    "connection.url": "http://elasticsearch-local:9200",
+    "type.name": "_doc",
+    "key.ignore": "false",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+
+    "behavior.on.null.values": "delete",
+    "write.method": "upsert",
+    "max.retries": "5",
+    "retry.backoff.ms": "500",
+
+    "schema.ignore": "true",
+    "drop.invalid.message": "true",
+
+    "transforms": "unwrap,flatten",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.flatten.type": "org.apache.kafka.connect.transforms.Flatten$Value",
+    "transforms.flatten.delimiter": "_",
+
+    "behavior.on.malformed.documents": "ignore",
+    "errors.tolerance": "all",
+
+    "batch.size": "1000",
+    "batch.size.bytes": "10000000",
+    "linger.ms": "1000",
+    "flush.timeout.ms": "10000",
+    "max.in.flight.requests": "1",
+    "input.data.format": "JSON"
+  }
+}
