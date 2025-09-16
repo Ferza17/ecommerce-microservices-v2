@@ -6,6 +6,7 @@ import (
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
+	userPgSinkRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/kafkaSink"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/google/wire"
 
@@ -24,6 +25,7 @@ type (
 
 	userUseCase struct {
 		userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository
+		userPgSinkRepository     userPgSinkRepository.IUserKafkaSink
 		rolePostgresqlRepository rolePostgresqlRepository.IRolePostgresqlRepository
 
 		rabbitmqInfrastructure    rabbitmqInfrastructure.IRabbitMQInfrastructure
@@ -38,6 +40,7 @@ var Set = wire.NewSet(NewUserUseCase)
 
 func NewUserUseCase(
 	userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository,
+	userPgSinkRepository userPgSinkRepository.IUserKafkaSink,
 	rolePostgresqlRepository rolePostgresqlRepository.IRolePostgresqlRepository,
 	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
 	authRedisRepository authRedisRepository.IAuthRedisRepository,
@@ -46,6 +49,7 @@ func NewUserUseCase(
 	logger logger.IZapLogger) IUserUseCase {
 	return &userUseCase{
 		userPostgresqlRepository:  userPostgresqlRepository,
+		userPgSinkRepository:      userPgSinkRepository,
 		rolePostgresqlRepository:  rolePostgresqlRepository,
 		rabbitmqInfrastructure:    rabbitmqInfrastructure,
 		telemetryInfrastructure:   telemetryInfrastructure,

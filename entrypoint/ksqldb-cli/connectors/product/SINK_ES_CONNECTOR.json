@@ -4,13 +4,15 @@
     "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
     "tasks.max": "1",
 
-    "topics": "products",
+    "topics": "sink-es-products-products",
     "connection.url": "http://elasticsearch-local:9200",
     "type.name": "_doc",
     "key.ignore": "false",
-    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
     "value.converter": "org.apache.kafka.connect.json.JsonConverter",
-    "value.converter.schemas.enable": "false",
+    "key.converter.schemas.enable": "true",
+    "value.converter.schemas.enable": "true",
 
     "behavior.on.null.values": "delete",
     "write.method": "upsert",
@@ -27,6 +29,11 @@
 
     "behavior.on.malformed.documents": "ignore",
     "errors.tolerance": "all",
+
+    "auto.create": "true",
+    "auto.evolve": "true",
+    "delete.enabled": "true",
+
 
     "batch.size": "1000",
     "batch.size.bytes": "10000000",

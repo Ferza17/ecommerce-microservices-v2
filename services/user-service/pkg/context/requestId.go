@@ -14,8 +14,11 @@ func SetRequestIDToContext(ctx context.Context, requestId string) context.Contex
 }
 
 func GetRequestIDFromContext(ctx context.Context) string {
-	token, _ := ctx.Value(CtxKeyRequestID).(string)
-	return token
+	reqId, ok := ctx.Value(CtxKeyRequestID).(string)
+	if !ok {
+		return ""
+	}
+	return reqId
 }
 
 func SetRequestIDToMetadata(ctx context.Context, requestId string) context.Context {

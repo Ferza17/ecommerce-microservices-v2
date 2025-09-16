@@ -8,6 +8,7 @@ import (
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	accessControlUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/usecase"
 	rolePostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/repository/postgres"
+	userPgSinkRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/kafkaSink"
 	"github.com/google/wire"
 	"google.golang.org/protobuf/types/known/emptypb"
 
@@ -31,6 +32,7 @@ type (
 	}
 	authUseCase struct {
 		userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository
+		userPgSinkRepository     userPgSinkRepository.IUserKafkaSink
 		rolePostgresqlRepository rolePostgresqlRepository.IRolePostgresqlRepository
 
 		authRedisRepository authRedisRepository.IAuthRedisRepository
@@ -48,6 +50,7 @@ var Set = wire.NewSet(NewAuthUseCase)
 
 func NewAuthUseCase(
 	userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository,
+	userPgSinkRepository userPgSinkRepository.IUserKafkaSink,
 	rolePostgresqlRepository rolePostgresqlRepository.IRolePostgresqlRepository,
 	authRedisRepository authRedisRepository.IAuthRedisRepository,
 	accessControlUseCase accessControlUseCase.IAccessControlUseCase,
@@ -58,6 +61,7 @@ func NewAuthUseCase(
 ) IAuthUseCase {
 	u := &authUseCase{
 		userPostgresqlRepository: userPostgresqlRepository,
+		userPgSinkRepository:     userPgSinkRepository,
 		rolePostgresqlRepository: rolePostgresqlRepository,
 		authRedisRepository:      authRedisRepository,
 		accessControlUseCase:     accessControlUseCase,

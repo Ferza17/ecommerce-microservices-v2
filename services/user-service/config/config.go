@@ -61,8 +61,9 @@ type Config struct {
 	CommonSagaStatusSuccess string
 	CommonSagaStatusFailed  string
 
-	BrokerKafka      *BrokerKafka
-	BrokerKafkaTopic *BrokerKafkaTopic
+	BrokerKafka                         *BrokerKafka
+	BrokerKafkaTopic                    *BrokerKafkaTopic
+	BrokerKafkaTopicConnectorSinkPgUser *BrokerKafkaTopicConnectorSinkPgUser
 
 	BrokerRabbitMQ *BrokerRabbitMQ
 
@@ -139,7 +140,8 @@ func SetConfig(path string) {
 		withDatabaseRedis(consulClient.KV()).
 		withBrokerRabbitMQ(consulClient.KV()).
 		withBrokerKafka(consulClient.KV()).
-		withBrokerKafkaTopic(consulClient.KV())
+		withBrokerKafkaTopic(consulClient.KV()).
+		withBrokerKafkaTopicConnectorSinkPgUser(consulClient.KV())
 
 	// User Service Config
 	pair, _, err := consulClient.KV().Get(fmt.Sprintf("%s/services/notification/SERVICE_NAME", c.Env), nil)
@@ -261,5 +263,10 @@ func (c *Config) withBrokerKafka(kv *api.KV) *Config {
 
 func (c *Config) withBrokerKafkaTopic(kv *api.KV) *Config {
 	c.BrokerKafkaTopic = DefaultKafkaBrokerTopic().WithConsulClient(c.Env, kv)
+	return c
+}
+
+func (c *Config) withBrokerKafkaTopicConnectorSinkPgUser(kv *api.KV) *Config {
+	c.BrokerKafkaTopicConnectorSinkPgUser = DefaultBrokerKafkaTopicsConnectorSinkPgUser().WithConsulClient(c.Env, kv)
 	return c
 }

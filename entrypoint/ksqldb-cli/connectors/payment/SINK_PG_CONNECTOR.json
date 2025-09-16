@@ -4,7 +4,7 @@
     "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
     "tasks.max": "1",
 
-    "topics": "sink_pg_payments_payment_providers,sink_pg_payments_payments",
+    "topics": "sink-pg-payments-payment_providers,sink-pg-payments-payments",
     "connection.url": "jdbc:postgresql://postgres-local:5432/payments",
     "connection.user": "postgres",
     "connection.password": "1234",
@@ -16,7 +16,6 @@
 
     "auto.create": "true",
     "auto.evolve": "true",
-
     "delete.enabled": "true",
 
     "table.name.format": "payment_providers,payments",
@@ -28,8 +27,9 @@
     "errors.tolerance": "all",
     "errors.log.enable": "true",
 
-    "transforms": "flatten",
-    "transforms.flatten.type": "org.apache.kafka.connect.transforms.Flatten$Value",
-    "transforms.flatten.delimiter": "_"
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "true",
+    "value.converter.schemas.enable": "true"
   }
 }

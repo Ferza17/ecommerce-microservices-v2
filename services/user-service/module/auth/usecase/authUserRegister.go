@@ -68,14 +68,19 @@ func (u *authUseCase) AuthUserRegister(ctx context.Context, requestId string, re
 		UpdatedAt:  timestamppb.New(now),
 	})
 
-	result, err := u.userPostgresqlRepository.CreateUser(ctx, requestId, user, tx)
-	if err != nil {
+	//result, err := u.userPostgresqlRepository.CreateUser(ctx, requestId, user, tx)
+	//if err != nil {
+	//	tx.Rollback()
+	//	u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
+	//	return nil, status.Error(codes.Internal, "internal server error")
+	//}
+
+	if err = u.userPgSinkRepository.CreateUser(ctx, requestId, user); err != nil {
 		tx.Rollback()
 		u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
-		return nil, status.Error(codes.Internal, "internal server error")
 	}
 
-	if err = u.SentOTP(ctx, requestId, result.ToProto()); err != nil {
+	if err = u.SentOTP(ctx, requestId, user.ToProto()); err != nil {
 		tx.Rollback()
 		return nil, status.Error(codes.Internal, "internal server error")
 	}

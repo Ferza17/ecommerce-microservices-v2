@@ -4,10 +4,10 @@
     "connector.class": "com.mongodb.kafka.connect.MongoSourceConnector",
     "tasks.max": "1",
 
+    "topics": "source-mongo-notification-notification_templates",
     "connection.uri": "mongodb://mongo:1234@mongo-local:27017",
     "database": "notification",
     "collection": "notification_templates",
-    "topic.prefix": "mongo",
 
     "publish.full.document.only": "true",
     "pipeline": "[{\"$match\": {\"operationType\": {\"$in\": [\"insert\", \"update\", \"replace\"]}}}]",
@@ -20,9 +20,14 @@
     "errors.tolerance": "all",
     "errors.log.enable": "true",
 
-    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "auto.create": "true",
+    "auto.evolve": "true",
+    "delete.enabled": "true",
+
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
     "value.converter": "org.apache.kafka.connect.json.JsonConverter",
-    "value.converter.schemas.enable": "false",
+    "key.converter.schemas.enable": "true",
+    "value.converter.schemas.enable": "true",
 
     "output.format.value": "json",
     "output.format.key": "json"

@@ -1,35 +1,33 @@
 #!/bin/bash
 
-echo ">>> Creating Kafka topics..."
-KAFKA_BROKER="kafka-local-broker-1:9092"
+echo ">>> Creating Kafka topics---"
+KAFKA_BROKER="kafka-local-broker-1:29092"
 
-# Define topics (name:partitions:replication-factor)
 TOPICS=(
-  "users.user_created.snapshot:3:1"
-  "users.user_updated.snapshot:3:1"
-  "users.user_login.snapshot:3:1"
-  "users.user_logout.snapshot:3:1"
+  "snapshot-users-user_created:3:1"
+  "snapshot-users-user_updated:3:1"
+  "snapshot-users-user_login:3:1"
+  "snapshot-users-user_logout:3:1"
 
-  "products.product_created.snapshot:3:1"
-  "products.product_updated.snapshot:3:1"
-  "products.product_deleted.snapshot:3:1"
+  "snapshot-products-product_created:3:1"
+  "snapshot-products-product_updated:3:1"
+  "snapshot-products-product_deleted:3:1"
 
-  "source.mongo.notifications.notification_templates:3:1"
-  "notifications.email_otp_created.snapshot:2:1"
-  "notifications.email_payment_order_created.snapshot:2:1"
+  "snapshot-notifications-email_otp_created:2:1"
+  "snapshot-notifications-email_payment_order_created:2:1"
 
-  "commerce.cart_created.snapshot:3:1"
-  "commerce.cart_updated.snapshot:3:1"
-  "commerce.cart_deleted.snapshot:3:1"
-  "commerce.wishlist_created.snapshot:3:1"
-  "commerce.wishlist_updated.snapshot:3:1"
-  "commerce.wishlist_deleted.snapshot:3:1"
+  "snapshot-commerce-cart_created:3:1"
+  "snapshot-commerce-cart_updated:3:1"
+  "snapshot-commerce-cart_deleted:3:1"
+  "snapshot-commerce-wishlist_created:3:1"
+  "snapshot-commerce-wishlist_updated:3:1"
+  "snapshot-commerce-wishlist_deleted:3:1"
 
-  "payments.payment_order_created.snapshot:3:1"
-  "payments.payment_order_cancelled_delayed.snapshot:2:1"
+  "snapshot-payments-payment_order_created:3:1"
+  "snapshot-payments-payment_order_cancelled_delayed:2:1"
 
-  "shippings.shipping_created.snapshot:3:1"
-  "shippings.shipping_updated.snapshot:3:1"
+  "snapshot-shippings-shipping_created:3:1"
+  "snapshot-shippings-shipping_updated:3:1"
 )
 
 for t in "${TOPICS[@]}"; do
@@ -42,4 +40,4 @@ for t in "${TOPICS[@]}"; do
     --topic $name
 done
 
-echo ">>> Done creating topics."
+echo ">>> Done creating topics-"

@@ -2,7 +2,10 @@ package kafka
 
 import (
 	"context"
-	"github.com/IBM/sarama"
+	"fmt"
+	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
+	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/google/wire"
@@ -10,12 +13,12 @@ import (
 
 type (
 	IKafkaInfrastructure interface {
-		Publish(ctx context.Context, message *sarama.ProducerMessage) error
-		Consume(topic string) ([]sarama.PartitionConsumer, error)
+		PublishWithJsonSchema(ctx context.Context, topic string, key string, value interface{}) error
 	}
 
 	KafkaInfrastructure struct {
-		config                  *sarama.Config
+		producer                *kafka.Producer
+		schemaRegistry          schemaregistry.Client
 		logger                  logger.IZapLogger
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 	}
@@ -27,22 +30,25 @@ func NewKafkaInfrastructure(
 	logger logger.IZapLogger,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 ) IKafkaInfrastructure {
-	config := sarama.NewConfig()
 
-	// Consumer Config
-	config.Consumer.Return.Errors = true
-	config.Consumer.Offsets.Initial = sarama.OffsetNewest
-	config.Consumer.Group.Rebalance.GroupStrategies = []sarama.BalanceStrategy{sarama.NewBalanceStrategyRoundRobin()}
+	producer, err := kafka.NewProducer(&kafka.ConfigMap{
+		"bootstrap.servers": config.Get().BrokerKafka.Broker1,
+		"client.id":         config.Get().UserServiceServiceName,
+	})
+	if err != nil {
+		logger.Error(fmt.Sprintf("Failed to create a kafka producer: %v", err))
+		return nil
+	}
 
-	// Producer Config
-	config.Producer.Partitioner = sarama.NewRandomPartitioner
-	config.Producer.RequiredAcks = sarama.WaitForAll
-	config.Producer.Return.Successes = true
-
-	config.Version = sarama.MaxVersion
+	schemaRegistry, err := schemaregistry.NewClient(schemaregistry.NewConfig(config.Get().BrokerKafka.SchemaRegistry))
+	if err != nil {
+		logger.Error(fmt.Sprintf("Failed to create a schema registry client: %v", err))
+		return nil
+	}
 
 	return &KafkaInfrastructure{
-		config:                  config,
+		producer:                producer,
+		schemaRegistry:          schemaRegistry,
 		logger:                  logger,
 		telemetryInfrastructure: telemetryInfrastructure,
 	}

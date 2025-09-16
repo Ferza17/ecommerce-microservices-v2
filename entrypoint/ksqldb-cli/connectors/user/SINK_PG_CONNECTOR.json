@@ -3,33 +3,23 @@
   "config": {
     "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
     "tasks.max": "1",
-
-    "topics": "sink_pg_users_users,sink_pg_users_roles",
+    "topics": "sink-pg-users-users",
     "connection.url": "jdbc:postgresql://postgres-local:5432/users",
     "connection.user": "postgres",
     "connection.password": "1234",
-
-    "dialect.name": "PostgreSqlDatabaseDialect",
-    "insert.mode": "upsert",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "io.confluent.connect.json.JsonSchemaConverter",
+    "value.converter.schema.registry.url": "http://schema-registry-local:8081",
+    "auto.create": true,
+    "auto.evolve": true,
+    "insert.mode": "insert",
     "pk.mode": "record_key",
     "pk.fields": "id",
-
-    "auto.create": "true",
-    "auto.evolve": "true",
-
-    "delete.enabled": "true",
-
-    "table.name.format": "users,roles",
-
-    "batch.size": "3000",
-    "max.retries": "10",
-    "retry.backoff.ms": "5000",
-
+    "table.name.format": "users",
+    "delete.enabled": true,
     "errors.tolerance": "all",
     "errors.log.enable": "true",
-
-    "transforms": "flatten",
-    "transforms.flatten.type": "org.apache.kafka.connect.transforms.Flatten$Value",
-    "transforms.flatten.delimiter": "_"
+    "errors.log.include.messages": "true",
+    "db.timezone": "Asia/Jakarta"
   }
 }

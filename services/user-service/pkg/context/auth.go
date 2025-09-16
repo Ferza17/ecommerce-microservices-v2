@@ -14,7 +14,10 @@ func SetTokenAuthorizationToContext(ctx context.Context, token string) context.C
 }
 
 func GetTokenAuthorizationFromContext(ctx context.Context) string {
-	token, _ := ctx.Value(CtxKeyAuthorization).(string)
+	token, ok := ctx.Value(CtxKeyAuthorization).(string)
+	if !ok {
+		return ""
+	}
 	return token
 }
 
