@@ -3,19 +3,30 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	userRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/util"
+	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (u *userUseCase) UpdateUserById(ctx context.Context, requestId string, req *userRpc.UpdateUserByIdRequest) (*userRpc.UpdateUserByIdResponse, error) {
 	var (
 		err error
-		tx  = u.postgresSQLInfrastructure.GormDB().Begin()
 	)
 	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "UserUseCase.UpdateUserById")
 	defer span.End()
 
-	user, err := u.userPostgresqlRepository.FindUserById(ctx, requestId, req.Id, tx)
+	now, err := util.GetNowWithTimeZone(pkgContext.CtxValueAsiaJakarta)
+	if err != nil {
+		u.logger.Error("AuthUseCase.AuthUserVerifyOtp", zap.String("requestId", requestId), zap.Error(err))
+		return nil, status.Error(codes.Internal, "internal server error")
+	}
+
+	user, err := u.userPostgresqlRepository.FindUserById(ctx, requestId, req.Id, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +35,6 @@ func (u *userUseCase) UpdateUserById(ctx context.Context, requestId string, req 
 	if req.Password != nil {
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*req.Password), bcrypt.DefaultCost)
 		if err != nil {
-			tx.Rollback()
 			u.logger.Error(fmt.Sprintf("requestId : %s , error hashing password: %v", requestId, err))
 			return nil, err
 		}
@@ -44,19 +54,17 @@ func (u *userUseCase) UpdateUserById(ctx context.Context, requestId string, req 
 		user.IsVerified = *req.IsVerified
 	}
 
-	result, err := u.userPostgresqlRepository.UpdateUserById(ctx, requestId, user, tx)
-	if err != nil {
-		tx.Rollback()
-		u.logger.Error(fmt.Sprintf("requestId : %s , error updating user: %v", requestId, err))
-		return nil, err
+	user.UpdatedAt = &now
+	if err = u.kafkaInfrastructure.PublishWithJsonSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkPgUser.Users, user.ID, user); err != nil {
+		u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
+		return nil, status.Error(codes.Internal, "internal server error")
 	}
 
-	tx.Commit()
 	return &userRpc.UpdateUserByIdResponse{
 		Message: "UpdateUserById",
 		Status:  "success",
 		Data: &userRpc.UpdateUserByIdResponse_UpdateUserByIdResponseData{
-			Id: result.ID,
+			Id: user.ID,
 		},
 	}, nil
 }

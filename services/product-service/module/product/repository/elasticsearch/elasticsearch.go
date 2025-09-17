@@ -26,8 +26,6 @@ type (
 
 var Set = wire.NewSet(NewProductElasticsearchRepository)
 
-const productIndex = "products"
-
 func NewProductElasticsearchRepository(
 	elasticsearchInfrastructure elasticsearchInfrastructure.IElasticsearchInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,

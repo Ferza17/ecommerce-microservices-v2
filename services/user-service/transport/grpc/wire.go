@@ -17,7 +17,6 @@ import (
 	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
 	rolePostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/repository/postgres"
 	userPresenter "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/presenter"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/kafkaSink"
 	userPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/postgres"
 	userUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/usecase"
 
@@ -34,6 +33,7 @@ func ProvideGrpcServer() *Server {
 		postgres.Set,
 		rabbitmq.Set,
 		telemetryInfrastructure.Set,
+		kafkaInfrastructure.Set,
 
 		// Repository Layer
 		userPostgresqlRepository.Set,
@@ -41,9 +41,6 @@ func ProvideGrpcServer() *Server {
 		rolePostgresqlRepository.Set,
 		accessControlPostgresqlRepository.Set,
 		accessControlRedisRepository.Set,
-
-		kafkaInfrastructure.Set,
-		kafkaSink.Set,
 
 		// UseCase Layer
 		userUseCase.Set,

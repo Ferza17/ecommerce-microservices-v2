@@ -12,7 +12,7 @@
     "value.converter.schema.registry.url": "http://schema-registry-local:8081",
     "auto.create": true,
     "auto.evolve": true,
-    "insert.mode": "insert",
+    "insert.mode": "upsert",
     "pk.mode": "record_key",
     "pk.fields": "id",
     "table.name.format": "users",
@@ -20,6 +20,20 @@
     "errors.tolerance": "all",
     "errors.log.enable": "true",
     "errors.log.include.messages": "true",
-    "db.timezone": "Asia/Jakarta"
+    "db.timezone": "Asia/Jakarta",
+
+    "transforms": "convertUpdatedAt,convertCreatedAt",
+
+    "transforms.convertUpdatedAt.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",
+    "transforms.convertUpdatedAt.field": "updated_at",
+    "transforms.convertUpdatedAt.target.type": "Timestamp",
+    "transforms.convertUpdatedAt.format": "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX",
+    "transforms.convertCreatedAt.missing.or.null.behavior": "skip",
+
+    "transforms.convertCreatedAt.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",
+    "transforms.convertCreatedAt.field": "created_at",
+    "transforms.convertCreatedAt.target.type": "Timestamp",
+    "transforms.convertCreatedAt.format": "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX",
+    "transforms.convertUpdatedAt.missing.or.null.behavior": "skip"
   }
 }

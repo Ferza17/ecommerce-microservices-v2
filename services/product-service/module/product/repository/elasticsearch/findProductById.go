@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/orm"
 	"log"
 )
@@ -12,7 +13,7 @@ func (r *productElasticsearchRepository) FindProductById(ctx context.Context, re
 	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "Repository.Elasticsearch.FindProductById")
 	defer span.End()
 
-	res, err := r.elasticsearchInfrastructure.GetClient().Get(productIndex, id)
+	res, err := r.elasticsearchInfrastructure.GetClient().Get(config.Get().BrokerKafkaTopicConnectorSinkProduct.EsProducts, id)
 	if err != nil {
 		r.logger.Error(fmt.Sprintf("error while get product by id: %v", err))
 		return nil, err

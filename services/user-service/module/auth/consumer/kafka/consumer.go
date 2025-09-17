@@ -14,7 +14,7 @@ type (
 	}
 
 	authConsumer struct {
-		kafkaInfrastructure kafkaInfrastructure.KafkaInfrastructure
+		kafkaInfrastructure kafkaInfrastructure.IKafkaInfrastructure
 		logger              logger.IZapLogger
 		authUseCase         authUseCase.IAuthUseCase
 	}
@@ -23,7 +23,7 @@ type (
 var Set = wire.NewSet(NewAuthConsumer)
 
 func NewAuthConsumer(
-	kafkaInfrastructure kafkaInfrastructure.KafkaInfrastructure,
+	kafkaInfrastructure kafkaInfrastructure.IKafkaInfrastructure,
 	logger logger.IZapLogger,
 	authUseCase authUseCase.IAuthUseCase) IAuthConsumer {
 	return &authConsumer{

@@ -10,6 +10,9 @@ import (
 func (r *rolePostgresSQLRepository) UpdateRoleById(ctx context.Context, requestId string, role *orm.Role, tx *gorm.DB) (*orm.Role, error) {
 	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "RolePostgresRepository.UpdateRoleById")
 	defer span.End()
+	if tx == nil {
+		tx = r.postgresSQLInfrastructure.GormDB()
+	}
 	if err := tx.WithContext(ctx).
 		Save(role).
 		Where("id = ?", role.ID).

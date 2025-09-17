@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/orm"
 	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product"
 	"time"
@@ -62,7 +63,7 @@ func (r *productElasticsearchRepository) FindProductsWithPagination(ctx context.
 
 	searchResult, err := r.elasticsearchInfrastructure.GetClient().Search(
 		r.elasticsearchInfrastructure.GetClient().Search.WithContext(ctxTimeout),
-		r.elasticsearchInfrastructure.GetClient().Search.WithIndex(productIndex),
+		r.elasticsearchInfrastructure.GetClient().Search.WithIndex(config.Get().BrokerKafkaTopicConnectorSinkProduct.EsProducts),
 		r.elasticsearchInfrastructure.GetClient().Search.WithBody(bytes.NewReader(queryJSON)),
 		r.elasticsearchInfrastructure.GetClient().Search.WithFrom(offset),
 		r.elasticsearchInfrastructure.GetClient().Search.WithSize(int(request.Limit)),

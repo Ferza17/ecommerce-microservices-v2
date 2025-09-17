@@ -2,11 +2,11 @@ package usecase
 
 import (
 	"context"
+	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/postgres"
 	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
-	userPgSinkRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/kafkaSink"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/google/wire"
 
@@ -25,8 +25,8 @@ type (
 
 	userUseCase struct {
 		userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository
-		userPgSinkRepository     userPgSinkRepository.IUserKafkaSink
 		rolePostgresqlRepository rolePostgresqlRepository.IRolePostgresqlRepository
+		kafkaInfrastructure      kafkaInfrastructure.IKafkaInfrastructure
 
 		rabbitmqInfrastructure    rabbitmqInfrastructure.IRabbitMQInfrastructure
 		postgresSQLInfrastructure postgres.IPostgresSQL
@@ -40,8 +40,8 @@ var Set = wire.NewSet(NewUserUseCase)
 
 func NewUserUseCase(
 	userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository,
-	userPgSinkRepository userPgSinkRepository.IUserKafkaSink,
 	rolePostgresqlRepository rolePostgresqlRepository.IRolePostgresqlRepository,
+	kafkaInfrastructure kafkaInfrastructure.IKafkaInfrastructure,
 	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
 	authRedisRepository authRedisRepository.IAuthRedisRepository,
 	postgresSQLInfrastructure postgres.IPostgresSQL,
@@ -49,8 +49,8 @@ func NewUserUseCase(
 	logger logger.IZapLogger) IUserUseCase {
 	return &userUseCase{
 		userPostgresqlRepository:  userPostgresqlRepository,
-		userPgSinkRepository:      userPgSinkRepository,
 		rolePostgresqlRepository:  rolePostgresqlRepository,
+		kafkaInfrastructure:       kafkaInfrastructure,
 		rabbitmqInfrastructure:    rabbitmqInfrastructure,
 		telemetryInfrastructure:   telemetryInfrastructure,
 		postgresSQLInfrastructure: postgresSQLInfrastructure,

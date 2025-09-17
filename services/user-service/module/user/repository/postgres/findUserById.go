@@ -10,6 +10,9 @@ import (
 func (r *userPostgresqlRepository) FindUserById(ctx context.Context, requestId string, id string, tx *gorm.DB) (*orm.User, error) {
 	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "UserPostgresRepository.FindUserById")
 	defer span.End()
+	if tx == nil {
+		tx = r.postgresSQLInfrastructure.GormDB()
+	}
 	user := new(orm.User)
 	if err := tx.WithContext(ctx).
 		Where("id = ?", id).

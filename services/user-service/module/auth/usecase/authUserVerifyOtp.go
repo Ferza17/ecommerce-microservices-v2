@@ -3,41 +3,48 @@ package usecase
 import (
 	"context"
 	"errors"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/util"
+	"github.com/go-redis/redis/v8"
 	"go.uber.org/zap"
-	"gorm.io/gorm"
-
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"gorm.io/gorm"
 )
 
 func (u *authUseCase) AuthUserVerifyOtp(ctx context.Context, requestId string, req *pb.AuthUserVerifyOtpRequest) (*pb.AuthUserVerifyOtpResponse, error) {
-	tx := u.postgresSQL.GormDB().Begin()
 	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthUseCase.AuthUserVerifyOtp")
 	defer span.End()
 
-	userId, err := u.authRedisRepository.GetOtp(ctx, requestId, req.Otp)
+	now, err := util.GetNowWithTimeZone(pkgContext.CtxValueAsiaJakarta)
 	if err != nil {
-		tx.Rollback()
 		u.logger.Error("AuthUseCase.AuthUserVerifyOtp", zap.String("requestId", requestId), zap.Error(err))
 		return nil, status.Error(codes.Internal, "internal server error")
 	}
 
+	userId, err := u.authRedisRepository.GetOtp(ctx, requestId, req.Otp)
+	if err != nil {
+		u.logger.Error("AuthUseCase.AuthUserVerifyOtp", zap.String("requestId", requestId), zap.Error(err))
+		if err == redis.Nil {
+			return nil, status.Error(codes.NotFound, "otp not found")
+		}
+		return nil, status.Error(codes.Internal, "internal server error")
+	}
+
 	if userId == nil {
-		tx.Rollback()
 		u.logger.Error("AuthUseCase.AuthUserVerifyOtp", zap.String("requestId", requestId), zap.Error(errors.New("userId is nil")))
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	user, err := u.userPostgresqlRepository.FindUserById(ctx, requestId, *userId, tx)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		tx.Rollback()
+	user, err := u.userPostgresqlRepository.FindUserById(ctx, requestId, *userId, nil)
+	if err != nil && err == gorm.ErrRecordNotFound {
 		u.logger.Error("AuthUseCase.AuthUserVerifyOtp", zap.String("requestId", requestId), zap.Error(err))
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
 	if user == nil {
-		tx.Rollback()
 		u.logger.Error("AuthUseCase.AuthUserVerifyOtp", zap.String("requestId", requestId), zap.Error(errors.New("user is nil")))
 		return nil, status.Error(codes.NotFound, "not found")
 	}
@@ -45,12 +52,17 @@ func (u *authUseCase) AuthUserVerifyOtp(ctx context.Context, requestId string, r
 	// Generate Access & Refresh Token
 	accessToken, refreshToken, err := u.GenerateAccessToken(ctx, requestId, user)
 	if err != nil {
-		tx.Rollback()
 		u.logger.Error("AuthUseCase.AuthUserLoginByEmailAndPassword", zap.String("requestId", requestId), zap.Error(errors.New("error generating token")))
 		return nil, err
 	}
 
-	tx.Commit()
+	user.IsVerified = true
+	user.UpdatedAt = &now
+	if err = u.kafkaInfrastructure.PublishWithJsonSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkPgUser.Users, user.ID, user); err != nil {
+		u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
+		return nil, status.Error(codes.Internal, "internal server error")
+	}
+
 	return &pb.AuthUserVerifyOtpResponse{
 		Status:  "success",
 		Message: "AuthUserVerifyOtp",

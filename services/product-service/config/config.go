@@ -78,6 +78,9 @@ type Config struct {
 	ProductServiceHttpHost       string
 	ProductServiceHttpPort       string
 	ProductServiceMetricHttpPort string
+
+	BrokerKafka                          *BrokerKafka
+	BrokerKafkaTopicConnectorSinkProduct *BrokerKafkaTopicConnectorSinkProduct
 }
 
 func SetConfig(path string) {
@@ -126,6 +129,8 @@ func SetConfig(path string) {
 	c.initElasticsearch(kv)
 	c.initExchange(kv)
 	c.initQueueProduct(kv)
+	c.withBrokerKafka(kv)
+	c.withBrokerKafkaTopicConnectorSinkProduct(kv)
 
 	if err = c.RegisterConsulService(); err != nil {
 		log.Fatalf("SetConfig | could not register service: %v", err)
@@ -143,4 +148,14 @@ func SetConfig(path string) {
 	)
 
 	viper.WatchConfig()
+}
+
+func (c *Config) withBrokerKafka(kv *api.KV) *Config {
+	c.BrokerKafka = DefaultKafkaBroker().WithConsulClient(c.Env, kv)
+	return c
+}
+
+func (c *Config) withBrokerKafkaTopicConnectorSinkProduct(kv *api.KV) *Config {
+	c.BrokerKafkaTopicConnectorSinkProduct = DefaultBrokerKafkaTopicConnectorSinkProduct().WithConsulClient(c.Env, kv)
+	return c
 }

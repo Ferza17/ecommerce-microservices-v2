@@ -18,7 +18,6 @@ import (
 	eventUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/usecase"
 	rolePostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/repository/postgres"
 	userConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/consumer"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/kafkaSink"
 	userPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/postgres"
 
 	userUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/usecase"
@@ -35,6 +34,7 @@ func ProvideRabbitMQServer() *Server {
 		postgres.Set,
 		rabbitmq.Set,
 		telemetry.Set,
+		kafkaInfrastructure.Set,
 
 		// Repository Layer
 		userPostgresqlRepository.Set,
@@ -42,9 +42,6 @@ func ProvideRabbitMQServer() *Server {
 		rolePostgresqlRepository.Set,
 		accessControlPostgresqlRepository.Set,
 		accessControlRedisRepository.Set,
-
-		kafkaInfrastructure.Set,
-		kafkaSink.Set,
 
 		// UseCase Layer
 		userUseCase.Set,

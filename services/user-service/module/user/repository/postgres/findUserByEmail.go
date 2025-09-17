@@ -10,6 +10,9 @@ import (
 func (r *userPostgresqlRepository) FindUserByEmail(ctx context.Context, requestId string, email string, tx *gorm.DB) (*orm.User, error) {
 	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "UserPostgresRepository.FindUserByEmail")
 	defer span.End()
+	if tx == nil {
+		tx = r.postgresSQLInfrastructure.GormDB()
+	}
 	user := new(orm.User)
 	if err := tx.WithContext(ctx).
 		Where("email = ?", email).

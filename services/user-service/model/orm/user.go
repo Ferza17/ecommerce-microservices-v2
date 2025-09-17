@@ -2,7 +2,6 @@ package orm
 
 import (
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
-	schema "github.com/ferza17/ecommerce-microservices-v2/user-service/model/schema/kafka-schema"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
 )
@@ -14,8 +13,8 @@ type User struct {
 	Password    string     `gorm:"type:varchar(255);not null" json:"password"`
 	IsVerified  bool       `gorm:"default:false" json:"is_verified"`
 	RoleID      string     `gorm:"type:varchar(255);index" json:"role_id"`
-	CreatedAt   *time.Time `gorm:"autoCreateTime" json:"-"`
-	UpdatedAt   *time.Time `gorm:"autoUpdateTime" json:"-"`
+	CreatedAt   *time.Time `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt   *time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 	DiscardedAt *time.Time `gorm:"index" json:"-"`
 
 	Role *Role `gorm:"foreignKey:RoleID" json:"-"`
@@ -119,75 +118,4 @@ func UsersFromProto(protos []*pb.User) []*User {
 		users = append(users, UserFromProto(proto))
 	}
 	return users
-}
-
-// TO Kafka Sink Schema
-func (u *User) ToKafkaSinkSchema() schema.KafkaSinkSchema {
-	discardedAt := ""
-	if u.DiscardedAt != nil {
-		discardedAt = u.DiscardedAt.Format(time.RFC3339)
-	}
-	return schema.KafkaSinkSchema{
-		Schema: schema.Schema{
-			Type: "json",
-			Fields: []schema.Fields{
-				{
-					Name:     "id",
-					Type:     "string",
-					Optional: false,
-				},
-				{
-					Name:     "name",
-					Type:     "string",
-					Optional: false,
-				},
-				{
-					Name:     "email",
-					Type:     "string",
-					Optional: false,
-				},
-				{
-					Name:     "password",
-					Type:     "string",
-					Optional: false,
-				},
-				{
-					Name:     "is_verified",
-					Type:     "boolean",
-					Optional: false,
-				},
-				{
-					Name:     "role_id",
-					Type:     "string",
-					Optional: false,
-				},
-				{
-					Name:     "created_at",
-					Type:     "string",
-					Optional: false,
-				},
-				{
-					Name:     "updated_at",
-					Type:     "string",
-					Optional: false,
-				},
-				{
-					Name:     "discarded_at",
-					Type:     "string",
-					Optional: true,
-				},
-			},
-		},
-		Payload: map[string]interface{}{
-			"id":           u.ID,
-			"name":         u.Name,
-			"email":        u.Email,
-			"password":     u.Password,
-			"is_verified":  u.IsVerified,
-			"role_id":      u.RoleID,
-			"created_at":   u.CreatedAt.Format(time.RFC3339),
-			"updated_at":   u.UpdatedAt.Format(time.RFC3339),
-			"discarded_at": discardedAt,
-		},
-	}
 }

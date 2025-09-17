@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/elastic/go-elasticsearch/v8/esutil"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/orm"
 )
 
@@ -25,7 +26,7 @@ func (r *productElasticsearchRepository) BulkCreateProduct(ctx context.Context, 
 
 		if err = bi.Add(ctx,
 			esutil.BulkIndexerItem{
-				Index:      productIndex,
+				Index:      config.Get().BrokerKafkaTopicConnectorSinkProduct.EsProducts,
 				DocumentID: product.ID,
 				Action:     "index",
 				Body:       bytes.NewReader(data),

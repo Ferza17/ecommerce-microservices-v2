@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"log"
 	"sync"
 
@@ -23,6 +24,8 @@ var runCommand = &cobra.Command{
 		rabbitMQServer := rabbitmq.ProvideRabbitMQServer()
 
 		wg := new(sync.WaitGroup)
+
+		log.Println("Starting services in env : ", config.Get().Env)
 
 		// Start GRPC Server
 		wg.Add(1)

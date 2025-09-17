@@ -3,8 +3,11 @@ package usecase
 import (
 	"context"
 	"errors"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/orm"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/util"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
@@ -12,47 +15,42 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
-	"time"
 )
 
 func (u *authUseCase) AuthUserRegister(ctx context.Context, requestId string, req *pb.AuthUserRegisterRequest) (*pb.AuthUserRegisterResponse, error) {
-	var (
-		tx  = u.postgresSQL.GormDB().Begin()
-		now = time.Now()
-	)
-
 	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthUseCase.AuthUserRegister")
 	defer span.End()
 
+	now, err := util.GetNowWithTimeZone(pkgContext.CtxValueAsiaJakarta)
+	if err != nil {
+		u.logger.Error("AuthUseCase.AuthUserVerifyOtp", zap.String("requestId", requestId), zap.Error(err))
+		return nil, status.Error(codes.Internal, "internal server error")
+	}
+
 	// Validate is email already exists
-	existedUser, err := u.userPostgresqlRepository.FindUserByEmail(ctx, requestId, req.Email, tx)
+	existedUser, err := u.userPostgresqlRepository.FindUserByEmail(ctx, requestId, req.Email, nil)
 	if err != nil && err != gorm.ErrRecordNotFound {
-		tx.Rollback()
 		u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
 		return nil, status.Error(codes.Internal, "internal server error")
 	}
 
 	if existedUser != nil {
-		tx.Rollback()
 		u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(errors.New("user with this email already exists")))
 		return nil, status.Error(codes.AlreadyExists, "User with this email already exists")
 	}
 
 	// Validate Role
-	role, err := u.rolePostgresqlRepository.FindRoleByName(ctx, requestId, req.Role.String(), tx)
+	role, err := u.rolePostgresqlRepository.FindRoleByName(ctx, requestId, req.Role.String(), nil)
 	if err != nil {
-		tx.Rollback()
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(errors.New("role not found")))
 			return nil, status.Error(codes.NotFound, "role not found")
 		}
-
 		return nil, err
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
-		tx.Rollback()
 		u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(errors.New("error hashing password")))
 		return nil, err
 	}
@@ -68,24 +66,15 @@ func (u *authUseCase) AuthUserRegister(ctx context.Context, requestId string, re
 		UpdatedAt:  timestamppb.New(now),
 	})
 
-	//result, err := u.userPostgresqlRepository.CreateUser(ctx, requestId, user, tx)
-	//if err != nil {
-	//	tx.Rollback()
-	//	u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
-	//	return nil, status.Error(codes.Internal, "internal server error")
-	//}
-
-	if err = u.userPgSinkRepository.CreateUser(ctx, requestId, user); err != nil {
-		tx.Rollback()
+	if err = u.kafkaInfrastructure.PublishWithJsonSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkPgUser.Users, user.ID, user); err != nil {
 		u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
-	}
-
-	if err = u.SentOTP(ctx, requestId, user.ToProto()); err != nil {
-		tx.Rollback()
 		return nil, status.Error(codes.Internal, "internal server error")
 	}
 
-	tx.Commit()
+	if err = u.SentOTP(ctx, requestId, user.ToProto()); err != nil {
+		return nil, status.Error(codes.Internal, "internal server error")
+	}
+
 	return &pb.AuthUserRegisterResponse{
 		Status:  "success",
 		Message: "AuthUserRegister",

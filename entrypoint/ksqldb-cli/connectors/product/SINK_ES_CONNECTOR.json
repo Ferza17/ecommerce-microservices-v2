@@ -2,17 +2,23 @@
   "name": "SINK_CONNECTOR_ES_PRODUCTS_PRODUCTS",
   "config": {
     "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
-    "tasks.max": "1",
+    "connection.url": "http://elasticsearch-local:9200",
+    "tasks.max": "2",
+    "index.name.format": "products",
+
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "io.confluent.connect.json.JsonSchemaConverter",
+    "value.converter.schema.registry.url": "http://schema-registry-local:8081",
+
+    "index.name": "products",
 
     "topics": "sink-es-products-products",
-    "connection.url": "http://elasticsearch-local:9200",
     "type.name": "_doc",
     "key.ignore": "false",
 
-    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
-    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
-    "key.converter.schemas.enable": "true",
-    "value.converter.schemas.enable": "true",
+    "auto.create": true,
+    "auto.evolve": true,
+    "delete.enabled": true,
 
     "behavior.on.null.values": "delete",
     "write.method": "upsert",
@@ -22,24 +28,35 @@
     "schema.ignore": "true",
     "drop.invalid.message": "true",
 
-    "transforms": "unwrap,flatten",
-    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
-    "transforms.flatten.type": "org.apache.kafka.connect.transforms.Flatten$Value",
-    "transforms.flatten.delimiter": "_",
-
     "behavior.on.malformed.documents": "ignore",
+
     "errors.tolerance": "all",
-
-    "auto.create": "true",
-    "auto.evolve": "true",
-    "delete.enabled": "true",
-
+    "errors.log.enable": "true",
+    "errors.log.include.messages": "true",
 
     "batch.size": "1000",
     "batch.size.bytes": "10000000",
     "linger.ms": "1000",
     "flush.timeout.ms": "10000",
     "max.in.flight.requests": "1",
-    "input.data.format": "JSON"
+    "input.data.format": "JSON",
+
+    "db.timezone": "Asia/Jakarta",
+    "transforms": "convertUpdatedAt,convertCreatedAt",
+
+    "transforms.convertUpdatedAt.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",
+    "transforms.convertUpdatedAt.field": "updated_at",
+    "transforms.convertUpdatedAt.target.type": "Timestamp",
+    "transforms.convertUpdatedAt.format": "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX",
+    "transforms.convertCreatedAt.missing.or.null.behavior": "skip",
+
+    "transforms.convertCreatedAt.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",
+    "transforms.convertCreatedAt.field": "created_at",
+    "transforms.convertCreatedAt.target.type": "Timestamp",
+    "transforms.convertCreatedAt.format": "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX",
+    "transforms.convertUpdatedAt.missing.or.null.behavior": "skip"
+
+
+
   }
 }

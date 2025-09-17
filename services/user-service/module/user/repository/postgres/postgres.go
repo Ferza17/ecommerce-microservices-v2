@@ -12,10 +12,8 @@ import (
 
 type (
 	IUserPostgresqlRepository interface {
-		CreateUser(ctx context.Context, requestId string, req *orm.User, tx *gorm.DB) (*orm.User, error)
 		FindUserById(ctx context.Context, requestId string, id string, tx *gorm.DB) (*orm.User, error)
 		FindUserByEmail(ctx context.Context, requestId string, email string, tx *gorm.DB) (*orm.User, error)
-		UpdateUserById(ctx context.Context, requestId string, req *orm.User, tx *gorm.DB) (*orm.User, error)
 	}
 
 	userPostgresqlRepository struct {

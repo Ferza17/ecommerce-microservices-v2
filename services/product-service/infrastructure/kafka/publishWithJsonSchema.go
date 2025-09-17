@@ -8,7 +8,7 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry/serde/jsonschema"
 	"time"
 
-	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/context"
 )
 
 func (c *kafkaInfrastructure) PublishWithJsonSchema(ctx context.Context, topic string, key string, value interface{}) error {

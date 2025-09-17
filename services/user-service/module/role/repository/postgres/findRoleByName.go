@@ -10,6 +10,9 @@ import (
 func (r *rolePostgresSQLRepository) FindRoleByName(ctx context.Context, requestId string, name string, tx *gorm.DB) (*orm.Role, error) {
 	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "RolePostgresRepository.FindRoleByName")
 	defer span.End()
+	if tx == nil {
+		tx = r.postgresSQLInfrastructure.GormDB()
+	}
 	role := new(orm.Role)
 	if err := tx.WithContext(ctx).
 		Where("role = ?", name).
