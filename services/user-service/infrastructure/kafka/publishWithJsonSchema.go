@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
-	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry/serde"
-	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry/serde/jsonschema"
 	"time"
 
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
@@ -41,16 +39,9 @@ func (c *kafkaInfrastructure) PublishWithJsonSchema(ctx context.Context, topic s
 	}
 
 	// Create JSON Schema serializer with proper configuration
-	serdes := jsonschema.NewSerializerConfig()
-
-	ser, err := jsonschema.NewSerializer(c.schemaRegistry, serde.ValueSerde, serdes)
-	if err != nil {
-		c.logger.Error(fmt.Sprintf("failed to create kafka serializer: %v", err))
-		return err
-	}
 
 	// Ensure the value is properly structured
-	payload, err := ser.Serialize(topic, value)
+	payload, err := c.jsonSerializer.Serialize(topic, value)
 	if err != nil {
 		c.logger.Error(fmt.Sprintf("failed to serialize message: %v", err))
 		return err

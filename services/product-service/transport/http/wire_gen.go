@@ -8,6 +8,7 @@ package http
 
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/elasticsearch"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/postgres"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/service/user"
@@ -26,10 +27,11 @@ func ProvideHttpTransport() *HttpTransport {
 	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
 	postgresSQL := postgres.NewPostgresqlInfrastructure(iZapLogger)
 	iProductPostgresqlRepository := postgres2.NewProductPostgresqlRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
+	iKafkaInfrastructure := kafka.NewKafkaInfrastructure(iZapLogger, iTelemetryInfrastructure)
 	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iTelemetryInfrastructure, iZapLogger)
 	iElasticsearchInfrastructure := elasticsearch.NewElasticsearchInfrastructure(iTelemetryInfrastructure, iZapLogger)
 	iProductElasticsearchRepository := elasticsearch2.NewProductElasticsearchRepository(iElasticsearchInfrastructure, iTelemetryInfrastructure, iZapLogger)
-	iProductUseCase := usecase.NewProductUseCase(postgresSQL, iProductPostgresqlRepository, iRabbitMQInfrastructure, iProductElasticsearchRepository, iTelemetryInfrastructure, iZapLogger)
+	iProductUseCase := usecase.NewProductUseCase(postgresSQL, iProductPostgresqlRepository, iKafkaInfrastructure, iRabbitMQInfrastructure, iProductElasticsearchRepository, iTelemetryInfrastructure, iZapLogger)
 	iUserService := user.NewUserService(iZapLogger)
 	productPresenter := presenter.NewProductPresenter(iProductUseCase, iTelemetryInfrastructure, iZapLogger, iUserService)
 	httpTransport := NewServer(iZapLogger, iTelemetryInfrastructure, productPresenter, iUserService)

@@ -8,6 +8,7 @@ package rabbitmq
 
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/elasticsearch"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/postgres"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
@@ -26,9 +27,10 @@ func ProvideRabbitMQTransport() *RabbitMQTransport {
 	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iTelemetryInfrastructure, iZapLogger)
 	postgresSQL := postgres.NewPostgresqlInfrastructure(iZapLogger)
 	iProductPostgresqlRepository := postgres2.NewProductPostgresqlRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
+	iKafkaInfrastructure := kafka.NewKafkaInfrastructure(iZapLogger, iTelemetryInfrastructure)
 	iElasticsearchInfrastructure := elasticsearch.NewElasticsearchInfrastructure(iTelemetryInfrastructure, iZapLogger)
 	iProductElasticsearchRepository := elasticsearch2.NewProductElasticsearchRepository(iElasticsearchInfrastructure, iTelemetryInfrastructure, iZapLogger)
-	iProductUseCase := usecase.NewProductUseCase(postgresSQL, iProductPostgresqlRepository, iRabbitMQInfrastructure, iProductElasticsearchRepository, iTelemetryInfrastructure, iZapLogger)
+	iProductUseCase := usecase.NewProductUseCase(postgresSQL, iProductPostgresqlRepository, iKafkaInfrastructure, iRabbitMQInfrastructure, iProductElasticsearchRepository, iTelemetryInfrastructure, iZapLogger)
 	iProductConsumer := consumer.NewProductConsumer(iRabbitMQInfrastructure, iProductUseCase, iTelemetryInfrastructure, iZapLogger)
 	rabbitMQTransport := NewServer(iZapLogger, iProductConsumer, iTelemetryInfrastructure, iRabbitMQInfrastructure)
 	return rabbitMQTransport

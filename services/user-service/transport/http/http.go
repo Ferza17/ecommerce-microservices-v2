@@ -165,3 +165,13 @@ func (s *Server) Serve(ctx context.Context) error {
 	s.workerPool.Stop()
 	return nil
 }
+
+func (s *Server) Close() {
+	s.logger.Info(fmt.Sprintf("closing http server"))
+	if err := s.server.Close(); err != nil {
+		s.logger.Error(fmt.Sprintf("error closing http server"))
+	}
+	if err := s.telemetryInfrastructure.Close(); err != nil {
+		s.logger.Error(fmt.Sprintf("error closing telemetry on http server"))
+	}
+}

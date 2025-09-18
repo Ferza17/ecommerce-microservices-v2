@@ -11,6 +11,7 @@ type WorkerPool struct {
 	workerName        string
 	workers           int
 	rabbitmqTaskQueue chan RabbitMQTaskQueue
+	kafkaTaskQueue    chan KafkaTaskQueue
 	wg                sync.WaitGroup
 	ctx               context.Context
 	cancel            context.CancelFunc
@@ -33,8 +34,39 @@ func NewWorkerPoolRabbitMQTaskQueue(workerName string, workers int, queueSize in
 		workerName:        workerName,
 		workers:           workers,
 		rabbitmqTaskQueue: make(chan RabbitMQTaskQueue, queueSize),
+		kafkaTaskQueue:    nil,
 		ctx:               ctx,
 		cancel:            cancel,
+	}
+}
+
+func NewWorkerPoolKafkaTaskQueue(workerName string, workers int, queueSize int) *WorkerPool {
+	ctx, cancel := context.WithCancel(context.Background())
+	return &WorkerPool{
+		workerName:        workerName,
+		workers:           workers,
+		rabbitmqTaskQueue: nil,
+		kafkaTaskQueue:    make(chan KafkaTaskQueue, queueSize),
+		ctx:               ctx,
+		cancel:            cancel,
+	}
+}
+
+func (wp *WorkerPool) AddRabbitMQTaskQueue(task RabbitMQTaskQueue) {
+	select {
+	case wp.rabbitmqTaskQueue <- task:
+		log.Printf("RabbitMQ Queue Name %s : Task Added", task.QueueName)
+	default:
+		log.Printf("Worker %s : %s  is full : %v", wp.workerName, task.QueueName, task)
+	}
+}
+
+func (wp *WorkerPool) AddKafkaTaskQueue(task KafkaTaskQueue) {
+	select {
+	case wp.kafkaTaskQueue <- task:
+		log.Printf("Kafka Topic Name : %s Task Added", task.Message)
+	default:
+		log.Printf("Worker %s : %s  is full : %v", wp.workerName, task.Message, task)
 	}
 }
 
@@ -52,11 +84,16 @@ func (wp *WorkerPool) worker(id int) {
 		select {
 		case task := <-wp.rabbitmqTaskQueue:
 			if err := task.Handler(task.Ctx, task.Delivery); err != nil {
-				log.Printf("Worker Queue %s : Task Error: %v", wp.workerName, err)
+				log.Printf("RabbitMQ Worker Queue %s : Task Error: %v", wp.workerName, err)
+				return
+			}
+		case task := <-wp.kafkaTaskQueue:
+			if err := task.Handler(task.Ctx, task.Message); err != nil {
+				log.Printf("kafka Worker Queue %s : Task Error: %v", wp.workerName, err)
 				return
 			}
 		case <-wp.ctx.Done():
-			log.Printf("Worker %d stopped", id)
+			log.Printf("Worker %s :  %d stopped", wp.workerName, id)
 			return
 		}
 	}
@@ -64,6 +101,11 @@ func (wp *WorkerPool) worker(id int) {
 
 func (wp *WorkerPool) Stop() {
 	wp.cancel()
-	close(wp.rabbitmqTaskQueue)
+	if wp.rabbitmqTaskQueue != nil {
+		close(wp.rabbitmqTaskQueue)
+	}
+	if wp.kafkaTaskQueue != nil {
+		close(wp.kafkaTaskQueue)
+	}
 	wp.wg.Wait()
 }

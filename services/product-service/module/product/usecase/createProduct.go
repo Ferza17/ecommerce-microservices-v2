@@ -3,26 +3,29 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/orm"
 	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/context"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/util"
 	"github.com/golang/protobuf/ptypes/empty"
-
 	"github.com/google/uuid"
+	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"time"
 )
 
 func (u *productUseCase) CreateProduct(ctx context.Context, requestId string, req *productRpc.CreateProductRequest) (*empty.Empty, error) {
-	var (
-		err error
-		tx  = u.postgres.GormDB.Begin()
-		now = time.Now().UTC()
-	)
 	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "ProductUseCase.CreateProduct")
 	defer span.End()
 
-	_, err = u.productPgsqlRepository.CreateProduct(ctx, &orm.Product{
+	now, err := util.GetNowWithTimeZone(pkgContext.CtxValueAsiaJakarta)
+	if err != nil {
+		u.logger.Error("error getting now with timezone ", zap.Error(err))
+		return nil, status.Errorf(codes.Internal, "internal error: %v", err)
+	}
+
+	product := &orm.Product{
 		ID:          uuid.NewString(),
 		Name:        req.GetName(),
 		Price:       req.GetPrice(),
@@ -32,15 +35,17 @@ func (u *productUseCase) CreateProduct(ctx context.Context, requestId string, re
 		Uom:         req.GetUom(),
 		CreatedAt:   &now,
 		UpdatedAt:   &now,
-	}, tx)
-	if err != nil {
-		tx.Rollback()
-		u.logger.Error(fmt.Sprintf("requestId : %s , error creating product: %v", requestId, err))
-		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	// TODO: Insert Via CONNECTOR SINK
+	if err = u.kafkaInfrastructure.PublishWithJsonSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkProduct.PgProducts, product.ID, product); err != nil {
+		u.logger.Error(fmt.Sprintf("Error publishing event to kafka for product creation: %s", err.Error()))
+		return nil, status.Errorf(codes.Internal, "Error publishing event to kafka for product creation: %s", err.Error())
+	}
 
-	tx.Commit()
-	return nil, nil
+	if err = u.kafkaInfrastructure.PublishWithJsonSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkProduct.EsProducts, product.ID, product); err != nil {
+		u.logger.Error(fmt.Sprintf("Error publishing event to kafka for product creation: %s", err.Error()))
+		return nil, status.Errorf(codes.Internal, "Error publishing event to kafka for product creation: %s", err.Error())
+	}
+
+	return &empty.Empty{}, nil
 }

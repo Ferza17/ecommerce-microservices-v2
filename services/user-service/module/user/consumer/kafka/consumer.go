@@ -4,33 +4,34 @@ import (
 	"context"
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/kafka"
-	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
+	userUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/google/wire"
 )
 
 type (
-	IAuthConsumer interface {
-		SnapshotUsersUserLogin(ctx context.Context, message *kafka.Message) error
-		SnapshotUsersUserLogout(ctx context.Context, message *kafka.Message) error
+	IUserConsumer interface {
+		SnapshotUsersUserCreated(ctx context.Context, message *kafka.Message) error
+		SnapshotUsersUserUpdated(ctx context.Context, message *kafka.Message) error
 	}
 
-	authConsumer struct {
+	userConsumer struct {
 		kafkaInfrastructure kafkaInfrastructure.IKafkaInfrastructure
 		logger              logger.IZapLogger
-		authUseCase         authUseCase.IAuthUseCase
+		userUseCase         userUseCase.IUserUseCase
 	}
 )
 
-var Set = wire.NewSet(NewAuthConsumer)
+var Set = wire.NewSet(NewUserConsumer)
 
-func NewAuthConsumer(
+func NewUserConsumer(
 	kafkaInfrastructure kafkaInfrastructure.IKafkaInfrastructure,
 	logger logger.IZapLogger,
-	authUseCase authUseCase.IAuthUseCase) IAuthConsumer {
-	return &authConsumer{
+	userUseCase userUseCase.IUserUseCase,
+) IUserConsumer {
+	return &userConsumer{
 		kafkaInfrastructure: kafkaInfrastructure,
 		logger:              logger,
-		authUseCase:         authUseCase,
+		userUseCase:         userUseCase,
 	}
 }

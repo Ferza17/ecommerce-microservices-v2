@@ -13,7 +13,6 @@ import (
 
 type (
 	IProductElasticsearchRepository interface {
-		BulkCreateProduct(ctx context.Context, products []*orm.Product) error
 		FindProductById(ctx context.Context, requestId string, id string) (*orm.Product, error)
 		FindProductsWithPagination(ctx context.Context, requestId string, request *productRpc.FindProductsWithPaginationRequest) (products []*orm.Product, total int64, err error)
 	}

@@ -5,6 +5,7 @@ package grpc
 
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/elasticsearch"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/postgres"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/rabbitmq"
 	userService "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/service/user"
@@ -26,6 +27,7 @@ func ProvideGrpcTransport() *GrpcTransport {
 		postgres.Set,
 		rabbitmq.Set,
 		telemetry.Set,
+		kafka.Set,
 
 		// Services
 		userService.Set,

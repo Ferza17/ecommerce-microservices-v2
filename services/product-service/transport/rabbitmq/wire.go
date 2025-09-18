@@ -5,6 +5,7 @@ package rabbitmq
 
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/elasticsearch"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/postgres"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
@@ -25,6 +26,7 @@ func ProvideRabbitMQTransport() *RabbitMQTransport {
 		postgres.Set,
 		rabbitmq.Set,
 		telemetry.Set,
+		kafka.Set,
 
 		productUseCase.Set,
 		productPgRepo.Set,

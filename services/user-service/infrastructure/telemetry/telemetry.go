@@ -4,6 +4,7 @@ package telemetry
 import (
 	"context"
 	"fmt"
+	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/google/wire"
@@ -25,8 +26,11 @@ type (
 		StartSpanFromHttpRequest(r *http.Request, fnName string) (context.Context, trace.Span)
 		StartSpanFromRabbitMQHeader(ctx context.Context, headers amqp091.Table, fnName string) (context.Context, trace.Span)
 		StartSpanFromRpcMetadata(ctx context.Context, fnName string) (context.Context, trace.Span)
-
+		StartSpanFromKafkaHeader(ctx context.Context, headers []kafka.Header, fnName string) (context.Context, trace.Span)
 		InjectSpanToTextMapPropagator(ctx context.Context) propagation.MapCarrier
+
+		// Handle Graceful Stop
+		Close() error
 	}
 	telemetryInfrastructure struct {
 		logger         logger.IZapLogger
@@ -34,6 +38,10 @@ type (
 		serviceName    string
 	}
 )
+
+func (t *telemetryInfrastructure) Close() error {
+	return t.tracerProvider.Shutdown(context.Background())
+}
 
 var Set = wire.NewSet(NewTelemetry)
 

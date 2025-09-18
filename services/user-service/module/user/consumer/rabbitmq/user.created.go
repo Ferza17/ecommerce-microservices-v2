@@ -1,4 +1,4 @@
-package consumer
+package rabbitmq
 
 import (
 	"context"
@@ -14,13 +14,12 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func (c *userConsumer) UserUpdated(ctx context.Context, d *amqp091.Delivery) error {
-
-	ctx, span := c.telemetryInfrastructure.StartSpanFromContext(ctx, "userConsumer.UserUpdated")
+func (c *userConsumer) UserCreated(ctx context.Context, d *amqp091.Delivery) error {
+	ctx, span := c.telemetryInfrastructure.StartSpanFromContext(ctx, "userConsumer.UserCreated")
 	defer span.End()
 
 	var (
-		request   pb.UpdateUserByIdRequest
+		request   pb.AuthUserRegisterRequest
 		requestId = pkgContext.GetRequestIDFromContext(ctx)
 	)
 
@@ -29,20 +28,20 @@ func (c *userConsumer) UserUpdated(ctx context.Context, d *amqp091.Delivery) err
 		if err := proto.Unmarshal(d.Body, &request); err != nil {
 			span.RecordError(err)
 			c.logger.Error(fmt.Sprintf("requsetID : %s , failed to unmarshal request : %v", requestId, zap.Error(err)))
-			pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserUpdated, "failed").Inc()
+			pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserCreated, "failed").Inc()
 			return err
 		}
 	case enum.JSON.String():
 		if err := json.Unmarshal(d.Body, &request); err != nil {
 			span.RecordError(err)
-			pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserUpdated, "failed").Inc()
+			pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserCreated, "failed").Inc()
 			c.logger.Error(fmt.Sprintf("failed to unmarshal request : %v", zap.Error(err)))
 			return err
 		}
 	default:
 		err := fmt.Errorf("invalid content type : %s", d.ContentType)
 		span.RecordError(err)
-		pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserUpdated, "failed").Inc()
+		pkgMetric.RabbitmqMessagesConsumed.WithLabelValues(config.Get().QueueUserCreated, "failed").Inc()
 		c.logger.Error(fmt.Sprintf("failed to get request id"))
 		return err
 	}
@@ -58,5 +57,6 @@ func (c *userConsumer) UserUpdated(ctx context.Context, d *amqp091.Delivery) err
 	if err := d.Ack(true); err != nil {
 		return err
 	}
+
 	return nil
 }

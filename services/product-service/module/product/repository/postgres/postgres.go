@@ -12,14 +12,7 @@ import (
 
 type (
 	IProductPostgresqlRepository interface {
-		// FindAllProductForElasticIndex
-		// This Function is only use for init index product's data. do not use on Real Use Case Scenario
-		FindAllProductForElasticIndex(ctx context.Context, tx *gorm.DB) ([]*orm.Product, error)
-
 		FindProductById(ctx context.Context, id string, tx *gorm.DB) (*orm.Product, error)
-		CreateProduct(ctx context.Context, product *orm.Product, tx *gorm.DB) (string, error)
-		DeleteProductById(ctx context.Context, id string, tx *gorm.DB) error
-		UpdateProductById(ctx context.Context, product *orm.Product, tx *gorm.DB) (*orm.Product, error)
 	}
 
 	ProductPostgresqlRepository struct {

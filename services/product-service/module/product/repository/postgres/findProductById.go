@@ -13,6 +13,9 @@ func (r *ProductPostgresqlRepository) FindProductById(ctx context.Context, id st
 		ctxTimeout, cancel = context.WithTimeout(ctx, 5*time.Second)
 	)
 	defer cancel()
+	if tx == nil {
+		tx = r.postgresSQLInfrastructure.GormDB
+	}
 	ctxTimeout, span := r.telemetryInfrastructure.StartSpanFromContext(ctxTimeout, "Repository.FindProductById")
 	defer span.End()
 	product := new(orm.Product)

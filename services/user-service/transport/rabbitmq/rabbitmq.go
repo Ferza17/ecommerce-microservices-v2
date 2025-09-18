@@ -2,11 +2,12 @@ package rabbitmq
 
 import (
 	"context"
+	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	authConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/consumer/rabbitmq"
-	userConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/consumer"
+	userConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/consumer/rabbitmq"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/worker"
@@ -147,9 +148,7 @@ func (srv *Server) Serve(ctx context.Context) error {
 						log.Fatalf("invalid queue %s", queue)
 					}
 
-					task.Ctx = newCtx
-					srv.workerPool.AddTaskQueue(task)
-
+					srv.workerPool.AddRabbitMQTaskQueue(task)
 					span.End()
 
 				case <-ctx.Done():
@@ -164,4 +163,14 @@ func (srv *Server) Serve(ctx context.Context) error {
 	<-ctx.Done()
 	srv.workerPool.Stop()
 	return nil
+}
+
+func (srv *Server) Close() {
+	srv.logger.Info("closing rabbitmq consumer")
+	if err := srv.amqpInfrastructure.Close(); err != nil {
+		srv.logger.Error("failed to close rabbitmq infrastructure", zap.Error(err))
+	}
+	if err := srv.telemetryInfrastructure.Close(); err != nil {
+		srv.logger.Error(fmt.Sprintf("error closing telemetry on rabbitmq consumer"))
+	}
 }

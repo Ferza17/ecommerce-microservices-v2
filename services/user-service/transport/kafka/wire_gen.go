@@ -4,7 +4,7 @@
 //go:build !wireinject
 // +build !wireinject
 
-package rabbitmq
+package kafka
 
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/kafka"
@@ -14,15 +14,14 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	postgres4 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/postgres"
 	redis3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/redis"
-	usecase2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/usecase"
-	rabbitmq3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/consumer/rabbitmq"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/usecase"
+	kafka2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/consumer/kafka"
 	redis2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
-	usecase3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
-	usecase4 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/usecase"
+	usecase2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
 	postgres3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/repository/postgres"
-	rabbitmq2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/consumer/rabbitmq"
+	kafka3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/consumer/kafka"
 	postgres2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/postgres"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/usecase"
+	usecase3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 )
 
@@ -31,21 +30,20 @@ import (
 func ProvideServer() *Server {
 	iZapLogger := logger.NewZapLogger()
 	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
-	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iTelemetryInfrastructure, iZapLogger)
+	iKafkaInfrastructure := kafka.NewKafkaInfrastructure(iZapLogger, iTelemetryInfrastructure)
 	iPostgresSQL := postgres.NewPostgresqlInfrastructure(iZapLogger)
 	iUserPostgresqlRepository := postgres2.NewUserPostgresqlRepository(iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
 	iRolePostgresqlRepository := postgres3.NewRolePostgresqlRepository(iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
-	iKafkaInfrastructure := kafka.NewKafkaInfrastructure(iZapLogger, iTelemetryInfrastructure)
 	iRedisInfrastructure := redis.NewRedisInfrastructure(iZapLogger)
 	iAuthRedisRepository := redis2.NewAuthRedisRepository(iRedisInfrastructure, iTelemetryInfrastructure, iZapLogger)
-	iUserUseCase := usecase.NewUserUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iKafkaInfrastructure, iRabbitMQInfrastructure, iAuthRedisRepository, iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
-	iUserConsumer := rabbitmq2.NewUserConsumer(iRabbitMQInfrastructure, iTelemetryInfrastructure, iUserUseCase, iZapLogger)
 	iAccessControlPostgresqlRepository := postgres4.NewAccessControlPostgresqlRepository(iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
 	iAccessControlRedisRepository := redis3.NewAccessControlRedisRepository(iRedisInfrastructure, iTelemetryInfrastructure, iZapLogger)
-	iAccessControlUseCase := usecase2.NewAccessControlUseCase(iAccessControlPostgresqlRepository, iAccessControlRedisRepository, iTelemetryInfrastructure, iPostgresSQL, iZapLogger)
-	iAuthUseCase := usecase3.NewAuthUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iKafkaInfrastructure, iAuthRedisRepository, iAccessControlUseCase, iRabbitMQInfrastructure, iTelemetryInfrastructure, iPostgresSQL, iZapLogger)
-	iEventUseCase := usecase4.NewEventUseCase(iTelemetryInfrastructure, iRabbitMQInfrastructure, iZapLogger)
-	iAuthConsumer := rabbitmq3.NewAuthConsumer(iRabbitMQInfrastructure, iTelemetryInfrastructure, iAuthUseCase, iEventUseCase, iZapLogger)
-	server := NewServer(iRabbitMQInfrastructure, iTelemetryInfrastructure, iZapLogger, iUserConsumer, iAuthConsumer)
+	iAccessControlUseCase := usecase.NewAccessControlUseCase(iAccessControlPostgresqlRepository, iAccessControlRedisRepository, iTelemetryInfrastructure, iPostgresSQL, iZapLogger)
+	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iTelemetryInfrastructure, iZapLogger)
+	iAuthUseCase := usecase2.NewAuthUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iKafkaInfrastructure, iAuthRedisRepository, iAccessControlUseCase, iRabbitMQInfrastructure, iTelemetryInfrastructure, iPostgresSQL, iZapLogger)
+	iAuthConsumer := kafka2.NewAuthConsumer(iKafkaInfrastructure, iZapLogger, iAuthUseCase)
+	iUserUseCase := usecase3.NewUserUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iKafkaInfrastructure, iRabbitMQInfrastructure, iAuthRedisRepository, iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
+	iUserConsumer := kafka3.NewUserConsumer(iKafkaInfrastructure, iZapLogger, iUserUseCase)
+	server := NewServer(iKafkaInfrastructure, iTelemetryInfrastructure, iAuthConsumer, iUserConsumer, iZapLogger)
 	return server
 }

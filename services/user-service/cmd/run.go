@@ -3,74 +3,73 @@ package cmd
 import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
-	"log"
-	"sync"
-
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/transport/grpc"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/transport/http"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/transport/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/transport/rabbitmq"
+	"log"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
+
 	"github.com/spf13/cobra"
 )
 
 var runCommand = &cobra.Command{
 	Use: "run",
 	Run: func(cmd *cobra.Command, args []string) {
-		ctx, cancel := context.WithCancel(cmd.Context())
-		defer cancel()
+		// Root context with cancel
+		ctx, cancel := context.WithCancel(context.Background())
 
 		// Initialize servers
 		grpcServer := grpc.ProvideGrpcServer()
 		httpServer := http.ProvideHttpServer()
-		rabbitMQServer := rabbitmq.ProvideRabbitMQServer()
+		rabbitMQServer := rabbitmq.ProvideServer()
+		kafkaServer := kafka.ProvideServer()
 
 		wg := new(sync.WaitGroup)
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
-		log.Println("Starting services in env : ", config.Get().Env)
+		log.Println("Starting services in env:", config.Get().Env)
 
-		// Start GRPC Server
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			err := grpcServer.Serve(ctx)
-			if err != nil {
-				log.Fatalf("error serving grpc server: %v", err)
-				return
-			}
-		}()
+		// Start servers
+		start := func(name string, fn func(context.Context) error, closeFn func()) {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				if err := fn(ctx); err != nil {
+					log.Printf("error serving %s: %v", name, err)
+				}
+				// closeFn should only be called *after* Serve exits
+				if closeFn != nil {
+					closeFn()
+				}
+			}()
+		}
 
-		// Start RabbitMQ Consumer
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			if err := rabbitMQServer.Serve(ctx); err != nil {
-				log.Fatalf("error serving rabbitmq server: %v", err)
-				return
-			}
-		}()
+		start("gRPC", grpcServer.Serve, grpcServer.Close)
+		start("RabbitMQ", rabbitMQServer.Serve, rabbitMQServer.Close)
+		start("Kafka", kafkaServer.Serve, kafkaServer.Close)
+		start("HTTP", httpServer.Serve, httpServer.Close)
 
-		// Start HTTP Server
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			if err := httpServer.Serve(ctx); err != nil {
-				log.Fatalf("error serving http server: %v", err)
-				return
-			}
-		}()
-
-		// Start Metric Collector (simplified)
+		// Metrics server (fire and forget, doesn’t need to close)
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			if err := http.ServeHttpPrometheusMetricCollector(); err != nil {
-				log.Fatalf("error serving http metric collector: %v", err)
-				return
+				log.Printf("error serving metrics: %v", err)
 			}
 		}()
 
-		// Wait for all goroutines to complete
-		wg.Wait()
+		// Wait for the quit signal
+		<-quit
+		log.Println("Received quit signal, shutting down...")
+		cancel() // tell all servers to stop
 
+		// Wait for all goroutines to finish
+		wg.Wait()
 		log.Println("All services stopped. Exiting...")
 	},
 }

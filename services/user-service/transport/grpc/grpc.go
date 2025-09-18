@@ -118,7 +118,14 @@ func (srv *Server) Serve(ctx context.Context) error {
 	}
 
 	<-ctx.Done()
-	srv.grpcServer.GracefulStop()
 	srv.workerPool.Stop()
 	return nil
+}
+
+func (srv *Server) Close() {
+	srv.logger.Info(fmt.Sprintf("closing grpc server"))
+	srv.grpcServer.GracefulStop()
+	if err := srv.telemetryInfrastructure.Close(); err != nil {
+		srv.logger.Error(fmt.Sprintf("error closing telemetry on grpc server"))
+	}
 }

@@ -161,6 +161,21 @@ services:
     networks:
       - local
 
+#  Kibana
+  
+#  kibana-local:
+#    container_name: kibana-local
+#    image: kibana:8.4.1
+#    depends_on:
+#      - elasticsearch-local
+#    ports:
+#      - '5601:5601'
+#    environment:
+#      - 'ELASTICSEARCH_HOSTS=http://elasticsearch-local:9200'
+#      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+#    networks:
+#      - local
+
   # REDIS DATABASE
 
   redis-local:
@@ -587,6 +602,10 @@ services:
         condition: service_healthy
       postgres-local:
         condition: service_healthy
+      kafka-local-broker-1:
+        condition: service_healthy
+      schema-registry-local:
+        condition: service_healthy
     healthcheck:
       test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://user-service:40056/v1/user/check | grep -q '^200$'" ]
       interval: 30s
@@ -671,8 +690,8 @@ services:
       test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://product-service:40055/v1/product/check | grep -q '^200$'" ]
       interval: 30s
       timeout: 10s
-      retries: 3
-      start_period: 20s
+      retries: 5
+      start_period: 60s
     networks:
       - local
 
