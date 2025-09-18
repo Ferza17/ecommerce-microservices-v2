@@ -11,7 +11,7 @@ func (r *accessControlRedisRepository) SetAccessControlHTTPExcluded(ctx context.
 	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "AccessControlRedisRepository.SetAccessControlHTTPExcluded")
 	defer span.End()
 
-	key := fmt.Sprintf(accessControlHTTPExcludedPrefixKey, config.Get().UserServiceServiceName, method, url)
+	key := fmt.Sprintf(accessControlHTTPExcludedPrefixKey, config.Get().ConfigServiceUser.ServiceName, method, url)
 	if err := r.redisInfrastructure.
 		GetClient().
 		SetEX(ctx, key, true, accessControlExcludedTTL).

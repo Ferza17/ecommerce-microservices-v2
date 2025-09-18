@@ -57,10 +57,10 @@ func NewServer(
 	authUseCase authUseCase.IAuthUseCase,
 ) *Server {
 	return &Server{
-		address: config.Get().UserServiceHttpHost,
-		port:    config.Get().UserServiceHttpPort,
+		address: config.Get().ConfigServiceUser.HttpHost,
+		port:    config.Get().ConfigServiceUser.HttpPort,
 		workerPool: pkgWorker.NewWorkerPool(
-			fmt.Sprintf("HTTP SERVER ON %s:%s", config.Get().UserServiceHttpHost, config.Get().UserServiceHttpPort),
+			fmt.Sprintf("HTTP SERVER ON %s:%s", config.Get().ConfigServiceUser.HttpHost, config.Get().ConfigServiceUser.HttpPort),
 			2,
 		),
 		logger:                  logger,
@@ -125,7 +125,7 @@ func (s *Server) Serve(ctx context.Context) error {
 					Kind: &structpb.Value_StringValue{StringValue: "OK"},
 				},
 				"service": &structpb.Value{
-					Kind: &structpb.Value_StringValue{StringValue: config.Get().UserServiceServiceName},
+					Kind: &structpb.Value_StringValue{StringValue: config.Get().ConfigServiceUser.ServiceName},
 				},
 			},
 		})

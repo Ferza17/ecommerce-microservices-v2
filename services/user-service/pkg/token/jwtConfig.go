@@ -18,17 +18,17 @@ type (
 
 func DefaultRefreshTokenConfig() *JWTConfig {
 	return &JWTConfig{
-		SecretKey:          config.Get().JwtAccessTokenSecret,
-		ExpirationDuration: config.Get().JwtRefreshTokenExpirationTime,
-		Issuer:             config.Get().UserServiceServiceName,
+		SecretKey:          config.Get().ConfigServiceUser.JwtAccessTokenSecret,
+		ExpirationDuration: config.Get().ConfigServiceUser.JwtRefreshTokenExpirationTime,
+		Issuer:             config.Get().ConfigServiceUser.ServiceName,
 	}
 }
 
 func DefaultAccessTokenConfig() *JWTConfig {
 	return &JWTConfig{
-		SecretKey:          config.Get().JwtAccessTokenSecret,
-		ExpirationDuration: config.Get().JwtAccessTokenExpirationTime,
-		Issuer:             config.Get().UserServiceServiceName,
+		SecretKey:          config.Get().ConfigServiceUser.JwtAccessTokenSecret,
+		ExpirationDuration: config.Get().ConfigServiceUser.JwtAccessTokenExpirationTime,
+		Issuer:             config.Get().ConfigServiceUser.ServiceName,
 	}
 }
 

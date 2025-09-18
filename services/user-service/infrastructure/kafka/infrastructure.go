@@ -51,11 +51,11 @@ func NewKafkaInfrastructure(
 
 	configMap := &kafka.ConfigMap{
 		"bootstrap.servers": config.Get().BrokerKafka.Broker1,
-		"client.id":         config.Get().UserServiceServiceName,
+		"client.id":         config.Get().ConfigServiceUser.ServiceName,
 
 		// Consumer config
 		"auto.offset.reset":     "earliest",
-		"group.id":              config.Get().UserServiceServiceName,
+		"group.id":              config.Get().ConfigServiceUser.ServiceName,
 		"session.timeout.ms":    10000,
 		"heartbeat.interval.ms": 3000,
 	}

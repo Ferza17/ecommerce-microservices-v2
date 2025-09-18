@@ -3,7 +3,6 @@ use opentelemetry::propagation::{Extractor, Injector};
 use std::str::FromStr;
 use tonic::metadata::{MetadataKey, MetadataMap, MetadataValue};
 use tracing::warn;
-use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 pub struct MetadataInjector<'a>(pub &'a mut MetadataMap);
 
@@ -62,4 +61,34 @@ pub fn inject_trace_context_to_lapin_table(
         request.insert(k.into(), lapin::types::AMQPValue::LongString(v.into()));
     }
     request
+}
+
+struct KafkaHeaderInjector<'a> {
+    headers: &'a mut rdkafka::message::OwnedHeaders,
+}
+
+impl<'a> Injector for KafkaHeaderInjector<'a> {
+    fn set(&mut self, key: &str, value: String) {
+        // Kafka headers are key-value, values must be &str or &[u8]
+        let value_bytes = value.into_bytes();
+        *self.headers = std::mem::replace(self.headers, rdkafka::message::OwnedHeaders::new())
+            .insert(rdkafka::message::Header {
+                key,
+                value: Some(&value_bytes),
+            });
+    }
+}
+
+/// Function to inject trace context into Kafka headers
+pub fn inject_trace_context_to_kafka_headers(
+    mut headers: rdkafka::message::OwnedHeaders,
+    ctx: &opentelemetry::Context,
+) -> rdkafka::message::OwnedHeaders {
+    global::get_text_map_propagator(|prop| {
+        let mut injector = KafkaHeaderInjector {
+            headers: &mut headers,
+        };
+        prop.inject_context(ctx, &mut injector);
+    });
+    headers
 }

@@ -617,29 +617,29 @@ services:
 
   # EVENT-STORE-SERVICE
 
-#  event-store-service:
-#    container_name: event-store-service
-#    build:
-#      context: ./services/event-store-service
-#      dockerfile: Dockerfile
-#    ports:
-#      - "50052:50052" # GRPC
-#      - "40052:40052" # HTTP
-#      - "30052:30052" # HTTP METRIC COLLECTOR
-#    restart: always
-#    depends_on:
-#      consul-local:
-#        condition: service_healthy
-#      mongo-local:
-#        condition: service_healthy
-#    healthcheck:
-#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://event-store-service:40052/v1/event-store/check | grep -q '^200$'" ]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 3
-#      start_period: 20s
-#    networks:
-#      - local
+  event-store-service:
+    container_name: event-store-service
+    build:
+      context: ./services/event-store-service
+      dockerfile: Dockerfile
+    ports:
+      - "50052:50052" # GRPC
+      - "40052:40052" # HTTP
+      - "30052:30052" # HTTP METRIC COLLECTOR
+    restart: always
+    depends_on:
+      consul-local:
+        condition: service_healthy
+      mongo-local:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://event-store-service:40052/v1/event-store/check | grep -q '^200$'" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - local
 
   # NOTIFICATION-SERVICE
 
@@ -697,59 +697,59 @@ services:
 
   # PAYMENT-SERVICE
 
-#  payment-service:
-#    container_name: payment-service
-#    build:
-#      context: ./services/payment-service
-#      dockerfile: Dockerfile
-#    ports:
-#      - "50054:50054" # GRPC
-#      - "40054:40054" # HTTP
-#      - "30054:30054" # HTTP METRIC COLLECTOR
-#    restart: always
-#    healthcheck:
-#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://payment-service:40054/v1/payment/check | grep -q '^200$'" ]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 3
-#      start_period: 20s
-#    depends_on:
-#      postgres-local:
-#        condition: service_healthy
-#      consul-local:
-#        condition: service_healthy
-#    networks:
-#      - local
+  payment-service:
+    container_name: payment-service
+    build:
+      context: ./services/payment-service
+      dockerfile: Dockerfile
+    ports:
+      - "50054:50054" # GRPC
+      - "40054:40054" # HTTP
+      - "30054:30054" # HTTP METRIC COLLECTOR
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://payment-service:40054/v1/payment/check | grep -q '^200$'" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    depends_on:
+      postgres-local:
+        condition: service_healthy
+      consul-local:
+        condition: service_healthy
+    networks:
+      - local
 
   # SHIPPING-SERVICE
 
-#  shipping-service:
-#    container_name: shipping-service
-#    build:
-#      context: ./services/shipping-service
-#      dockerfile: Dockerfile
-#    ports:
-#      - "50057:50057" # GRPC
-#      - "40057:40057" # HTTP
-#      - "30057:30057" # HTTP METRIC COLLECTOR
-#    environment:
-#      DATABASE_URL: postgres://postgres:1234@postgres-local:5432/shippings
-#    restart: no
-#    healthcheck:
-#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:40057/v1/shipping/check | grep -q '^200$'" ]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 3
-#      start_period: 20s
-#    depends_on:
-#      user-service:
-#        condition: service_healthy
-#      postgres-local:
-#        condition: service_healthy
-#      consul-local:
-#        condition: service_healthy
-#    networks:
-#      - local
+  shipping-service:
+    container_name: shipping-service
+    build:
+      context: ./services/shipping-service
+      dockerfile: Dockerfile
+    ports:
+      - "50057:50057" # GRPC
+      - "40057:40057" # HTTP
+      - "30057:30057" # HTTP METRIC COLLECTOR
+    environment:
+      DATABASE_URL: postgres://postgres:1234@postgres-local:5432/shippings
+    restart: no
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:40057/v1/shipping/check | grep -q '^200$'" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    depends_on:
+      user-service:
+        condition: service_healthy
+      postgres-local:
+        condition: service_healthy
+      consul-local:
+        condition: service_healthy
+    networks:
+      - local
 
 networks:
   local:

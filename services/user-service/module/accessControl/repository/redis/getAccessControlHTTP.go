@@ -12,7 +12,7 @@ func (r *accessControlRedisRepository) GetAccessControlHTTP(ctx context.Context,
 	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "AccessControlRedisRepository.GetAccessControlHTTP")
 	defer span.End()
 
-	key := fmt.Sprintf(accessControlHTTPPrefixKey, config.Get().UserServiceServiceName, role, method, url)
+	key := fmt.Sprintf(accessControlHTTPPrefixKey, config.Get().ConfigServiceUser.ServiceName, role, method, url)
 	val, err := r.redisInfrastructure.GetClient().Get(ctx, key).Result()
 	if err != nil {
 		r.logger.Error("AccessControlRedisRepository.GetAccessControlHTTP", zap.Error(err))

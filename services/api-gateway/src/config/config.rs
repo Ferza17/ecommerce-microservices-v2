@@ -1,4 +1,6 @@
+use crate::config::message_broker_kafka::MessageBrokerKafka;
 use crate::config::service_event_rabbitmq::ServiceEventRabbitMQ;
+use crate::config::service_user_kafka::ServiceUserKafka;
 use crate::config::{
     message_broker_rabbitmq::MessageBrokerRabbitMQ, open_policy_agent::OpenPolicyAgent,
     service_api_gateway::ServiceApiGateway, service_event::ServiceEvent,
@@ -27,6 +29,7 @@ pub struct AppConfig {
     // FROM CONSUL KV SERVICE/USER
     pub service_user: ServiceUser,
     pub service_user_rabbitmq: ServiceUserRabbitMQ,
+    pub service_user_kafka: ServiceUserKafka,
     // FROM CONSUL KV SERVICE/PRODUCT
     pub service_product: ServiceProduct,
     // FROM CONSUL KV SERVICE/PAYMENT
@@ -38,6 +41,8 @@ pub struct AppConfig {
     pub telemetry_jaeger: TelemetryJaeger,
     // FROM CONSUL RABBITMQ
     pub message_broker_rabbitmq: MessageBrokerRabbitMQ,
+    // FROM CONSUL KAFKA
+    pub message_broker_kafka: MessageBrokerKafka,
     // FROM CONSUL OPEN POLICY CONFIG
     pub open_policy_agent: OpenPolicyAgent,
 }
@@ -59,6 +64,8 @@ impl Default for AppConfig {
             telemetry_jaeger: TelemetryJaeger::default(),
             message_broker_rabbitmq: MessageBrokerRabbitMQ::default(),
             open_policy_agent: OpenPolicyAgent::default(),
+            message_broker_kafka: MessageBrokerKafka::default(),
+            service_user_kafka: ServiceUserKafka::default(),
         }
     }
 }
@@ -112,11 +119,13 @@ impl AppConfig {
             .with_service_shipping_rabbitmq(&client)
             .with_service_user(&client)
             .with_service_user_rabbitmq(&client)
+            .with_service_user_kafka(&client)
             .with_service_payment(&client)
             .with_service_event(&client)
             .with_service_event_rabbitmq(&client)
             .with_service_product(&client)
             .with_message_broker_rabbitmq(&client)
+            .with_message_broker_kafka(&client)
             .with_telemetry_jaeger(&client)
             .with_register_consul_service(&client))
     }
@@ -176,6 +185,20 @@ impl AppConfig {
                     .await
                     .unwrap_or_else(|e| {
                         panic!("Error with_service_user_rabbitmq :  {:?}", e);
+                    });
+            });
+        });
+        self
+    }
+
+    fn with_service_user_kafka(mut self, client: &ConsulClient) -> Self {
+        tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                self.service_user_kafka = ServiceUserKafka::default()
+                    .with_consul_client(self.config_env.env.clone(), client)
+                    .await
+                    .unwrap_or_else(|e| {
+                        panic!("Error with_service_user_kafka :  {:?}", e);
                     });
             });
         });
@@ -274,6 +297,20 @@ impl AppConfig {
                     .await
                     .unwrap_or_else(|e| {
                         panic!("Error with_message_broker_rabbitmq :  {:?}", e);
+                    });
+            });
+        });
+        self
+    }
+
+    fn with_message_broker_kafka(mut self, client: &ConsulClient) -> Self {
+        tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                self.message_broker_kafka = MessageBrokerKafka::default()
+                    .with_consul_client(self.config_env.env.clone(), client)
+                    .await
+                    .unwrap_or_else(|e| {
+                        panic!("Error with_message_broker_kafka :  {:?}", e);
                     });
             });
         });

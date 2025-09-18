@@ -11,7 +11,7 @@ func (r *accessControlRedisRepository) SetAccessControlRPCExcluded(ctx context.C
 	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "AccessControlRedisRepository.SetAccessControlRPCExcluded")
 	defer span.End()
 
-	key := fmt.Sprintf(accessControlRPCExcludedPrefixKey, config.Get().UserServiceServiceName, fullMethodName)
+	key := fmt.Sprintf(accessControlRPCExcludedPrefixKey, config.Get().ConfigServiceUser.ServiceName, fullMethodName)
 	if err := r.redisInfrastructure.
 		GetClient().
 		SetEX(ctx, key, true, accessControlExcludedTTL).

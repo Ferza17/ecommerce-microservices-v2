@@ -56,10 +56,10 @@ func NewServer(
 ) *Server {
 	//TODO: Add workers from consul config
 	return &Server{
-		address: config.Get().UserServiceRpcHost,
-		port:    config.Get().UserServiceRpcPort,
+		address: config.Get().ConfigServiceUser.RpcHost,
+		port:    config.Get().ConfigServiceUser.RpcPort,
 		workerPool: pkgWorker.NewWorkerPool(
-			fmt.Sprintf("GRPC SERVER ON %s:%s", config.Get().UserServiceRpcHost, config.Get().UserServiceRpcPort),
+			fmt.Sprintf("GRPC SERVER ON %s:%s", config.Get().ConfigServiceUser.RpcHost, config.Get().ConfigServiceUser.RpcPort),
 			2,
 		),
 		logger:                  logger,
@@ -105,7 +105,7 @@ func (srv *Server) Serve(ctx context.Context) error {
 	// Register health service
 	healthServer := health.NewServer()
 	grpc_health_v1.RegisterHealthServer(srv.grpcServer, healthServer)
-	healthServer.SetServingStatus(config.Get().UserServiceServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
+	healthServer.SetServingStatus(config.Get().ConfigServiceUser.ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
 
 	// IMPORTANT: Register reflection AFTER all services are registered
 	if config.Get().Env != enum.CONFIG_ENV_PROD {

@@ -12,7 +12,7 @@ func (r *accessControlRedisRepository) GetAccessControlRPC(ctx context.Context, 
 	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "AccessControlRedisRepository.GetAccessControlRPC")
 	defer span.End()
 
-	key := fmt.Sprintf(accessControlRPCPrefixKey, config.Get().UserServiceServiceName, role, fullMethodName)
+	key := fmt.Sprintf(accessControlRPCPrefixKey, config.Get().ConfigServiceUser.ServiceName, role, fullMethodName)
 	val, err := r.redisInfrastructure.GetClient().Get(ctx, key).Result()
 	if err != nil {
 		r.logger.Error("AccessControlRedisRepository.GetAccessControlRPC", zap.String("requestId", requestId), zap.Error(err))

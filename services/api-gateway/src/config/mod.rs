@@ -12,3 +12,5 @@ mod open_policy_agent;
 mod service_user_rabbitmq;
 mod service_event;
 mod service_event_rabbitmq;
+mod message_broker_kafka;
+mod service_user_kafka;

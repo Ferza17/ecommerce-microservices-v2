@@ -1,8 +1,6 @@
 pub mod auth {
     pub mod http_presenter;
     pub mod transport_grpc;
-    pub mod transport_rabbitmq;
-    pub mod transport_kafka;
     pub mod usecase;
 }
 
@@ -14,6 +12,7 @@ pub mod notification {
 pub mod user {
     pub mod http_presenter;
     pub mod transport_grpc;
+    pub mod transport_kafka;   
     pub mod transport_rabbitmq;
     pub mod usecase;
 }

@@ -11,9 +11,9 @@ import (
 func ServeHttpPrometheusMetricCollector() error {
 	handler := http.NewServeMux()
 	handler.Handle("/v1/user/metrics", promhttp.Handler())
-	log.Printf("Starting HTTP Metric Server on %s:%s", config.Get().UserServiceHttpHost, config.Get().UserServiceMetricHttpPort)
+	log.Printf("Starting HTTP Metric Server on %s:%s", config.Get().ConfigServiceUser.HttpHost, config.Get().ConfigServiceUser.MetricHttpPort)
 	if err := http.ListenAndServe(
-		fmt.Sprintf("%s:%s", config.Get().UserServiceHttpHost, config.Get().UserServiceMetricHttpPort),
+		fmt.Sprintf("%s:%s", config.Get().ConfigServiceUser.HttpHost, config.Get().ConfigServiceUser.MetricHttpPort),
 		handler,
 	); err != nil {
 		return err

@@ -46,6 +46,9 @@ impl HttpTransport {
                 self.config.clone(),
             )
             .await;
+        let kafka = crate::infrastructure::message_broker::kafka::KafkaInfrastructure::new(
+            self.config.clone(),
+        );
 
         // Consumer Layer
         let event_consumer_rabbitmq = crate::module::event::consumer_rabbitmq::Consumer::new(
@@ -60,6 +63,8 @@ impl HttpTransport {
             crate::module::auth::transport_grpc::Transport::new(self.config.clone()).await?;
         let user_transport_rabbitmq =
             crate::module::user::transport_rabbitmq::Transport::new(self.config.clone(), rabbitmq);
+        let user_transport_kafka =
+            crate::module::user::transport_kafka::Transport::new(self.config.clone(), kafka);
 
         let product_transport_grpc =
             crate::module::product::transport_grpc::Transport::new(self.config.clone()).await?;
@@ -81,9 +86,9 @@ impl HttpTransport {
         // Use case layer
         let auth_use_case = crate::module::auth::usecase::UseCase::new(
             auth_transport_grpc,
-            user_transport_grpc.clone(),
             event_transport_grpc,
             user_transport_rabbitmq.clone(),
+            user_transport_kafka,
             opa,
         );
         let user_use_case = crate::module::user::usecase::UseCase::new(

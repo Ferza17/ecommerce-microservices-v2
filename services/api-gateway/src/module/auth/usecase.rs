@@ -11,25 +11,25 @@ use uuid::Timestamp;
 #[derive(Debug, Clone)]
 pub struct UseCase {
     auth_transport_grpc: crate::module::auth::transport_grpc::Transport,
-    user_transport_grpc: crate::module::user::transport_grpc::Transport,
     event_transport_grpc: crate::module::event::transport_grpc::Transport,
-    rabbitmq_infrastructure: crate::module::user::transport_rabbitmq::Transport,
+    user_transport_rabbitmq: crate::module::user::transport_rabbitmq::Transport,
+    user_transport_kafka: crate::module::user::transport_kafka::Transport,
     opa_infrastructure: crate::infrastructure::opa::opa::OPA,
 }
 
 impl UseCase {
     pub fn new(
         auth_transport_grpc: crate::module::auth::transport_grpc::Transport,
-        user_transport_grpc: crate::module::user::transport_grpc::Transport,
         event_transport_grpc: crate::module::event::transport_grpc::Transport,
-        rabbitmq_infrastructure: crate::module::user::transport_rabbitmq::Transport,
+        user_transport_rabbitmq: crate::module::user::transport_rabbitmq::Transport,
+        user_transport_kafka: crate::module::user::transport_kafka::Transport,
         opa_infrastructure: crate::infrastructure::opa::opa::OPA,
     ) -> Self {
         Self {
             auth_transport_grpc,
-            user_transport_grpc,
             event_transport_grpc,
-            rabbitmq_infrastructure,
+            user_transport_rabbitmq,
+            user_transport_kafka,
             opa_infrastructure,
         }
     }
@@ -63,34 +63,8 @@ impl UseCase {
         request: tonic::Request<AuthUserLoginByEmailAndPasswordRequest>,
     ) -> Result<(), tonic::Status> {
         match self
-            .event_transport_grpc
-            .append(
-                request_id.clone(),
-                tonic::Request::new(AppendRequest {
-                    aggregate_id: request_id.clone(),
-                    aggregate_type: "test".to_string(),
-                    expected_version: 0,
-                    events: vec![Event {
-                        id: uuid::Uuid::new_v4().to_string(),
-                        aggregate_id: request_id.clone(),
-                        aggregate_type: "test".to_string(),
-                        version: 0,
-                        name: "login".to_string(),
-                        occurred_at: None,
-                        payload: vec![],
-                        metadata: Default::default(),
-                    }],
-                }),
-            )
-            .await
-        {
-            Ok(_) => {}
-            Err(_) => {}
-        };
-
-        match self
-            .rabbitmq_infrastructure
-            .publish_user_login(request_id, request)
+            .user_transport_kafka
+            .send_snapshot_users_user_login(request_id, request)
             .await
         {
             Ok(_) => Ok(()),
