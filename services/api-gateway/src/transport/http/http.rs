@@ -50,12 +50,6 @@ impl HttpTransport {
             self.config.clone(),
         );
 
-        // Consumer Layer
-        let event_consumer_rabbitmq = crate::module::event::consumer_rabbitmq::Consumer::new(
-            self.config.clone(),
-            rabbitmq.clone(),
-        );
-
         // Transport Layer
         let user_transport_grpc =
             crate::module::user::transport_grpc::Transport::new(self.config.clone()).await?;
@@ -80,13 +74,10 @@ impl HttpTransport {
                 .await?;
         let shipping_transport_grpc =
             crate::module::shipping::transport_grpc::Transport::new(self.config.clone()).await?;
-        let event_transport_grpc =
-            crate::module::event::transport_grpc::Transport::new(self.config.clone()).await?;
 
         // Use case layer
         let auth_use_case = crate::module::auth::usecase::UseCase::new(
             auth_transport_grpc,
-            event_transport_grpc,
             user_transport_rabbitmq.clone(),
             user_transport_kafka,
             opa,
@@ -145,7 +136,6 @@ impl HttpTransport {
         );
         let notification_presenter = crate::module::notification::http_presenter::Presenter::new(
             notification_use_case,
-            event_consumer_rabbitmq,
         );
 
         let app = Router::new()

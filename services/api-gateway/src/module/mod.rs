@@ -48,9 +48,3 @@ pub mod payment {
     pub mod transport_rabbitmq;
     pub mod usecase;
 }
-
-pub mod event {
-    pub mod consumer_rabbitmq;
-    pub mod transport_grpc;
-    pub mod transport_rabbitmq;
-}

@@ -4,7 +4,6 @@ use futures::{SinkExt, StreamExt};
 #[derive(Debug, Clone)]
 pub struct Presenter {
     notification_use_case: crate::module::notification::usecase::UseCase,
-    event_consumer_rabbitmq: crate::module::event::consumer_rabbitmq::Consumer,
 }
 
 pub const ROUTE_PREFIX: &str = "/api/v1/notification";
@@ -13,11 +12,9 @@ pub const TAG: &str = "Notification";
 impl Presenter {
     pub fn new(
         notification_use_case: crate::module::notification::usecase::UseCase,
-        event_consumer_rabbitmq: crate::module::event::consumer_rabbitmq::Consumer,
     ) -> Self {
         Self {
             notification_use_case,
-            event_consumer_rabbitmq,
         }
     }
     pub fn router(&self) -> axum::Router {
@@ -94,27 +91,5 @@ pub async fn get_notification_with_request_id(
             },
         )
         .await;
-
-        let mut event_messages = state.event_consumer_rabbitmq.consume_event_created().await;
-        while let Some(result) = event_messages.recv().await {
-            match result {
-                Ok(payload) => {
-                    send_notification_to_client(
-                        &mut sender,
-                        ResponseCommand {
-                            status: "pending".to_string(),
-                            message: "waiting response to be ready".to_string(),
-                            data: Option::from(ResponseCommandData {
-                                request_id: request_id.clone(),
-                                websocket_notification_url: serde_json::to_string(&payload)
-                                    .unwrap(),
-                            }),
-                        },
-                    )
-                    .await;
-                }
-                Err(err) => {}
-            };
-        }
     })
 }

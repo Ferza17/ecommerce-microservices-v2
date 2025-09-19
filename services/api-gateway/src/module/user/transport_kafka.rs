@@ -1,3 +1,4 @@
+use prost::Message;
 use crate::config::config::AppConfig;
 use crate::infrastructure::message_broker::kafka::KafkaInfrastructure;
 use crate::model::rpc::user::AuthUserLoginByEmailAndPasswordRequest;
@@ -35,6 +36,11 @@ impl Transport {
                     value: Some(request_id.clone().as_bytes()),
                 });
 
+        let mut buf = Vec::new();
+        request.into_inner().encode(&mut buf).map_err(|err| {
+            return tonic::Status::new(tonic::Code::InvalidArgument, format!("{}", err));
+        })?;
+
         match self
             .kafka_infrastructure
             .publish(
@@ -46,7 +52,7 @@ impl Transport {
                 )
                 .key(&request_id)
                 .headers(headers)
-                .payload(serde_json::to_string(request.get_ref()).unwrap().as_bytes()),
+                .payload(buf.as_slice()),
             )
             .await
         {

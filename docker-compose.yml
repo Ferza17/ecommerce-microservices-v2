@@ -610,8 +610,8 @@ services:
       test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://user-service:40056/v1/user/check | grep -q '^200$'" ]
       interval: 30s
       timeout: 10s
-      retries: 3
-      start_period: 20s
+      retries: 10
+      start_period: 60s
     networks:
       - local
 
@@ -636,8 +636,8 @@ services:
       test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://event-store-service:40052/v1/event-store/check | grep -q '^200$'" ]
       interval: 30s
       timeout: 10s
-      retries: 3
-      start_period: 20s
+      retries: 10
+      start_period: 60s
     networks:
       - local
 
@@ -658,12 +658,14 @@ services:
         condition: service_healthy
       mongo-local:
         condition: service_healthy
+      kafka-local-broker-1:
+        condition: service_healthy
     healthcheck:
       test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://notification-service:40053/v1/notification/check | grep -q '^200$'" ]
       interval: 30s
       timeout: 10s
-      retries: 3
-      start_period: 20s
+      retries: 10
+      start_period: 60s
     networks:
       - local
 
@@ -686,11 +688,13 @@ services:
         condition: service_healthy
       kafka-connect-local:
         condition: service_healthy
+      kafka-local-broker-1:
+        condition: service_healthy
     healthcheck:
       test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://product-service:40055/v1/product/check | grep -q '^200$'" ]
       interval: 30s
       timeout: 10s
-      retries: 5
+      retries: 10
       start_period: 60s
     networks:
       - local
@@ -711,12 +715,14 @@ services:
       test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://payment-service:40054/v1/payment/check | grep -q '^200$'" ]
       interval: 30s
       timeout: 10s
-      retries: 3
-      start_period: 20s
+      retries: 10
+      start_period: 60s
     depends_on:
       postgres-local:
         condition: service_healthy
       consul-local:
+        condition: service_healthy
+      kafka-local-broker-1:
         condition: service_healthy
     networks:
       - local
@@ -737,16 +743,18 @@ services:
     restart: no
     healthcheck:
       test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:40057/v1/shipping/check | grep -q '^200$'" ]
-      interval: 30s
+      interval: 11s
       timeout: 10s
-      retries: 3
-      start_period: 20s
+      retries: 10
+      start_period: 60s
     depends_on:
       user-service:
         condition: service_healthy
       postgres-local:
         condition: service_healthy
       consul-local:
+        condition: service_healthy
+      kafka-local-broker-1:
         condition: service_healthy
     networks:
       - local

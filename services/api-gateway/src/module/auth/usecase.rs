@@ -11,7 +11,6 @@ use uuid::Timestamp;
 #[derive(Debug, Clone)]
 pub struct UseCase {
     auth_transport_grpc: crate::module::auth::transport_grpc::Transport,
-    event_transport_grpc: crate::module::event::transport_grpc::Transport,
     user_transport_rabbitmq: crate::module::user::transport_rabbitmq::Transport,
     user_transport_kafka: crate::module::user::transport_kafka::Transport,
     opa_infrastructure: crate::infrastructure::opa::opa::OPA,
@@ -20,14 +19,12 @@ pub struct UseCase {
 impl UseCase {
     pub fn new(
         auth_transport_grpc: crate::module::auth::transport_grpc::Transport,
-        event_transport_grpc: crate::module::event::transport_grpc::Transport,
         user_transport_rabbitmq: crate::module::user::transport_rabbitmq::Transport,
         user_transport_kafka: crate::module::user::transport_kafka::Transport,
         opa_infrastructure: crate::infrastructure::opa::opa::OPA,
     ) -> Self {
         Self {
             auth_transport_grpc,
-            event_transport_grpc,
             user_transport_rabbitmq,
             user_transport_kafka,
             opa_infrastructure,
