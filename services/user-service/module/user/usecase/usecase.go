@@ -4,7 +4,6 @@ import (
 	"context"
 	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/postgres"
-	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
@@ -24,11 +23,9 @@ type (
 	}
 
 	userUseCase struct {
-		userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository
-		rolePostgresqlRepository rolePostgresqlRepository.IRolePostgresqlRepository
-		kafkaInfrastructure      kafkaInfrastructure.IKafkaInfrastructure
-
-		rabbitmqInfrastructure    rabbitmqInfrastructure.IRabbitMQInfrastructure
+		userPostgresqlRepository  userPostgresqlRepository.IUserPostgresqlRepository
+		rolePostgresqlRepository  rolePostgresqlRepository.IRolePostgresqlRepository
+		kafkaInfrastructure       kafkaInfrastructure.IKafkaInfrastructure
 		postgresSQLInfrastructure postgres.IPostgresSQL
 		telemetryInfrastructure   telemetryInfrastructure.ITelemetryInfrastructure
 		authRedisRepository       authRedisRepository.IAuthRedisRepository
@@ -42,7 +39,6 @@ func NewUserUseCase(
 	userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository,
 	rolePostgresqlRepository rolePostgresqlRepository.IRolePostgresqlRepository,
 	kafkaInfrastructure kafkaInfrastructure.IKafkaInfrastructure,
-	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
 	authRedisRepository authRedisRepository.IAuthRedisRepository,
 	postgresSQLInfrastructure postgres.IPostgresSQL,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
@@ -51,7 +47,6 @@ func NewUserUseCase(
 		userPostgresqlRepository:  userPostgresqlRepository,
 		rolePostgresqlRepository:  rolePostgresqlRepository,
 		kafkaInfrastructure:       kafkaInfrastructure,
-		rabbitmqInfrastructure:    rabbitmqInfrastructure,
 		telemetryInfrastructure:   telemetryInfrastructure,
 		postgresSQLInfrastructure: postgresSQLInfrastructure,
 		authRedisRepository:       authRedisRepository,

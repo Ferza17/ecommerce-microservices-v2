@@ -2,16 +2,16 @@ package cmd
 
 import (
 	"context"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/transport/grpc"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/transport/http"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/transport/kafka"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/transport/rabbitmq"
 	"log"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
+
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/transport/grpc"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/transport/http"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/transport/kafka"
 
 	"github.com/spf13/cobra"
 )
@@ -25,7 +25,6 @@ var runCommand = &cobra.Command{
 		// Initialize servers
 		grpcServer := grpc.ProvideGrpcServer()
 		httpServer := http.ProvideHttpServer()
-		rabbitMQServer := rabbitmq.ProvideServer()
 		kafkaServer := kafka.ProvideServer()
 
 		wg := new(sync.WaitGroup)
@@ -50,7 +49,6 @@ var runCommand = &cobra.Command{
 		}
 
 		start("gRPC", grpcServer.Serve, grpcServer.Close)
-		start("RabbitMQ", rabbitMQServer.Serve, rabbitMQServer.Close)
 		start("Kafka", kafkaServer.Serve, kafkaServer.Close)
 		start("HTTP", httpServer.Serve, httpServer.Close)
 

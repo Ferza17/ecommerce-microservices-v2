@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/notification"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
@@ -34,7 +35,7 @@ func (u *authUseCase) SentOTP(ctx context.Context, requestId string, user *pb.Us
 		return status.Error(codes.Internal, err.Error())
 	}
 
-	if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, config.Get().ExchangeNotification, config.Get().QueueNotificationEmailOtpCreated, message); err != nil {
+	if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicNotifications.EmailOtpCreated, requestId, message); err != nil {
 		u.logger.Error("AuthUseCase.SentOTP", zap.String("requestId", requestId), zap.Error(err))
 		return status.Error(codes.Internal, err.Error())
 	}

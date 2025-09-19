@@ -3,6 +3,8 @@ package kafka
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry"
 	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry/serde"
@@ -12,12 +14,12 @@ import (
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/google/wire"
-	"time"
 )
 
 type (
 	IKafkaInfrastructure interface {
 		PublishWithJsonSchema(ctx context.Context, topic string, key string, value interface{}) error
+		Publish(ctx context.Context, topic string, key string, value []byte) error
 		SetupTopics(topics []string) error
 		ReadMessage(duration time.Duration) (*kafka.Message, error)
 		Close() error

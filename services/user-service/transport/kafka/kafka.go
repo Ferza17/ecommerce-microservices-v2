@@ -3,6 +3,9 @@ package kafka
 import (
 	"context"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/kafka"
@@ -14,8 +17,6 @@ import (
 	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/worker"
 	"github.com/google/wire"
 	"go.opentelemetry.io/otel/attribute"
-	"strings"
-	"time"
 )
 
 type (
@@ -51,10 +52,10 @@ func NewServer(
 func (srv *Server) Serve(mainCtx context.Context) error {
 	srv.workerPool.Start()
 	topics := []string{
-		config.Get().BrokerKafkaTopic.UserUserLogin,
-		config.Get().BrokerKafkaTopic.UserUserLogout,
-		config.Get().BrokerKafkaTopic.UserUserCreated,
-		config.Get().BrokerKafkaTopic.UserUserUpdated,
+		config.Get().BrokerKafkaTopicUsers.UserUserLogin,
+		config.Get().BrokerKafkaTopicUsers.UserUserLogout,
+		config.Get().BrokerKafkaTopicUsers.UserUserCreated,
+		config.Get().BrokerKafkaTopicUsers.UserUserUpdated,
 	}
 
 	if err := srv.kafkaInfrastructure.SetupTopics(topics); err != nil {
@@ -106,19 +107,19 @@ func (srv *Server) Serve(mainCtx context.Context) error {
 				span.SetAttributes(attribute.String(pkgContext.CtxKeyRequestID, requestId))
 
 				switch *msg.TopicPartition.Topic {
-				case config.Get().BrokerKafkaTopic.UserUserLogin:
+				case config.Get().BrokerKafkaTopicUsers.UserUserLogin:
 					task.Handler = func(ctx context.Context, message *kafka.Message) error {
 						return srv.authKafkaConsumer.SnapshotUsersUserLogin(childCtx, message)
 					}
-				case config.Get().BrokerKafkaTopic.UserUserLogout:
+				case config.Get().BrokerKafkaTopicUsers.UserUserLogout:
 					task.Handler = func(ctx context.Context, message *kafka.Message) error {
 						return srv.authKafkaConsumer.SnapshotUsersUserLogout(childCtx, message)
 					}
-				case config.Get().BrokerKafkaTopic.UserUserCreated:
+				case config.Get().BrokerKafkaTopicUsers.UserUserCreated:
 					task.Handler = func(ctx context.Context, message *kafka.Message) error {
 						return srv.userKafkaConsumer.SnapshotUsersUserCreated(childCtx, message)
 					}
-				case config.Get().BrokerKafkaTopic.UserUserUpdated:
+				case config.Get().BrokerKafkaTopicUsers.UserUserUpdated:
 					task.Handler = func(ctx context.Context, message *kafka.Message) error {
 						return srv.userKafkaConsumer.SnapshotUsersUserUpdated(childCtx, message)
 					}

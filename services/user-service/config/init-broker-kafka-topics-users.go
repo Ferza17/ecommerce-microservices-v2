@@ -2,11 +2,12 @@ package config
 
 import (
 	"fmt"
-	"github.com/hashicorp/consul/api"
 	"log"
+
+	"github.com/hashicorp/consul/api"
 )
 
-type BrokerKafkaTopic struct {
+type BrokerKafkaTopicUsers struct {
 	UserUserCreated string
 	UserUserUpdated string
 	UserUserLogin   string
@@ -14,8 +15,8 @@ type BrokerKafkaTopic struct {
 	keyPrefix       string
 }
 
-func DefaultKafkaBrokerTopic() *BrokerKafkaTopic {
-	return &BrokerKafkaTopic{
+func DefaultKafkaBrokerTopicUsers() *BrokerKafkaTopicUsers {
+	return &BrokerKafkaTopicUsers{
 		UserUserCreated: "",
 		UserUserUpdated: "",
 		UserUserLogin:   "",
@@ -24,7 +25,7 @@ func DefaultKafkaBrokerTopic() *BrokerKafkaTopic {
 	}
 }
 
-func (c *BrokerKafkaTopic) WithConsulClient(env string, kv *api.KV) *BrokerKafkaTopic {
+func (c *BrokerKafkaTopicUsers) WithConsulClient(env string, kv *api.KV) *BrokerKafkaTopicUsers {
 	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "USER_CREATED"), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get USER_CREATED from consul: %v", err)

@@ -9,7 +9,6 @@ package kafka
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/postgres"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/redis"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	postgres4 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/postgres"
@@ -39,10 +38,9 @@ func ProvideServer() *Server {
 	iAccessControlPostgresqlRepository := postgres4.NewAccessControlPostgresqlRepository(iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
 	iAccessControlRedisRepository := redis3.NewAccessControlRedisRepository(iRedisInfrastructure, iTelemetryInfrastructure, iZapLogger)
 	iAccessControlUseCase := usecase.NewAccessControlUseCase(iAccessControlPostgresqlRepository, iAccessControlRedisRepository, iTelemetryInfrastructure, iPostgresSQL, iZapLogger)
-	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iTelemetryInfrastructure, iZapLogger)
-	iAuthUseCase := usecase2.NewAuthUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iKafkaInfrastructure, iAuthRedisRepository, iAccessControlUseCase, iRabbitMQInfrastructure, iTelemetryInfrastructure, iPostgresSQL, iZapLogger)
+	iAuthUseCase := usecase2.NewAuthUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iKafkaInfrastructure, iAuthRedisRepository, iAccessControlUseCase, iTelemetryInfrastructure, iPostgresSQL, iZapLogger)
 	iAuthConsumer := kafka2.NewAuthConsumer(iKafkaInfrastructure, iZapLogger, iAuthUseCase)
-	iUserUseCase := usecase3.NewUserUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iKafkaInfrastructure, iRabbitMQInfrastructure, iAuthRedisRepository, iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
+	iUserUseCase := usecase3.NewUserUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iKafkaInfrastructure, iAuthRedisRepository, iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
 	iUserConsumer := kafka3.NewUserConsumer(iKafkaInfrastructure, iZapLogger, iUserUseCase)
 	server := NewServer(iKafkaInfrastructure, iTelemetryInfrastructure, iAuthConsumer, iUserConsumer, iZapLogger)
 	return server

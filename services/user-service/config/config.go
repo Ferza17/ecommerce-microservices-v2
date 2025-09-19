@@ -2,13 +2,14 @@ package config
 
 import (
 	"fmt"
+	"log"
+	"os"
+
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
 	pkgMetric "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/metric"
 	"github.com/hashicorp/consul/api"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/viper"
-	"log"
-	"os"
 )
 
 var c *Config
@@ -23,42 +24,14 @@ type Config struct {
 	ConsulPort string `mapstructure:"CONSUL_PORT"`
 
 	// From Consul
-	NotificationServiceName string
-
-	// EXCHANGE
-	ExchangeCommerce       string
-	ExchangeEvent          string
-	ExchangeNotification   string
-	ExchangeProduct        string
-	ExchangeUser           string
-	ExchangePaymentDelayed string
-	ExchangePaymentDirect  string
-
-	// Queue Product
-	QueueProductCreated string
-	QueueProductUpdated string
-	QueueProductDeleted string
-
-	// Queue User
-	QueueUserCreated string
-	QueueUserUpdated string
-	QueueUserLogin   string
-	QueueUserLogout  string
-
-	QueueEventCreated string
-
-	// Queue Notification
-	QueueNotificationEmailOtpCreated          string
-	QueueNotificationEmailPaymentOrderCreated string
-
 	BrokerKafka                         *BrokerKafka
-	BrokerKafkaTopic                    *BrokerKafkaTopic
 	BrokerKafkaTopicConnectorSinkPgUser *BrokerKafkaTopicConnectorSinkPgUser
 
-	ConfigTelemetry *ConfigTelemetry
+	// TOPICS
+	BrokerKafkaTopicUsers         *BrokerKafkaTopicUsers
+	BrokerKafkaTopicNotifications *BrokerKafkaTopicNotifications
 
-	BrokerRabbitMQ            *BrokerRabbitMQ
-	EventStoreServiceRabbitMQ *ServiceEventStoreRabbitMQ
+	ConfigTelemetry *ConfigTelemetry
 
 	DatabasePostgres *DatabasePostgres
 	DatabaseRedis    *DatabaseRedis
@@ -104,32 +77,15 @@ func SetConfig(path string) {
 	}
 
 	// Get Consul Key / Value
-	c.initExchange(consulClient.KV())
-	c.initQueueProduct(consulClient.KV())
-	c.initQueueUser(consulClient.KV())
-	c.initQueueNotification(consulClient.KV())
-
 	c.
 		withServiceUser(consulClient.KV()).
 		withConfigTelemetry(consulClient.KV()).
-		withServiceEventStoreRabbitMQ(consulClient.KV()).
 		withDatabasePostgres(consulClient.KV()).
 		withDatabaseRedis(consulClient.KV()).
-		withBrokerRabbitMQ(consulClient.KV()).
 		withBrokerKafka(consulClient.KV()).
-		withBrokerKafkaTopic(consulClient.KV()).
+		withBrokerKafkaTopicUsers(consulClient.KV()).
+		withBrokerKafkaTopicNotifications(consulClient.KV()).
 		withBrokerKafkaTopicConnectorSinkPgUser(consulClient.KV())
-
-	// User Service Config
-	pair, _, err := consulClient.KV().Get(fmt.Sprintf("%s/services/notification/SERVICE_NAME", c.Env), nil)
-	if err != nil {
-		log.Fatalf("SetConfig | could not get notification/SERVICE_NAME from consul: %v", err)
-	}
-	if pair == nil {
-		log.Fatal("SetConfig | Consul | SERVICE_NAME is required")
-	}
-	c.NotificationServiceName = string(pair.Value)
-
 	if err = c.RegisterConsulService(); err != nil {
 		log.Fatalf("SetConfig | could not register consul service: %v", err)
 		return
@@ -153,11 +109,6 @@ func (c *Config) withServiceUser(kv *api.KV) *Config {
 	return c
 }
 
-func (c *Config) withServiceEventStoreRabbitMQ(kv *api.KV) *Config {
-	c.EventStoreServiceRabbitMQ = DefaultServiceEventStoreRabbitMQ().WithConsulClient(c.Env, kv)
-	return c
-}
-
 func (c *Config) withDatabasePostgres(kv *api.KV) *Config {
 	c.DatabasePostgres = DefaultDatabasePostgres().WithConsulClient(c.Env, kv)
 	return c
@@ -168,23 +119,23 @@ func (c *Config) withDatabaseRedis(kv *api.KV) *Config {
 	return c
 }
 
-func (c *Config) withBrokerRabbitMQ(kv *api.KV) *Config {
-	c.BrokerRabbitMQ = DefaultRabbitMQBroker().WithConsulClient(c.Env, kv)
-	return c
-}
-
 func (c *Config) withBrokerKafka(kv *api.KV) *Config {
 	c.BrokerKafka = DefaultKafkaBroker().WithConsulClient(c.Env, kv)
 	return c
 }
 
-func (c *Config) withBrokerKafkaTopic(kv *api.KV) *Config {
-	c.BrokerKafkaTopic = DefaultKafkaBrokerTopic().WithConsulClient(c.Env, kv)
+func (c *Config) withBrokerKafkaTopicConnectorSinkPgUser(kv *api.KV) *Config {
+	c.BrokerKafkaTopicConnectorSinkPgUser = DefaultBrokerKafkaTopicsConnectorSinkPgUser().WithConsulClient(c.Env, kv)
 	return c
 }
 
-func (c *Config) withBrokerKafkaTopicConnectorSinkPgUser(kv *api.KV) *Config {
-	c.BrokerKafkaTopicConnectorSinkPgUser = DefaultBrokerKafkaTopicsConnectorSinkPgUser().WithConsulClient(c.Env, kv)
+func (c *Config) withBrokerKafkaTopicUsers(kv *api.KV) *Config {
+	c.BrokerKafkaTopicUsers = DefaultKafkaBrokerTopicUsers().WithConsulClient(c.Env, kv)
+	return c
+}
+
+func (c *Config) withBrokerKafkaTopicNotifications(kv *api.KV) *Config {
+	c.BrokerKafkaTopicNotifications = DefaultKafkaBrokerTopicNotifications().WithConsulClient(c.Env, kv)
 	return c
 }
 

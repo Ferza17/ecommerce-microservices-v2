@@ -4,7 +4,6 @@ import (
 	"context"
 	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/postgres"
-	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	accessControlUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/usecase"
@@ -34,15 +33,11 @@ type (
 		userPostgresqlRepository userPostgresqlRepository.IUserPostgresqlRepository
 		rolePostgresqlRepository rolePostgresqlRepository.IRolePostgresqlRepository
 		kafkaInfrastructure      kafkaInfrastructure.IKafkaInfrastructure
-
-		authRedisRepository authRedisRepository.IAuthRedisRepository
-
-		accessControlUseCase accessControlUseCase.IAccessControlUseCase
-
-		rabbitmqInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
-		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
-		postgresSQL             postgres.IPostgresSQL
-		logger                  logger.IZapLogger
+		authRedisRepository      authRedisRepository.IAuthRedisRepository
+		accessControlUseCase     accessControlUseCase.IAccessControlUseCase
+		telemetryInfrastructure  telemetryInfrastructure.ITelemetryInfrastructure
+		postgresSQL              postgres.IPostgresSQL
+		logger                   logger.IZapLogger
 	}
 )
 
@@ -54,7 +49,6 @@ func NewAuthUseCase(
 	kafkaInfrastructure kafkaInfrastructure.IKafkaInfrastructure,
 	authRedisRepository authRedisRepository.IAuthRedisRepository,
 	accessControlUseCase accessControlUseCase.IAccessControlUseCase,
-	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	postgresSQL postgres.IPostgresSQL,
 	logger logger.IZapLogger,
@@ -65,7 +59,6 @@ func NewAuthUseCase(
 		kafkaInfrastructure:      kafkaInfrastructure,
 		authRedisRepository:      authRedisRepository,
 		accessControlUseCase:     accessControlUseCase,
-		rabbitmqInfrastructure:   rabbitmqInfrastructure,
 		telemetryInfrastructure:  telemetryInfrastructure,
 		postgresSQL:              postgresSQL,
 		logger:                   logger,

@@ -15,6 +15,7 @@ func (c *userConsumer) SnapshotUsersUserCreated(ctx context.Context, message *ka
 		request   pb.AuthUserRegisterRequest
 		requestId = pkgContext.GetRequestIDFromContext(ctx)
 	)
+	_ = requestId
 
 	if err := proto.Unmarshal(message.Value, &request); err != nil {
 		c.logger.Info(fmt.Sprintf("proto.Unmarshal: %v", err))
