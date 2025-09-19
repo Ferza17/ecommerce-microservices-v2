@@ -31,6 +31,11 @@ func DefaultConfigServiceShipping() *ConfigServiceShipping {
 	}
 }
 
+func (c *Config) withConfigServiceShipping(kv *api.KV) *Config {
+	c.ConfigServiceShipping = DefaultConfigServiceShipping().WithConsulClient(c.Env, kv)
+	return c
+}
+
 func (c *ConfigServiceShipping) WithConsulClient(env string, kv *api.KV) *ConfigServiceShipping {
 
 	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "SERVICE_NAME"), nil)

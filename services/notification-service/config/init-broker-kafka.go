@@ -21,6 +21,11 @@ func DefaultKafkaBroker() *BrokerKafka {
 	}
 }
 
+func (c *Config) withBrokerKafka(kv *api.KV) *Config {
+	c.BrokerKafka = DefaultKafkaBroker().WithConsulClient(c.Env, kv)
+	return c
+}
+
 func (c *BrokerKafka) WithConsulClient(env string, kv *api.KV) *BrokerKafka {
 	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "BROKER_1"), nil)
 	if err != nil {

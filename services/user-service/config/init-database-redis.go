@@ -25,6 +25,11 @@ func DefaultDatabaseRedis() *DatabaseRedis {
 	}
 }
 
+func (c *Config) withDatabaseRedis(kv *api.KV) *Config {
+	c.DatabaseRedis = DefaultDatabaseRedis().WithConsulClient(c.Env, kv)
+	return c
+}
+
 func (c *DatabaseRedis) WithConsulClient(env string, kv *api.KV) *DatabaseRedis {
 	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "REDIS_HOST"), nil)
 	if err != nil {

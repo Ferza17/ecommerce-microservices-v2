@@ -28,6 +28,11 @@ func DefaultDatabaseMongo() *DatabaseMongo {
 	}
 }
 
+func (c *Config) withConfigDatabaseMongo(kv *api.KV) *Config {
+	c.DatabaseMongo = DefaultDatabaseMongo().WithConsulClient(c.Env, kv)
+	return c
+}
+
 func (c *DatabaseMongo) WithConsulClient(env string, kv *api.KV) *DatabaseMongo {
 	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "MONGO_USERNAME"), nil)
 	if err != nil {

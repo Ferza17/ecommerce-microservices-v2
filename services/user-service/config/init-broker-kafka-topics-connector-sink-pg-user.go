@@ -20,6 +20,11 @@ func DefaultBrokerKafkaTopicsConnectorSinkPgUser() *BrokerKafkaTopicConnectorSin
 	}
 }
 
+func (c *Config) withBrokerKafkaTopicConnectorSinkPgUser(kv *api.KV) *Config {
+	c.BrokerKafkaTopicConnectorSinkPgUser = DefaultBrokerKafkaTopicsConnectorSinkPgUser().WithConsulClient(c.Env, kv)
+	return c
+}
+
 func (c *BrokerKafkaTopicConnectorSinkPgUser) WithConsulClient(env string, kv *api.KV) *BrokerKafkaTopicConnectorSinkPgUser {
 	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "USERS"), nil)
 	if err != nil {

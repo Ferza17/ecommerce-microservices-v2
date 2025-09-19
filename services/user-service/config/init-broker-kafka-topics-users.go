@@ -25,6 +25,11 @@ func DefaultKafkaBrokerTopicUsers() *BrokerKafkaTopicUsers {
 	}
 }
 
+func (c *Config) withBrokerKafkaTopicUsers(kv *api.KV) *Config {
+	c.BrokerKafkaTopicUsers = DefaultKafkaBrokerTopicUsers().WithConsulClient(c.Env, kv)
+	return c
+}
+
 func (c *BrokerKafkaTopicUsers) WithConsulClient(env string, kv *api.KV) *BrokerKafkaTopicUsers {
 	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "USER_CREATED"), nil)
 	if err != nil {

@@ -28,6 +28,11 @@ func DefaultDatabasePostgres() *DatabasePostgres {
 	}
 }
 
+func (c *Config) withDatabasePostgres(kv *api.KV) *Config {
+	c.DatabasePostgres = DefaultDatabasePostgres().WithConsulClient(c.Env, kv)
+	return c
+}
+
 func (c *DatabasePostgres) WithConsulClient(env string, kv *api.KV) *DatabasePostgres {
 	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "POSTGRES_USERNAME"), nil)
 	if err != nil {

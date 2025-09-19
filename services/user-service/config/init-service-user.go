@@ -45,6 +45,11 @@ func DefaultConfigServiceUser() *ConfigServiceUser {
 	}
 }
 
+func (c *Config) withServiceUser(kv *api.KV) *Config {
+	c.ConfigServiceUser = DefaultConfigServiceUser().WithConsulClient(c.Env, kv)
+	return c
+}
+
 func (c *ConfigServiceUser) WithConsulClient(env string, kv *api.KV) *ConfigServiceUser {
 
 	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "SERVICE_NAME"), nil)

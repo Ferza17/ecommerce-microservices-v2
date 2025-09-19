@@ -76,17 +76,17 @@ func SetConfig(path string) {
 		log.Fatalf("SetConfig | could not connect to consul: %v", err)
 	}
 
-	c.ConfigServiceNotification = DefaultConfigServiceNotification().WithConsulClient(c.Env, consulClient.KV())
-	c.ConfigServicePayment = DefaultConfigServicePayment().WithConsulClient(c.Env, consulClient.KV())
-	c.ConfigServiceShipping = DefaultConfigServiceShipping().WithConsulClient(c.Env, consulClient.KV())
-	c.ConfigServiceUser = DefaultConfigServiceUser().WithConsulClient(c.Env, consulClient.KV())
-	c.ConfigSmtp = DefaultConfigSmtp().WithConsulClient(c.Env, consulClient.KV())
-	c.ConfigTelemetry = DefaultConfigTelemetry().WithConsulClient(c.Env, consulClient.KV())
-	c.DatabaseMongo = DefaultDatabaseMongo().WithConsulClient(c.Env, consulClient.KV())
-	c.BrokerKafka = DefaultKafkaBroker().WithConsulClient(c.Env, consulClient.KV())
-	c.BrokerKafkaTopicNotifications = DefaultKafkaBrokerTopicNotifications().WithConsulClient(c.Env, consulClient.KV())
-
-	if err = c.RegisterConsulService(); err != nil {
+	if err = c.
+		withBrokerKafka(consulClient.KV()).
+		withBrokerKafkaTopicNotifications(consulClient.KV()).
+		withConfigTelemetry(consulClient.KV()).
+		withConfigDatabaseMongo(consulClient.KV()).
+		withConfigServiceNotification(consulClient.KV()).
+		withConfigServicePayment(consulClient.KV()).
+		withConfigServiceShipping(consulClient.KV()).
+		withConfigServiceUser(consulClient.KV()).
+		withConfigSmtp(consulClient.KV()).
+		RegisterConsulService(); err != nil {
 		log.Fatalf("SetConfig | could not register service: %v", err)
 		return
 	}

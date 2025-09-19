@@ -21,6 +21,11 @@ func DefaultKafkaBrokerTopicNotifications() *BrokerKafkaTopicNotifications {
 	}
 }
 
+func (c *Config) withBrokerKafkaTopicNotifications(kv *api.KV) *Config {
+	c.BrokerKafkaTopicNotifications = DefaultKafkaBrokerTopicNotifications().WithConsulClient(c.Env, kv)
+	return c
+}
+
 func (c *BrokerKafkaTopicNotifications) WithConsulClient(env string, kv *api.KV) *BrokerKafkaTopicNotifications {
 	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "EMAIL_OTP_CREATED"), nil)
 	if err != nil {

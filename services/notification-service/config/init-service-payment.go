@@ -31,6 +31,11 @@ func DefaultConfigServicePayment() *ConfigServicePayment {
 	}
 }
 
+func (c *Config) withConfigServicePayment(kv *api.KV) *Config {
+	c.ConfigServicePayment = DefaultConfigServicePayment().WithConsulClient(c.Env, kv)
+	return c
+}
+
 func (c *ConfigServicePayment) WithConsulClient(env string, kv *api.KV) *ConfigServicePayment {
 
 	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "SERVICE_NAME"), nil)

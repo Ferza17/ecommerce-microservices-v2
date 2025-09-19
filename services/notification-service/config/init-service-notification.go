@@ -30,6 +30,11 @@ func DefaultConfigServiceNotification() *ConfigServiceNotification {
 	}
 }
 
+func (c *Config) withConfigServiceNotification(kv *api.KV) *Config {
+	c.ConfigServiceNotification = DefaultConfigServiceNotification().WithConsulClient(c.Env, kv)
+	return c
+}
+
 func (c *ConfigServiceNotification) WithConsulClient(env string, kv *api.KV) *ConfigServiceNotification {
 	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "SERVICE_NAME"), nil)
 	if err != nil {

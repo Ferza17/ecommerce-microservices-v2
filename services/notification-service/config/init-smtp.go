@@ -28,6 +28,11 @@ func DefaultConfigSmtp() *ConfigSmtp {
 	}
 }
 
+func (c *Config) withConfigSmtp(kv *api.KV) *Config {
+	c.ConfigSmtp = DefaultConfigSmtp().WithConsulClient(c.Env, kv)
+	return c
+}
+
 func (c *ConfigSmtp) WithConsulClient(env string, kv *api.KV) *ConfigSmtp {
 	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "SMTP_SENDER_EMAIL"), nil)
 	if err != nil {

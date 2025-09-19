@@ -77,7 +77,7 @@ func SetConfig(path string) {
 	}
 
 	// Get Consul Key / Value
-	c.
+	if err = c.
 		withServiceUser(consulClient.KV()).
 		withConfigTelemetry(consulClient.KV()).
 		withDatabasePostgres(consulClient.KV()).
@@ -85,8 +85,8 @@ func SetConfig(path string) {
 		withBrokerKafka(consulClient.KV()).
 		withBrokerKafkaTopicUsers(consulClient.KV()).
 		withBrokerKafkaTopicNotifications(consulClient.KV()).
-		withBrokerKafkaTopicConnectorSinkPgUser(consulClient.KV())
-	if err = c.RegisterConsulService(); err != nil {
+		withBrokerKafkaTopicConnectorSinkPgUser(consulClient.KV()).
+		RegisterConsulService(); err != nil {
 		log.Fatalf("SetConfig | could not register consul service: %v", err)
 		return
 	}
@@ -102,44 +102,4 @@ func SetConfig(path string) {
 	)
 
 	viper.WatchConfig()
-}
-
-func (c *Config) withServiceUser(kv *api.KV) *Config {
-	c.ConfigServiceUser = DefaultConfigServiceUser().WithConsulClient(c.Env, kv)
-	return c
-}
-
-func (c *Config) withDatabasePostgres(kv *api.KV) *Config {
-	c.DatabasePostgres = DefaultDatabasePostgres().WithConsulClient(c.Env, kv)
-	return c
-}
-
-func (c *Config) withDatabaseRedis(kv *api.KV) *Config {
-	c.DatabaseRedis = DefaultDatabaseRedis().WithConsulClient(c.Env, kv)
-	return c
-}
-
-func (c *Config) withBrokerKafka(kv *api.KV) *Config {
-	c.BrokerKafka = DefaultKafkaBroker().WithConsulClient(c.Env, kv)
-	return c
-}
-
-func (c *Config) withBrokerKafkaTopicConnectorSinkPgUser(kv *api.KV) *Config {
-	c.BrokerKafkaTopicConnectorSinkPgUser = DefaultBrokerKafkaTopicsConnectorSinkPgUser().WithConsulClient(c.Env, kv)
-	return c
-}
-
-func (c *Config) withBrokerKafkaTopicUsers(kv *api.KV) *Config {
-	c.BrokerKafkaTopicUsers = DefaultKafkaBrokerTopicUsers().WithConsulClient(c.Env, kv)
-	return c
-}
-
-func (c *Config) withBrokerKafkaTopicNotifications(kv *api.KV) *Config {
-	c.BrokerKafkaTopicNotifications = DefaultKafkaBrokerTopicNotifications().WithConsulClient(c.Env, kv)
-	return c
-}
-
-func (c *Config) withConfigTelemetry(kv *api.KV) *Config {
-	c.ConfigTelemetry = DefaultConfigTelemetry().WithConsulClient(c.Env, kv)
-	return c
 }
