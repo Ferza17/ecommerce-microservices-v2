@@ -38,6 +38,7 @@ func NewServer(
 ) *Server {
 	return &Server{
 		kafkaInfrastructure:       kafkaInfrastructure,
+		workerPool:                pkgWorker.NewWorkerPoolKafkaTaskQueue("kafka-consumer", 4, 1000),
 		telemetryInfrastructure:   telemetryInfrastructure,
 		logger:                    logger,
 		notificationEmailConsumer: notificationEmailConsumer,

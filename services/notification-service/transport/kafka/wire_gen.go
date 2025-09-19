@@ -4,12 +4,12 @@
 //go:build !wireinject
 // +build !wireinject
 
-package rabbitmq
+package kafka
 
 import (
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mailhog"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mongodb"
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/services/payment"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/consumer"
@@ -20,16 +20,16 @@ import (
 
 // Injectors from wire.go:
 
-func ProvideRabbitMQServer() *RabbitMQTransport {
+func ProvideServer() *Server {
 	iZapLogger := logger.NewZapLogger()
 	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
-	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iZapLogger, iTelemetryInfrastructure)
+	iKafkaInfrastructure := kafka.NewKafkaInfrastructure(iZapLogger, iTelemetryInfrastructure)
 	iMongoDBInfrastructure := mongodb.NewMongoDBInfrastructure(iZapLogger)
 	iNotificationEmailRepository := mongodb2.NewNotificationEmailRepository(iMongoDBInfrastructure, iTelemetryInfrastructure, iZapLogger)
 	iMailhogInfrastructure := mailhog.NewMailhogInfrastructure(iZapLogger)
 	iPaymentService := payment.NewPaymentService(iZapLogger)
-	iNotificationEmailUseCase := usecase.NewNotificationEmailUseCase(iNotificationEmailRepository, iRabbitMQInfrastructure, iMailhogInfrastructure, iTelemetryInfrastructure, iPaymentService, iZapLogger)
-	iNotificationEmailConsumer := consumer.NewNotificationConsumer(iRabbitMQInfrastructure, iNotificationEmailUseCase, iTelemetryInfrastructure, iZapLogger)
-	rabbitMQTransport := NewServer(iZapLogger, iNotificationEmailConsumer, iRabbitMQInfrastructure, iTelemetryInfrastructure)
-	return rabbitMQTransport
+	iNotificationEmailUseCase := usecase.NewNotificationEmailUseCase(iNotificationEmailRepository, iKafkaInfrastructure, iMailhogInfrastructure, iTelemetryInfrastructure, iPaymentService, iZapLogger)
+	iNotificationEmailConsumer := consumer.NewNotificationConsumer(iKafkaInfrastructure, iNotificationEmailUseCase, iTelemetryInfrastructure, iZapLogger)
+	server := NewServer(iKafkaInfrastructure, iTelemetryInfrastructure, iZapLogger, iNotificationEmailConsumer)
+	return server
 }

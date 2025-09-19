@@ -1,14 +1,23 @@
 #!/bin/bash
 
-echo "Registering PostgresSQL Exporter as proxy service in Consul ..."
+echo "Registering PostgresSQL Metric Exporter to Consul ..."
 
-# Wait for PostgresSQL Exporter to be available
-echo "Waiting for PostgresSQL Exporter to be available..."
-until nc -z postgres-exporter-local 9187; do
-echo "PostgresSQL Exporter not ready yet, waiting..."
-sleep 2
+# Wait for PostgresSQL Metric Exporter to be available (max 10 retries)
+echo "Waiting for PostgresSQL Metric Exporter to be available..."
+max_retries=10
+count=0
+
+until nc -z postgres-exporter-local 9187 >/dev/null 2>&1; do
+  count=$((count+1))
+  echo "PostgresSQL Metric Exporter not ready yet, attempt $count/$max_retries..."
+
+  if [ $count -ge $max_retries ]; then
+    echo "⚠️ PostgresSQL Metric Exporter still not available after $max_retries attempts, continuing anyway..."
+    break
+  fi
+  sleep 2
 done
-echo "PostgresSQL Exporter is available"
+echo "PostgresSQL Metric Exporter check finished"
 
 
 # Register Postgresql Exporter service
@@ -37,4 +46,4 @@ curl -s -X PUT http://consul-local:8500/v1/agent/check/register \
 }'
 
 # Verify registration
-echo "✅ PostgresSQL Exporter registration completed"
+echo "✅ PostgresSQL Metric Exporter registration completed"

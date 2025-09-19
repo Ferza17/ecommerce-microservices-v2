@@ -7,8 +7,9 @@ import (
 	"github.com/hashicorp/consul/api"
 )
 
-type ConfigServiceNotification struct {
-	ServiceName    string
+type ConfigServiceUser struct {
+	ServiceName string
+
 	RpcHost        string
 	RpcPort        string
 	HttpHost       string
@@ -18,19 +19,20 @@ type ConfigServiceNotification struct {
 	keyPrefix string
 }
 
-func DefaultConfigServiceNotification() *ConfigServiceNotification {
-	return &ConfigServiceNotification{
+func DefaultConfigServiceUser() *ConfigServiceUser {
+	return &ConfigServiceUser{
 		ServiceName:    "",
 		RpcHost:        "",
 		RpcPort:        "",
 		HttpHost:       "",
 		HttpPort:       "",
 		MetricHttpPort: "",
-		keyPrefix:      "%s/services/notification/%s",
+		keyPrefix:      "%s/services/user/%s",
 	}
 }
 
-func (c *ConfigServiceNotification) WithConsulClient(env string, kv *api.KV) *ConfigServiceNotification {
+func (c *ConfigServiceUser) WithConsulClient(env string, kv *api.KV) *ConfigServiceUser {
+
 	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "SERVICE_NAME"), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get SERVICE_NAME from consul: %v", err)

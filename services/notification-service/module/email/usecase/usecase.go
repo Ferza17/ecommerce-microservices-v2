@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"context"
+	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/kafka"
 	mailHogInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mailhog"
-	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/rabbitmq"
 	paymentService "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/services/payment"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
 	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification"
@@ -20,7 +20,7 @@ type (
 
 	notificationEmailUseCase struct {
 		notificationRepository  notificationRepository.INotificationEmailRepository
-		rabbitmqInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
+		kafkaInfrastructure     kafkaInfrastructure.IKafkaInfrastructure
 		mailHogInfrastructure   mailHogInfrastructure.IMailhogInfrastructure
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 		paymentSvc              paymentService.IPaymentService
@@ -32,14 +32,14 @@ var Set = wire.NewSet(NewNotificationEmailUseCase)
 
 func NewNotificationEmailUseCase(
 	notificationRepository notificationRepository.INotificationEmailRepository,
-	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
+	kafkaInfrastructure kafkaInfrastructure.IKafkaInfrastructure,
 	mailHogInfrastructure mailHogInfrastructure.IMailhogInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	paymentSvc paymentService.IPaymentService,
 	logger logger.IZapLogger) INotificationEmailUseCase {
 	c := &notificationEmailUseCase{
 		notificationRepository:  notificationRepository,
-		rabbitmqInfrastructure:  rabbitmqInfrastructure,
+		kafkaInfrastructure:     kafkaInfrastructure,
 		mailHogInfrastructure:   mailHogInfrastructure,
 		telemetryInfrastructure: telemetryInfrastructure,
 		paymentSvc:              paymentSvc,

@@ -30,28 +30,32 @@ type (
 var Set = wire.NewSet(NewMongoDBInfrastructure)
 
 func NewMongoDBInfrastructure(logger logger.IZapLogger) IMongoDBInfrastructure {
+	conUrl := fmt.Sprintf(
+		"mongodb://%s:%s@%s:%s/%s?directConnection=true&replicaSet=rs0",
+		config.Get().DatabaseMongo.Username,
+		config.Get().DatabaseMongo.Password,
+		config.Get().DatabaseMongo.Host,
+		config.Get().DatabaseMongo.Port,
+		config.Get().DatabaseMongo.DatabaseName,
+	)
 	conn, err := mongo.Connect(
 		context.Background(),
 		options.
 			Client().
 			ApplyURI(
-				fmt.Sprintf("mongodb://%s:%s@%s:%s/%s?authSource=admin",
-					config.Get().DatabaseMongo.Username,
-					config.Get().DatabaseMongo.Password,
-					config.Get().DatabaseMongo.Host,
-					config.Get().DatabaseMongo.Port,
-					config.Get().DatabaseMongo.DatabaseName,
-				),
+				conUrl,
 			),
 	)
-
 	if err != nil {
 		logger.Error("MongoDBInfrastructure.NewMongoDBInfrastructure", zap.Error(err))
+		return nil
 	}
-	// Make sure that connection insurable
+
 	if err = conn.Ping(context.Background(), nil); err != nil {
 		logger.Error("MongoDBInfrastructure.NewMongoDBInfrastructure", zap.Error(err))
+		return nil
 	}
+
 	return &MongoDBInfrastructure{
 		mongoClient: conn,
 		logger:      logger,
@@ -75,7 +79,7 @@ func (m *MongoDBInfrastructure) GetCollection(database enum.Database, collection
 }
 
 func (m *MongoDBInfrastructure) GetConnectionString() string {
-	return fmt.Sprintf("mongodb://%s:%s@%s:%s/%s?authSource=admin",
+	return fmt.Sprintf("mongodb://%s:%s@%s:%s/%s?directConnection=true&replicaSet=rs0",
 		config.Get().DatabaseMongo.Username,
 		config.Get().DatabaseMongo.Password,
 		config.Get().DatabaseMongo.Host,

@@ -61,22 +61,22 @@ services:
 
   # POSTGRESQL EXPORTER FOR PROMETHEUS METRICS
 
-  postgres-exporter-local:
-    container_name: postgres-exporter-local
-    image: prometheuscommunity/postgres-exporter:latest
-    ports:
-      - '9187'
-    environment:
-      DATA_SOURCE_URI: postgres-local:5432/users?sslmode=disable
-      DATA_SOURCE_USER: postgres
-      DATA_SOURCE_PASS: 1234
-      PG_EXPORTER_INCLUDE_DATABASES: products,users,payments
-    depends_on:
-      postgres-local:
-        condition: service_healthy
-    networks:
-      - local
-    restart: unless-stopped
+#  postgres-exporter-local:
+#    container_name: postgres-exporter-local
+#    image: prometheuscommunity/postgres-exporter:latest
+#    ports:
+#      - '9187'
+#    environment:
+#      DATA_SOURCE_URI: postgres-local:5432/users?sslmode=disable
+#      DATA_SOURCE_USER: postgres
+#      DATA_SOURCE_PASS: 1234
+#      PG_EXPORTER_INCLUDE_DATABASES: products,users,payments
+#    depends_on:
+#      postgres-local:
+#        condition: service_healthy
+#    networks:
+#      - local
+#    restart: unless-stopped
 
   # MONGODB DATABASE
 
@@ -499,46 +499,46 @@ services:
       - '9411:9411' # EXPOSE FOR LOCAL DEVELOPMENT
     networks:
       - local
-    depends_on:
-      - prometheus-local
+#    depends_on:
+#      - prometheus-local
 
   # FOR METRICS
 
-  prometheus-local:
-    container_name: prometheus-local
-    image: prom/prometheus:latest
-    ports:
-      - '9090:9090' # EXPOSE FOR LOCAL DEVELOPMENT
-    volumes:
-      - ./entrypoint/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=200h'
-      - '--web.enable-lifecycle'
-    networks:
-      - local
+#  prometheus-local:
+#    container_name: prometheus-local
+#    image: prom/prometheus:latest
+#    ports:
+#      - '9090:9090' # EXPOSE FOR LOCAL DEVELOPMENT
+#    volumes:
+#      - ./entrypoint/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+#    command:
+#      - '--config.file=/etc/prometheus/prometheus.yml'
+#      - '--storage.tsdb.path=/prometheus'
+#      - '--web.console.libraries=/etc/prometheus/console_libraries'
+#      - '--web.console.templates=/etc/prometheus/consoles'
+#      - '--storage.tsdb.retention.time=200h'
+#      - '--web.enable-lifecycle'
+#    networks:
+#      - local
 
   # GRAFANA DASHBOARD
 
-  grafana-local:
-    container_name: grafana-local
-    image: grafana/grafana:latest
-    ports:
-      - '3000:3000'
-    volumes:
-      - ./entrypoint/grafana/provisioning:/etc/grafana/provisioning
-    environment:
-      - GF_SECURITY_ADMIN_USER=grafana
-      - GF_SECURITY_ADMIN_PASSWORD=12345
-      - GF_USERS_ALLOW_SIGN_UP=false
-    depends_on:
-      - prometheus-local
-    networks:
-      - local
-    restart: unless-stopped
+#  grafana-local:
+#    container_name: grafana-local
+#    image: grafana/grafana:latest
+#    ports:
+#      - '3000:3000'
+#    volumes:
+#      - ./entrypoint/grafana/provisioning:/etc/grafana/provisioning
+#    environment:
+#      - GF_SECURITY_ADMIN_USER=grafana
+#      - GF_SECURITY_ADMIN_PASSWORD=12345
+#      - GF_USERS_ALLOW_SIGN_UP=false
+#    depends_on:
+#      - prometheus-local
+#    networks:
+#      - local
+#    restart: unless-stopped
 
   # REVERSE PROXY AND LOAD BALANCER
 
@@ -617,147 +617,147 @@ services:
 
   # EVENT-STORE-SERVICE
 
-  event-store-service:
-    container_name: event-store-service
-    build:
-      context: ./services/event-store-service
-      dockerfile: Dockerfile
-    ports:
-      - "50052:50052" # GRPC
-      - "40052:40052" # HTTP
-      - "30052:30052" # HTTP METRIC COLLECTOR
-    restart: always
-    depends_on:
-      consul-local:
-        condition: service_healthy
-      mongo-local:
-        condition: service_healthy
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://event-store-service:40052/v1/event-store/check | grep -q '^200$'" ]
-      interval: 30s
-      timeout: 10s
-      retries: 10
-      start_period: 60s
-    networks:
-      - local
+#  event-store-service:
+#    container_name: event-store-service
+#    build:
+#      context: ./services/event-store-service
+#      dockerfile: Dockerfile
+#    ports:
+#      - "50052:50052" # GRPC
+#      - "40052:40052" # HTTP
+#      - "30052:30052" # HTTP METRIC COLLECTOR
+#    restart: always
+#    depends_on:
+#      consul-local:
+#        condition: service_healthy
+#      mongo-local:
+#        condition: service_healthy
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://event-store-service:40052/v1/event-store/check | grep -q '^200$'" ]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 10
+#      start_period: 60s
+#    networks:
+#      - local
 
   # NOTIFICATION-SERVICE
 
-  notification-service:
-    container_name: notification-service
-    build:
-      context: ./services/notification-service
-      dockerfile: Dockerfile
-    ports:
-      - "50053:50053" # GRPC
-      - "40053:40053" # HTTP
-      - "30053:30053" # HTTP METRIC COLLECTOR
-    restart: always
-    depends_on:
-      consul-local:
-        condition: service_healthy
-      mongo-local:
-        condition: service_healthy
-      kafka-local-broker-1:
-        condition: service_healthy
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://notification-service:40053/v1/notification/check | grep -q '^200$'" ]
-      interval: 30s
-      timeout: 10s
-      retries: 10
-      start_period: 60s
-    networks:
-      - local
+#  notification-service:
+#    container_name: notification-service
+#    build:
+#      context: ./services/notification-service
+#      dockerfile: Dockerfile
+#    ports:
+#      - "50053:50053" # GRPC
+#      - "40053:40053" # HTTP
+#      - "30053:30053" # HTTP METRIC COLLECTOR
+#    restart: always
+#    depends_on:
+#      consul-local:
+#        condition: service_healthy
+#      mongo-local:
+#        condition: service_healthy
+#      kafka-local-broker-1:
+#        condition: service_healthy
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://notification-service:40053/v1/notification/check | grep -q '^200$'" ]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 10
+#      start_period: 60s
+#    networks:
+#      - local
 
   # PRODUCT-SERVICE
 
-  product-service:
-    container_name: product-service
-    build:
-      context: ./services/product-service
-      dockerfile: Dockerfile
-    ports:
-      - "50055:50055" # GRPC
-      - "40055:40055" # HTTP
-      - "30055:30055" # HTTP METRIC COLLECTOR
-    restart: always
-    depends_on:
-      postgres-local:
-        condition: service_healthy
-      consul-local:
-        condition: service_healthy
-      kafka-connect-local:
-        condition: service_healthy
-      kafka-local-broker-1:
-        condition: service_healthy
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://product-service:40055/v1/product/check | grep -q '^200$'" ]
-      interval: 30s
-      timeout: 10s
-      retries: 10
-      start_period: 60s
-    networks:
-      - local
+#  product-service:
+#    container_name: product-service
+#    build:
+#      context: ./services/product-service
+#      dockerfile: Dockerfile
+#    ports:
+#      - "50055:50055" # GRPC
+#      - "40055:40055" # HTTP
+#      - "30055:30055" # HTTP METRIC COLLECTOR
+#    restart: always
+#    depends_on:
+#      postgres-local:
+#        condition: service_healthy
+#      consul-local:
+#        condition: service_healthy
+#      kafka-connect-local:
+#        condition: service_healthy
+#      kafka-local-broker-1:
+#        condition: service_healthy
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://product-service:40055/v1/product/check | grep -q '^200$'" ]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 10
+#      start_period: 60s
+#    networks:
+#      - local
 
   # PAYMENT-SERVICE
 
-  payment-service:
-    container_name: payment-service
-    build:
-      context: ./services/payment-service
-      dockerfile: Dockerfile
-    ports:
-      - "50054:50054" # GRPC
-      - "40054:40054" # HTTP
-      - "30054:30054" # HTTP METRIC COLLECTOR
-    restart: always
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://payment-service:40054/v1/payment/check | grep -q '^200$'" ]
-      interval: 30s
-      timeout: 10s
-      retries: 10
-      start_period: 60s
-    depends_on:
-      postgres-local:
-        condition: service_healthy
-      consul-local:
-        condition: service_healthy
-      kafka-local-broker-1:
-        condition: service_healthy
-    networks:
-      - local
+#  payment-service:
+#    container_name: payment-service
+#    build:
+#      context: ./services/payment-service
+#      dockerfile: Dockerfile
+#    ports:
+#      - "50054:50054" # GRPC
+#      - "40054:40054" # HTTP
+#      - "30054:30054" # HTTP METRIC COLLECTOR
+#    restart: always
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://payment-service:40054/v1/payment/check | grep -q '^200$'" ]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 10
+#      start_period: 60s
+#    depends_on:
+#      postgres-local:
+#        condition: service_healthy
+#      consul-local:
+#        condition: service_healthy
+#      kafka-local-broker-1:
+#        condition: service_healthy
+#    networks:
+#      - local
 
   # SHIPPING-SERVICE
 
-  shipping-service:
-    container_name: shipping-service
-    build:
-      context: ./services/shipping-service
-      dockerfile: Dockerfile
-    ports:
-      - "50057:50057" # GRPC
-      - "40057:40057" # HTTP
-      - "30057:30057" # HTTP METRIC COLLECTOR
-    environment:
-      DATABASE_URL: postgres://postgres:1234@postgres-local:5432/shippings
-    restart: no
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:40057/v1/shipping/check | grep -q '^200$'" ]
-      interval: 11s
-      timeout: 10s
-      retries: 10
-      start_period: 60s
-    depends_on:
-      user-service:
-        condition: service_healthy
-      postgres-local:
-        condition: service_healthy
-      consul-local:
-        condition: service_healthy
-      kafka-local-broker-1:
-        condition: service_healthy
-    networks:
-      - local
+#  shipping-service:
+#    container_name: shipping-service
+#    build:
+#      context: ./services/shipping-service
+#      dockerfile: Dockerfile
+#    ports:
+#      - "50057:50057" # GRPC
+#      - "40057:40057" # HTTP
+#      - "30057:30057" # HTTP METRIC COLLECTOR
+#    environment:
+#      DATABASE_URL: postgres://postgres:1234@postgres-local:5432/shippings
+#    restart: no
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:40057/v1/shipping/check | grep -q '^200$'" ]
+#      interval: 11s
+#      timeout: 10s
+#      retries: 10
+#      start_period: 60s
+#    depends_on:
+#      user-service:
+#        condition: service_healthy
+#      postgres-local:
+#        condition: service_healthy
+#      consul-local:
+#        condition: service_healthy
+#      kafka-local-broker-1:
+#        condition: service_healthy
+#    networks:
+#      - local
 
 networks:
   local:

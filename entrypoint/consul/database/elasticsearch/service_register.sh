@@ -1,14 +1,23 @@
 #!/bin/bash
 
-echo "Registering Elasticsearch as proxy service in Consul ..."
+echo "Registering Elasticsearch to Consul ..."
 
- # Wait for Redis to be available
-echo "Waiting for Redis to be available..."
-until nc -z elasticsearch-local 9200; do
-echo "Elasticsearch not ready yet, waiting..."
-sleep 2
+# Wait for Elasticsearch to be available (max 10 retries)
+echo "Waiting for Elasticsearch to be available..."
+max_retries=10
+count=0
+
+until nc -z elasticsearch-local 9200 >/dev/null 2>&1; do
+  count=$((count+1))
+  echo "Elasticsearch not ready yet, attempt $count/$max_retries..."
+
+  if [ $count -ge $max_retries ]; then
+    echo "⚠️ Elasticsearch still not available after $max_retries attempts, continuing anyway..."
+    break
+  fi
+  sleep 2
 done
-echo "Elasticsearch is available"
+echo "Elasticsearch check finished"
 
 # Register Elasticsearch service
 consul services register \

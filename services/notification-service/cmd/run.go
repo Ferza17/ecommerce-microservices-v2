@@ -2,9 +2,10 @@ package cmd
 
 import (
 	"context"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/transport/grpc"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/transport/http"
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/transport/rabbitmq"
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/transport/kafka"
 	"github.com/spf13/cobra"
 	"log"
 	"sync"
@@ -17,7 +18,9 @@ var runCommand = &cobra.Command{
 		defer cancel()
 
 		grpcServer := grpc.ProvideGrpcServer()
-		rabbitMQServer := rabbitmq.ProvideRabbitMQServer()
+		kafkaConsumer := kafka.ProvideServer()
+
+		log.Println("Starting services in env:", config.Get().Env)
 
 		wg := new(sync.WaitGroup)
 		wg.Add(1)
@@ -32,8 +35,9 @@ var runCommand = &cobra.Command{
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			if err := rabbitMQServer.Serve(ctx); err != nil {
+			if err := kafkaConsumer.Serve(ctx); err != nil {
 				log.Fatalf("failed to serve : %s", err)
+				return
 			}
 		}()
 

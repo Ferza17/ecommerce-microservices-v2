@@ -1,14 +1,23 @@
 #!/bin/bash
 
-echo "Registering Redis as proxy service in Consul ..."
+echo "Registering Redis to Consul ..."
 
-# Wait for Redis to be available
+# Wait for Redis to be available (max 10 retries)
 echo "Waiting for Redis to be available..."
-until nc -z redis-local 6379; do
-echo "Redis not ready yet, waiting..."
-sleep 2
+max_retries=10
+count=0
+
+until nc -z redis-local 6379 >/dev/null 2>&1; do
+  count=$((count+1))
+  echo "Redis not ready yet, attempt $count/$max_retries..."
+
+  if [ $count -ge $max_retries ]; then
+    echo "⚠️ Redis still not available after $max_retries attempts, continuing anyway..."
+    break
+  fi
+  sleep 2
 done
-echo "Redis is available"
+echo "Redis check finished"
 
 # Register Redis service
 consul services register \

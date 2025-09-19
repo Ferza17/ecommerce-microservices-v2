@@ -1,14 +1,23 @@
 #!/bin/bash
 
-echo "Registering PostgresSQL as proxy service in Consul ..."
+echo "Registering PostgresSQL to Consul ..."
 
-# Wait for MongoDB to be available
+# Wait for PostgresSQL to be available (max 10 retries)
 echo "Waiting for PostgresSQL to be available..."
-until nc -z postgres-local 5432; do
-echo "PostgresSQL not ready yet, waiting..."
-sleep 2
+max_retries=10
+count=0
+
+until nc -z postgres-local 5432 >/dev/null 2>&1; do
+  count=$((count+1))
+  echo "PostgresSQL not ready yet, attempt $count/$max_retries..."
+
+  if [ $count -ge $max_retries ]; then
+    echo "⚠️ PostgresSQL still not available after $max_retries attempts, continuing anyway..."
+    break
+  fi
+  sleep 2
 done
-echo "MongoDB is available"
+echo "PostgresSQL check finished"
 
 
 # Register MongoDB service

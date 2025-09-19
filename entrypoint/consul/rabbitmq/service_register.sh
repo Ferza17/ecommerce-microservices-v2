@@ -1,14 +1,25 @@
 #!/bin/sh
 
-echo "Registering RabbitMQ as proxy service in Consul ..."
+echo "Registering RabbitMQ to Consul ..."
 
-# Wait for RabbitMQ to be available
+
+
+# Wait for MongoDB to be available (max 10 retries)
 echo "Waiting for RabbitMQ to be available..."
-until nc -z rabbitmq-local 5672; do
-echo "RabbitMQ not ready yet, waiting..."
-sleep 2
+max_retries=10
+count=0
+
+until nc -z rabbitmq-local 5672 >/dev/null 2>&1; do
+  count=$((count+1))
+  echo "RabbitMQ not ready yet, attempt $count/$max_retries..."
+
+  if [ $count -ge $max_retries ]; then
+    echo "⚠️ RabbitMQ still not available after $max_retries attempts, continuing anyway..."
+    break
+  fi
+  sleep 2
 done
-echo "RabbitMQ is available"
+echo "RabbitMQ check finished"
 
 # Register MongoDB service
 consul services register \
@@ -37,4 +48,4 @@ curl -s -X PUT http://consul-local:8500/v1/agent/check/register \
 }'
 
 # Verify registration
-echo "✅ RabbitMQ proxy registration completed"
+echo "✅ RabbitMQ registration completed"
