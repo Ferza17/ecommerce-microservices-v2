@@ -2,12 +2,12 @@ package config
 
 import (
 	"fmt"
+	"log"
+	"os"
+
 	pkgMetric "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/metric"
 	"github.com/hashicorp/consul/api"
 	"github.com/prometheus/client_golang/prometheus"
-	"log"
-	"os"
-	"sync"
 
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/enum"
 	"github.com/spf13/viper"
@@ -26,75 +26,17 @@ type Config struct {
 	ConsulPort string `mapstructure:"CONSUL_PORT"`
 
 	// Notification SERVICE
-	NotificationServiceServiceName    string
-	NotificationServiceRpcHost        string
-	NotificationServiceRpcPort        string
-	NotificationServiceHttpHost       string
-	NotificationServiceHttpPort       string
-	NotificationServiceMetricHttpPort string
+	ConfigServiceNotification *ConfigServiceNotification
+	ConfigServicePayment      *ConfigServicePayment
 
-	// User Service Config
-	UserServiceServiceName    string
-	UserServiceRpcHost        string
-	UserServiceRpcPort        string
-	UserServiceHttpHost       string
-	UserServiceHttpPort       string
-	UserServiceMetricHttpPort string
+	ConfigTelemetry *ConfigTelemetry
 
-	// Shipping Service Config
-	ShippingServiceServiceName    string
-	ShippingServiceRpcHost        string
-	ShippingServiceRpcPort        string
-	ShippingServiceHttpHost       string
-	ShippingServiceHttpPort       string
-	ShippingServiceMetricHttpPort string
+	BrokerKafka                   *BrokerKafka
+	BrokerKafkaTopicNotifications *BrokerKafkaTopicNotifications
 
-	// Payment Service Config
-	PaymentServiceServiceName    string
-	PaymentServiceRpcHost        string
-	PaymentServiceRpcPort        string
-	PaymentServiceHttpHost       string
-	PaymentServiceHttpPort       string
-	PaymentServiceMetricHttpPort string
+	ConfigSmtp *ConfigSmtp
 
-	JaegerTelemetryHost string
-	JaegerTelemetryPort string
-
-	RabbitMQUsername string
-	RabbitMQPassword string
-	RabbitMQHost     string
-	RabbitMQPort     string
-
-	QueueEventCreated string
-
-	// EXCHANGE
-	ExchangeCommerce       string
-	ExchangeEvent          string
-	ExchangeNotification   string
-	ExchangeProduct        string
-	ExchangeUser           string
-	ExchangePaymentDelayed string
-	ExchangePaymentDirect  string
-
-	// Queue Notification
-	QueueNotificationEmailOtpCreated          string
-	QueueNotificationEmailPaymentOrderCreated string
-
-	CommonSagaStatusPending string
-	CommonSagaStatusSuccess string
-	CommonSagaStatusFailed  string
-
-	SmtpSenderEmail string
-	SmtpHost        string
-	SmtpPort        string
-	SmtpUsername    string
-	SmtpPassword    string
-
-	MongoUsername     string
-	MongoPassword     string
-	MongoHost         string
-	MongoPort         string
-	MongoDatabaseName string
+	DatabaseMongo *DatabaseMongo
 }
 
 func SetConfig(path string) {
@@ -132,56 +74,13 @@ func SetConfig(path string) {
 		log.Fatalf("SetConfig | could not connect to consul: %v", err)
 	}
 
-	// Get Consul Key / Value
-	wg := new(sync.WaitGroup)
-
-	// Telemetry Config
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		c.initTelemetry(consulClient.KV())
-	}()
-
-	// RabbitMQ Config
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		c.initRabbitmq(consulClient.KV())
-		c.initExchange(consulClient.KV())
-		c.initQueueNotification(consulClient.KV())
-	}()
-
-	// COMMON Config
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		c.initCommon(consulClient.KV())
-	}()
-
-	// SMTP Config
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		c.initSmtp(consulClient.KV())
-	}()
-
-	// MongoDB Config
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		c.initMongoDB(consulClient.KV())
-	}()
-
-	// Init Service Config
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		c.initNotificationService(consulClient.KV())
-		c.initUserService(consulClient.KV())
-		c.initPaymentService(consulClient.KV())
-	}()
-
-	wg.Wait()
+	c.ConfigServiceNotification = DefaultConfigServiceUser().WithConsulClient(c.Env, consulClient.KV())
+	c.ConfigServicePayment = DefaultConfigServicePayment().WithConsulClient(c.Env, consulClient.KV())
+	c.ConfigSmtp = DefaultConfigSmtp().WithConsulClient(c.Env, consulClient.KV())
+	c.ConfigTelemetry = DefaultConfigTelemetry().WithConsulClient(c.Env, consulClient.KV())
+	c.DatabaseMongo = DefaultDatabaseMongo().WithConsulClient(c.Env, consulClient.KV())
+	c.BrokerKafka = DefaultKafkaBroker().WithConsulClient(c.Env, consulClient.KV())
+	c.BrokerKafkaTopicNotifications = DefaultKafkaBrokerTopicNotifications().WithConsulClient(c.Env, consulClient.KV())
 
 	if err = c.RegisterConsulService(); err != nil {
 		log.Fatalf("SetConfig | could not register service: %v", err)

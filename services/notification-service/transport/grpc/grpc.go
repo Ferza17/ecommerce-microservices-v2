@@ -3,6 +3,9 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"log"
+	"net"
+
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/worker"
@@ -12,8 +15,6 @@ import (
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
-	"log"
-	"net"
 )
 
 type (
@@ -32,11 +33,11 @@ func NewGrpcServer(
 	logger logger.IZapLogger) *GrpcServer {
 	return &GrpcServer{
 		workerPool: pkgWorker.NewWorkerPool(
-			fmt.Sprintf("GRPC SERVER ON %s:%s", config.Get().NotificationServiceRpcHost, config.Get().NotificationServiceRpcPort),
+			fmt.Sprintf("GRPC SERVER ON %s:%s", config.Get().ConfigServiceNotification.RpcHost, config.Get().ConfigServiceNotification.RpcPort),
 			1,
 		),
-		address:    config.Get().NotificationServiceRpcHost,
-		port:       config.Get().NotificationServiceRpcPort,
+		address:    config.Get().ConfigServiceNotification.RpcHost,
+		port:       config.Get().ConfigServiceNotification.RpcPort,
 		grpcServer: grpc.NewServer(),
 		logger:     logger,
 	}
@@ -52,7 +53,7 @@ func (s *GrpcServer) Serve(ctx context.Context) error {
 
 	healthServer := health.NewServer()
 	grpc_health_v1.RegisterHealthServer(s.grpcServer, healthServer)
-	healthServer.SetServingStatus(config.Get().NotificationServiceServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
+	healthServer.SetServingStatus(config.Get().ConfigServiceNotification.ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
 
 	log.Printf("Starting gRPC server on %s:%s", s.address, s.port)
 	// Enable Reflection to Evans grpc client

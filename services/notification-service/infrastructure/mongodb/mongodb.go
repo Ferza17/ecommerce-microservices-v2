@@ -3,6 +3,7 @@ package mongodb
 import (
 	"context"
 	"fmt"
+
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/enum"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
@@ -35,11 +36,11 @@ func NewMongoDBInfrastructure(logger logger.IZapLogger) IMongoDBInfrastructure {
 			Client().
 			ApplyURI(
 				fmt.Sprintf("mongodb://%s:%s@%s:%s/%s?authSource=admin",
-					config.Get().MongoUsername,
-					config.Get().MongoPassword,
-					config.Get().MongoHost,
-					config.Get().MongoPort,
-					config.Get().MongoDatabaseName,
+					config.Get().DatabaseMongo.Username,
+					config.Get().DatabaseMongo.Password,
+					config.Get().DatabaseMongo.Host,
+					config.Get().DatabaseMongo.Port,
+					config.Get().DatabaseMongo.DatabaseName,
 				),
 			),
 	)
@@ -75,10 +76,10 @@ func (m *MongoDBInfrastructure) GetCollection(database enum.Database, collection
 
 func (m *MongoDBInfrastructure) GetConnectionString() string {
 	return fmt.Sprintf("mongodb://%s:%s@%s:%s/%s?authSource=admin",
-		config.Get().MongoUsername,
-		config.Get().MongoPassword,
-		config.Get().MongoHost,
-		config.Get().MongoPort,
-		config.Get().MongoDatabaseName,
+		config.Get().DatabaseMongo.Username,
+		config.Get().DatabaseMongo.Password,
+		config.Get().DatabaseMongo.Host,
+		config.Get().DatabaseMongo.Port,
+		config.Get().DatabaseMongo.DatabaseName,
 	)
 }

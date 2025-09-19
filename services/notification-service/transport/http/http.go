@@ -2,9 +2,10 @@ package http
 
 import (
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 	"log"
 	"net/http"
+
+	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 )
 
 func ServeHttpHealthCheckHandler() error {
@@ -15,7 +16,7 @@ func ServeHttpHealthCheckHandler() error {
 		w.Write([]byte(`{"status":"ok"}`))
 	})
 
-	addr := fmt.Sprintf("%s:%s", config.Get().NotificationServiceHttpHost, config.Get().NotificationServiceHttpPort)
+	addr := fmt.Sprintf("%s:%s", config.Get().ConfigServiceNotification.HttpHost, config.Get().ConfigServiceNotification.HttpPort)
 	log.Printf("Starting HTTP HealthCheck Server on %s", addr)
 	if err := http.ListenAndServe(addr, handler); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("healthcheck server failed: %v", err)

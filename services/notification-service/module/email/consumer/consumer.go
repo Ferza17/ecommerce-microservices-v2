@@ -2,22 +2,23 @@ package consumer
 
 import (
 	"context"
-	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/rabbitmq"
+
+	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
+	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/kafka"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
 	notificationUseCase "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 	"github.com/google/wire"
-	"github.com/rabbitmq/amqp091-go"
 )
 
 type (
 	INotificationEmailConsumer interface {
-		NotificationEmailOTP(ctx context.Context, d *amqp091.Delivery) error
-		NotificationEmailPaymentOrderCreated(ctx context.Context, d *amqp091.Delivery) error
+		SnapshotNotificationsEmailOtpCreated(ctx context.Context, message *kafka.Message) error
+		SnapshotNotificationsEmailPaymentOrderCreated(ctx context.Context, message *kafka.Message) error
 	}
 
 	notificationEmailConsumer struct {
-		rabbitmqInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
+		kafkaInfrastructure     kafkaInfrastructure.IKafkaInfrastructure
 		notificationUseCase     notificationUseCase.INotificationEmailUseCase
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 		logger                  logger.IZapLogger
@@ -27,12 +28,12 @@ type (
 var Set = wire.NewSet(NewNotificationConsumer)
 
 func NewNotificationConsumer(
-	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
+	kafkaInfrastructure kafkaInfrastructure.IKafkaInfrastructure,
 	notificationUseCase notificationUseCase.INotificationEmailUseCase,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	logger logger.IZapLogger) INotificationEmailConsumer {
 	return &notificationEmailConsumer{
-		rabbitmqInfrastructure:  rabbitmqInfrastructure,
+		kafkaInfrastructure:     kafkaInfrastructure,
 		notificationUseCase:     notificationUseCase,
 		telemetryInfrastructure: telemetryInfrastructure,
 		logger:                  logger,

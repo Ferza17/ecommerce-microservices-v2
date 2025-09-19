@@ -1,11 +1,12 @@
 package logger
 
 import (
+	"log"
+
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 	"github.com/google/wire"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"log"
 )
 
 type (
@@ -46,19 +47,19 @@ func NewZapLogger() IZapLogger {
 }
 
 func (z *zapLogger) Info(fnName string, fields ...zap.Field) {
-	fields = append(fields, zap.String("service", config.Get().NotificationServiceServiceName))
+	fields = append(fields, zap.String("service", config.Get().ConfigServiceNotification.ServiceName))
 	fields = append(fields, zap.String("context", fnName))
 	z.logger.Info(fnName, fields...)
 }
 
 func (z *zapLogger) Error(fnName string, fields ...zap.Field) {
-	fields = append(fields, zap.String("service", config.Get().NotificationServiceServiceName))
+	fields = append(fields, zap.String("service", config.Get().ConfigServiceNotification.ServiceName))
 	fields = append(fields, zap.String("context", fnName))
 	z.logger.Error(fnName, fields...)
 }
 
 func (z *zapLogger) Debug(fnName string, fields ...zap.Field) {
-	fields = append(fields, zap.String("service", config.Get().NotificationServiceServiceName))
+	fields = append(fields, zap.String("service", config.Get().ConfigServiceNotification.ServiceName))
 	fields = append(fields, zap.String("msg", fnName))
 	z.logger.Debug(fnName, fields...)
 }

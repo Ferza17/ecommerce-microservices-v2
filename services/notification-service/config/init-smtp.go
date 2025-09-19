@@ -2,53 +2,76 @@ package config
 
 import (
 	"fmt"
-	"github.com/hashicorp/consul/api"
 	"log"
+
+	"github.com/hashicorp/consul/api"
 )
 
-func (c *Config) initSmtp(kv *api.KV) {
-	pair, _, err := kv.Get(fmt.Sprintf("%s/smtp/SMTP_SENDER_EMAIL", c.Env), nil)
-	if err != nil {
-		log.Fatalf("SetConfig | could not get SMTP_SENDER_EMAIL host from consul: %v", err)
-	}
-	if pair == nil {
-		log.Fatal("SetConfig | Consul | SMTP_SENDER_EMAIL host is required")
-	}
-	c.SmtpSenderEmail = string(pair.Value)
+type ConfigSmtp struct {
+	SenderEmail string
+	Host        string
+	Port        string
+	Username    string
+	Password    string
 
-	pair, _, err = kv.Get(fmt.Sprintf("%s/smtp/SMTP_USERNAME", c.Env), nil)
-	if err != nil {
-		log.Fatalf("SetConfig | could not get SMTP_USERNAME host from consul: %v", err)
-	}
-	if pair == nil {
-		log.Fatal("SetConfig | Consul | SMTP_USERNAME host is required")
-	}
-	c.SmtpUsername = string(pair.Value)
+	keyPrefix string
+}
 
-	pair, _, err = kv.Get(fmt.Sprintf("%s/smtp/SMTP_PASSWORD", c.Env), nil)
-	if err != nil {
-		log.Fatalf("SetConfig | could not get SMTP_PASSWORD host from consul: %v", err)
+func DefaultConfigSmtp() *ConfigSmtp {
+	return &ConfigSmtp{
+		SenderEmail: "",
+		Host:        "",
+		Port:        "",
+		Username:    "",
+		Password:    "",
+		keyPrefix:   "%s/smtp/%s",
 	}
-	if pair == nil {
-		log.Fatal("SetConfig | Consul | SMTP_PASSWORD host is required")
-	}
-	c.SmtpPassword = string(pair.Value)
+}
 
-	pair, _, err = kv.Get(fmt.Sprintf("%s/smtp/SMTP_HOST", c.Env), nil)
+func (c *ConfigSmtp) WithConsulClient(env string, kv *api.KV) *ConfigSmtp {
+	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "SMTP_SENDER_EMAIL"), nil)
 	if err != nil {
-		log.Fatalf("SetConfig | could not get SMTP_HOST host from consul: %v", err)
+		log.Fatalf("SetConfig | could not get SMTP_SENDER_EMAIL from consul: %v", err)
 	}
 	if pair == nil {
-		log.Fatal("SetConfig | Consul | SMTP_HOST host is required")
+		log.Fatal("SetConfig | Consul | SMTP_SENDER_EMAIL is required")
 	}
-	c.SmtpHost = string(pair.Value)
+	c.SenderEmail = string(pair.Value)
 
-	pair, _, err = kv.Get(fmt.Sprintf("%s/smtp/SMTP_PORT", c.Env), nil)
+	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "SMTP_USERNAME"), nil)
 	if err != nil {
-		log.Fatalf("SetConfig | could not get SMTP_PORT host from consul: %v", err)
+		log.Fatalf("SetConfig | could not get SMTP_USERNAME from consul: %v", err)
 	}
 	if pair == nil {
-		log.Fatal("SetConfig | Consul | SMTP_PORT host is required")
+		log.Fatal("SetConfig | Consul | SMTP_USERNAME is required")
 	}
-	c.SmtpPort = string(pair.Value)
+	c.Username = string(pair.Value)
+
+	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "SMTP_PASSWORD"), nil)
+	if err != nil {
+		log.Fatalf("SetConfig | could not get SMTP_PASSWORD from consul: %v", err)
+	}
+	if pair == nil {
+		log.Fatal("SetConfig | Consul | SMTP_PASSWORD is required")
+	}
+	c.Password = string(pair.Value)
+
+	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "SMTP_HOST"), nil)
+	if err != nil {
+		log.Fatalf("SetConfig | could not get SMTP_HOST from consul: %v", err)
+	}
+	if pair == nil {
+		log.Fatal("SetConfig | Consul | SMTP_HOST is required")
+	}
+	c.Host = string(pair.Value)
+
+	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "SMTP_PORT"), nil)
+	if err != nil {
+		log.Fatalf("SetConfig | could not get SMTP_PORT from consul: %v", err)
+	}
+	if pair == nil {
+		log.Fatal("SetConfig | Consul | SMTP_PORT is required")
+	}
+	c.Port = string(pair.Value)
+	return c
 }

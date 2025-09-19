@@ -3,6 +3,7 @@ package payment
 import (
 	"context"
 	"fmt"
+
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 	pb "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
@@ -29,7 +30,7 @@ func NewPaymentService(
 	logger logger.IZapLogger,
 ) IPaymentService {
 	insecureCredentials := grpc.WithTransportCredentials(insecure.NewCredentials()) // For Local Development
-	conn, err := grpc.NewClient(fmt.Sprintf("%s:%s", config.Get().PaymentServiceRpcHost, config.Get().PaymentServiceRpcPort), insecureCredentials)
+	conn, err := grpc.NewClient(fmt.Sprintf("%s:%s", config.Get().ConfigServicePayment.RpcHost, config.Get().ConfigServicePayment.RpcPort), insecureCredentials)
 	if err != nil {
 		logger.Error("ShippingService.NewShippingService", zap.Error(err))
 		return nil

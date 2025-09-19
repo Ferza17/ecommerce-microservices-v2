@@ -3,6 +3,9 @@ package telemetry
 import (
 	"context"
 	"fmt"
+	"net/http"
+
+	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 	"github.com/google/wire"
@@ -14,7 +17,6 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.12.0"
 	"go.opentelemetry.io/otel/trace"
-	"net/http"
 )
 
 type (
@@ -24,8 +26,12 @@ type (
 		StartSpanFromHttpRequest(r *http.Request, fnName string) (context.Context, trace.Span)
 		StartSpanFromRabbitMQHeader(ctx context.Context, headers amqp091.Table, fnName string) (context.Context, trace.Span)
 		StartSpanFromRpcMetadata(ctx context.Context, fnName string) (context.Context, trace.Span)
+		StartSpanFromKafkaHeader(ctx context.Context, headers []kafka.Header, fnName string) (context.Context, trace.Span)
 
 		InjectSpanToTextMapPropagator(ctx context.Context) propagation.MapCarrier
+
+		// Handle Graceful Stop
+		Close() error
 	}
 	telemetryInfrastructure struct {
 		logger         logger.IZapLogger
@@ -39,8 +45,8 @@ var Set = wire.NewSet(NewTelemetry)
 func NewTelemetry(logger logger.IZapLogger) ITelemetryInfrastructure {
 	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(
 		jaeger.WithEndpoint(fmt.Sprintf("http://%s:%s/api/traces",
-			config.Get().JaegerTelemetryHost,
-			config.Get().JaegerTelemetryPort,
+			config.Get().ConfigTelemetry.JaegerTelemetryHost,
+			config.Get().ConfigTelemetry.JaegerTelemetryPort,
 		)),
 	))
 	if err != nil {
@@ -51,7 +57,7 @@ func NewTelemetry(logger logger.IZapLogger) ITelemetryInfrastructure {
 		sdktrace.WithBatcher(exp),
 		sdktrace.WithResource(resource.NewWithAttributes(
 			semconv.SchemaURL,
-			semconv.ServiceNameKey.String(config.Get().NotificationServiceServiceName),
+			semconv.ServiceNameKey.String(config.Get().ConfigServiceNotification.ServiceName),
 		)),
 	)
 	otel.SetTracerProvider(tp)
@@ -63,6 +69,10 @@ func NewTelemetry(logger logger.IZapLogger) ITelemetryInfrastructure {
 	return &telemetryInfrastructure{
 		logger:         logger,
 		tracerProvider: tp,
-		serviceName:    config.Get().NotificationServiceServiceName,
+		serviceName:    config.Get().ConfigServiceNotification.ServiceName,
 	}
+}
+
+func (t *telemetryInfrastructure) Close() error {
+	return t.tracerProvider.Shutdown(context.Background())
 }
