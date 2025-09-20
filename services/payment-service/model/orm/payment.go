@@ -16,10 +16,10 @@ type Payment struct {
 	UserID      string     `gorm:"type:varchar(255);not null" json:"user_id"`
 	CreatedAt   *time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt   *time.Time `gorm:"autoUpdateTime" json:"updated_at"`
-	DiscardedAt *time.Time `gorm:"index" json:"discarded_at"`
+	DiscardedAt *time.Time `gorm:"index" json:"-"`
 
-	PaymentItems    []*PaymentItem `gorm:"foreignKey:PaymentID;references:ID" json:"payment_items"`
-	PaymentProvider *Provider      `gorm:"foreignKey:ProviderID;references:ID" json:"payment_provider"`
+	PaymentItems    []*PaymentItem `gorm:"foreignKey:PaymentID;references:ID" json:"-"`
+	PaymentProvider *Provider      `gorm:"foreignKey:ProviderID;references:ID" json:"-"`
 }
 
 func (Payment) TableName() string {

@@ -11,6 +11,10 @@ func (r *paymentRepository) UpdatePaymentStatusByIdWithTransaction(ctx context.C
 	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "PaymentPostgresRepository.UpdatePaymentStatusByIdWithTransaction")
 	defer span.End()
 
+	if tx == nil {
+		tx = r.postgresSQLInfrastructure.GormDB
+	}
+
 	// Use the provided transaction to update the status
 	result := tx.WithContext(ctx).
 		Model(&orm.Payment{}).   // Reference the ORM model

@@ -28,12 +28,12 @@ var Set = wire.NewSet(
 
 func NewPostgresqlInfrastructure(logger logger.IZapLogger) *PostgresSQL {
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		config.Get().PostgresHost,
-		config.Get().PostgresPort,
-		config.Get().PostgresUsername,
-		config.Get().PostgresPassword,
-		config.Get().PostgresDatabaseName,
-		config.Get().PostgresSSLMode)
+		config.Get().DatabasePostgres.Host,
+		config.Get().DatabasePostgres.Port,
+		config.Get().DatabasePostgres.Username,
+		config.Get().DatabasePostgres.Password,
+		config.Get().DatabasePostgres.Database,
+		config.Get().DatabasePostgres.SSLMode)
 
 	sqldb, err := sql.Open("pgx", dsn)
 	if err != nil {

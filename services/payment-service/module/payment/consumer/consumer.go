@@ -2,25 +2,20 @@ package consumer
 
 import (
 	"context"
-	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
+	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
 	"github.com/google/wire"
-	"github.com/rabbitmq/amqp091-go"
 )
 
 type (
 	IPaymentConsumer interface {
-		PaymentOrderCreated(ctx context.Context, d *amqp091.Delivery) error
-		PaymentOrderDelayedCancelled(ctx context.Context, d *amqp091.Delivery) error
-
-		Close() error
+		SnapshotPaymentsPaymentOrderCreated(ctx context.Context, message *kafka.Message) error
+		SnapshotPaymentsPaymentOrderCancelledDelayed(ctx context.Context, message *kafka.Message) error
 	}
 
 	paymentConsumer struct {
-		rabbitmq                rabbitmq.IRabbitMQInfrastructure
 		telemetryInfrastructure telemetry.ITelemetryInfrastructure
 		paymentUseCase          usecase.IPaymentUseCase
 		logger                  logger.IZapLogger
@@ -34,24 +29,13 @@ var Set = wire.NewSet(
 
 // NewPaymentConsumer creates a new instance of IPaymentConsumer.
 func NewPaymentConsumer(
-	rabbitmq rabbitmq.IRabbitMQInfrastructure,
 	telemetryInfrastructure telemetry.ITelemetryInfrastructure,
 	paymentUseCase usecase.IPaymentUseCase,
 	logger logger.IZapLogger,
 ) IPaymentConsumer {
 	return &paymentConsumer{
-		rabbitmq:                rabbitmq,
 		telemetryInfrastructure: telemetryInfrastructure,
 		paymentUseCase:          paymentUseCase,
 		logger:                  logger,
 	}
-}
-
-func (c *paymentConsumer) Close() error {
-	if err := c.rabbitmq.Close(); err != nil {
-		c.logger.Error(fmt.Sprintf("Failed to close a connection: %v", err))
-		return err
-	}
-
-	return nil
 }

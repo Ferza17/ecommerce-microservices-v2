@@ -46,19 +46,19 @@ func NewZapLogger() IZapLogger {
 }
 
 func (z *zapLogger) Info(fnName string, fields ...zap.Field) {
-	fields = append(fields, zap.String("service", config.Get().PaymentServiceServiceName))
+	fields = append(fields, zap.String("service", config.Get().ConfigServicePayment.ServiceName))
 	fields = append(fields, zap.String("context", fnName))
 	z.logger.Info(fnName, fields...)
 }
 
 func (z *zapLogger) Error(fnName string, fields ...zap.Field) {
-	fields = append(fields, zap.String("service", config.Get().PaymentServiceServiceName))
+	fields = append(fields, zap.String("service", config.Get().ConfigServicePayment.ServiceName))
 	fields = append(fields, zap.String("context", fnName))
 	z.logger.Error(fnName, fields...)
 }
 
 func (z *zapLogger) Debug(fnName string, fields ...zap.Field) {
-	fields = append(fields, zap.String("service", config.Get().PaymentServiceServiceName))
+	fields = append(fields, zap.String("service", config.Get().ConfigServicePayment.ServiceName))
 	fields = append(fields, zap.String("msg", fnName))
 	z.logger.Debug(fnName, fields...)
 }

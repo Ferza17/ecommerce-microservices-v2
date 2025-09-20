@@ -56,10 +56,10 @@ func NewGrpcServer(
 	userService userService.IUserService,
 ) IGrpcServer {
 	return &GrpcServer{
-		address: config.Get().PaymentServiceRpcHost,
-		port:    config.Get().PaymentServiceRpcPort,
+		address: config.Get().ConfigServicePayment.RpcHost,
+		port:    config.Get().ConfigServicePayment.RpcPort,
 		workerPool: pkgWorker.NewWorkerPool(
-			fmt.Sprintf("GRPC SERVER ON %s:%s", config.Get().PaymentServiceRpcHost, config.Get().PaymentServiceRpcPort),
+			fmt.Sprintf("GRPC SERVER ON %s:%s", config.Get().ConfigServicePayment.RpcHost, config.Get().ConfigServicePayment.RpcPort),
 			2,
 		),
 		paymentPresenter:         paymentPresenter,
@@ -99,7 +99,7 @@ func (s *GrpcServer) Serve(ctx context.Context) error {
 	// Mark the service as healthy
 	healthServer := health.NewServer()
 	grpc_health_v1.RegisterHealthServer(s.grpcServer, healthServer)
-	healthServer.SetServingStatus(config.Get().PaymentServiceServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
+	healthServer.SetServingStatus(config.Get().ConfigServicePayment.ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
 
 	// Enable Reflection to Evans grpc client
 	reflection.Register(s.grpcServer)

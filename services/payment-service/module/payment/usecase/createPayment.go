@@ -86,18 +86,17 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 	}
 
 	now := time.Now()
-	paymentID, err := u.paymentRepository.CreatePayment(ctx, requestId, &orm.Payment{
+	payment := &orm.Payment{
 		ID:         uuid.NewString(),
 		Code:       util.GenerateInvoiceCode(),
 		TotalPrice: totalAmount,
 		Status:     paymentPb.PaymentStatus_PENDING.String(),
 		ProviderID: request.ProviderId,
 		UserID:     request.UserId,
-	}, tx)
-	if err != nil {
-		tx.Rollback() // Roll back the transaction on error
-		u.logger.Error(fmt.Sprintf("Failed to create payment, requestId: %s, error: %v", requestId, err))
-		return nil, fmt.Errorf("failed to create payment: %w", err)
+	}
+	if err = u.kafkaInfrastructure.PublishWithJsonSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkPgPayment.Payments, payment.ID, payment); err != nil {
+		u.logger.Error(fmt.Sprintf("Error publishing event to kafka for payment creation: %s", err.Error()))
+		return nil, status.Errorf(codes.Internal, "Error publishing event to kafka for payment creation: %s", err.Error())
 	}
 
 	user, err := u.userService.AuthUserFindUserByToken(ctx, requestId, &userRpc.AuthUserFindUserByTokenRequest{
@@ -126,26 +125,27 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 		}
 
 		// Call a repository to create the PaymentItem
-		if _, err = u.paymentRepository.CreatePaymentItem(ctx, &orm.PaymentItem{
+		paymentItem := &orm.PaymentItem{
 			ID:          uuid.NewString(),
 			ProductID:   item.ProductId,
 			Amount:      float64(productQty) * product.Price,
 			Qty:         item.Qty,
-			PaymentID:   paymentID,
+			PaymentID:   payment.ID,
 			CreatedAt:   &now,
 			UpdatedAt:   &now,
 			DiscardedAt: nil,
-		}, tx); err != nil {
-			tx.Rollback() // Roll back the transaction on error
-			u.logger.Error(fmt.Sprintf("Failed to create payment item, requestId: %s, error: %v", requestId, err))
-			return nil, fmt.Errorf("failed to create payment item: %w", err)
+		}
+
+		if err = u.kafkaInfrastructure.PublishWithJsonSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkPgPayment.PaymentItems, paymentItem.ID, paymentItem); err != nil {
+			u.logger.Error(fmt.Sprintf("Error publishing event to kafka for payment creation: %s", err.Error()))
+			return nil, status.Errorf(codes.Internal, "Error publishing event to kafka for payment creation: %s", err.Error())
 		}
 	}
 
 	// Publish to shipping.created
 	messages, err := proto.Marshal(&shippingRpc.CreateShippingRequest{
 		UserId:             user.Data.User.Id,
-		PaymentId:          paymentID,
+		PaymentId:          payment.ID,
 		ShippingProviderId: request.ShippingProviderId,
 	})
 	if err != nil {
@@ -153,51 +153,51 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 		u.logger.Error(fmt.Sprintf("Failed to marshal CreateShipping request, requestId: %s, error: %v", requestId, err))
 		return nil, fmt.Errorf("failed to marshal CreateShipping request: %w", err)
 	}
-	if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, config.Get().ExchangeShipping, config.Get().QueueShippingCreated, messages); err != nil {
+	if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicShippings.ShippingCreated, uuid.NewString(), messages); err != nil {
 		tx.Rollback()
 		u.logger.Error(fmt.Sprintf("Failed to publish CreateShipping request, requestId: %s, error: %v", requestId, err))
-		return nil, fmt.Errorf("failed to publish CreateShipping request: %w", err)
 	}
 
 	// Publish to Notification Payment Order Created
 	if messages, err = proto.Marshal(&notificationPb.SendEmailPaymentOrderCreateRequest{
 		Email:            user.Data.User.Email,
-		PaymentId:        paymentID,
+		PaymentId:        payment.ID,
 		NotificationType: notificationPb.NotificationTypeEnum_NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED,
 	}); err != nil {
 		u.logger.Error("NotificationTypeEnum_NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED", zap.String("requestId", requestId), zap.Error(err))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	if err = u.rabbitmqInfrastructure.Publish(ctx, requestId, config.Get().ExchangeNotification, config.Get().QueueNotificationEmailPaymentOrderCreated, messages); err != nil {
-		u.logger.Error("Failed to publish notification", zap.Error(err))
-		return nil, status.Error(codes.Internal, err.Error())
+	if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicNotifications.PaymentOrderCreated, fmt.Sprintf("%s:%s", user.Data.User.Email, payment.ID), messages); err != nil {
+		tx.Rollback()
+		u.logger.Error(fmt.Sprintf("Failed to publish SendEmailPaymentOrderCreateRequest request, requestId: %s, error: %v", requestId, err))
 	}
 
-	// Publish to Payment.Order.Delayed.Cancelled
-	if messages, err = proto.Marshal(&paymentPb.PaymentOrderDelayedCancelledRequest{
-		Id: paymentID,
-	}); err != nil {
-		tx.Rollback()
-		u.logger.Error(fmt.Sprintf("Failed to marshal PaymentOrderDelayedCancelledRequest request, requestId: %s, error: %v", requestId, err))
-		return nil, fmt.Errorf("failed to marshal PaymentOrderDelayedCancelledRequest request: %w", err)
-	}
-
-	if err = u.rabbitmqInfrastructure.PublishDelayedMessage(ctx, requestId, config.Get().ExchangePaymentDelayed, config.Get().QueuePaymentOrderDelayedCancelled, messages, config.Get().PaymentOrderCancelledInMs); err != nil {
-		tx.Rollback()
-		u.logger.Error(fmt.Sprintf("Failed to publish event payment.delayed.cancelled, requestId: %s, error: %v", requestId, err))
-		return nil, fmt.Errorf("failed to commit transaction: %w", err)
-	}
+	// TODO: Publish to Payment.Order.Delayed.Cancelled
+	//if messages, err = proto.Marshal(&paymentPb.PaymentOrderDelayedCancelledRequest{
+	//	Id: paymentID,
+	//}); err != nil {
+	//	tx.Rollback()
+	//	u.logger.Error(fmt.Sprintf("Failed to marshal PaymentOrderDelayedCancelledRequest request, requestId: %s, error: %v", requestId, err))
+	//	return nil, fmt.Errorf("failed to marshal PaymentOrderDelayedCancelledRequest request: %w", err)
+	//}
+	//
+	//if err = u.rabbitmqInfrastructure.PublishDelayedMessage(ctx, requestId, config.Get().ExchangePaymentDelayed, config.Get().QueuePaymentOrderDelayedCancelled, messages, config.Get().PaymentOrderCancelledInMs); err != nil {
+	//	tx.Rollback()
+	//	u.logger.Error(fmt.Sprintf("Failed to publish event payment.delayed.cancelled, requestId: %s, error: %v", requestId, err))
+	//	return nil, fmt.Errorf("failed to commit transaction: %w", err)
+	//}
 
 	// Commit the transaction
 	if err = tx.Commit().Error; err != nil {
 		u.logger.Error(fmt.Sprintf("Failed to commit transaction, requestId: %s, error: %v", requestId, err))
 		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
+
 	return &paymentPb.CreatePaymentResponse{
 		Message: "CreatePayment",
 		Status:  "success",
 		Data: &paymentPb.CreatePaymentResponse_CreatePaymentResponseData{
-			Id: paymentID,
+			Id: payment.ID,
 		},
 	}, nil
 }

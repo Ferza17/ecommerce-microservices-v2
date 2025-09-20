@@ -13,7 +13,7 @@ func (r *paymentRepository) CreatePayment(ctx context.Context, requestId string,
 
 	// Validate that the transaction object exists
 	if tx == nil {
-		return "", fmt.Errorf("transaction object cannot be nil")
+		tx = r.postgresSQLInfrastructure.GormDB
 	}
 
 	// Create the Payment record

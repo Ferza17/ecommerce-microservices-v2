@@ -15,18 +15,18 @@ func (c *Config) RegisterConsulService() error {
 		log.Fatalf("SetConfig | could not connect to consul: %v", err)
 	}
 
-	port, err := strconv.ParseInt(c.PaymentServiceRpcPort, 10, 64)
+	port, err := strconv.ParseInt(c.ConfigServicePayment.RpcPort, 10, 64)
 	if err != nil {
 		log.Fatalf("SetConfig | could not parse PORT to int: %v", err)
 	}
 	if err = client.Agent().ServiceRegister(&api.AgentServiceRegistration{
 		Kind:    api.ServiceKindTypical,
-		Name:    c.PaymentServiceServiceName,
-		Address: c.PaymentServiceRpcHost,
+		Name:    c.ConfigServicePayment.ServiceName,
+		Address: c.ConfigServicePayment.RpcHost,
 		Port:    int(port),
 		Tags:    []string{"service", "rabbitmq-client"},
 		Check: &api.AgentServiceCheck{
-			GRPC:                           fmt.Sprintf("%s:%s", c.PaymentServiceRpcHost, c.PaymentServiceRpcPort),
+			GRPC:                           fmt.Sprintf("%s:%s", c.ConfigServicePayment.RpcHost, c.ConfigServicePayment.RpcPort),
 			GRPCUseTLS:                     false,
 			Interval:                       "30s", // Less frequent checks
 			Timeout:                        "5s",  // Reasonable timeout

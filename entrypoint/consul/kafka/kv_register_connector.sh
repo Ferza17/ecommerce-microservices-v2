@@ -14,10 +14,12 @@ consul kv put production/broker/kafka/TOPICS/CONNECTOR/SOURCE/MONGO/NOTIFICATION
 # ----------- PAYMENT
 ## LOCAL
 consul kv put local/broker/kafka/TOPICS/CONNECTOR/SINK/PG/PAYMENT/PAYMENT-PROVIDERS "sink-pg-payments-payment_providers"
+consul kv put local/broker/kafka/TOPICS/CONNECTOR/SINK/PG/PAYMENT/PAYMENT-ITEMS "sink-pg-payments-payment_items"
 consul kv put local/broker/kafka/TOPICS/CONNECTOR/SINK/PG/PAYMENT/PAYMENTS "sink-pg-payments-payments"
 
 ## PRODUCTION
 consul kv put production/broker/kafka/TOPICS/CONNECTOR/SINK/PG/PAYMENT/PAYMENT-PROVIDERS "sink-pg-payments-payment_providers"
+consul kv put production/broker/kafka/TOPICS/CONNECTOR/SINK/PG/PAYMENT/PAYMENT-ITEMS "sink-pg-payments-payment_items"
 consul kv put production/broker/kafka/TOPICS/CONNECTOR/SINK/PG/PAYMENT/PAYMENTS "sink-pg-payments-payments"
 
 # ----------- PRODUCT

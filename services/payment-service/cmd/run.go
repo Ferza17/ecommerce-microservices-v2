@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
 	transportGrpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/transport/grpc"
-	"github.com/ferza17/ecommerce-microservices-v2/payment-service/transport/http"
-	"github.com/ferza17/ecommerce-microservices-v2/payment-service/transport/rabbitmq"
+	transportHttp "github.com/ferza17/ecommerce-microservices-v2/payment-service/transport/http"
+	transportKafka "github.com/ferza17/ecommerce-microservices-v2/payment-service/transport/kafka"
+
 	"github.com/spf13/cobra"
 	"log"
 	"os"
@@ -21,15 +22,13 @@ var runCommand = &cobra.Command{
 		ctx, cancel := context.WithCancel(cmd.Context())
 		defer cancel()
 
-		grpcServer := transportGrpc.ProvideGrpcServer()
-		httpServer := http.ProvideHttpServer()
-		rabbitMQServer := rabbitmq.ProvideGrpcServer()
+		grpcServer := transportGrpc.Provide()
+		httpServer := transportHttp.Provide()
+		kafkaConsumer := transportKafka.Provide()
 
 		// Quit the signal channel
 		quit := make(chan os.Signal, 1)
 		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-
-		p := make(chan bool)
 
 		// WaitGroup to ensure all services cleanups properly
 		var wg sync.WaitGroup
@@ -40,10 +39,7 @@ var runCommand = &cobra.Command{
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			log.Printf("Starting gRPC server on %s:%s...", config.Get().PaymentServiceRpcHost, config.Get().PaymentServiceRpcPort)
-
-			// Signal that we're about to start the server
-			close(p)
+			log.Printf("Starting gRPC server on %s:%s...", config.Get().ConfigServicePayment.RpcHost, config.Get().ConfigServicePayment.RpcPort)
 
 			// Start the server (these blocks)
 			if err := grpcServer.Serve(ctx); err != nil {
@@ -51,16 +47,6 @@ var runCommand = &cobra.Command{
 				return
 			}
 
-		}()
-
-		// Start RabbitMQ server
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			if err := rabbitMQServer.Serve(ctx); err != nil {
-				log.Fatalf("failed to start RabbitMQ server: %s", err)
-				return
-			}
 		}()
 
 		// Start HTTP Server
@@ -73,17 +59,27 @@ var runCommand = &cobra.Command{
 			}
 		}()
 
-		// Start HTTP Metric Collector
+		// Start Kafka Consumer
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			if err := http.ServeHttpPrometheusMetricCollector(); err != nil {
+			if err := kafkaConsumer.Serve(ctx); err != nil {
 				log.Fatal(err)
 				return
 			}
 		}()
 
-		log.Println(fmt.Sprintf("starting %s", config.Get().PaymentServiceServiceName))
+		// Start HTTP Metric Collector
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if err := transportHttp.ServeHttpPrometheusMetricCollector(); err != nil {
+				log.Fatal(err)
+				return
+			}
+		}()
+
+		log.Println(fmt.Sprintf("starting %s", config.Get().ConfigServicePayment.ServiceName))
 		<-quit
 		log.Println("Received quit signal, cleaning up...")
 

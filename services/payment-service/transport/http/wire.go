@@ -4,8 +4,8 @@
 package http
 
 import (
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/postgresql"
-	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
 	productService "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/product"
 	shippingService "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/shipping"
 
@@ -21,14 +21,13 @@ import (
 	"github.com/google/wire"
 )
 
-// ProvideHttpServer wires all dependencies for *HttpServer
-func ProvideHttpServer() *HttpServer {
+func Provide() *HttpServer {
 	wire.Build(
 		// Infrastructure layer
 		logger.Set,
 		postgresql.Set,
 		telemetry.Set,
-		rabbitmq.Set,
+		kafka.Set,
 		userService.Set,
 		shippingService.Set,
 		productService.Set,

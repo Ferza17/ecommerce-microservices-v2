@@ -13,9 +13,8 @@ func (r *paymentRepository) CreatePaymentItem(ctx context.Context, paymentItem *
 
 	// Validate that the transaction object exists
 	if tx == nil {
-		return "", fmt.Errorf("transaction object cannot be nil")
+		tx = r.postgresSQLInfrastructure.GormDB
 	}
-
 	// Insert the PaymentItem record
 	if err := tx.WithContext(ctx).Create(paymentItem).Error; err != nil {
 		r.logger.Error(fmt.Sprintf(

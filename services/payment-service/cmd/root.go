@@ -21,7 +21,7 @@ func init() {
 
 func Run() {
 	cmd := &cobra.Command{}
-	cmd.AddCommand(rootCommand, migrationCommand, runCommand)
+	cmd.AddCommand(rootCommand, migrationCommand, runCommand, insertMockCommand)
 	if err := cmd.Execute(); err != nil {
 		log.Panic(err)
 	}

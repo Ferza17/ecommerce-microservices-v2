@@ -7,8 +7,8 @@
 package grpc
 
 import (
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/postgresql"
-	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/product"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/shipping"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/user"
@@ -24,20 +24,19 @@ import (
 
 // Injectors from wire.go:
 
-// ProvideGrpcServer wires all dependencies for IGrpcServer
-func ProvideGrpcServer() IGrpcServer {
+func Provide() IGrpcServer {
 	iZapLogger := logger.NewZapLogger()
 	postgresSQL := postgresql.NewPostgresqlInfrastructure(iZapLogger)
 	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
 	iPaymentRepository := repository.NewPaymentRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
 	iPaymentProviderRepository := repository2.NewPaymentProviderRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
-	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iTelemetryInfrastructure, iZapLogger)
+	iKafkaInfrastructure := kafka.NewKafkaInfrastructure(iZapLogger, iTelemetryInfrastructure)
 	iShippingService := shipping.NewShippingService(iZapLogger)
 	iUserService := user.NewUserService(iZapLogger)
 	iProductService := product.NewProductService(iZapLogger)
-	iPaymentUseCase := usecase.NewPaymentUseCase(iPaymentRepository, iPaymentProviderRepository, iRabbitMQInfrastructure, iTelemetryInfrastructure, iZapLogger, postgresSQL, iShippingService, iUserService, iProductService)
+	iPaymentUseCase := usecase.NewPaymentUseCase(iPaymentRepository, iPaymentProviderRepository, iKafkaInfrastructure, iTelemetryInfrastructure, iZapLogger, postgresSQL, iShippingService, iUserService, iProductService)
 	iPaymentPresenter := presenter.NewPaymentPresenter(iPaymentUseCase, iTelemetryInfrastructure, iUserService, iZapLogger)
-	iPaymentProviderUseCase := usecase2.NewPaymentProviderUseCase(iPaymentProviderRepository, iRabbitMQInfrastructure, iTelemetryInfrastructure, postgresSQL, iZapLogger)
+	iPaymentProviderUseCase := usecase2.NewPaymentProviderUseCase(iPaymentProviderRepository, iKafkaInfrastructure, iTelemetryInfrastructure, postgresSQL, iZapLogger)
 	iPaymentProviderPresenter := presenter2.NewPaymentProviderPresenter(iPaymentProviderUseCase, iTelemetryInfrastructure, iUserService, iZapLogger)
 	iGrpcServer := NewGrpcServer(iZapLogger, iPaymentPresenter, iPaymentProviderPresenter, iTelemetryInfrastructure, iUserService)
 	return iGrpcServer

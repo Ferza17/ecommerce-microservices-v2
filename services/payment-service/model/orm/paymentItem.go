@@ -14,7 +14,7 @@ type PaymentItem struct {
 	PaymentID   string     `gorm:"type:varchar(255);not null" json:"payment_id"`
 	CreatedAt   *time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt   *time.Time `gorm:"autoUpdateTime" json:"updated_at"`
-	DiscardedAt *time.Time `gorm:"index" json:"discarded_at"`
+	DiscardedAt *time.Time `gorm:"index" json:"-"`
 }
 
 func (PaymentItem) TableName() string {

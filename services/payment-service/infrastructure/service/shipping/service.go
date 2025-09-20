@@ -31,7 +31,7 @@ var Set = wire.NewSet(NewShippingService)
 
 func NewShippingService(logger logger.IZapLogger) IShippingService {
 	insecureCredentials := grpc.WithTransportCredentials(insecure.NewCredentials()) // For Local Development
-	conn, err := grpc.NewClient(fmt.Sprintf("%s:%s", config.Get().ShippingServiceRpcHost, config.Get().ShippingServiceRpcPort), insecureCredentials)
+	conn, err := grpc.NewClient(fmt.Sprintf("%s:%s", config.Get().ConfigServiceShipping.RpcHost, config.Get().ConfigServiceShipping.RpcPort), insecureCredentials)
 	if err != nil {
 		logger.Error("ShippingService.NewShippingService", zap.Error(err))
 		return nil

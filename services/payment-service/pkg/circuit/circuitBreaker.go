@@ -31,7 +31,7 @@ var Set = wire.NewSet(
 
 // ProvideServiceName provides the service name for circuit breaker
 func ProvideServiceName() string {
-	return config.Get().PaymentServiceServiceName
+	return config.Get().ConfigServicePayment.ServiceName
 }
 
 func NewCircuitBreaker(svcName string, logger logger.IZapLogger) ICircuitBreaker {

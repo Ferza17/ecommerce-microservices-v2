@@ -10,8 +10,10 @@ func (r *paymentRepository) FindPaymentById(ctx context.Context, requestId strin
 	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "PaymentPostgresRepository.FindPaymentById")
 	defer span.End()
 	var payment orm.Payment
-	// Execute the query with preloading of all foreign keys\
-	// Check and handle errors
+
+	if tx == nil {
+		tx = r.postgresSQLInfrastructure.GormDB
+	}
 
 	if err := tx.WithContext(ctx).
 		Preload("PaymentProvider").

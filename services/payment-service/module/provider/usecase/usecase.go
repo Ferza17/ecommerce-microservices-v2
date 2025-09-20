@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"context"
+	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/postgresql"
-	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/provider/repository"
@@ -19,8 +19,8 @@ type (
 
 	paymentProviderUseCase struct {
 		paymentProviderRepository repository.IPaymentProviderRepository
-		rabbitmqInfrastructure    rabbitmq.IRabbitMQInfrastructure
 		telemetryInfrastructure   telemetry.ITelemetryInfrastructure
+		kafkaInfrastructure       kafkaInfrastructure.IKafkaInfrastructure
 		postgresql                *postgresql.PostgresSQL
 		logger                    logger.IZapLogger
 	}
@@ -29,14 +29,14 @@ type (
 // NewPaymentProviderUseCase creates and returns a new instance of IPaymentProvider.
 func NewPaymentProviderUseCase(
 	paymentProviderRepository repository.IPaymentProviderRepository,
-	rabbitmqInfrastructure rabbitmq.IRabbitMQInfrastructure,
+	kafkaInfrastructure kafkaInfrastructure.IKafkaInfrastructure,
 	telemetryInfrastructure telemetry.ITelemetryInfrastructure,
 	postgresql *postgresql.PostgresSQL,
 	logger logger.IZapLogger,
 ) IPaymentProviderUseCase {
 	return &paymentProviderUseCase{
 		paymentProviderRepository: paymentProviderRepository,
-		rabbitmqInfrastructure:    rabbitmqInfrastructure,
+		kafkaInfrastructure:       kafkaInfrastructure,
 		telemetryInfrastructure:   telemetryInfrastructure,
 		postgresql:                postgresql,
 		logger:                    logger,

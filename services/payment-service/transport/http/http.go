@@ -51,10 +51,10 @@ func NewHttpServer(
 	userService userService.IUserService,
 ) *HttpServer {
 	return &HttpServer{
-		address: config.Get().PaymentServiceHttpHost,
-		port:    config.Get().PaymentServiceHttpPort,
+		address: config.Get().ConfigServicePayment.HttpHost,
+		port:    config.Get().ConfigServicePayment.HttpPort,
 		workerPool: pkgWorker.NewWorkerPool(
-			fmt.Sprintf("HTTP SERVER ON %s:%s", config.Get().PaymentServiceHttpHost, config.Get().PaymentServiceHttpPort),
+			fmt.Sprintf("HTTP SERVER ON %s:%s", config.Get().ConfigServicePayment.HttpHost, config.Get().ConfigServicePayment.HttpPort),
 			2,
 		),
 		paymentPresenter:         paymentPresenter,

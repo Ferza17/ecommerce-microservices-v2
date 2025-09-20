@@ -9,8 +9,6 @@ import (
 	"github.com/spf13/viper"
 	"log"
 	"os"
-	"strconv"
-	"sync"
 )
 
 var c *Config
@@ -24,91 +22,31 @@ type Config struct {
 	ConsulHost string `mapstructure:"CONSUL_HOST"`
 	ConsulPort string `mapstructure:"CONSUL_PORT"`
 
-	// From CONSUL; Local Service Config
-	PaymentOrderCancelledInMs int
-
-	// COMMON Config
-	CommonSagaStatusPending string
-	CommonSagaStatusSuccess string
-	CommonSagaStatusFailed  string
-
-	// JAEGER TELEMETRY Config
-	JaegerTelemetryHost string
-	JaegerTelemetryPort string
-
-	// RABBITMQ Config
-	RabbitMQUsername string
-	RabbitMQPassword string
-	RabbitMQHost     string
-	RabbitMQPort     string
-
-	// EXCHANGE Config
-	ExchangeCommerce       string
-	ExchangeEvent          string
-	ExchangeNotification   string
-	ExchangeProduct        string
-	ExchangeUser           string
-	ExchangePaymentDelayed string
-	ExchangePaymentDirect  string
-	ExchangeShipping       string
-
-	// Queue Notification Config
-	QueueNotificationEmailOtpCreated          string
-	QueueNotificationEmailPaymentOrderCreated string
-
-	// Queue Payment Config
-	QueuePaymentOrderCreated          string
-	QueuePaymentOrderDelayedCancelled string
-
-	// Queue Shipping Config
-	QueueShippingCreated string
-	QueueShippingUpdated string
+	ConfigTelemetry *ConfigTelemetry
 
 	// POSTGRES CONFIG
-	PostgresHost         string
-	PostgresPort         string
-	PostgresUsername     string
-	PostgresPassword     string
-	PostgresDatabaseName string
-	PostgresSSLMode      string
+	DatabasePostgres *DatabasePostgres
 
 	// REDIS Config
-	RedisHost     string
-	RedisPort     string
-	RedisPassword string
-	RedisDB       int
+	DatabaseRedis *DatabaseRedis
 
 	// User Service Config
-	UserServiceServiceName    string
-	UserServiceRpcHost        string
-	UserServiceRpcPort        string
-	UserServiceHttpHost       string
-	UserServiceHttpPort       string
-	UserServiceMetricHttpPort string
+	ConfigServiceUser *ConfigServiceUser
 
 	// Product Service Config
-	ProductServiceServiceName    string
-	ProductServiceRpcHost        string
-	ProductServiceRpcPort        string
-	ProductServiceHttpHost       string
-	ProductServiceHttpPort       string
-	ProductServiceMetricHttpPort string
+	ConfigServiceProduct *ConfigServiceProduct
 
 	// Payment Service Config
-	PaymentServiceServiceName    string
-	PaymentServiceRpcHost        string
-	PaymentServiceRpcPort        string
-	PaymentServiceHttpHost       string
-	PaymentServiceHttpPort       string
-	PaymentServiceMetricHttpPort string
+	ConfigServicePayment *ConfigServicePayment
 
 	// Shipping Service Config
-	ShippingServiceServiceName    string
-	ShippingServiceRpcHost        string
-	ShippingServiceRpcPort        string
-	ShippingServiceHttpHost       string
-	ShippingServiceHttpPort       string
-	ShippingServiceMetricHttpPort string
+	ConfigServiceShipping *ConfigServiceShipping
+
+	BrokerKafka                            *BrokerKafka
+	BrokerKafkaTopicConnectorSinkPgPayment *BrokerKafkaTopicConnectorSinkPgPayment
+	BrokerKafkaTopicPayments               *BrokerKafkaTopicPayments
+	BrokerKafkaTopicNotifications          *BrokerKafkaTopicNotifications
+	BrokerKafkaTopicShippings              *BrokerKafkaTopicShippings
 }
 
 func SetConfig(path string) {
@@ -127,7 +65,7 @@ func SetConfig(path string) {
 	if err != nil {
 		panic(fmt.Sprintf("config not found: %s", err.Error()))
 	}
-	if err := viper.Unmarshal(&c); err != nil {
+	if err = viper.Unmarshal(&c); err != nil {
 		log.Fatalf("SetConfig | could not parse config: %v", err)
 	}
 
@@ -148,69 +86,6 @@ func SetConfig(path string) {
 		log.Fatalf("SetConfig | could not connect to consul: %v", err)
 	}
 
-	// Local Config
-	pair, _, err := client.KV().Get(fmt.Sprintf("%s/services/payment/PAYMENT_ORDER_CANCELLED_IN_MS", c.Env), nil)
-	if err != nil {
-		log.Fatalf("SetConfig | could not get  from consul: %v", err)
-	}
-	if pair == nil {
-		log.Fatal("SetConfig | Consul |  is required")
-	}
-	temp, err := strconv.ParseInt(string(pair.Value), 10, 64)
-	if err != nil {
-		log.Fatalf("SetConfig | could not parse PAYMENT_ORDER_CANCELLED_IN_MS to int: %v", err)
-	}
-	c.PaymentOrderCancelledInMs = int(temp)
-	// End Local Config
-
-	// Get Consul Key / Value
-	wg := sync.WaitGroup{}
-
-	// Telemetry Config
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		c.initTelemetry(client.KV())
-	}()
-
-	// RabbitMQ Config
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		c.initRabbitmq(client.KV())
-		c.initExchange(client.KV())
-		c.initQueueNotification(client.KV())
-		c.initQueuePayment(client.KV())
-		c.initQueueShipping(client.KV())
-	}()
-
-	// COMMON Config
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		c.initCommon(client.KV())
-	}()
-
-	// Database Config
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		c.initPostgres(client.KV())
-		c.initRedis(client.KV())
-	}()
-
-	// Service Config
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		c.initPaymentService(client.KV())
-		c.initUserService(client.KV())
-		c.initProductService(client.KV())
-		c.initShippingService(client.KV())
-	}()
-
-	wg.Wait()
-
 	// Register Prometheus
 	prometheus.MustRegister(
 		pkgMetric.GrpcRequestsTotal,
@@ -221,7 +96,20 @@ func SetConfig(path string) {
 		pkgMetric.RabbitmqMessagesConsumed,
 	)
 
-	if err = c.RegisterConsulService(); err != nil {
+	if err = c.
+		withBrokerKafka(client.KV()).
+		withBrokerKafkaTopicConnectorSinkPgPayment(client.KV()).
+		withBrokerKafkaTopicNotifications(client.KV()).
+		withBrokerKafkaTopicShippings(client.KV()).
+		withBrokerKafkaTopicPayments(client.KV()).
+		withConfigTelemetry(client.KV()).
+		withConfigServicePayment(client.KV()).
+		withServiceShipping(client.KV()).
+		withServiceUser(client.KV()).
+		withServiceProduct(client.KV()).
+		withDatabasePostgres(client.KV()).
+		withDatabaseRedis(client.KV()).
+		RegisterConsulService(); err != nil {
 		log.Fatalf("SetConfig | could not register service: %v", err)
 		return
 	}

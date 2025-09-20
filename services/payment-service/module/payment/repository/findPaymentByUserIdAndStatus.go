@@ -14,6 +14,10 @@ func (r *paymentRepository) FindPaymentByUserIdAndStatus(ctx context.Context, re
 	// Variable to hold the payment record
 	var payment orm.Payment
 
+	if tx == nil {
+		tx = r.postgresSQLInfrastructure.GormDB
+	}
+
 	// Execute query with preloading
 	result := tx.WithContext(ctx).
 		Preload("Provider"). // Preload the Provider association

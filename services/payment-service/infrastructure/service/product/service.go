@@ -27,7 +27,7 @@ var Set = wire.NewSet(NewProductService)
 
 func NewProductService(logger logger.IZapLogger) IProductService {
 	insecureCredentials := grpc.WithTransportCredentials(insecure.NewCredentials()) // For Local Development
-	conn, err := grpc.NewClient(fmt.Sprintf("%s:%s", config.Get().ProductServiceRpcHost, config.Get().ProductServiceRpcPort), insecureCredentials)
+	conn, err := grpc.NewClient(fmt.Sprintf("%s:%s", config.Get().ConfigServiceProduct.RpcHost, config.Get().ConfigServiceProduct.RpcPort), insecureCredentials)
 	if err != nil {
 		logger.Error("ProductService.NewProductService", zap.Error(err))
 		return nil

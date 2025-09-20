@@ -14,6 +14,10 @@ func (r *paymentRepository) LockPaymentByIdWithTransaction(ctx context.Context, 
 
 	var payment orm.Payment
 
+	if tx == nil {
+		tx = r.postgresSQLInfrastructure.GormDB
+	}
+
 	// Lock the row using SELECT ... FOR UPDATE
 	if err := tx.WithContext(ctx).
 		Model(&orm.Payment{}).

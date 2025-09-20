@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"context"
+	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/postgresql"
-	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/rabbitmq"
 	productService "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/product"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/shipping"
 	userService "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/user"
@@ -28,8 +28,8 @@ type (
 	paymentUseCase struct {
 		paymentRepository         repository.IPaymentRepository
 		paymentProviderRepository paymentProviderRepository.IPaymentProviderRepository
-		rabbitmqInfrastructure    rabbitmq.IRabbitMQInfrastructure
 		telemetryInfrastructure   telemetry.ITelemetryInfrastructure
+		kafkaInfrastructure       kafkaInfrastructure.IKafkaInfrastructure
 		logger                    logger.IZapLogger
 		postgres                  *postgresql.PostgresSQL
 		shippingService           shipping.IShippingService
@@ -46,7 +46,7 @@ var Set = wire.NewSet(
 func NewPaymentUseCase(
 	paymentRepository repository.IPaymentRepository,
 	paymentProviderRepository paymentProviderRepository.IPaymentProviderRepository,
-	rabbitmqInfrastructure rabbitmq.IRabbitMQInfrastructure,
+	kafkaInfrastructure kafkaInfrastructure.IKafkaInfrastructure,
 	telemetryInfrastructure telemetry.ITelemetryInfrastructure,
 	logger logger.IZapLogger,
 	postgres *postgresql.PostgresSQL,
@@ -57,7 +57,7 @@ func NewPaymentUseCase(
 	return &paymentUseCase{
 		paymentRepository:         paymentRepository,
 		paymentProviderRepository: paymentProviderRepository,
-		rabbitmqInfrastructure:    rabbitmqInfrastructure,
+		kafkaInfrastructure:       kafkaInfrastructure,
 		telemetryInfrastructure:   telemetryInfrastructure,
 		logger:                    logger,
 		postgres:                  postgres,

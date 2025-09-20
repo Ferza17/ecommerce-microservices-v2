@@ -17,7 +17,7 @@ import (
 
 var insertMockCommand = &cobra.Command{
 	Use:   "insert-mock",
-	Short: "Migration database",
+	Short: "Insert Mock to database",
 	Run: func(cmd *cobra.Command, args []string) {
 		logger := logger.ProvideLogger()
 		logger.Info("insert-mock products to postgresql via sink connector ")

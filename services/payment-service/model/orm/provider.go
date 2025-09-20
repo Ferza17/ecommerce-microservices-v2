@@ -8,16 +8,16 @@ import (
 
 // Provider GORM model
 type Provider struct {
-	ID          string     `gorm:"primaryKey;type:varchar(255)"`
-	Name        string     `gorm:"type:varchar(255);not null"`
-	Method      string     `gorm:"not null"`
-	CreatedAt   *time.Time `gorm:"autoCreateTime"`
-	UpdatedAt   *time.Time `gorm:"autoUpdateTime"`
-	DiscardedAt *time.Time `gorm:"index"`
+	ID          string     `gorm:"primaryKey;type:varchar(255)" json:"id"`
+	Name        string     `gorm:"type:varchar(255);not null" json:"name"`
+	Method      string     `gorm:"not null" json:"method"`
+	CreatedAt   *time.Time `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt   *time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+	DiscardedAt *time.Time `gorm:"index" json:"-"`
 }
 
 func (Provider) TableName() string {
-	return "providers"
+	return "payment_providers"
 }
 
 func (p *Provider) ToProto() *pb.Provider {
