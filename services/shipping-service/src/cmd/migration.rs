@@ -6,7 +6,6 @@ pub struct MigrationArgs {
     pub direction: String,
 }
 
-//TODO: Running Migration Up & Down
 pub fn handle_migration_command(args: MigrationArgs) {
     if args.direction == "up" {
         println!("Running UP migrations...");

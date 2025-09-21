@@ -1,21 +1,11 @@
 /* @generated and managed by dsync */
 
-use crate::model::diesel::schema::*;
 #[allow(unused)]
 use crate::model::diesel::shipping_providers::ShippingProviders;
+use crate::model::diesel::schema::*;
 
 /// Struct representing a row in table `shippings`
-#[derive(
-    Debug,
-    Clone,
-    serde::Serialize,
-    serde::Deserialize,
-    diesel::Queryable,
-    diesel::Selectable,
-    diesel::QueryableByName,
-    diesel::Associations,
-    diesel::Identifiable,
-)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, diesel::Queryable, diesel::Selectable, diesel::QueryableByName, diesel::Associations, diesel::Identifiable)]
 #[diesel(table_name=shippings, primary_key(id), belongs_to(ShippingProviders, foreign_key=shipping_provider_id))]
 pub struct Shippings {
     /// Field representing column `id`
@@ -27,11 +17,11 @@ pub struct Shippings {
     /// Field representing column `shipping_provider_id`
     pub shipping_provider_id: String,
     /// Field representing column `created_at`
-    pub created_at: chrono::NaiveDateTime,
+    pub created_at: chrono::DateTime<chrono::Utc>,
     /// Field representing column `updated_at`
-    pub updated_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
     /// Field representing column `discarded_at`
-    pub discarded_at: Option<chrono::NaiveDateTime>,
+    pub discarded_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 /// Create Struct for a row in table `shippings` for [`Shippings`]
@@ -47,17 +37,15 @@ pub struct CreateShippings {
     /// Field representing column `shipping_provider_id`
     pub shipping_provider_id: String,
     /// Field representing column `created_at`
-    pub created_at: chrono::NaiveDateTime,
+    pub created_at: chrono::DateTime<chrono::Utc>,
     /// Field representing column `updated_at`
-    pub updated_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
     /// Field representing column `discarded_at`
-    pub discarded_at: Option<chrono::NaiveDateTime>,
+    pub discarded_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 /// Update Struct for a row in table `shippings` for [`Shippings`]
-#[derive(
-    Debug, Clone, serde::Serialize, serde::Deserialize, diesel::AsChangeset, PartialEq, Default,
-)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, diesel::AsChangeset, PartialEq, Default)]
 #[diesel(table_name=shippings)]
 pub struct UpdateShippings {
     /// Field representing column `user_id`
@@ -67,9 +55,9 @@ pub struct UpdateShippings {
     /// Field representing column `shipping_provider_id`
     pub shipping_provider_id: Option<String>,
     /// Field representing column `created_at`
-    pub created_at: Option<chrono::NaiveDateTime>,
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
     /// Field representing column `updated_at`
-    pub updated_at: Option<chrono::NaiveDateTime>,
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
     /// Field representing column `discarded_at`
-    pub discarded_at: Option<Option<chrono::NaiveDateTime>>,
+    pub discarded_at: Option<Option<chrono::DateTime<chrono::Utc>>>,
 }

@@ -15,9 +15,6 @@ type (
 		FindPaymentById(ctx context.Context, requestId string, id string, tx *gorm.DB) (*orm.Payment, error)
 		FindPaymentByUserIdAndStatus(ctx context.Context, requestId string, userId string, status string, tx *gorm.DB) (*orm.Payment, error)
 
-		CreatePayment(ctx context.Context, requestId string, request *orm.Payment, tx *gorm.DB) (string, error)
-		CreatePaymentItem(ctx context.Context, paymentItem *orm.PaymentItem, tx *gorm.DB) (string, error)
-		UpdatePaymentStatusByIdWithTransaction(ctx context.Context, requestId string, id string, status string, tx *gorm.DB) error
 		LockPaymentByIdWithTransaction(ctx context.Context, requestId string, id string, tx *gorm.DB) (*orm.Payment, error)
 	}
 

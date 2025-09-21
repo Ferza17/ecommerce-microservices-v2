@@ -1,9 +1,9 @@
-use prost::Message;
 use crate::config::config::AppConfig;
 use crate::infrastructure::message_broker::kafka::KafkaInfrastructure;
 use crate::model::rpc::user::AuthUserLoginByEmailAndPasswordRequest;
 use crate::package::context::request_id::X_REQUEST_ID_HEADER;
 use crate::util::metadata::inject_trace_context_to_kafka_headers;
+use prost::Message;
 use rdkafka::message::{Header, OwnedHeaders};
 use rdkafka::producer::FutureRecord;
 use tracing::{Span, error, instrument};
@@ -29,12 +29,15 @@ impl Transport {
         request_id: String,
         request: tonic::Request<AuthUserLoginByEmailAndPasswordRequest>,
     ) -> Result<(), tonic::Status> {
-        let headers =
-            inject_trace_context_to_kafka_headers(OwnedHeaders::new(), &Span::current().context())
-                .insert(Header {
-                    key: X_REQUEST_ID_HEADER,
-                    value: Some(request_id.clone().as_bytes()),
-                });
+        let mut headers =
+            inject_trace_context_to_kafka_headers(OwnedHeaders::new(), &Span::current().context());
+
+        if request_id != "" {
+            headers = headers.insert(Header {
+                key: X_REQUEST_ID_HEADER,
+                value: Some(request_id.as_bytes()),
+            });
+        }
 
         let mut buf = Vec::new();
         request.into_inner().encode(&mut buf).map_err(|err| {

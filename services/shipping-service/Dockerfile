@@ -41,4 +41,4 @@ COPY migrations ./migrations
 COPY config ./config
 COPY proto ./proto
 
-ENTRYPOINT ["/bin/sh", "-c", "diesel migration run --migration-dir ./migrations && exec /usr/bin/shipping-service run --direction production"]
+ENTRYPOINT ["/bin/sh", "-c", "diesel migration run --migration-dir ./migrations && exec /usr/bin/shipping-service run insert-mock && exec /usr/bin/shipping-service run --direction production"]

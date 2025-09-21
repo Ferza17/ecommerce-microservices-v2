@@ -1,8 +1,11 @@
 use config::{Config, ConfigError, Environment, File};
 use consulrs::client::{ConsulClient, ConsulClientSettingsBuilder};
 use consulrs::{kv, service};
+use serde::Deserialize;
 
 use crate::config::database_postgres::DatabasePostgres;
+use crate::config::message_broker_kafka::MessageBrokerKafka;
+use crate::config::message_broker_kafka_topic_sink_shipping::MessageBrokerKafkaTopicSinkShipping;
 use crate::config::message_broker_rabbitmq::MessageBrokerRabbitMQ;
 use crate::config::service_payment::ServicePayment;
 use crate::config::service_shipping::ServiceShipping;
@@ -12,7 +15,6 @@ use crate::config::telemetry_jaeger::TelemetryJaeger;
 use consulrs::api::check::common::AgentServiceCheckBuilder;
 use consulrs::api::service::common::AgentServiceConnect;
 use consulrs::api::service::requests::RegisterServiceRequest;
-use serde::Deserialize;
 use std::env;
 
 #[derive(Clone, Debug)]
@@ -32,6 +34,8 @@ pub struct AppConfig {
     pub telemetry_jaeger: TelemetryJaeger,
     // FROM CONSUL RABBITMQ
     pub message_broker_rabbitmq: MessageBrokerRabbitMQ,
+    pub message_broker_kafka: MessageBrokerKafka,
+    pub message_broker_kafka_topic_sink_shipping: MessageBrokerKafkaTopicSinkShipping,
 }
 
 impl Default for AppConfig {
@@ -45,15 +49,18 @@ impl Default for AppConfig {
             service_payment: ServicePayment::default(),
             telemetry_jaeger: TelemetryJaeger::default(),
             message_broker_rabbitmq: MessageBrokerRabbitMQ::default(),
+            message_broker_kafka: MessageBrokerKafka::default(),
+            message_broker_kafka_topic_sink_shipping: MessageBrokerKafkaTopicSinkShipping::default(
+            ),
         }
     }
 }
 
 #[derive(Deserialize, Clone, Debug)]
 pub struct ConfigEnv {
-    env: String,
-    consul_host: String,
-    consul_port: String,
+    pub env: String,
+    pub consul_host: String,
+    pub consul_port: String,
 }
 
 impl Default for ConfigEnv {
@@ -92,15 +99,19 @@ impl AppConfig {
         .unwrap();
 
         Ok(AppConfig::default()
-            .with_config_env(cfg_env)
-            .with_database_postgres(&client)
-            .with_message_broker_rabbitmq(&client)
-            .with_service_payment(&client)
-            .with_service_shipping(&client)
-            .with_service_shipping_rabbitmq(&client)
-            .with_service_user(&client)
-            .with_telemetry_jaeger(&client)
-            .with_register_consul_service(&client))
+            .with_config_env(cfg_env))
+
+
+            // .with_database_postgres_from_consul(&client)
+            // .with_message_broker_rabbitmq_from_consul(&client)
+            // .with_service_payment_from_consul(&client)
+            // .with_service_shipping_from_consul(&client)
+            // .with_service_shipping_rabbitmq_from_consul(&client)
+            // .with_service_user_from_consul(&client)
+            // .with_telemetry_jaeger_from_consul(&client)
+            // .with_message_broker_kafka_from_consul(&client)
+            // .with_message_broker_kafka_topic_sink_shipping_from_consul(&client)
+            // .with_register_consul_service(&client)
     }
 
     fn with_config_env(mut self, env: ConfigEnv) -> Self {
@@ -108,21 +119,21 @@ impl AppConfig {
         self
     }
 
-    fn with_database_postgres(mut self, client: &ConsulClient) -> Self {
+    pub fn with_database_postgres_from_consul(mut self, client: &ConsulClient) -> Self {
         tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(async {
                 self.database_postgres = DatabasePostgres::default()
                     .with_consul_client(self.config_env.env.clone(), client)
                     .await
                     .unwrap_or_else(|e| {
-                        panic!("Error with_database_postgres :  {:?}", e);
+                        panic!("Error with_database_postgres_from_consul :  {:?}", e);
                     });
             });
         });
         self
     }
 
-    fn with_message_broker_rabbitmq(mut self, client: &ConsulClient) -> Self {
+    pub fn with_message_broker_rabbitmq_from_consul(mut self, client: &ConsulClient) -> Self {
         tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(async {
                 self.message_broker_rabbitmq = MessageBrokerRabbitMQ::default()
@@ -136,7 +147,7 @@ impl AppConfig {
         self
     }
 
-    fn with_service_payment(mut self, client: &ConsulClient) -> Self {
+    pub fn with_service_payment_from_consul(mut self, client: &ConsulClient) -> Self {
         tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(async {
                 self.service_payment = ServicePayment::default()
@@ -150,7 +161,7 @@ impl AppConfig {
         self
     }
 
-    fn with_service_shipping(mut self, client: &ConsulClient) -> Self {
+    pub fn with_service_shipping_from_consul(mut self, client: &ConsulClient) -> Self {
         tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(async {
                 self.service_shipping = ServiceShipping::default()
@@ -164,7 +175,7 @@ impl AppConfig {
         self
     }
 
-    fn with_service_shipping_rabbitmq(mut self, client: &ConsulClient) -> Self {
+    pub fn with_service_shipping_rabbitmq_from_consul(mut self, client: &ConsulClient) -> Self {
         tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(async {
                 self.service_shipping_rabbitmq = ServiceShippingRabbitMQ::default()
@@ -178,7 +189,7 @@ impl AppConfig {
         self
     }
 
-    fn with_service_user(mut self, client: &ConsulClient) -> Self {
+    pub fn with_service_user_from_consul(mut self, client: &ConsulClient) -> Self {
         tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(async {
                 self.service_user = ServiceUser::default()
@@ -192,7 +203,7 @@ impl AppConfig {
         self
     }
 
-    fn with_telemetry_jaeger(mut self, client: &ConsulClient) -> Self {
+    pub fn with_telemetry_jaeger_from_consul(mut self, client: &ConsulClient) -> Self {
         tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(async {
                 self.telemetry_jaeger = TelemetryJaeger::default()
@@ -206,7 +217,7 @@ impl AppConfig {
         self
     }
 
-    fn with_register_consul_service(self, client: &ConsulClient) -> Self {
+    pub fn with_register_consul_service(self, client: &ConsulClient) -> Self {
         tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(async {
                 let svc_addr = format!(
@@ -255,6 +266,41 @@ impl AppConfig {
                 .unwrap_or_else(|e| {
                     panic!("Error Register Consul :  {:?}", e);
                 });
+            });
+        });
+        self
+    }
+
+    pub fn with_message_broker_kafka_from_consul(mut self, client: &ConsulClient) -> Self {
+        tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                self.message_broker_kafka = MessageBrokerKafka::default()
+                    .with_consul_client(self.config_env.env.clone(), client)
+                    .await
+                    .unwrap_or_else(|e| {
+                        panic!("Error with_message_broker_kafka :  {:?}", e);
+                    });
+            });
+        });
+        self
+    }
+
+    pub fn with_message_broker_kafka_topic_sink_shipping_from_consul(
+        mut self,
+        client: &ConsulClient,
+    ) -> Self {
+        tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                self.message_broker_kafka_topic_sink_shipping =
+                    MessageBrokerKafkaTopicSinkShipping::default()
+                        .with_consul_client(self.config_env.env.clone(), client)
+                        .await
+                        .unwrap_or_else(|e| {
+                            panic!(
+                                "Error with_message_broker_kafka_topic_sink_shipping :  {:?}",
+                                e
+                            );
+                        });
             });
         });
         self

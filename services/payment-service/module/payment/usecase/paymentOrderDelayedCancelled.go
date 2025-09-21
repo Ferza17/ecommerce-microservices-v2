@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -36,10 +37,10 @@ func (u *paymentUseCase) PaymentOrderDelayedCancelled(ctx context.Context, reque
 		return nil
 	}
 
-	if err = u.paymentRepository.UpdatePaymentStatusByIdWithTransaction(ctx, requestId, payment.ID, paymentRpc.PaymentStatus_FAILED.String(), tx); err != nil {
+	if err = u.kafkaInfrastructure.PublishWithJsonSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkPgPayment.Payments, payment.ID, payment); err != nil {
 		tx.Rollback()
-		u.logger.Error(fmt.Sprintf("Failed to update payment status, requestId: %s, error: %v", requestId, err))
-		return status.Error(codes.Internal, err.Error())
+		u.logger.Error(fmt.Sprintf("Error publishing event to kafka for payment creation: %s", err.Error()))
+		return status.Errorf(codes.Internal, "Error publishing event to kafka for payment creation: %s", err.Error())
 	}
 
 	tx.Commit()

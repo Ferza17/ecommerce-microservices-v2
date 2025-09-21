@@ -1,0 +1,29 @@
+use consulrs::client::ConsulClient;
+
+#[derive(Clone, Debug)]
+pub struct MessageBrokerKafka {
+    pub broker_1: String,
+    pub schema_registry_url: String,
+}
+
+impl Default for MessageBrokerKafka {
+    fn default() -> Self {
+        Self {
+            broker_1: "".to_string(),
+            schema_registry_url: "".to_string(),       
+        }
+    }
+}
+
+impl MessageBrokerKafka {
+    pub async fn with_consul_client(
+        &mut self,
+        env: String,
+        client: &ConsulClient,
+    ) -> Result<Self, Box<dyn std::error::Error>> {
+        self.broker_1 =
+            crate::config::config::get_kv(client, format!("{}/broker/kafka/BROKER_1", env)).await;
+        self.schema_registry_url = crate::config::config::get_kv(client, format!("{}/broker/kafka/SCHEMA_REGISTRY", env)).await;
+        Ok(self.clone())
+    }
+}

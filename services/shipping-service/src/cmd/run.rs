@@ -10,6 +10,7 @@ use crate::package::worker_pool::typed_worker_pool::TypedWorkerPool;
 use crate::package::worker_pool::worker_pool::WorkerPoolError;
 use crate::transport::http::http::HttpTransport;
 use clap::Args;
+use consulrs::client::{ConsulClient, ConsulClientSettingsBuilder};
 use tokio::task::JoinHandle;
 #[derive(Args, Debug)]
 pub struct RunArgs {
@@ -18,7 +19,7 @@ pub struct RunArgs {
 }
 pub async fn handle_run_command(args: RunArgs) {
     // Init config
-    let cfg = AppConfig::new(&*args.direction)
+    let mut cfg = AppConfig::new(&*args.direction)
         .await
         .map_err(|e| {
             eprintln!("Failed to load configuration: {}", e);
@@ -26,6 +27,30 @@ pub async fn handle_run_command(args: RunArgs) {
         })
         .unwrap();
 
+    let client = ConsulClient::new(
+        ConsulClientSettingsBuilder::default()
+            .address(format!(
+                "http://{}:{}",
+                cfg.config_env.consul_host, cfg.config_env.consul_port
+            ))
+            .build()
+            .map_err(|e| eprintln!(" Error Consul :  {:?}", e))
+            .unwrap(),
+    )
+    .unwrap();
+
+    cfg = cfg
+        .with_database_postgres_from_consul(&client)
+        .with_message_broker_rabbitmq_from_consul(&client)
+        .with_service_payment_from_consul(&client)
+        .with_service_shipping_from_consul(&client)
+        .with_service_shipping_rabbitmq_from_consul(&client)
+        .with_service_user_from_consul(&client)
+        .with_telemetry_jaeger_from_consul(&client)
+        .with_message_broker_kafka_from_consul(&client)
+        .with_message_broker_kafka_topic_sink_shipping_from_consul(&client)
+        .with_register_consul_service(&client);
+    
     match init_tracing(cfg.clone()) {
         Ok(_) => {}
         Err(_) => panic!("Failed to init tracing"),

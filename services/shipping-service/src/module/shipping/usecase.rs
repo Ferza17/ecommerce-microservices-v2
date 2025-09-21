@@ -142,7 +142,7 @@ impl ShippingUseCase for ShippingUseCaseImpl {
             })?;
 
         // CREATE SHIPPING
-        let now = chrono::Utc::now().naive_utc();
+        let now = chrono::Utc::now();
         self.shipping_repository.clone().create_shipping(
             &*request_id.clone(),
             &CreateShippings {
@@ -306,7 +306,7 @@ impl ShippingUseCase for ShippingUseCaseImpl {
             shipping.user_id = request.get_ref().user_id.clone();
         }
 
-        let now = chrono::Utc::now().naive_utc();
+        let now = chrono::Utc::now();
         self.shipping_repository.clone().update_shipping(
             &*request_id.clone(),
             &*request.get_ref().id.clone(),
@@ -314,7 +314,7 @@ impl ShippingUseCase for ShippingUseCaseImpl {
                 user_id: Option::from(shipping.user_id),
                 payment_id: Option::from(shipping.payment_id),
                 shipping_provider_id: Option::from(shipping.shipping_provider_id),
-                created_at: Option::from(now),
+                created_at: Option::from(now.clone()),
                 updated_at: Option::from(now),
                 discarded_at: None,
             },

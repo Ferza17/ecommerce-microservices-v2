@@ -12,11 +12,11 @@ pub struct ShippingProviders {
     /// Field representing column `name`
     pub name: String,
     /// Field representing column `created_at`
-    pub created_at: chrono::NaiveDateTime,
+    pub created_at: chrono::DateTime<chrono::Utc>,
     /// Field representing column `updated_at`
-    pub updated_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
     /// Field representing column `discarded_at`
-    pub discarded_at: Option<chrono::NaiveDateTime>,
+    pub discarded_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 /// Create Struct for a row in table `shipping_providers` for [`ShippingProviders`]
@@ -28,11 +28,11 @@ pub struct CreateShippingProviders {
     /// Field representing column `name`
     pub name: String,
     /// Field representing column `created_at`
-    pub created_at: chrono::NaiveDateTime,
+    pub created_at: chrono::DateTime<chrono::Utc>,
     /// Field representing column `updated_at`
-    pub updated_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
     /// Field representing column `discarded_at`
-    pub discarded_at: Option<chrono::NaiveDateTime>,
+    pub discarded_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 /// Update Struct for a row in table `shipping_providers` for [`ShippingProviders`]
@@ -42,9 +42,9 @@ pub struct UpdateShippingProviders {
     /// Field representing column `name`
     pub name: Option<String>,
     /// Field representing column `created_at`
-    pub created_at: Option<chrono::NaiveDateTime>,
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
     /// Field representing column `updated_at`
-    pub updated_at: Option<chrono::NaiveDateTime>,
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
     /// Field representing column `discarded_at`
-    pub discarded_at: Option<Option<chrono::NaiveDateTime>>,
+    pub discarded_at: Option<Option<chrono::DateTime<chrono::Utc>>>,
 }

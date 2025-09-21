@@ -21,7 +21,7 @@ CREATE TABLE payments
     user_id      VARCHAR          NOT NULL,                 -- Corresponds to string userId
     created_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW(),    -- Represents `google.protobuf.Timestamp created_at` with DEFAULT NOW()
     updated_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW(),    -- Represents `google.protobuf.Timestamp updated_at`, auto-updated on change
-    discarded_at TIMESTAMP WITH TIME ZONE
+    discarded_at TIMESTAMP WITH TIME ZONE DEFAULT NULL
 );
 
 
@@ -35,5 +35,5 @@ CREATE TABLE payment_items
     payment_id   VARCHAR REFERENCES payments (id),
     created_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW(), -- Represents `google.protobuf.Timestamp created_at` with DEFAULT NOW()
     updated_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW(), -- Represents `google.protobuf.Timestamp updated_at`, auto-updated on change
-    discarded_at TIMESTAMP WITH TIME ZONE
+    discarded_at TIMESTAMP WITH TIME ZONE DEFAULT NULL
 );
