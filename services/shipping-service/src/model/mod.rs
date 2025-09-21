@@ -7,6 +7,8 @@ pub mod rpc {
     pub mod response;
 }
 
-pub mod schema_registry{
-    pub mod shipping_providers;
+pub mod schema_registry {
+    pub mod registry;
+    mod shipping_providers;
+    mod shipping;
 }
