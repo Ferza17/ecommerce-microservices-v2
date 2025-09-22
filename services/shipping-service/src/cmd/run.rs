@@ -37,7 +37,7 @@ pub async fn handle_run_command(args: RunArgs) {
             .map_err(|e| eprintln!(" Error Consul :  {:?}", e))
             .unwrap(),
     )
-    .unwrap();
+        .unwrap();
 
     cfg = cfg
         .with_database_postgres_from_consul(&client)
@@ -49,12 +49,13 @@ pub async fn handle_run_command(args: RunArgs) {
         .with_telemetry_jaeger_from_consul(&client)
         .with_message_broker_kafka_from_consul(&client)
         .with_message_broker_kafka_topic_sink_shipping_from_consul(&client)
+        .with_message_broker_kafka_topic_shipping_from_consul(&client)
         .with_register_consul_service(&client);
-    
-    match init_tracing(cfg.clone()) {
-        Ok(_) => {}
-        Err(_) => panic!("Failed to init tracing"),
-    }
+
+    // match init_tracing(cfg.clone()) {
+    //     Ok(_) => {}
+    //     Err(_) => panic!("Failed to init tracing"),
+    // }
     // ======= WORKER POOLS ===========
     // Create specialized worker pools
     let pools = Arc::new(TypedWorkerPool::new(5, 5, 1000, 1));
@@ -148,6 +149,30 @@ pub async fn handle_run_command(args: RunArgs) {
             .await;
         handles.push((format!("{:?}", pool.messaging_pool.worker_type()), handle));
     }
+    // Kafka with Messaging Pool
+    {
+        let pool = Arc::clone(&pools);
+        let cfg_clone = cfg.clone();
+        let pools_clone = Arc::clone(&pools);
+        let handle: Result<JoinHandle<Result<(), anyhow::Error>>, WorkerPoolError> = pool
+            .spawn_messaging_task(move || async move {
+                let transport = crate::transport::message_broker::kafka::Transport::new(cfg_clone, pools_clone.messaging_pool.clone());
+                match transport.serve().await {
+                    Ok(_) => {
+                        tracing::info!("Kafka service completed successfully");
+                        Ok(())
+                    }
+                    Err(e) => {
+                        tracing::error!("Kafka service failed: {}", e);
+                        Err(anyhow::anyhow!("Kafka service failed: {}", e))
+                    }
+                }
+            })
+            .await;
+        handles.push((format!("{:?}", pool.messaging_pool.worker_type()), handle));
+    }
+
+
     // Wait for all services
     for (service_name, handle) in handles {
         handle

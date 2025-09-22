@@ -49,7 +49,10 @@ var Set = wire.NewSet(
 
 func (srv *Server) Serve(mainCtx context.Context) error {
 	srv.workerPool.Start()
-	topics := []string{}
+	topics := []string{
+		config.Get().BrokerKafkaTopicPayments.PaymentOrderCreated,
+		config.Get().BrokerKafkaTopicPayments.PaymentOrderCreatedDelayed,
+	}
 
 	if err := srv.kafkaInfrastructure.SetupTopics(topics); err != nil {
 		srv.logger.Error(fmt.Sprintf("failed to setup kafka topics: %v", err))
@@ -98,11 +101,11 @@ func (srv *Server) Serve(mainCtx context.Context) error {
 				span.SetAttributes(attribute.String(pkgContext.CtxKeyRequestID, requestId))
 
 				switch *msg.TopicPartition.Topic {
-				case config.Get().BrokerKafkaTopicPayments.EmailOtpCreated:
+				case config.Get().BrokerKafkaTopicPayments.PaymentOrderCreated:
 					task.Handler = func(ctx context.Context, message *kafka.Message) error {
 						return srv.paymentConsumer.SnapshotPaymentsPaymentOrderCreated(childCtx, message)
 					}
-				case config.Get().BrokerKafkaTopicPayments.EmailPaymentOrderCreated:
+				case config.Get().BrokerKafkaTopicPayments.PaymentOrderCreatedDelayed:
 					task.Handler = func(ctx context.Context, message *kafka.Message) error {
 						return srv.paymentConsumer.SnapshotPaymentsPaymentOrderCancelledDelayed(childCtx, message)
 					}

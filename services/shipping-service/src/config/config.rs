@@ -5,6 +5,7 @@ use serde::Deserialize;
 
 use crate::config::database_postgres::DatabasePostgres;
 use crate::config::message_broker_kafka::MessageBrokerKafka;
+use crate::config::message_broker_kafka_topic_shipping::MessageBrokerKafkaTopicShipping;
 use crate::config::message_broker_kafka_topic_sink_shipping::MessageBrokerKafkaTopicSinkShipping;
 use crate::config::message_broker_rabbitmq::MessageBrokerRabbitMQ;
 use crate::config::service_payment::ServicePayment;
@@ -36,6 +37,7 @@ pub struct AppConfig {
     pub message_broker_rabbitmq: MessageBrokerRabbitMQ,
     pub message_broker_kafka: MessageBrokerKafka,
     pub message_broker_kafka_topic_sink_shipping: MessageBrokerKafkaTopicSinkShipping,
+    pub message_broker_kafka_topic_shipping: MessageBrokerKafkaTopicShipping,
 }
 
 impl Default for AppConfig {
@@ -52,6 +54,7 @@ impl Default for AppConfig {
             message_broker_kafka: MessageBrokerKafka::default(),
             message_broker_kafka_topic_sink_shipping: MessageBrokerKafkaTopicSinkShipping::default(
             ),
+            message_broker_kafka_topic_shipping: MessageBrokerKafkaTopicShipping::default(),
         }
     }
 }
@@ -98,20 +101,7 @@ impl AppConfig {
         )
         .unwrap();
 
-        Ok(AppConfig::default()
-            .with_config_env(cfg_env))
-
-
-            // .with_database_postgres_from_consul(&client)
-            // .with_message_broker_rabbitmq_from_consul(&client)
-            // .with_service_payment_from_consul(&client)
-            // .with_service_shipping_from_consul(&client)
-            // .with_service_shipping_rabbitmq_from_consul(&client)
-            // .with_service_user_from_consul(&client)
-            // .with_telemetry_jaeger_from_consul(&client)
-            // .with_message_broker_kafka_from_consul(&client)
-            // .with_message_broker_kafka_topic_sink_shipping_from_consul(&client)
-            // .with_register_consul_service(&client)
+        Ok(AppConfig::default().with_config_env(cfg_env))
     }
 
     fn with_config_env(mut self, env: ConfigEnv) -> Self {
@@ -298,6 +288,27 @@ impl AppConfig {
                         .unwrap_or_else(|e| {
                             panic!(
                                 "Error with_message_broker_kafka_topic_sink_shipping :  {:?}",
+                                e
+                            );
+                        });
+            });
+        });
+        self
+    }
+
+    pub fn with_message_broker_kafka_topic_shipping_from_consul(
+        mut self,
+        client: &ConsulClient,
+    ) -> Self {
+        tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                self.message_broker_kafka_topic_shipping =
+                    MessageBrokerKafkaTopicShipping::default()
+                        .with_consul_client(self.config_env.env.clone(), client)
+                        .await
+                        .unwrap_or_else(|e| {
+                            panic!(
+                                "Error with_message_broker_kafka_topic_shipping_from_consul :  {:?}",
                                 e
                             );
                         });

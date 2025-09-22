@@ -8,16 +8,16 @@ import (
 )
 
 type BrokerKafkaTopicPayments struct {
-	EmailOtpCreated          string
-	EmailPaymentOrderCreated string
-	keyPrefix                string
+	PaymentOrderCreated        string
+	PaymentOrderCreatedDelayed string
+	keyPrefix                  string
 }
 
 func DefaultKafkaBrokerTopicPayments() *BrokerKafkaTopicPayments {
 	return &BrokerKafkaTopicPayments{
-		EmailOtpCreated:          "",
-		EmailPaymentOrderCreated: "",
-		keyPrefix:                "%s/broker/kafka/TOPICS/NOTIFICATION/%s",
+		PaymentOrderCreated:        "",
+		PaymentOrderCreatedDelayed: "",
+		keyPrefix:                  "%s/broker/kafka/TOPICS/PAYMENT/%s",
 	}
 }
 
@@ -27,22 +27,22 @@ func (c *Config) withBrokerKafkaTopicPayments(kv *api.KV) *Config {
 }
 
 func (c *BrokerKafkaTopicPayments) WithConsulClient(env string, kv *api.KV) *BrokerKafkaTopicPayments {
-	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "EMAIL_OTP_CREATED"), nil)
+	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "PAYMENT_ORDER_CREATED"), nil)
 	if err != nil {
-		log.Fatalf("SetConfig | could not get EMAIL_OTP_CREATED from consul: %v", err)
+		log.Fatalf("SetConfig | could not get PAYMENT_ORDER_CREATED from consul: %v", err)
 	}
 	if pair == nil {
-		log.Fatal("SetConfig | Consul | EMAIL_OTP_CREATED is required")
+		log.Fatal("SetConfig | Consul | PAYMENT_ORDER_CREATED is required")
 	}
-	c.EmailOtpCreated = string(pair.Value)
+	c.PaymentOrderCreated = string(pair.Value)
 
-	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "EMAIL_PAYMENT_ORDER_CREATED"), nil)
+	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "PAYMENT_ORDER_CREATED_DELAYED"), nil)
 	if err != nil {
-		log.Fatalf("SetConfig | could not get EMAIL_PAYMENT_ORDER_CREATED from consul: %v", err)
+		log.Fatalf("SetConfig | could not get PAYMENT_ORDER_CREATED_DELAYED from consul: %v", err)
 	}
 	if pair == nil {
-		log.Fatal("SetConfig | Consul | EMAIL_PAYMENT_ORDER_CREATED is required")
+		log.Fatal("SetConfig | Consul | PAYMENT_ORDER_CREATED_DELAYED is required")
 	}
-	c.EmailPaymentOrderCreated = string(pair.Value)
+	c.PaymentOrderCreatedDelayed = string(pair.Value)
 	return c
 }

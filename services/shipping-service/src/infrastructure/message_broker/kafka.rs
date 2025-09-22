@@ -1,7 +1,6 @@
 use crate::config::config::AppConfig;
-use crate::package::context::auth::AUTHORIZATION_HEADER;
-use crate::package::context::request_id::X_REQUEST_ID_HEADER;
-use crate::util::metadata::inject_trace_context_to_kafka_headers;
+use rdkafka::config::RDKafkaLogLevel;
+use rdkafka::consumer::{Consumer, DefaultConsumerContext, MessageStream, StreamConsumer};
 use rdkafka::message::{OwnedHeaders, ToBytes};
 use rdkafka::{
     config::ClientConfig,
@@ -12,23 +11,34 @@ use schema_registry_converter::schema_registry_common::{
     SchemaType, SubjectNameStrategy, SuppliedSchema,
 };
 use std::time::Duration;
-use tracing::Span;
-use tracing_opentelemetry::OpenTelemetrySpanExt;
+use tracing::instrument;
 
 #[derive(Debug, Clone)]
 pub struct KafkaInfrastructure {
-    pub kafka_config: ClientConfig,
+    client_config: ClientConfig,
     schema_registry_settings: schema_registry_converter::async_impl::schema_registry::SrSettings,
 }
 
 impl KafkaInfrastructure {
     pub fn new(config: AppConfig) -> Self {
-        let mut kafka_config = ClientConfig::new();
-        kafka_config
-            .set("bootstrap.servers", config.message_broker_kafka.broker_1)
-            .set("message.timeout.ms", "5000")
-            .set("client.id", config.service_shipping.name)
-            .set("heartbeat.interval.ms", "3000");
+        let mut client_config = ClientConfig::new();
+        client_config.set(
+            "bootstrap.servers",
+            config.message_broker_kafka.broker_1.clone(),
+        );
+        // Published Config
+        client_config
+            .set("client.id", config.service_shipping.name.clone())
+            .set("message.timeout.ms", "5000");
+
+        // Consumer Config
+        client_config
+            .set("group.id", config.service_shipping.name.clone().as_str())
+            .set("enable.partition.eof", "false")
+            .set("session.timeout.ms", "6000")
+            .set("enable.auto.commit", "true")
+            .set("auto.offset.reset", "earliest")
+            .set_log_level(RDKafkaLogLevel::Debug);
 
         let schema_registry_settings =
             schema_registry_converter::async_impl::schema_registry::SrSettings::new(
@@ -36,31 +46,32 @@ impl KafkaInfrastructure {
             );
 
         Self {
-            kafka_config,
+            client_config,
             schema_registry_settings,
         }
     }
 
+    #[instrument("KafkaInfrastructure.publish")]
     pub async fn publish<K, P>(&self, record: FutureRecord<'_, K, P>) -> Result<(), anyhow::Error>
     where
-        K: ToBytes + ?Sized,
-        P: ToBytes + ?Sized,
+        K: ToBytes + ?Sized + std::fmt::Debug,
+        P: ToBytes + ?Sized + std::fmt::Debug,
     {
-        let producer: FutureProducer = self.kafka_config.create()?;
+        let producer: FutureProducer = self.client_config.create()?;
         match producer.send(record, Duration::from_secs(5)).await {
             Ok(_) => Ok(()),
             Err(_) => Err(anyhow::Error::msg("Error sending message")),
         }
     }
 
+    #[instrument("KafkaInfrastructure.publish_with_json_schema")]
     pub async fn publish_with_json_schema(
         &self,
         topic: String,
         schema: crate::model::schema_registry::registry::Registry,
         payload: serde_json::Value,
         key: String,
-        request_id: Option<String>,
-        token: Option<String>,
+        headers: Option<OwnedHeaders>,
     ) -> Result<(), anyhow::Error> {
         let subject = match SubjectNameStrategy::TopicNameStrategy(topic.clone().to_string(), false)
             .get_subject()
@@ -94,29 +105,12 @@ impl KafkaInfrastructure {
         )
         .await;
 
-        let mut headers =
-            inject_trace_context_to_kafka_headers(OwnedHeaders::new(), &Span::current().context());
-
-        if request_id.is_some() {
-            headers = headers.insert(rdkafka::message::Header {
-                key: X_REQUEST_ID_HEADER,
-                value: Some(request_id.unwrap().as_bytes()),
-            });
-        }
-
-        if token.is_some() {
-            headers = headers.insert(rdkafka::message::Header {
-                key: AUTHORIZATION_HEADER,
-                value: Some(format!("Bearer {}", token.unwrap()).as_bytes()),
-            })
-        }
-
-        let producer: FutureProducer = self.kafka_config.create()?;
+        let producer: FutureProducer = self.client_config.create()?;
         match producer
             .send(
                 FutureRecord::to(topic.as_str())
                     .key(&key)
-                    .headers(headers)
+                    .headers(headers.unwrap_or_default())
                     .payload(encoded_payload?.as_slice()),
                 Duration::from_secs(5),
             )
@@ -125,5 +119,18 @@ impl KafkaInfrastructure {
             Ok(_) => Ok(()),
             Err(_) => Err(anyhow::Error::msg("Error sending message")),
         }
+    }
+
+    pub async fn consume(&self, topics: &[&str]) -> Result<StreamConsumer, anyhow::Error> {
+        let mut consumer: StreamConsumer = match self.client_config.create() {
+            Ok(v) => v,
+            Err(_) => Err(anyhow::Error::msg("Error creating consumer"))?,
+        };
+
+        consumer
+            .subscribe(topics)
+            .expect("Can't subscribe to specified topics");
+
+        Ok(consumer)
     }
 }

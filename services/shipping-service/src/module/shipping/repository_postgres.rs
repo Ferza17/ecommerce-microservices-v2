@@ -13,11 +13,6 @@ use std::fmt;
 use tracing::{Level, event, instrument};
 
 pub trait ShippingPostgresRepository {
-    async fn create_shipping(
-        &self,
-        request_id: &str,
-        shipping: &CreateShippings,
-    ) -> Result<(), Error>;
     async fn get_shipping_by_id(
         &self,
         request_id: &str,
@@ -29,14 +24,6 @@ pub trait ShippingPostgresRepository {
         page: &u32,
         limit: &u32,
     ) -> Result<Vec<shippingModel>, Error>;
-    async fn update_shipping(
-        &self,
-        request_id: &str,
-        shipping_id: &str,
-        shipping: &UpdateShippings,
-    ) -> Result<(), Error>;
-
-    async fn delete_shipping(&self, request_id: &str, shipping_id: &str) -> Result<(), Error>;
 }
 
 #[derive(Clone)]
@@ -59,25 +46,6 @@ impl fmt::Debug for ShippingPostgresRepositoryImpl {
 }
 
 impl ShippingPostgresRepository for ShippingPostgresRepositoryImpl {
-    async fn create_shipping(
-        &self,
-        request_id: &str,
-        shipping: &CreateShippings,
-    ) -> Result<(), Error> {
-        event!(
-            Level::INFO,
-            name = "ShippingPostgresRepository.create_shipping",
-            request_id = request_id
-        );
-
-        diesel::insert_into(shippingSchema)
-            .values(shipping)
-            .execute(&mut self.pg.get().await?)
-            .await
-            .map(|_| ())
-            .map_err(Error::from)
-    }
-
     async fn get_shipping_by_id(
         &self,
         request_id: &str,
@@ -119,47 +87,6 @@ impl ShippingPostgresRepository for ShippingPostgresRepositoryImpl {
         {
             Ok(result) => Ok(result),
             Err(e) => Err(e.into()),
-        }
-    }
-
-    async fn update_shipping(
-        &self,
-        request_id: &str,
-        shipping_id: &str,
-        shipping: &UpdateShippings,
-    ) -> Result<(), Error> {
-        event!(
-            Level::INFO,
-            name = "ShippingPostgresRepository.update_shipping",
-            request_id = request_id
-        );
-
-        match diesel::update(shippingSchema.filter(id.eq(shipping_id)))
-            .set(shipping)
-            .execute(&mut self.pg.get().await?)
-            .await
-        {
-            Ok(_) => Ok(()),
-            Err(err) => {
-                return Err(err.into());
-            }
-        }
-    }
-
-    async fn delete_shipping(&self, request_id: &str, shipping_id: &str) -> Result<(), Error> {
-        event!(
-            Level::INFO,
-            name = "ShippingPostgresRepository.delete_shipping",
-            request_id = request_id
-        );
-        match diesel::delete(shippingSchema.filter(id.eq(shipping_id)))
-            .execute(&mut self.pg.get().await?)
-            .await
-        {
-            Ok(_) => Ok(()),
-            Err(_) => {
-                return Err(Error::msg("Failed to delete shipping"));
-            }
         }
     }
 }

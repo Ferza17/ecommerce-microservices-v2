@@ -1,5 +1,6 @@
 use crate::config::config::AppConfig;
 use crate::infrastructure::database::async_postgres::get_connection;
+use crate::infrastructure::message_broker::kafka::KafkaInfrastructure;
 use crate::infrastructure::services::payment::PaymentServiceGrpcClient;
 use crate::infrastructure::services::user::UserServiceGrpcClient;
 use crate::interceptor::auth::AuthLayer;
@@ -34,7 +35,7 @@ impl GrpcTransport {
         let postgres_pool = get_connection(&self.config.clone()).await;
         let user_service = UserServiceGrpcClient::new(self.config.clone()).await;
         let payment_service = PaymentServiceGrpcClient::new(self.config.clone()).await;
-
+        let kafka_infrastructure = KafkaInfrastructure::new(self.config.clone());
         // Repository Layer
         let shipping_provider_postgres_repository =
             ShippingProviderPostgresRepositoryImpl::new(postgres_pool.clone());
@@ -45,10 +46,12 @@ impl GrpcTransport {
         let shipping_provider_use_case =
             ShippingProviderUseCaseImpl::new(shipping_provider_postgres_repository.clone());
         let shipping_use_case = ShippingUseCaseImpl::new(
+            self.config.clone(),
             shipping_postgres_repository.clone(),
             shipping_provider_postgres_repository.clone(),
             user_service.clone(),
             payment_service.clone(),
+            kafka_infrastructure,
         );
 
         // Presenter Layer

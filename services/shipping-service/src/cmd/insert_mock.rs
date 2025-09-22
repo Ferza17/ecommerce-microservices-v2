@@ -54,7 +54,6 @@ pub async fn handle_insert_mock_command(args: InsertMockArgs) {
                 serde_json::to_value(&provider.clone()).unwrap(),
                 provider.clone().id,
                 None,
-                None,
             )
             .await
         {

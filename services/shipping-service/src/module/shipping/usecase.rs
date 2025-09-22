@@ -1,9 +1,14 @@
+use crate::config::config::AppConfig;
+use crate::infrastructure::message_broker::kafka::KafkaInfrastructure;
 use crate::infrastructure::services::payment::PaymentServiceGrpcClient;
 use crate::infrastructure::services::user::UserServiceGrpcClient;
 use crate::model::diesel::shipping_providers::to_proto::shipping_provider_to_proto;
 use crate::model::diesel::shippings::to_proto::shippings_to_proto;
 use crate::model::diesel::shippings::{CreateShippings, UpdateShippings};
 use crate::model::rpc::payment::FindPaymentByIdRequest;
+use crate::model::rpc::shipping::create_shipping_response::CreateShippingResponseData;
+use crate::model::rpc::shipping::delete_shipping_response::DeleteShippingResponseData;
+use crate::model::rpc::shipping::update_shipping_response::UpdateShippingResponseData;
 use crate::model::rpc::shipping::{
     CreateShippingRequest, CreateShippingResponse, DeleteShippingRequest, DeleteShippingResponse,
     GetShippingByIdRequest, GetShippingByIdResponse, ListShippingRequest, ListShippingResponse,
@@ -16,9 +21,16 @@ use crate::module::shipping::repository_postgres::{
 use crate::module::shipping_provider::repository_postgres::{
     ShippingProviderPostgresRepository, ShippingProviderPostgresRepositoryImpl,
 };
+use crate::package::context::auth::AUTHORIZATION_HEADER;
+use crate::package::context::request_id::X_REQUEST_ID_HEADER;
+use crate::util::metadata::inject_trace_context_to_kafka_headers;
+use anyhow::Error;
 use prost_wkt_types::Timestamp;
+use rdkafka::message::OwnedHeaders;
+use serde_json::to_string;
 use tonic::{Request, Response, Status};
-use tracing::{Level, event, instrument};
+use tracing::{Level, Span, event, instrument};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 pub trait ShippingUseCase {
     async fn create_shipping(
@@ -53,24 +65,30 @@ pub trait ShippingUseCase {
 
 #[derive(Clone, Debug)]
 pub struct ShippingUseCaseImpl {
+    app_config: AppConfig,
     shipping_repository: ShippingPostgresRepositoryImpl,
     shipping_provider_repository: ShippingProviderPostgresRepositoryImpl,
     user_service: UserServiceGrpcClient,
     payment_service: PaymentServiceGrpcClient,
+    kafka_infrastructure: KafkaInfrastructure,
 }
 
 impl ShippingUseCaseImpl {
     pub fn new(
+        app_config: AppConfig,
         shipping_repository: ShippingPostgresRepositoryImpl,
         shipping_provider_repository: ShippingProviderPostgresRepositoryImpl,
         user_service: UserServiceGrpcClient,
         payment_service: PaymentServiceGrpcClient,
+        kafka_infrastructure: KafkaInfrastructure,
     ) -> Self {
         Self {
+            app_config,
             shipping_repository,
             shipping_provider_repository,
             user_service,
             payment_service,
+            kafka_infrastructure,
         }
     }
 }
@@ -96,10 +114,7 @@ impl ShippingUseCase for ShippingUseCaseImpl {
             .map_err(|e| {
                 eprintln!("find_user_by_id {:?}", e);
                 event!(name: "ShippingUseCase.create_shipping.error", Level::ERROR, request_id = request_id, error = ?e);
-                if e.to_string().contains("not found") {
-                    return Status::not_found("payment id not found".to_string());
-                }
-                Status::internal("error".to_string())
+                Status::from(e)
             })?;
 
         // VALIDATE PAYMENT_ID
@@ -133,41 +148,66 @@ impl ShippingUseCase for ShippingUseCaseImpl {
             )
             .await
             .map_err(|e| {
-                eprintln!("get_shipping_provider_by_id {:?}", e);
-                event!(name: "ShippingUseCase.create_shipping.error", Level::ERROR, request_id = request_id, error = ?e);
-                if e.to_string().contains("shipping provider id not found") {
-                    return Status::not_found("not found".to_string());
-                }
+                event!(name: "ShippingUseCase.create_shipping.error", Level::ERROR, request_id = request_id.clone(), error = ?e);
                 Status::internal("error".to_string())
             })?;
 
         // CREATE SHIPPING
         let now = chrono::Utc::now();
-        self.shipping_repository.clone().create_shipping(
-            &*request_id.clone(),
-            &CreateShippings {
-                id: uuid::Uuid::new_v4().to_string(),
-                user_id: request.get_ref().user_id.clone(),
-                payment_id: request.get_ref().payment_id.clone(),
-                shipping_provider_id: request.get_ref().shipping_provider_id.clone(),
-                created_at: now.clone(),
-                updated_at: now,
-                discarded_at: None,
-            },
-        ).await.map_err(|e| {
-            eprintln!("create_shipping {:?}", e);
-            event!(name: "ShippingUseCase.create_shipping.error", Level::ERROR, request_id = request_id, error = ?e);
-            if e.to_string().contains("shipping provider id not found") {
-                return Status::not_found("not found".to_string());
-            }
-            Status::internal("error".to_string())
-        })?;
+        let id = uuid::Uuid::new_v4().to_string();
 
-        Ok(Response::new(CreateShippingResponse {
-            message: "create_shipping".to_string(),
-            status: "success".to_string(),
-            data: None,
-        }))
+        match self
+            .kafka_infrastructure
+            .publish_with_json_schema(
+                self.app_config
+                    .message_broker_kafka_topic_sink_shipping
+                    .pg_shippings_shippings
+                    .clone(),
+                crate::model::schema_registry::registry::Registry::Shipping,
+                serde_json::to_value(&CreateShippings {
+                    id: id.clone(),
+                    user_id: request.get_ref().user_id.clone(),
+                    payment_id: request.get_ref().payment_id.clone(),
+                    shipping_provider_id: request.get_ref().shipping_provider_id.clone(),
+                    created_at: now.clone(),
+                    updated_at: now,
+                    discarded_at: None,
+                })
+                .unwrap(),
+                id.clone(),
+                Some(
+                    inject_trace_context_to_kafka_headers(
+                        OwnedHeaders::new(),
+                        &Span::current().context(),
+                    )
+                    .insert(rdkafka::message::Header {
+                        key: X_REQUEST_ID_HEADER,
+                        value: Some(request_id.clone().as_bytes()),
+                    })
+                    .insert(rdkafka::message::Header {
+                        key: AUTHORIZATION_HEADER,
+                        value: Some(format!("Bearer {}", token).as_bytes()),
+                    }),
+                ),
+            )
+            .await
+        {
+            Ok(_) => {
+                event!(name : "ShippingUseCase.create_shipping.success", Level::INFO, request_id = request_id);
+                Ok(Response::new(CreateShippingResponse {
+                    message: "create_shipping".to_string(),
+                    status: "success".to_string(),
+                    data: Some(CreateShippingResponseData { id }),
+                }))
+            }
+            Err(e) => {
+                event!(name: "ShippingUseCase.create_shipping.error", Level::ERROR, request_id = request_id, error = ?e);
+                Err(Status::internal(format!(
+                    "invalid to create shipping : {}",
+                    e.to_string()
+                )))
+            }
+        }
     }
 
     #[instrument("ShippingUseCase.get_shipping_by_id")]
@@ -185,9 +225,6 @@ impl ShippingUseCase for ShippingUseCaseImpl {
             .await
             .map_err(|e| {
                 event!(name: "ShippingUseCase.get_shipping_by_id.error", Level::ERROR, request_id = request_id, error = ?e);
-                if e.to_string().contains("not found") {
-                    return Status::not_found("not found".to_string());
-                }
                 Status::internal("error".to_string())
             })?;
 
@@ -229,9 +266,6 @@ impl ShippingUseCase for ShippingUseCaseImpl {
             .await
             .map_err(|e| {
                 event!(name: "ShippingUseCase.fetch_shipping_provider.error", Level::ERROR, request_id = request_id, error = ?e);
-                if e.to_string().contains("not found") {
-                    return Status::not_found("shipping not found".to_string());
-                }
                 Status::internal("error".to_string())
             })?;
 
@@ -258,23 +292,29 @@ impl ShippingUseCase for ShippingUseCaseImpl {
         request_id: String,
         request: Request<ListShippingRequest>,
     ) -> Result<Response<ListShippingResponse>, Status> {
-        let fetch_shippings = self.shipping_repository
+        match self
+            .shipping_repository
             .clone()
-            .list_shipping(&*request_id, &request.get_ref().page, &request.get_ref().limit)
+            .list_shipping(
+                &*request_id,
+                &request.get_ref().page,
+                &request.get_ref().limit,
+            )
             .await
-            .map_err(|e| {
-                event!(name: "ShippingUseCase.fetch_shipping.error", Level::ERROR, request_id = request_id, error = ?e);
-                if e.to_string().contains("not found") {
-                    return Status::not_found("shippings not found".to_string());
-                }
-                Status::internal("error".to_string())
-            })?;
-
-        Ok(Response::new(ListShippingResponse {
-            message: "update_shipping".to_string(),
-            status: "success".to_string(),
-            data: shippings_to_proto(fetch_shippings),
-        }))
+        {
+            Ok(v) => {
+                event!(name: "ShippingUseCase.list_shipping.success", Level::INFO, request_id = request_id, shippings = ?v);
+                Ok(Response::new(ListShippingResponse {
+                    message: "list_shipping".to_string(),
+                    status: "success".to_string(),
+                    data: shippings_to_proto(v),
+                }))
+            }
+            Err(err) => {
+                event!(name: "ShippingUseCase.list_shipping.error", Level::ERROR, request_id = request_id, error = ?err);
+                Err(Status::internal("error".to_string()))
+            }
+        }
     }
 
     #[instrument("ShippingUseCase.update_shipping")]
@@ -297,37 +337,59 @@ impl ShippingUseCase for ShippingUseCaseImpl {
         if request.get_ref().shipping_provider_id != shipping.shipping_provider_id {
             shipping.shipping_provider_id = request.get_ref().shipping_provider_id.clone();
         }
-
         if request.get_ref().payment_id != shipping.payment_id {
             shipping.payment_id = request.get_ref().payment_id.clone();
         }
-
         if request.get_ref().user_id != shipping.user_id {
             shipping.user_id = request.get_ref().user_id.clone();
         }
 
         let now = chrono::Utc::now();
-        self.shipping_repository.clone().update_shipping(
-            &*request_id.clone(),
-            &*request.get_ref().id.clone(),
-            &UpdateShippings {
-                user_id: Option::from(shipping.user_id),
-                payment_id: Option::from(shipping.payment_id),
-                shipping_provider_id: Option::from(shipping.shipping_provider_id),
-                created_at: Option::from(now.clone()),
-                updated_at: Option::from(now),
-                discarded_at: None,
-            },
-        ).await.map_err(|e| {
-            event!(name: "ShippingUseCase.delete_shipping.error", Level::ERROR, request_id = request_id, error = ?e);
-            Status::internal("error".to_string())
-        })?;
+        shipping.updated_at = now;
 
-        Ok(Response::new(UpdateShippingResponse {
-            message: "update_shipping".to_string(),
-            status: "success".to_string(),
-            data: None,
-        }))
+        match self
+            .kafka_infrastructure
+            .publish_with_json_schema(
+                self.app_config
+                    .message_broker_kafka_topic_sink_shipping
+                    .pg_shippings_shippings
+                    .clone(),
+                crate::model::schema_registry::registry::Registry::Shipping,
+                serde_json::to_value(&shipping).unwrap(),
+                shipping.id.clone(),
+                Some(
+                    inject_trace_context_to_kafka_headers(
+                        OwnedHeaders::new(),
+                        &Span::current().context(),
+                    )
+                    .insert(rdkafka::message::Header {
+                        key: X_REQUEST_ID_HEADER,
+                        value: Some(request_id.clone().as_bytes()),
+                    })
+                    .insert(rdkafka::message::Header {
+                        key: AUTHORIZATION_HEADER,
+                        value: Some(format!("Bearer {}", token).as_bytes()),
+                    }),
+                ),
+            )
+            .await
+        {
+            Ok(_) => {
+                event!(name : "ShippingUseCase.update_shipping.success", Level::INFO, request_id = request_id, shipping = ?shipping);
+                Ok(Response::new(UpdateShippingResponse {
+                    message: "update_shipping".to_string(),
+                    status: "success".to_string(),
+                    data: Some(UpdateShippingResponseData { id: shipping.id }),
+                }))
+            }
+            Err(e) => {
+                event!(name: "ShippingUseCase.update_shipping.error", Level::ERROR, request_id = request_id, error = ?e);
+                Err(Status::internal(format!(
+                    "invalid to update shipping : {}",
+                    e.to_string()
+                )))
+            }
+        }
     }
 
     #[instrument("ShippingUseCase.delete_shipping")]
@@ -336,7 +398,7 @@ impl ShippingUseCase for ShippingUseCaseImpl {
         request_id: String,
         request: Request<DeleteShippingRequest>,
     ) -> Result<Response<DeleteShippingResponse>, Status> {
-        self.shipping_repository
+        let shipping = self.shipping_repository
             .clone()
             .get_shipping_by_id(&*request_id, &*request.get_ref().id.clone())
             .await
@@ -345,19 +407,56 @@ impl ShippingUseCase for ShippingUseCaseImpl {
                 Status::internal("error".to_string())
             })?;
 
-        self.shipping_repository
-            .clone()
-            .delete_shipping(&*request_id.clone(), &*request.get_ref().id.clone())
+        let now = chrono::Utc::now();
+        match self
+            .kafka_infrastructure
+            .publish_with_json_schema(
+                self.app_config
+                    .message_broker_kafka_topic_sink_shipping
+                    .pg_shippings_shippings
+                    .clone(),
+                crate::model::schema_registry::registry::Registry::Shipping,
+                serde_json::to_value(&CreateShippings {
+                    id: shipping.id.clone(),
+                    user_id: shipping.user_id,
+                    payment_id: shipping.payment_id,
+                    shipping_provider_id: shipping.shipping_provider_id,
+                    created_at: shipping.created_at,
+                    updated_at: shipping.created_at,
+                    discarded_at: Some(now),
+                })
+                .unwrap(),
+                shipping.id.clone(),
+                Some(
+                    inject_trace_context_to_kafka_headers(
+                        OwnedHeaders::new(),
+                        &Span::current().context(),
+                    )
+                    .insert(rdkafka::message::Header {
+                        key: X_REQUEST_ID_HEADER,
+                        value: Some(request_id.clone().as_bytes()),
+                    }),
+                ),
+            )
             .await
-            .map_err(|e| {
+        {
+            Ok(_) => {
+                event!(name : "ShippingUseCase.delete_shipping.success", Level::INFO, request_id = request_id);
+                Ok(Response::new(DeleteShippingResponse {
+                    message: "delete_shipping".to_string(),
+                    status: "success".to_string(),
+                    data: Some(DeleteShippingResponseData {
+                        id: shipping.id.to_string(),
+                    }),
+                }))
+            }
+            Err(e) => {
                 event!(name: "ShippingUseCase.delete_shipping.error", Level::ERROR, request_id = request_id, error = ?e);
-                Status::internal("error".to_string())
-            })?;
-
-        Ok(Response::new(DeleteShippingResponse {
-            message: "delete_shipping".to_string(),
-            status: "success".to_string(),
-            data: None,
-        }))
+                Err(Status::internal(format!(
+                    "invalid to delete shipping : {}",
+                    e.to_string()
+                )))
+            }
+        }
     }
 }

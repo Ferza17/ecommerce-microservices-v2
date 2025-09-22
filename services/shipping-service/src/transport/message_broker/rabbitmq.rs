@@ -1,5 +1,6 @@
 use crate::config::config::AppConfig;
 use crate::infrastructure::database::async_postgres::get_connection;
+use crate::infrastructure::message_broker::kafka::KafkaInfrastructure;
 use crate::infrastructure::message_broker::rabbitmq::RabbitMQInfrastructure;
 use crate::infrastructure::services::payment::PaymentServiceGrpcClient;
 use crate::infrastructure::services::user::UserServiceGrpcClient;
@@ -30,6 +31,7 @@ impl RabbitMQTransport {
         let payment_service = PaymentServiceGrpcClient::new(self.config.clone()).await;
         let rabbitmq_infrastructure =
             Arc::new(RabbitMQInfrastructure::new(self.config.clone()).await);
+        let kafka_infrastructure = KafkaInfrastructure::new(self.config.clone());
 
         // Repository Layer
         let shipping_provider_postgres_repository =
@@ -39,10 +41,12 @@ impl RabbitMQTransport {
 
         // UseCase Layer
         let shipping_use_case = ShippingUseCaseImpl::new(
+            self.config.clone(),
             shipping_postgres_repository,
             shipping_provider_postgres_repository,
             user_service,
             payment_service,
+            kafka_infrastructure,
         );
 
         // Wrap in Arc for sharing across tasks

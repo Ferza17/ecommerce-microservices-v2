@@ -432,6 +432,12 @@ services:
     command: [ "/init-all.sh" ]
     tty: true
     stdin_open: true
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s http://ksqldb-server-local:8088/info | grep -q '\"KsqlServerInfo\"'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - local
 
@@ -469,6 +475,7 @@ services:
       CONTROL_CENTER_UI_AUTO_REFRESH_ENABLE: "true"
       CONTROL_CENTER_UI_AUTO_REFRESH_INTERVAL_SECONDS: 10
       PORT: 9021
+
     networks:
       - local
 
@@ -608,8 +615,8 @@ services:
         condition: service_healthy
     healthcheck:
       test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://user-service:40056/v1/user/check | grep -q '^200$'" ]
-      interval: 30s
-      timeout: 10s
+      interval: 45s
+      timeout: 40s
       retries: 10
       start_period: 60s
     networks:
@@ -701,31 +708,35 @@ services:
 
   # PAYMENT-SERVICE
 
-#  payment-service:
-#    container_name: payment-service
-#    build:
-#      context: ./services/payment-service
-#      dockerfile: Dockerfile
-#    ports:
-#      - "50054:50054" # GRPC
-#      - "40054:40054" # HTTP
-#      - "30054:30054" # HTTP METRIC COLLECTOR
-#    restart: always
-#    healthcheck:
-#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://payment-service:40054/v1/payment/check | grep -q '^200$'" ]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 10
-#      start_period: 60s
-#    depends_on:
-#      postgres-local:
-#        condition: service_healthy
-#      consul-local:
-#        condition: service_healthy
-#      kafka-local-broker-1:
-#        condition: service_healthy
-#    networks:
-#      - local
+  payment-service:
+    container_name: payment-service
+    build:
+      context: ./services/payment-service
+      dockerfile: Dockerfile
+    ports:
+      - "50054:50054" # GRPC
+      - "40054:40054" # HTTP
+      - "30054:30054" # HTTP METRIC COLLECTOR
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://payment-service:40054/v1/payment/check | grep -q '^200$'" ]
+      interval: 45s
+      timeout: 40s
+      retries: 10
+      start_period: 60s
+    depends_on:
+      postgres-local:
+        condition: service_healthy
+      consul-local:
+        condition: service_healthy
+      kafka-local-broker-1:
+        condition: service_healthy
+      kafka-connect-local:
+        condition: service_healthy
+      ksqldb-cli-local:
+        condition: service_healthy
+    networks:
+      - local
 
   # SHIPPING-SERVICE
 
