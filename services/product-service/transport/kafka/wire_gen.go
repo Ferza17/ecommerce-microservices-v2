@@ -30,6 +30,6 @@ func Provide() *Transport {
 	iProductElasticsearchRepository := elasticsearch2.NewProductElasticsearchRepository(iElasticsearchInfrastructure, iTelemetryInfrastructure, iZapLogger)
 	iProductUseCase := usecase.NewProductUseCase(postgresSQL, iProductPostgresqlRepository, iKafkaInfrastructure, iProductElasticsearchRepository, iTelemetryInfrastructure, iZapLogger)
 	iProductConsumer := consumer.NewProductConsumer(iKafkaInfrastructure, iProductUseCase, iTelemetryInfrastructure, iZapLogger)
-	transport := NewServer(iProductConsumer, iKafkaInfrastructure, iTelemetryInfrastructure, iZapLogger)
+	transport := NewTransport(iProductConsumer, iKafkaInfrastructure, iTelemetryInfrastructure, iZapLogger)
 	return transport
 }

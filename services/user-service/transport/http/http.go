@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"fmt"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
@@ -30,7 +31,7 @@ import (
 )
 
 type (
-	Server struct {
+	Transport struct {
 		address                 string
 		port                    string
 		workerPool              *pkgWorker.WorkerPool
@@ -46,17 +47,17 @@ type (
 	}
 )
 
-var Set = wire.NewSet(NewServer)
+var Set = wire.NewSet(NewTransport)
 
-func NewServer(
+func NewTransport(
 	logger logger.IZapLogger,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	authPresenter *authPresenter.AuthPresenter,
 	userPresenter *userPresenter.UserPresenter,
 	accessControlUseCase accessControlUseCase.IAccessControlUseCase,
 	authUseCase authUseCase.IAuthUseCase,
-) *Server {
-	return &Server{
+) *Transport {
+	return &Transport{
 		address: config.Get().ConfigServiceUser.HttpHost,
 		port:    config.Get().ConfigServiceUser.HttpPort,
 		workerPool: pkgWorker.NewWorkerPool(
@@ -72,7 +73,7 @@ func NewServer(
 	}
 }
 
-func (s *Server) Serve(ctx context.Context) error {
+func (s *Transport) Serve(ctx context.Context) error {
 	s.workerPool.Start()
 	// Create Gorilla mux router
 	router := mux.NewRouter()
@@ -166,7 +167,20 @@ func (s *Server) Serve(ctx context.Context) error {
 	return nil
 }
 
-func (s *Server) Close() {
+func (s *Transport) ServeHttpPrometheusMetricCollector() error {
+	handler := http.NewServeMux()
+	handler.Handle("/v1/user/metrics", promhttp.Handler())
+	s.logger.Info(fmt.Sprintf("Starting HTTP Metric Server on %s:%s", config.Get().ConfigServiceUser.HttpHost, config.Get().ConfigServiceUser.MetricHttpPort))
+	if err := http.ListenAndServe(
+		fmt.Sprintf("%s:%s", config.Get().ConfigServiceUser.HttpHost, config.Get().ConfigServiceUser.MetricHttpPort),
+		handler,
+	); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Transport) Close() {
 	s.logger.Info(fmt.Sprintf("closing http server"))
 	if err := s.server.Close(); err != nil {
 		s.logger.Error(fmt.Sprintf("error closing http server"))

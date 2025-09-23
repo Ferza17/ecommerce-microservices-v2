@@ -23,9 +23,9 @@ var runCommand = &cobra.Command{
 		ctx, cancel := context.WithCancel(context.Background())
 
 		// Initialize servers
-		grpcServer := grpc.ProvideGrpcServer()
-		httpServer := http.ProvideHttpServer()
-		kafkaServer := kafka.ProvideServer()
+		grpcServer := grpc.Provide()
+		httpServer := http.Provide()
+		kafkaConsumer := kafka.Provide()
 
 		wg := new(sync.WaitGroup)
 		quit := make(chan os.Signal, 1)
@@ -49,14 +49,14 @@ var runCommand = &cobra.Command{
 		}
 
 		start("gRPC", grpcServer.Serve, grpcServer.Close)
-		start("Kafka", kafkaServer.Serve, kafkaServer.Close)
+		start("Kafka", kafkaConsumer.Serve, kafkaConsumer.Close)
 		start("HTTP", httpServer.Serve, httpServer.Close)
 
 		// Metrics server (fire and forget, doesn’t need to close)
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			if err := http.ServeHttpPrometheusMetricCollector(); err != nil {
+			if err := httpServer.ServeHttpPrometheusMetricCollector(); err != nil {
 				log.Printf("error serving metrics: %v", err)
 			}
 		}()

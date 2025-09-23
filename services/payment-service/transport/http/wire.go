@@ -21,7 +21,7 @@ import (
 	"github.com/google/wire"
 )
 
-func Provide() *HttpServer {
+func Provide() *Transport {
 	wire.Build(
 		// Infrastructure layer
 		logger.Set,

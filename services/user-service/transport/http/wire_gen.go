@@ -26,7 +26,7 @@ import (
 
 // Injectors from wire.go:
 
-func ProvideHttpServer() *Server {
+func Provide() *Transport {
 	iZapLogger := logger.NewZapLogger()
 	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
 	iPostgresSQL := postgres.NewPostgresqlInfrastructure(iZapLogger)
@@ -42,6 +42,6 @@ func ProvideHttpServer() *Server {
 	authPresenter := presenter.NewAuthPresenter(iAuthUseCase, iTelemetryInfrastructure, iZapLogger)
 	iUserUseCase := usecase3.NewUserUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iKafkaInfrastructure, iAuthRedisRepository, iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
 	userPresenter := presenter2.NewUserPresenter(iUserUseCase, iAuthUseCase, iTelemetryInfrastructure, iZapLogger)
-	server := NewServer(iZapLogger, iTelemetryInfrastructure, authPresenter, userPresenter, iAccessControlUseCase, iAuthUseCase)
-	return server
+	transport := NewTransport(iZapLogger, iTelemetryInfrastructure, authPresenter, userPresenter, iAccessControlUseCase, iAuthUseCase)
+	return transport
 }

@@ -19,7 +19,7 @@ import (
 )
 
 type (
-	Server struct {
+	Transport struct {
 		kafkaInfrastructure       kafkaInfrastructure.IKafkaInfrastructure
 		workerPool                *pkgWorker.WorkerPool
 		telemetryInfrastructure   telemetryInfrastructure.ITelemetryInfrastructure
@@ -28,15 +28,15 @@ type (
 	}
 )
 
-var Set = wire.NewSet(NewServer)
+var Set = wire.NewSet(NewTransport)
 
-func NewServer(
+func NewTransport(
 	kafkaInfrastructure kafkaInfrastructure.IKafkaInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	logger logger.IZapLogger,
 	notificationEmailConsumer notificationEmailConsumer.INotificationEmailConsumer,
-) *Server {
-	return &Server{
+) *Transport {
+	return &Transport{
 		kafkaInfrastructure:       kafkaInfrastructure,
 		workerPool:                pkgWorker.NewWorkerPoolKafkaTaskQueue("kafka-consumer", 4, 1000),
 		telemetryInfrastructure:   telemetryInfrastructure,
@@ -45,7 +45,7 @@ func NewServer(
 	}
 }
 
-func (srv *Server) Serve(mainCtx context.Context) error {
+func (srv *Transport) Serve(mainCtx context.Context) error {
 	srv.workerPool.Start()
 
 	topics := []string{
@@ -122,7 +122,7 @@ func (srv *Server) Serve(mainCtx context.Context) error {
 	return nil
 }
 
-func (srv *Server) Close() {
+func (srv *Transport) Close() {
 	if err := srv.kafkaInfrastructure.Close(); err != nil {
 		srv.logger.Error(fmt.Sprintf("failed to close kafka infrastructure: %v", err))
 	}

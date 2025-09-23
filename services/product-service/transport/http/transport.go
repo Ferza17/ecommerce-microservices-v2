@@ -42,9 +42,9 @@ type (
 	}
 )
 
-var Set = wire.NewSet(NewServer)
+var Set = wire.NewSet(NewTransport)
 
-func NewServer(
+func NewTransport(
 	logger logger.IZapLogger,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	productPresenter *presenter.ProductPresenter,

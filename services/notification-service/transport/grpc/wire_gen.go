@@ -12,8 +12,8 @@ import (
 
 // Injectors from wire.go:
 
-func ProvideGrpcServer() *GrpcServer {
+func Provide() *Transport {
 	iZapLogger := logger.NewZapLogger()
-	grpcServer := NewGrpcServer(iZapLogger)
-	return grpcServer
+	transport := NewTransport(iZapLogger)
+	return transport
 }

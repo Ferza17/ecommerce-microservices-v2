@@ -27,10 +27,10 @@ type Transport struct {
 }
 
 var Set = wire.NewSet(
-	NewServer,
+	NewTransport,
 )
 
-func NewServer(
+func NewTransport(
 	productConsumer productConsumer.IProductConsumer,
 	kafkaInfrastructure kafkaInfrastructure.IKafkaInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,

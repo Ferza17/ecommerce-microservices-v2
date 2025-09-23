@@ -22,7 +22,7 @@ import (
 
 // Injectors from wire.go:
 
-func Provide() *Server {
+func Provide() *Transport {
 	iZapLogger := logger.NewZapLogger()
 	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
 	postgresSQL := postgresql.NewPostgresqlInfrastructure(iZapLogger)
@@ -34,6 +34,6 @@ func Provide() *Server {
 	iProductService := product.NewProductService(iZapLogger)
 	iPaymentUseCase := usecase.NewPaymentUseCase(iPaymentRepository, iPaymentProviderRepository, iKafkaInfrastructure, iTelemetryInfrastructure, iZapLogger, postgresSQL, iShippingService, iUserService, iProductService)
 	iPaymentConsumer := consumer.NewPaymentConsumer(iTelemetryInfrastructure, iPaymentUseCase, iZapLogger)
-	server := NewServer(iPaymentConsumer, iKafkaInfrastructure, iTelemetryInfrastructure, iZapLogger)
-	return server
+	transport := NewTransport(iPaymentConsumer, iKafkaInfrastructure, iTelemetryInfrastructure, iZapLogger)
+	return transport
 }

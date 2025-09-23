@@ -20,7 +20,7 @@ import (
 
 // Injectors from wire.go:
 
-func ProvideServer() *Server {
+func Provide() *Transport {
 	iZapLogger := logger.NewZapLogger()
 	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
 	iKafkaInfrastructure := kafka.NewKafkaInfrastructure(iZapLogger, iTelemetryInfrastructure)
@@ -30,6 +30,6 @@ func ProvideServer() *Server {
 	iPaymentService := payment.NewPaymentService(iZapLogger)
 	iNotificationEmailUseCase := usecase.NewNotificationEmailUseCase(iNotificationEmailRepository, iKafkaInfrastructure, iMailhogInfrastructure, iTelemetryInfrastructure, iPaymentService, iZapLogger)
 	iNotificationEmailConsumer := consumer.NewNotificationConsumer(iKafkaInfrastructure, iNotificationEmailUseCase, iTelemetryInfrastructure, iZapLogger)
-	server := NewServer(iKafkaInfrastructure, iTelemetryInfrastructure, iZapLogger, iNotificationEmailConsumer)
-	return server
+	transport := NewTransport(iKafkaInfrastructure, iTelemetryInfrastructure, iZapLogger, iNotificationEmailConsumer)
+	return transport
 }

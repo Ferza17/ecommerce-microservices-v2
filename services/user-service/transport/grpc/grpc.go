@@ -28,7 +28,7 @@ import (
 )
 
 type (
-	Server struct {
+	Transport struct {
 		address                 string
 		port                    string
 		workerPool              *pkgWorker.WorkerPool
@@ -44,18 +44,17 @@ type (
 	}
 )
 
-var Set = wire.NewSet(NewServer)
+var Set = wire.NewSet(NewTransport)
 
-func NewServer(
+func NewTransport(
 	logger logger.IZapLogger,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	authPresenter *authPresenter.AuthPresenter,
 	userPresenter *userPresenter.UserPresenter,
 	accessControlUseCase accessControlUseCase.IAccessControlUseCase,
 	authUseCase authUseCase.IAuthUseCase,
-) *Server {
-	//TODO: Add workers from consul config
-	return &Server{
+) *Transport {
+	return &Transport{
 		address: config.Get().ConfigServiceUser.RpcHost,
 		port:    config.Get().ConfigServiceUser.RpcPort,
 		workerPool: pkgWorker.NewWorkerPool(
@@ -71,7 +70,7 @@ func NewServer(
 	}
 }
 
-func (srv *Server) Serve(ctx context.Context) error {
+func (srv *Transport) Serve(ctx context.Context) error {
 	srv.workerPool.Start()
 
 	listen, err := net.Listen("tcp", fmt.Sprintf("%s:%s", srv.address, srv.port))
@@ -122,7 +121,7 @@ func (srv *Server) Serve(ctx context.Context) error {
 	return nil
 }
 
-func (srv *Server) Close() {
+func (srv *Transport) Close() {
 	srv.logger.Info(fmt.Sprintf("closing grpc server"))
 	srv.grpcServer.GracefulStop()
 	if err := srv.telemetryInfrastructure.Close(); err != nil {

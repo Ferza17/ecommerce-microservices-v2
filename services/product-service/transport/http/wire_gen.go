@@ -32,6 +32,6 @@ func Provide() *Transport {
 	iProductUseCase := usecase.NewProductUseCase(postgresSQL, iProductPostgresqlRepository, iKafkaInfrastructure, iProductElasticsearchRepository, iTelemetryInfrastructure, iZapLogger)
 	iUserService := user.NewUserService(iZapLogger)
 	productPresenter := presenter.NewProductPresenter(iProductUseCase, iTelemetryInfrastructure, iZapLogger, iUserService)
-	transport := NewServer(iZapLogger, iTelemetryInfrastructure, productPresenter, iUserService)
+	transport := NewTransport(iZapLogger, iTelemetryInfrastructure, productPresenter, iUserService)
 	return transport
 }

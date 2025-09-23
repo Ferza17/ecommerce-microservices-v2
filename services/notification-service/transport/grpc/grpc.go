@@ -18,7 +18,7 @@ import (
 )
 
 type (
-	GrpcServer struct {
+	Transport struct {
 		address    string
 		port       string
 		workerPool *pkgWorker.WorkerPool
@@ -27,11 +27,11 @@ type (
 	}
 )
 
-var Set = wire.NewSet(NewGrpcServer)
+var Set = wire.NewSet(NewTransport)
 
-func NewGrpcServer(
-	logger logger.IZapLogger) *GrpcServer {
-	return &GrpcServer{
+func NewTransport(
+	logger logger.IZapLogger) *Transport {
+	return &Transport{
 		workerPool: pkgWorker.NewWorkerPool(
 			fmt.Sprintf("GRPC SERVER ON %s:%s", config.Get().ConfigServiceNotification.RpcHost, config.Get().ConfigServiceNotification.RpcPort),
 			1,
@@ -43,7 +43,7 @@ func NewGrpcServer(
 	}
 }
 
-func (s *GrpcServer) Serve(ctx context.Context) error {
+func (s *Transport) Serve(ctx context.Context) error {
 	s.workerPool.Start()
 
 	listen, err := net.Listen("tcp", fmt.Sprintf(":%s", s.port))
@@ -68,6 +68,6 @@ func (s *GrpcServer) Serve(ctx context.Context) error {
 	return nil
 }
 
-func (s *GrpcServer) GracefulStop() {
+func (s *Transport) GracefulStop() {
 	s.grpcServer.GracefulStop()
 }

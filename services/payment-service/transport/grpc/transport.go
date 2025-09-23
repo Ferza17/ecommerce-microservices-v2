@@ -26,12 +26,7 @@ import (
 )
 
 type (
-	IGrpcServer interface {
-		Serve(ctx context.Context) error
-		GracefulStop()
-	}
-
-	GrpcServer struct {
+	Transport struct {
 		address                  string
 		port                     string
 		workerPool               *pkgWorker.WorkerPool
@@ -47,15 +42,14 @@ type (
 	}
 )
 
-// NewGrpcServer creates and returns a new instance of GrpcServer with all dependencies.
-func NewGrpcServer(
+func NewTransport(
 	logger logger.IZapLogger,
 	paymentPresenter paymentPresenter.IPaymentPresenter,
 	paymentProviderPresenter paymentProviderPresenter.IPaymentProviderPresenter,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	userService userService.IUserService,
-) IGrpcServer {
-	return &GrpcServer{
+) *Transport {
+	return &Transport{
 		address: config.Get().ConfigServicePayment.RpcHost,
 		port:    config.Get().ConfigServicePayment.RpcPort,
 		workerPool: pkgWorker.NewWorkerPool(
@@ -72,10 +66,10 @@ func NewGrpcServer(
 
 // Set is a Wire provider set for GrpcServer dependencies.
 var Set = wire.NewSet(
-	NewGrpcServer,
+	NewTransport,
 )
 
-func (s *GrpcServer) Serve(ctx context.Context) error {
+func (s *Transport) Serve(ctx context.Context) error {
 	s.workerPool.Start()
 
 	listen, err := net.Listen("tcp", fmt.Sprintf(":%s", s.port))
@@ -113,6 +107,6 @@ func (s *GrpcServer) Serve(ctx context.Context) error {
 	return nil
 }
 
-func (s *GrpcServer) GracefulStop() {
+func (s *Transport) GracefulStop() {
 	s.grpcServer.GracefulStop()
 }

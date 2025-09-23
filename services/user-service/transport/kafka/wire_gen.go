@@ -26,7 +26,7 @@ import (
 
 // Injectors from wire.go:
 
-func ProvideServer() *Server {
+func Provide() *Transport {
 	iZapLogger := logger.NewZapLogger()
 	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
 	iKafkaInfrastructure := kafka.NewKafkaInfrastructure(iZapLogger, iTelemetryInfrastructure)
@@ -42,6 +42,6 @@ func ProvideServer() *Server {
 	iAuthConsumer := kafka2.NewAuthConsumer(iKafkaInfrastructure, iZapLogger, iAuthUseCase)
 	iUserUseCase := usecase3.NewUserUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iKafkaInfrastructure, iAuthRedisRepository, iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
 	iUserConsumer := kafka3.NewUserConsumer(iKafkaInfrastructure, iZapLogger, iUserUseCase)
-	server := NewServer(iKafkaInfrastructure, iTelemetryInfrastructure, iAuthConsumer, iUserConsumer, iZapLogger)
-	return server
+	transport := NewTransport(iKafkaInfrastructure, iTelemetryInfrastructure, iAuthConsumer, iUserConsumer, iZapLogger)
+	return transport
 }

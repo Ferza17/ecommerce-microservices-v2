@@ -18,43 +18,44 @@ import (
 )
 
 type (
-	Server struct {
+	Transport struct {
 		workerPool              *pkgWorker.WorkerPool
 		paymentConsumer         paymentConsumer.IPaymentConsumer
 		kafkaInfrastructure     kafkaInfrastructure.IKafkaInfrastructure
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 		logger                  logger.IZapLogger
+		topics                  []string
 	}
 )
 
-func NewServer(
+var Set = wire.NewSet(
+	NewTransport,
+)
+
+func NewTransport(
 	paymentConsumer paymentConsumer.IPaymentConsumer,
 	kafkaInfrastructure kafkaInfrastructure.IKafkaInfrastructure,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	logger logger.IZapLogger,
-) *Server {
-	return &Server{
+) *Transport {
+	return &Transport{
 		workerPool: pkgWorker.NewWorkerPoolKafkaTaskQueue(
 			"Kafka Consumer", 9, 1000),
 		paymentConsumer:         paymentConsumer,
 		kafkaInfrastructure:     kafkaInfrastructure,
 		telemetryInfrastructure: telemetryInfrastructure,
 		logger:                  logger,
+		topics: []string{
+			config.Get().BrokerKafkaTopicPayments.PaymentOrderCreated,
+			config.Get().BrokerKafkaTopicPayments.PaymentOrderCreatedDelayed,
+		},
 	}
 }
 
-var Set = wire.NewSet(
-	NewServer,
-)
-
-func (srv *Server) Serve(mainCtx context.Context) error {
+func (srv *Transport) Serve(mainCtx context.Context) error {
 	srv.workerPool.Start()
-	topics := []string{
-		config.Get().BrokerKafkaTopicPayments.PaymentOrderCreated,
-		config.Get().BrokerKafkaTopicPayments.PaymentOrderCreatedDelayed,
-	}
 
-	if err := srv.kafkaInfrastructure.SetupTopics(topics); err != nil {
+	if err := srv.kafkaInfrastructure.SetupTopics(srv.topics); err != nil {
 		srv.logger.Error(fmt.Sprintf("failed to setup kafka topics: %v", err))
 		return err
 	}

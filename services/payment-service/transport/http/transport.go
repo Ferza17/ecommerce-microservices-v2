@@ -20,13 +20,14 @@ import (
 	"github.com/google/wire"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/encoding/protojson"
 	"net/http"
 )
 
-type HttpServer struct {
+type Transport struct {
 	address                  string
 	port                     string
 	workerPool               *pkgWorker.WorkerPool
@@ -40,17 +41,16 @@ type HttpServer struct {
 	logger logger.IZapLogger
 }
 
-var Set = wire.NewSet(NewHttpServer)
+var Set = wire.NewSet(NewTransport)
 
-// NewHttpServer creates and returns a new instance of HttpServer with all dependencies.
-func NewHttpServer(
+func NewTransport(
 	logger logger.IZapLogger,
 	paymentPresenter paymentPresenter.IPaymentPresenter,
 	paymentProviderPresenter paymentProviderPresenter.IPaymentProviderPresenter,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	userService userService.IUserService,
-) *HttpServer {
-	return &HttpServer{
+) *Transport {
+	return &Transport{
 		address: config.Get().ConfigServicePayment.HttpHost,
 		port:    config.Get().ConfigServicePayment.HttpPort,
 		workerPool: pkgWorker.NewWorkerPool(
@@ -65,7 +65,7 @@ func NewHttpServer(
 	}
 }
 
-func (s *HttpServer) Serve(ctx context.Context) error {
+func (s *Transport) Serve(ctx context.Context) error {
 	s.workerPool.Start()
 
 	router := mux.NewRouter()
@@ -149,5 +149,18 @@ func (s *HttpServer) Serve(ctx context.Context) error {
 
 	<-ctx.Done()
 	s.workerPool.Stop()
+	return nil
+}
+
+func (s *Transport) ServeHttpPrometheusMetricCollector() error {
+	handler := http.NewServeMux()
+	handler.Handle("/v1/payment/metrics", promhttp.Handler())
+	s.logger.Info(fmt.Sprintf("Starting HTTP Metric Server on %s:%s", config.Get().ConfigServicePayment.HttpHost, config.Get().ConfigServicePayment.MetricHttpPort))
+	if err := http.ListenAndServe(
+		fmt.Sprintf("%s:%s", config.Get().ConfigServicePayment.HttpHost, config.Get().ConfigServicePayment.MetricHttpPort),
+		handler,
+	); err != nil {
+		return err
+	}
 	return nil
 }

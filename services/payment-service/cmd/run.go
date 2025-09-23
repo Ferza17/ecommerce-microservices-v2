@@ -73,7 +73,7 @@ var runCommand = &cobra.Command{
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			if err := transportHttp.ServeHttpPrometheusMetricCollector(); err != nil {
+			if err := httpServer.ServeHttpPrometheusMetricCollector(); err != nil {
 				log.Fatal(err)
 				return
 			}

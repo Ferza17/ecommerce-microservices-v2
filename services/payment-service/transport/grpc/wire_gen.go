@@ -24,7 +24,7 @@ import (
 
 // Injectors from wire.go:
 
-func Provide() IGrpcServer {
+func Provide() *Transport {
 	iZapLogger := logger.NewZapLogger()
 	postgresSQL := postgresql.NewPostgresqlInfrastructure(iZapLogger)
 	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
@@ -38,6 +38,6 @@ func Provide() IGrpcServer {
 	iPaymentPresenter := presenter.NewPaymentPresenter(iPaymentUseCase, iTelemetryInfrastructure, iUserService, iZapLogger)
 	iPaymentProviderUseCase := usecase2.NewPaymentProviderUseCase(iPaymentProviderRepository, iKafkaInfrastructure, iTelemetryInfrastructure, postgresSQL, iZapLogger)
 	iPaymentProviderPresenter := presenter2.NewPaymentProviderPresenter(iPaymentProviderUseCase, iTelemetryInfrastructure, iUserService, iZapLogger)
-	iGrpcServer := NewGrpcServer(iZapLogger, iPaymentPresenter, iPaymentProviderPresenter, iTelemetryInfrastructure, iUserService)
-	return iGrpcServer
+	transport := NewTransport(iZapLogger, iPaymentPresenter, iPaymentProviderPresenter, iTelemetryInfrastructure, iUserService)
+	return transport
 }

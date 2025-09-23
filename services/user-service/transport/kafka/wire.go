@@ -6,7 +6,6 @@ package kafka
 import (
 	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/kafka"
 	postgresInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/postgres"
-	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/rabbitmq"
 	redisInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/redis"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	accessControlPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/postgres"
@@ -23,13 +22,12 @@ import (
 	"github.com/google/wire"
 )
 
-func ProvideServer() *Server {
+func Provide() *Transport {
 	wire.Build(
 		logger.Set,
 
 		kafkaInfrastructure.Set,
 		telemetryInfrastructure.Set,
-		rabbitmqInfrastructure.Set,
 		postgresInfrastructure.Set,
 		redisInfrastructure.Set,
 

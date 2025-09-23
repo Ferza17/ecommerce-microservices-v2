@@ -8,7 +8,7 @@ import (
 	"github.com/google/wire"
 )
 
-func ProvideGrpcServer() *GrpcServer {
+func Provide() *Transport {
 	wire.Build(
 		logger.Set,
 		Set)

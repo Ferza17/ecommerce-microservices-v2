@@ -17,7 +17,7 @@ import (
 	notificationEmailUseCase "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/usecase"
 )
 
-func ProvideServer() *Server {
+func Provide() *Transport {
 	wire.Build(
 		logger.Set,
 		kafkaInfrastructure.Set,

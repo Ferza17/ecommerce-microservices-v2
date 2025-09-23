@@ -17,8 +17,8 @@ var runCommand = &cobra.Command{
 		ctx, cancel := context.WithCancel(cmd.Context())
 		defer cancel()
 
-		grpcServer := grpc.ProvideGrpcServer()
-		kafkaConsumer := kafka.ProvideServer()
+		grpcServer := grpc.Provide()
+		kafkaConsumer := kafka.Provide()
 
 		log.Println("Starting services in env:", config.Get().Env)
 
