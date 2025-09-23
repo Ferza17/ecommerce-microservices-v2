@@ -24,62 +24,19 @@ type Config struct {
 
 	// From Consul
 
-	JaegerTelemetryHost string
-	JaegerTelemetryPort string
+	ConfigTelemetry *ConfigTelemetry
 
-	RabbitMQUsername string
-	RabbitMQPassword string
-	RabbitMQHost     string
-	RabbitMQPort     string
-
-	// EXCHANGE
-	ExchangeCommerce       string
-	ExchangeEvent          string
-	ExchangeNotification   string
-	ExchangeProduct        string
-	ExchangeUser           string
-	ExchangePaymentDelayed string
-	ExchangePaymentDirect  string
-
-	// Queue Product
-	QueueProductCreated string
-	QueueProductUpdated string
-	QueueProductDeleted string
-
-	QueueEventCreated string
-
-	CommonSagaStatusPending string
-	CommonSagaStatusSuccess string
-	CommonSagaStatusFailed  string
-
-	PostgresHost         string
-	PostgresPort         string
-	PostgresUsername     string
-	PostgresPassword     string
-	PostgresDatabaseName string
-	PostgresSSLMode      string
-
-	ElasticsearchHost     string
-	ElasticsearchPort     string
-	ElasticsearchUsername string
-	ElasticsearchPassword string
+	DatabasePostgres      *DatabasePostgres
+	DatabaseElasticsearch *DatabaseElasticsearch
 
 	// USER SERVICE
-	UserServiceServiceName string
-	UserServiceRpcHost     string
-	UserServiceRpcPort     string
-	UserServiceHttpHost    string
-	UserServiceHttpPort    string
+	ConfigServiceUser *ConfigServiceUser
 
 	// PRODUCT SERVICE
-	ProductServiceServiceName    string
-	ProductServiceRpcHost        string
-	ProductServiceRpcPort        string
-	ProductServiceHttpHost       string
-	ProductServiceHttpPort       string
-	ProductServiceMetricHttpPort string
+	ConfigServiceProduct *ConfigServiceProduct
 
 	BrokerKafka                          *BrokerKafka
+	BrokerKafkaTopicProducts             *BrokerKafkaTopicProducts
 	BrokerKafkaTopicConnectorSinkProduct *BrokerKafkaTopicConnectorSinkProduct
 }
 
@@ -119,18 +76,14 @@ func SetConfig(path string) {
 	}
 
 	// Get Consul Key / Value
-	kv := consulClient.KV()
-	c.initTelemetry(kv)
-	c.initCommon(kv)
-	c.initRabbitmq(kv)
-	c.initPostgres(kv)
-	c.initUserService(kv)
-	c.initProductService(kv)
-	c.initElasticsearch(kv)
-	c.initExchange(kv)
-	c.initQueueProduct(kv)
-	c.withBrokerKafka(kv)
-	c.withBrokerKafkaTopicConnectorSinkProduct(kv)
+	c.withServiceProduct(consulClient.KV())
+	c.withServiceUser(consulClient.KV())
+	c.withDatabaseElasticsearch(consulClient.KV())
+	c.withDatabasePostgres(consulClient.KV())
+	c.withConfigTelemetry(consulClient.KV())
+	c.withBrokerKafka(consulClient.KV())
+	c.withBrokerKafkaTopicConnectorSinkProduct(consulClient.KV())
+	c.withBrokerKafkaTopicProducts(consulClient.KV())
 
 	if err = c.RegisterConsulService(); err != nil {
 		log.Fatalf("SetConfig | could not register service: %v", err)
@@ -148,14 +101,4 @@ func SetConfig(path string) {
 	)
 
 	viper.WatchConfig()
-}
-
-func (c *Config) withBrokerKafka(kv *api.KV) *Config {
-	c.BrokerKafka = DefaultKafkaBroker().WithConsulClient(c.Env, kv)
-	return c
-}
-
-func (c *Config) withBrokerKafkaTopicConnectorSinkProduct(kv *api.KV) *Config {
-	c.BrokerKafkaTopicConnectorSinkProduct = DefaultBrokerKafkaTopicConnectorSinkProduct().WithConsulClient(c.Env, kv)
-	return c
 }

@@ -32,10 +32,10 @@ func NewElasticsearchInfrastructure(
 	logger logger.IZapLogger) IElasticsearchInfrastructure {
 	client, err := elasticsearch.NewClient(elasticsearch.Config{
 		Addresses: []string{
-			fmt.Sprintf("http://%s:%s", config.Get().ElasticsearchHost, config.Get().ElasticsearchPort),
+			fmt.Sprintf("http://%s:%s", config.Get().DatabaseElasticsearch.Host, config.Get().DatabaseElasticsearch.Port),
 		},
-		Username: config.Get().ElasticsearchUsername,
-		Password: config.Get().ElasticsearchPassword,
+		Username: config.Get().DatabaseElasticsearch.Username,
+		Password: config.Get().DatabaseElasticsearch.Password,
 	})
 	if err != nil {
 		logger.Error(fmt.Sprintf("failed to connect to elasticsearch: %v", err))

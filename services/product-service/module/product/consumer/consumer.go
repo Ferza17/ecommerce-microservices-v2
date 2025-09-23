@@ -2,23 +2,23 @@ package consumer
 
 import (
 	"context"
-	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/rabbitmq"
+	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
+	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/kafka"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
 	productUseCase "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/logger"
 	"github.com/google/wire"
-	"github.com/rabbitmq/amqp091-go"
 )
 
 type (
 	IProductConsumer interface {
-		ProductCreated(ctx context.Context, d *amqp091.Delivery) error
-		ProductUpdated(ctx context.Context, d *amqp091.Delivery) error
-		ProductDeleted(ctx context.Context, d *amqp091.Delivery) error
+		SnapshotProductsProductCreated(ctx context.Context, message *kafka.Message) error
+		SnapshotProductsProductUpdated(ctx context.Context, message *kafka.Message) error
+		SnapshotProductsProductDeleted(ctx context.Context, message *kafka.Message) error
 	}
 
 	productConsumer struct {
-		rabbitMQInfrastructure  rabbitmqInfrastructure.IRabbitMQInfrastructure
+		kafkaInfrastructure     kafkaInfrastructure.IKafkaInfrastructure
 		productUseCase          productUseCase.IProductUseCase
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 		logger                  logger.IZapLogger
@@ -28,13 +28,13 @@ type (
 var Set = wire.NewSet(NewProductConsumer)
 
 func NewProductConsumer(
-	rabbitMQInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
+	kafkaInfrastructure kafkaInfrastructure.IKafkaInfrastructure,
 	productUseCase productUseCase.IProductUseCase,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	logger logger.IZapLogger,
 ) IProductConsumer {
 	return &productConsumer{
-		rabbitMQInfrastructure:  rabbitMQInfrastructure,
+		kafkaInfrastructure:     kafkaInfrastructure,
 		productUseCase:          productUseCase,
 		telemetryInfrastructure: telemetryInfrastructure,
 		logger:                  logger,

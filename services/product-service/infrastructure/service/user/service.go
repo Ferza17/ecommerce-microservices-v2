@@ -30,7 +30,7 @@ var Set = wire.NewSet(NewUserService)
 func NewUserService(logger logger.IZapLogger) IUserService {
 	insecureCredentials := grpc.WithTransportCredentials(insecure.NewCredentials()) // For Local Development
 
-	conn, err := grpc.NewClient(fmt.Sprintf("%s:%s", config.Get().UserServiceRpcHost, config.Get().UserServiceRpcPort), insecureCredentials)
+	conn, err := grpc.NewClient(fmt.Sprintf("%s:%s", config.Get().ConfigServiceUser.RpcHost, config.Get().ConfigServiceUser.RpcPort), insecureCredentials)
 	if err != nil {
 		logger.Error("UserService.NewUserService", zap.Error(err))
 		return nil

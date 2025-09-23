@@ -26,7 +26,7 @@ import (
 )
 
 type (
-	GrpcTransport struct {
+	Transport struct {
 		address    string
 		port       string
 		grpcServer *grpc.Server
@@ -48,14 +48,14 @@ func NewServer(
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	productPresenter *presenter.ProductPresenter,
 	userService userService.IUserService,
-) *GrpcTransport {
-	return &GrpcTransport{
+) *Transport {
+	return &Transport{
 		workerPool: pkgWorker.NewWorkerPool(
-			fmt.Sprintf("GRPC SERVER ON %s:%s", config.Get().ProductServiceRpcHost, config.Get().ProductServiceRpcPort),
+			fmt.Sprintf("GRPC SERVER ON %s:%s", config.Get().ConfigServiceProduct.RpcHost, config.Get().ConfigServiceProduct.RpcPort),
 			1,
 		),
-		address:                 config.Get().ProductServiceRpcHost,
-		port:                    config.Get().ProductServiceRpcPort,
+		address:                 config.Get().ConfigServiceProduct.RpcHost,
+		port:                    config.Get().ConfigServiceProduct.RpcPort,
 		productPresenter:        productPresenter,
 		logger:                  logger,
 		telemetryInfrastructure: telemetryInfrastructure,
@@ -63,7 +63,7 @@ func NewServer(
 	}
 }
 
-func (srv *GrpcTransport) Serve(ctx context.Context) error {
+func (srv *Transport) Serve(ctx context.Context) error {
 	srv.workerPool.Start()
 
 	listen, err := net.Listen("tcp", fmt.Sprintf("%s:%s", srv.address, srv.port))
@@ -89,7 +89,7 @@ func (srv *GrpcTransport) Serve(ctx context.Context) error {
 	// Mark the service as healthy
 	healthServer := health.NewServer()
 	grpc_health_v1.RegisterHealthServer(srv.grpcServer, healthServer)
-	healthServer.SetServingStatus(config.Get().UserServiceServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
+	healthServer.SetServingStatus(config.Get().ConfigServiceProduct.ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
 
 	// Enable Reflection to Evans grpc client
 	reflection.Register(srv.grpcServer)
@@ -104,6 +104,6 @@ func (srv *GrpcTransport) Serve(ctx context.Context) error {
 	return nil
 }
 
-func (srv *GrpcTransport) GracefulStop() {
+func (srv *Transport) GracefulStop() {
 	srv.grpcServer.GracefulStop()
 }

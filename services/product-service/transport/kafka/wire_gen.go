@@ -4,13 +4,12 @@
 //go:build !wireinject
 // +build !wireinject
 
-package rabbitmq
+package kafka
 
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/elasticsearch"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/postgres"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/consumer"
 	elasticsearch2 "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/repository/elasticsearch"
@@ -21,17 +20,16 @@ import (
 
 // Injectors from wire.go:
 
-func ProvideRabbitMQTransport() *RabbitMQTransport {
+func Provide() *Transport {
 	iZapLogger := logger.NewZapLogger()
 	iTelemetryInfrastructure := telemetry.NewTelemetry(iZapLogger)
-	iRabbitMQInfrastructure := rabbitmq.NewRabbitMQInfrastructure(iTelemetryInfrastructure, iZapLogger)
+	iKafkaInfrastructure := kafka.NewKafkaInfrastructure(iZapLogger, iTelemetryInfrastructure)
 	postgresSQL := postgres.NewPostgresqlInfrastructure(iZapLogger)
 	iProductPostgresqlRepository := postgres2.NewProductPostgresqlRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
-	iKafkaInfrastructure := kafka.NewKafkaInfrastructure(iZapLogger, iTelemetryInfrastructure)
 	iElasticsearchInfrastructure := elasticsearch.NewElasticsearchInfrastructure(iTelemetryInfrastructure, iZapLogger)
 	iProductElasticsearchRepository := elasticsearch2.NewProductElasticsearchRepository(iElasticsearchInfrastructure, iTelemetryInfrastructure, iZapLogger)
-	iProductUseCase := usecase.NewProductUseCase(postgresSQL, iProductPostgresqlRepository, iKafkaInfrastructure, iRabbitMQInfrastructure, iProductElasticsearchRepository, iTelemetryInfrastructure, iZapLogger)
-	iProductConsumer := consumer.NewProductConsumer(iRabbitMQInfrastructure, iProductUseCase, iTelemetryInfrastructure, iZapLogger)
-	rabbitMQTransport := NewServer(iZapLogger, iProductConsumer, iTelemetryInfrastructure, iRabbitMQInfrastructure)
-	return rabbitMQTransport
+	iProductUseCase := usecase.NewProductUseCase(postgresSQL, iProductPostgresqlRepository, iKafkaInfrastructure, iProductElasticsearchRepository, iTelemetryInfrastructure, iZapLogger)
+	iProductConsumer := consumer.NewProductConsumer(iKafkaInfrastructure, iProductUseCase, iTelemetryInfrastructure, iZapLogger)
+	transport := NewServer(iProductConsumer, iKafkaInfrastructure, iTelemetryInfrastructure, iZapLogger)
+	return transport
 }

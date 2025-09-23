@@ -3,13 +3,13 @@ package kafka
 import (
 	"context"
 	"fmt"
-	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"time"
 
+	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/context"
 )
 
-func (c *kafkaInfrastructure) PublishWithJsonSchema(ctx context.Context, topic string, key string, value interface{}) error {
+func (c *kafkaInfrastructure) Publish(ctx context.Context, topic string, key string, value []byte) error {
 	var (
 		headers = []kafka.Header{
 			{
@@ -19,7 +19,7 @@ func (c *kafkaInfrastructure) PublishWithJsonSchema(ctx context.Context, topic s
 		}
 		deliveryChan = make(chan kafka.Event, 1)
 	)
-	ctx, span := c.telemetryInfrastructure.StartSpanFromContext(ctx, "KafkaInfrastructure.PublishWithJsonSchema")
+	ctx, span := c.telemetryInfrastructure.StartSpanFromContext(ctx, "KafkaInfrastructure.Publish")
 	defer span.End()
 
 	if pkgContext.GetTokenAuthorizationFromContext(ctx) != "" {
@@ -38,26 +38,17 @@ func (c *kafkaInfrastructure) PublishWithJsonSchema(ctx context.Context, topic s
 		})
 	}
 
-	// Create JSON Schema serializer with proper configuration
-
-	// Ensure the value is properly structured
-	payload, err := c.jsonSerializer.Serialize(topic, value)
-	if err != nil {
-		c.logger.Error(fmt.Sprintf("failed to serialize message: %v", err))
-		return err
-	}
-
 	message := &kafka.Message{
 		TopicPartition: kafka.TopicPartition{
 			Topic:     &topic,
 			Partition: kafka.PartitionAny,
 		},
 		Key:     []byte(key),
-		Value:   payload,
+		Value:   value,
 		Headers: headers,
 	}
 
-	if err = c.producer.Produce(message, deliveryChan); err != nil {
+	if err := c.producer.Produce(message, deliveryChan); err != nil {
 		c.logger.Error(fmt.Sprintf("failed to publish message to topic %s: %v", topic, err))
 		return err
 	}
@@ -78,5 +69,4 @@ func (c *kafkaInfrastructure) PublishWithJsonSchema(ctx context.Context, topic s
 	}
 
 	return nil
-
 }

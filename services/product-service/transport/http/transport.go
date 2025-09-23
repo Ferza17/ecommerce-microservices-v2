@@ -19,6 +19,7 @@ import (
 	"github.com/google/wire"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"google.golang.org/protobuf/encoding/protojson"
 	"log"
@@ -26,7 +27,7 @@ import (
 )
 
 type (
-	HttpTransport struct {
+	Transport struct {
 		address    string
 		port       string
 		server     *http.Server
@@ -48,14 +49,14 @@ func NewServer(
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	productPresenter *presenter.ProductPresenter,
 	userService userService.IUserService,
-) *HttpTransport {
-	return &HttpTransport{
+) *Transport {
+	return &Transport{
 		workerPool: pkgWorker.NewWorkerPool(
-			fmt.Sprintf("HTTP SERVER ON %s:%s", config.Get().ProductServiceHttpHost, config.Get().ProductServiceHttpPort),
+			fmt.Sprintf("HTTP SERVER ON %s:%s", config.Get().ConfigServiceProduct.HttpHost, config.Get().ConfigServiceProduct.HttpPort),
 			1,
 		),
-		address:                 config.Get().ProductServiceHttpHost,
-		port:                    config.Get().ProductServiceHttpPort,
+		address:                 config.Get().ConfigServiceProduct.HttpHost,
+		port:                    config.Get().ConfigServiceProduct.HttpPort,
 		productPresenter:        productPresenter,
 		logger:                  logger,
 		telemetryInfrastructure: telemetryInfrastructure,
@@ -63,7 +64,7 @@ func NewServer(
 	}
 }
 
-func (s *HttpTransport) Serve(ctx context.Context) error {
+func (s *Transport) Serve(ctx context.Context) error {
 	s.workerPool.Start()
 
 	// Create Gorilla mux router
@@ -143,5 +144,18 @@ func (s *HttpTransport) Serve(ctx context.Context) error {
 
 	<-ctx.Done()
 	s.workerPool.Stop()
+	return nil
+}
+
+func (s *Transport) ServeHttpPrometheusMetricCollector() error {
+	handler := http.NewServeMux()
+	handler.Handle("/v1/product/metrics", promhttp.Handler())
+	log.Printf("Starting HTTP Metric Server on %s:%s", config.Get().ConfigServiceProduct.HttpHost, config.Get().ConfigServiceProduct.HttpPort)
+	if err := http.ListenAndServe(
+		fmt.Sprintf("%s:%s", config.Get().ConfigServiceProduct.HttpHost, config.Get().ConfigServiceProduct.MetricHttpPort),
+		handler,
+	); err != nil {
+		return err
+	}
 	return nil
 }

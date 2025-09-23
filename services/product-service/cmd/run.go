@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/transport/grpc"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/transport/http"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/transport/rabbitmq"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/transport/kafka"
 	"github.com/spf13/cobra"
 	"log"
 	"sync"
@@ -16,23 +16,15 @@ var runCommand = &cobra.Command{
 		ctx, cancel := context.WithCancel(cmd.Context())
 		defer cancel()
 
-		grpcServer := grpc.ProvideGrpcTransport()
-		httpServer := http.ProvideHttpTransport()
-		rabbitMQServer := rabbitmq.ProvideRabbitMQTransport()
+		grpcServer := grpc.Provide()
+		httpServer := http.Provide()
+		kafkaConsumer := kafka.Provide()
 
 		wg := new(sync.WaitGroup)
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			if err := grpcServer.Serve(ctx); err != nil {
-				log.Fatalln(err)
-			}
-		}()
-
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			if err := rabbitMQServer.Serve(ctx); err != nil {
 				log.Fatalln(err)
 			}
 		}()
@@ -49,7 +41,16 @@ var runCommand = &cobra.Command{
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			if err := http.ServeHttpPrometheusMetricCollector(); err != nil {
+			if err := kafkaConsumer.Serve(ctx); err != nil {
+				log.Println("Kafka Consumer Error: ", err)
+				return
+			}
+		}()
+
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if err := httpServer.ServeHttpPrometheusMetricCollector(); err != nil {
 				log.Panic(err)
 				return
 			}

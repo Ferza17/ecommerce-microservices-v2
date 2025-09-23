@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/postgres"
-	rabbitmqInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/rabbitmq"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
 	productRpc "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product"
 	productElasticsearchRepository "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/repository/elasticsearch"
@@ -29,7 +28,6 @@ type (
 		productPgsqlRepository         productRepo.IProductPostgresqlRepository
 		kafkaInfrastructure            kafka.IKafkaInfrastructure
 		productElasticsearchRepository productElasticsearchRepository.IProductElasticsearchRepository
-		rabbitmqInfrastructure         rabbitmqInfrastructure.IRabbitMQInfrastructure
 		telemetryInfrastructure        telemetryInfrastructure.ITelemetryInfrastructure
 		logger                         logger.IZapLogger
 	}
@@ -41,7 +39,6 @@ func NewProductUseCase(
 	postgres *postgres.PostgresSQL,
 	productPgsqlRepository productRepo.IProductPostgresqlRepository,
 	kafkaInfrastructure kafka.IKafkaInfrastructure,
-	rabbitmqInfrastructure rabbitmqInfrastructure.IRabbitMQInfrastructure,
 	productElasticsearchRepository productElasticsearchRepository.IProductElasticsearchRepository,
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	logger logger.IZapLogger,
@@ -50,7 +47,6 @@ func NewProductUseCase(
 		postgres:                       postgres,
 		productPgsqlRepository:         productPgsqlRepository,
 		kafkaInfrastructure:            kafkaInfrastructure,
-		rabbitmqInfrastructure:         rabbitmqInfrastructure,
 		telemetryInfrastructure:        telemetryInfrastructure,
 		productElasticsearchRepository: productElasticsearchRepository,
 		logger:                         logger,

@@ -1,15 +1,14 @@
 //go:build wireinject
 // +build wireinject
 
-package rabbitmq
+package kafka
 
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/elasticsearch"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/postgres"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/rabbitmq"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
-	productConsumer "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/consumer"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/consumer"
 	productEsRepo "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/repository/elasticsearch"
 	productPgRepo "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/repository/postgres"
 	productUseCase "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/usecase"
@@ -17,23 +16,22 @@ import (
 	"github.com/google/wire"
 )
 
-func ProvideRabbitMQTransport() *RabbitMQTransport {
+func Provide() *Transport {
 	wire.Build(
 		logger.Set,
 
 		// Infra
 		elasticsearch.Set,
 		postgres.Set,
-		rabbitmq.Set,
 		telemetry.Set,
 		kafka.Set,
 
-		productUseCase.Set,
-		productPgRepo.Set,
 		productEsRepo.Set,
+		productPgRepo.Set,
 
-		productConsumer.Set,
+		productUseCase.Set,
 
+		consumer.Set,
 		Set,
 	)
 
