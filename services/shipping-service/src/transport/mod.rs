@@ -9,6 +9,5 @@ pub mod http {
 }
 
 pub mod message_broker {
-    pub mod rabbitmq;
     pub mod kafka;
 }

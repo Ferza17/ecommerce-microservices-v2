@@ -7,10 +7,8 @@ use crate::config::database_postgres::DatabasePostgres;
 use crate::config::message_broker_kafka::MessageBrokerKafka;
 use crate::config::message_broker_kafka_topic_shipping::MessageBrokerKafkaTopicShipping;
 use crate::config::message_broker_kafka_topic_sink_shipping::MessageBrokerKafkaTopicSinkShipping;
-use crate::config::message_broker_rabbitmq::MessageBrokerRabbitMQ;
 use crate::config::service_payment::ServicePayment;
 use crate::config::service_shipping::ServiceShipping;
-use crate::config::service_shipping_rabbitmq::ServiceShippingRabbitMQ;
 use crate::config::service_user::ServiceUser;
 use crate::config::telemetry_jaeger::TelemetryJaeger;
 use consulrs::api::check::common::AgentServiceCheckBuilder;
@@ -26,15 +24,13 @@ pub struct AppConfig {
     pub database_postgres: DatabasePostgres,
     // FROM CONSUL KV SERVICES/SHIPPING
     pub service_shipping: ServiceShipping,
-    pub service_shipping_rabbitmq: ServiceShippingRabbitMQ,
     // FROM CONSUL KV SERVICE/USER
     pub service_user: ServiceUser,
     // FROM CONSUL KV SERVICE/USER
     pub service_payment: ServicePayment,
     // FROM CONSUL JAEGER TELEMETRY
     pub telemetry_jaeger: TelemetryJaeger,
-    // FROM CONSUL RABBITMQ
-    pub message_broker_rabbitmq: MessageBrokerRabbitMQ,
+    // FROM CONSUL KAFKA
     pub message_broker_kafka: MessageBrokerKafka,
     pub message_broker_kafka_topic_sink_shipping: MessageBrokerKafkaTopicSinkShipping,
     pub message_broker_kafka_topic_shipping: MessageBrokerKafkaTopicShipping,
@@ -46,11 +42,9 @@ impl Default for AppConfig {
             config_env: ConfigEnv::default(),
             database_postgres: DatabasePostgres::default(),
             service_shipping: ServiceShipping::default(),
-            service_shipping_rabbitmq: ServiceShippingRabbitMQ::default(),
             service_user: ServiceUser::default(),
             service_payment: ServicePayment::default(),
             telemetry_jaeger: TelemetryJaeger::default(),
-            message_broker_rabbitmq: MessageBrokerRabbitMQ::default(),
             message_broker_kafka: MessageBrokerKafka::default(),
             message_broker_kafka_topic_sink_shipping: MessageBrokerKafkaTopicSinkShipping::default(
             ),
@@ -123,20 +117,6 @@ impl AppConfig {
         self
     }
 
-    pub fn with_message_broker_rabbitmq_from_consul(mut self, client: &ConsulClient) -> Self {
-        tokio::task::block_in_place(|| {
-            tokio::runtime::Handle::current().block_on(async {
-                self.message_broker_rabbitmq = MessageBrokerRabbitMQ::default()
-                    .with_consul_client(self.config_env.env.clone(), client)
-                    .await
-                    .unwrap_or_else(|e| {
-                        panic!("Error with_message_broker_rabbitmq :  {:?}", e);
-                    });
-            });
-        });
-        self
-    }
-
     pub fn with_service_payment_from_consul(mut self, client: &ConsulClient) -> Self {
         tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(async {
@@ -159,20 +139,6 @@ impl AppConfig {
                     .await
                     .unwrap_or_else(|e| {
                         panic!("Error with_service_shipping :  {:?}", e);
-                    });
-            });
-        });
-        self
-    }
-
-    pub fn with_service_shipping_rabbitmq_from_consul(mut self, client: &ConsulClient) -> Self {
-        tokio::task::block_in_place(|| {
-            tokio::runtime::Handle::current().block_on(async {
-                self.service_shipping_rabbitmq = ServiceShippingRabbitMQ::default()
-                    .with_consul_client(self.config_env.env.clone(), client)
-                    .await
-                    .unwrap_or_else(|e| {
-                        panic!("Error with_service_shipping_rabbitmq : {:?}", e);
                     });
             });
         });

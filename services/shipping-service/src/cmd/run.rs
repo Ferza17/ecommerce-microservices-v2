@@ -1,8 +1,5 @@
 use crate::config::config::AppConfig;
-use crate::transport::{
-    grpc::grpc::GrpcTransport, http::metric::serve_metric_http_collector,
-    message_broker::rabbitmq::RabbitMQTransport,
-};
+use crate::transport::{grpc::grpc::GrpcTransport, http::metric::serve_metric_http_collector};
 use std::sync::Arc;
 
 use crate::infrastructure::telemetry::jaeger::init_tracing;
@@ -37,14 +34,12 @@ pub async fn handle_run_command(args: RunArgs) {
             .map_err(|e| eprintln!(" Error Consul :  {:?}", e))
             .unwrap(),
     )
-        .unwrap();
+    .unwrap();
 
     cfg = cfg
         .with_database_postgres_from_consul(&client)
-        .with_message_broker_rabbitmq_from_consul(&client)
         .with_service_payment_from_consul(&client)
         .with_service_shipping_from_consul(&client)
-        .with_service_shipping_rabbitmq_from_consul(&client)
         .with_service_user_from_consul(&client)
         .with_telemetry_jaeger_from_consul(&client)
         .with_message_broker_kafka_from_consul(&client)
@@ -126,29 +121,6 @@ pub async fn handle_run_command(args: RunArgs) {
             .await;
         handles.push((format!("{:?}", pool.metrics_pool.worker_type()), handle));
     }
-    // RabbitMQ with messaging pool
-    {
-        let pool = Arc::clone(&pools);
-        let cfg_clone = cfg.clone();
-        let pools_clone = Arc::clone(&pools);
-        let handle: Result<JoinHandle<Result<(), anyhow::Error>>, WorkerPoolError> = pool
-            .spawn_rabbitmq_task(move || async move {
-                let transport =
-                    RabbitMQTransport::new(cfg_clone, pools_clone.messaging_pool.clone());
-                match transport.serve().await {
-                    Ok(_) => {
-                        tracing::info!("RABBITMQ service completed successfully");
-                        Ok(())
-                    }
-                    Err(e) => {
-                        tracing::error!("RABBITMQ service failed: {}", e);
-                        Err(anyhow::anyhow!("RABBITMQ service failed: {}", e))
-                    }
-                }
-            })
-            .await;
-        handles.push((format!("{:?}", pool.messaging_pool.worker_type()), handle));
-    }
     // Kafka with Messaging Pool
     {
         let pool = Arc::clone(&pools);
@@ -156,7 +128,10 @@ pub async fn handle_run_command(args: RunArgs) {
         let pools_clone = Arc::clone(&pools);
         let handle: Result<JoinHandle<Result<(), anyhow::Error>>, WorkerPoolError> = pool
             .spawn_messaging_task(move || async move {
-                let transport = crate::transport::message_broker::kafka::Transport::new(cfg_clone, pools_clone.messaging_pool.clone());
+                let transport = crate::transport::message_broker::kafka::Transport::new(
+                    cfg_clone,
+                    pools_clone.messaging_pool.clone(),
+                );
                 match transport.serve().await {
                     Ok(_) => {
                         tracing::info!("Kafka service completed successfully");
@@ -171,7 +146,6 @@ pub async fn handle_run_command(args: RunArgs) {
             .await;
         handles.push((format!("{:?}", pool.messaging_pool.worker_type()), handle));
     }
-
 
     // Wait for all services
     for (service_name, handle) in handles {

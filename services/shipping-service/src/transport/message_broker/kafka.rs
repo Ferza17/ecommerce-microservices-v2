@@ -1,22 +1,15 @@
 use crate::config::config::AppConfig;
 use crate::infrastructure::database::async_postgres::get_connection;
 use crate::infrastructure::message_broker::kafka::KafkaInfrastructure;
-use crate::infrastructure::message_broker::rabbitmq::RabbitMQInfrastructure;
 use crate::infrastructure::services::payment::PaymentServiceGrpcClient;
 use crate::infrastructure::services::user::UserServiceGrpcClient;
 use crate::module::shipping::repository_postgres::ShippingPostgresRepositoryImpl;
 use crate::module::shipping::usecase::ShippingUseCaseImpl;
 use crate::module::shipping_provider::repository_postgres::ShippingProviderPostgresRepositoryImpl;
-use crate::package::worker_pool::worker_pool::{WorkerPool, WorkerPoolError};
-use anyhow::Error;
-use futures::{StreamExt, TryFutureExt};
+use crate::package::worker_pool::worker_pool::WorkerPool;
+use futures::StreamExt;
 use rdkafka::Message;
-use rdkafka::consumer::StreamConsumer;
-use rdkafka::error::KafkaResult;
-use serde_json::to_string;
 use std::sync::Arc;
-use tokio::task::JoinHandle;
-use tracing::error;
 
 pub struct Transport {
     config: AppConfig,

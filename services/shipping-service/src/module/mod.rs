@@ -6,8 +6,6 @@ pub mod shipping_provider {
 }
 
 pub mod shipping {
-
-    pub mod consumer_rabbitmq;
     pub mod consumer_kafka;
     pub mod presenter_grpc;
     pub mod presenter_http;
