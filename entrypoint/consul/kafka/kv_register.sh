@@ -1,7 +1,5 @@
 #!/bin/sh
 
-
-
 echo "INIT CONFIG KAFKA BROKER"
 # BROKER local
 consul kv put local/broker/kafka/BROKER_1 "localhost:9092"

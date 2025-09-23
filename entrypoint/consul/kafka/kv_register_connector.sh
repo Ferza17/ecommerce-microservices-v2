@@ -1,8 +1,6 @@
 #!/bin/sh
 
 echo "INIT CONFIG KAFKA TOPICS SINK & SOURCE CONNECTOR"
-
-
 # ----------- NOTIFICATION
 
 ## LOCAL

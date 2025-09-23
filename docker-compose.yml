@@ -26,7 +26,6 @@ services:
       - ./entrypoint/consul/init.sh:/init.sh:ro
       - ./entrypoint/consul/database:/database:ro
       - ./entrypoint/consul/prometheus:/prometheus:ro
-      - ./entrypoint/consul/rabbitmq:/rabbitmq:ro
       - ./entrypoint/consul/kafka:/kafka:ro
       - ./entrypoint/consul/services:/services:ro
       - ./entrypoint/consul/smtp:/smtp:ro
@@ -39,7 +38,6 @@ services:
       - local
 
   # POSTGRESQL DATABASE
-
 
   postgres-local:
     container_name: postgres-local
@@ -201,30 +199,6 @@ services:
     ports:
       - '1025:1025' # EXPOSE FOR LOCAL DEVELOPMENT
       - '8025:8025' # EXPOSE FOR LOCAL DEVELOPMENT
-    networks:
-      - local
-
-  # MESSAGE BROKER RABBIT MQ
-
-  rabbitmq-local:
-    container_name: rabbitmq-local
-    image: rabbitmq:3.11-management
-    ports:
-      - '15672:15672' # EXPOSE FOR LOCAL DEVELOPMENT
-      - '5672:5672' # EXPOSE FOR LOCAL DEVELOPMENT
-    environment:
-      RABBITMQ_DEFAULT_USER: "rabbitmq"
-      RABBITMQ_DEFAULT_PASS: "1234"
-      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbitmq_management load_definitions \"/etc/rabbitmq/definitions.json\""
-    volumes:
-      - ./entrypoint/rabbitmq/plugins:/usr/lib/rabbitmq/plugins
-      - ./entrypoint/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
-    command: >
-      sh -c "
-      cp /usr/lib/rabbitmq/plugins/rabbitmq_delayed_message_exchange-3.11.1.ez /plugins/ &&
-      rabbitmq-plugins enable --offline rabbitmq_delayed_message_exchange &&
-      rabbitmq-server
-      "
     networks:
       - local
 
@@ -396,7 +370,6 @@ services:
         condition: service_healthy
     ports:
       - "8088:8088" # KSQLDB SERVER
-#      - "8083:8083" # CONNECTORS
     command: ["/etc/ksqldb-server/init.sh"]
     restart: always
     volumes:
@@ -622,25 +595,29 @@ services:
     networks:
       - local
 
-  # EVENT-STORE-SERVICE
+  # PRODUCT-SERVICE
 
-#  event-store-service:
-#    container_name: event-store-service
+#  product-service:
+#    container_name: product-service
 #    build:
-#      context: ./services/event-store-service
+#      context: ./services/product-service
 #      dockerfile: Dockerfile
 #    ports:
-#      - "50052:50052" # GRPC
-#      - "40052:40052" # HTTP
-#      - "30052:30052" # HTTP METRIC COLLECTOR
+#      - "50055:50055" # GRPC
+#      - "40055:40055" # HTTP
+#      - "30055:30055" # HTTP METRIC COLLECTOR
 #    restart: always
 #    depends_on:
+#      postgres-local:
+#        condition: service_healthy
 #      consul-local:
 #        condition: service_healthy
-#      mongo-local:
+#      kafka-connect-local:
+#        condition: service_healthy
+#      kafka-local-broker-1:
 #        condition: service_healthy
 #    healthcheck:
-#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://event-store-service:40052/v1/event-store/check | grep -q '^200$'" ]
+#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://product-service:40055/v1/product/check | grep -q '^200$'" ]
 #      interval: 30s
 #      timeout: 10s
 #      retries: 10
@@ -676,67 +653,37 @@ services:
 #    networks:
 #      - local
 
-  # PRODUCT-SERVICE
+  # PAYMENT-SERVICE
 
-#  product-service:
-#    container_name: product-service
+#  payment-service:
+#    container_name: payment-service
 #    build:
-#      context: ./services/product-service
+#      context: ./services/payment-service
 #      dockerfile: Dockerfile
 #    ports:
-#      - "50055:50055" # GRPC
-#      - "40055:40055" # HTTP
-#      - "30055:30055" # HTTP METRIC COLLECTOR
+#      - "50054:50054" # GRPC
+#      - "40054:40054" # HTTP
+#      - "30054:30054" # HTTP METRIC COLLECTOR
 #    restart: always
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://payment-service:40054/v1/payment/check | grep -q '^200$'" ]
+#      interval: 45s
+#      timeout: 40s
+#      retries: 10
+#      start_period: 60s
 #    depends_on:
 #      postgres-local:
 #        condition: service_healthy
 #      consul-local:
 #        condition: service_healthy
-#      kafka-connect-local:
-#        condition: service_healthy
 #      kafka-local-broker-1:
 #        condition: service_healthy
-#    healthcheck:
-#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://product-service:40055/v1/product/check | grep -q '^200$'" ]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 10
-#      start_period: 60s
+#      kafka-connect-local:
+#        condition: service_healthy
+#      ksqldb-cli-local:
+#        condition: service_healthy
 #    networks:
 #      - local
-
-  # PAYMENT-SERVICE
-
-  payment-service:
-    container_name: payment-service
-    build:
-      context: ./services/payment-service
-      dockerfile: Dockerfile
-    ports:
-      - "50054:50054" # GRPC
-      - "40054:40054" # HTTP
-      - "30054:30054" # HTTP METRIC COLLECTOR
-    restart: always
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://payment-service:40054/v1/payment/check | grep -q '^200$'" ]
-      interval: 45s
-      timeout: 40s
-      retries: 10
-      start_period: 60s
-    depends_on:
-      postgres-local:
-        condition: service_healthy
-      consul-local:
-        condition: service_healthy
-      kafka-local-broker-1:
-        condition: service_healthy
-      kafka-connect-local:
-        condition: service_healthy
-      ksqldb-cli-local:
-        condition: service_healthy
-    networks:
-      - local
 
   # SHIPPING-SERVICE
 
