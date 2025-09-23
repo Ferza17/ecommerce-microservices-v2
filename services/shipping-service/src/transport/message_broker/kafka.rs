@@ -9,7 +9,7 @@ use crate::module::shipping::usecase::ShippingUseCaseImpl;
 use crate::module::shipping_provider::repository_postgres::ShippingProviderPostgresRepositoryImpl;
 use crate::package::worker_pool::worker_pool::{WorkerPool, WorkerPoolError};
 use anyhow::Error;
-use futures::StreamExt;
+use futures::{StreamExt, TryFutureExt};
 use rdkafka::Message;
 use rdkafka::consumer::StreamConsumer;
 use rdkafka::error::KafkaResult;
@@ -33,8 +33,6 @@ impl Transport {
         let postgres_pool = get_connection(&self.config.clone()).await;
         let user_service = UserServiceGrpcClient::new(self.config.clone()).await;
         let payment_service = PaymentServiceGrpcClient::new(self.config.clone()).await;
-        let rabbitmq_infrastructure =
-            Arc::new(RabbitMQInfrastructure::new(self.config.clone()).await);
         let kafka_infrastructure = KafkaInfrastructure::new(self.config.clone());
 
         // Repository Layer
@@ -70,26 +68,6 @@ impl Transport {
             ])
             .await
         {
-            Ok(v) => Arc::new(v), // Wrap in Arc
-            Err(e) => {
-                eprintln!("Failed to create Kafka consumer: {:?}", e);
-                return Err(e.into());
-            }
-        };
-
-        let kafka_consumer = match kafka_infrastructure
-            .consume(&[
-                self.config
-                    .message_broker_kafka_topic_shipping
-                    .snapshot_shippings_shipping_created
-                    .as_str(),
-                self.config
-                    .message_broker_kafka_topic_shipping
-                    .snapshot_shippings_shipping_updated
-                    .as_str(),
-            ])
-            .await
-        {
             Ok(v) => Arc::new(v),
             Err(e) => {
                 eprintln!("Failed to create Kafka consumer: {:?}", e);
@@ -97,72 +75,72 @@ impl Transport {
             }
         };
 
-        let mut handles: Vec<(String, Result<JoinHandle<()>, WorkerPoolError>)> = Vec::new();
-
-        // Move the entire consumer into the async block
-        let kafka_consumer = Arc::clone(&kafka_consumer);
-        let shipping_consumer = Arc::clone(&shipping_consumer);
-        let config = self.config.clone();
-
-        // Create a separate task for the stream processing
-        let mut stream = kafka_consumer.stream();
+        let stream = kafka_consumer.stream();
+        tokio::pin!(stream);
 
         while let Some(message) = stream.next().await {
             match message {
-                Ok(m) => {
-                    let shipping_consumer = Arc::clone(&shipping_consumer);
-                    let message_topic = m.topic().clone().to_string();
-
-                    if message_topic
-                        == config
-                            .message_broker_kafka_topic_shipping
-                            .snapshot_shippings_shipping_created
-                            .as_str()
-                    {
-                        let handler = Ok(self
-                            .pool
-                            .spawn(move || async move {
-                                match shipping_consumer
-                                    .consume_snapshot_shippings_shipping_created(m)
-                                    .await
-                                {
-                                    Ok(_) => {}
-                                    Err(e) => {
-                                        error!("{:?}", e);
-                                    }
-                                }
-                            })
-                            .await
-                            .expect("Failed to spawn worker"));
-
-                        handles.push((
-                            self.config
+                Ok(m) => match m.topic() {
+                    topic
+                        if topic
+                            == self
+                                .config
                                 .message_broker_kafka_topic_shipping
                                 .snapshot_shippings_shipping_created
-                                .clone(),
-                            handler,
-                        ));
+                                .as_str() =>
+                    {
+                        let consumer = shipping_consumer.clone();
+                        let msg = m.detach(); // detach to own the message
+                        match self
+                            .pool
+                            .spawn(move || async move {
+                                consumer
+                                    .consume_snapshot_shippings_shipping_created(msg)
+                                    .await
+                                    .unwrap();
+                            })
+                            .await
+                        {
+                            Ok(_) => {
+                                eprintln!("Kafka message consumed");
+                            }
+                            Err(_) => continue,
+                        }
                     }
-
-                    if message_topic
-                        == config
-                            .message_broker_kafka_topic_shipping
-                            .snapshot_shippings_shipping_updated
-                            .as_str()
-                    {}
-
+                    topic
+                        if topic
+                            == self
+                                .config
+                                .message_broker_kafka_topic_shipping
+                                .snapshot_shippings_shipping_updated
+                                .as_str() =>
+                    {
+                        let consumer = shipping_consumer.clone();
+                        let msg = m.detach(); // detach to own the message
+                        match self
+                            .pool
+                            .spawn(move || async move {
+                                consumer
+                                    .consume_snapshot_shippings_shipping_updated(msg)
+                                    .await
+                                    .unwrap();
+                            })
+                            .await
+                        {
+                            Ok(_) => {
+                                eprintln!("Kafka message consumed");
+                            }
+                            Err(_) => continue,
+                        }
+                    }
+                    _ => {
+                        eprintln!("Kafka unregistered topic ");
+                    }
+                },
+                Err(e) => {
+                    eprintln!("Kafka message error: {:?}", e);
                     continue;
                 }
-                Err(e) => {
-                    error!("Kafka message error: {:?}", e);
-                }
-            }
-        }
-
-        // Wait for the stream processing task to complete
-        for (topic, handle) in handles {
-            if let Err(e) = handle.unwrap().await {
-                error!("[Kafka] Error: {}", e);
             }
         }
 

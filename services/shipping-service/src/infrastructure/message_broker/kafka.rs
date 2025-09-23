@@ -29,15 +29,15 @@ impl KafkaInfrastructure {
         // Published Config
         client_config
             .set("client.id", config.service_shipping.name.clone())
-            .set("message.timeout.ms", "5000");
+            .set("message.timeout.ms", "2000");
 
         // Consumer Config
         client_config
             .set("group.id", config.service_shipping.name.clone().as_str())
-            .set("enable.partition.eof", "false")
-            .set("session.timeout.ms", "6000")
+            .set("session.timeout.ms", "10000")
             .set("enable.auto.commit", "true")
             .set("auto.offset.reset", "earliest")
+            .set("heartbeat.interval.ms", "3000")
             .set_log_level(RDKafkaLogLevel::Debug);
 
         let schema_registry_settings =
