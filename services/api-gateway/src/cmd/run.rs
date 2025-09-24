@@ -1,5 +1,5 @@
 use crate::config::config::AppConfig;
-use crate::transport::http::{http::HttpTransport, metric::serve_metric_http_collector};
+use crate::transport::http::http::HttpTransport;
 use std::sync::Arc;
 
 use crate::infrastructure::telemetry::jaeger::init_tracing;
@@ -63,7 +63,8 @@ pub async fn handle_run_command(args: RunArgs) {
         let cfg_clone = cfg.clone();
         let handle: Result<JoinHandle<Result<(), anyhow::Error>>, WorkerPoolError> = pool
             .spawn_metrics_task(move || async move {
-                match serve_metric_http_collector(cfg_clone).await {
+                let transport = HttpTransport::new(cfg_clone);
+                match transport.serve_metric_http_collector().await {
                     Ok(_) => {
                         tracing::info!("Metric service completed successfully");
                         Ok(())

@@ -1,41 +1,43 @@
 use crate::config::config::AppConfig;
+use rdkafka::consumer::{Consumer, StreamConsumer};
 use rdkafka::message::ToBytes;
 use rdkafka::{
     config::ClientConfig,
     producer::{FutureProducer, FutureRecord},
 };
 use std::time::Duration;
+use tracing::instrument;
 
 #[derive(Debug, Clone)]
 pub struct KafkaInfrastructure {
-    pub kafka_config: ClientConfig,
+    client_config: ClientConfig,
 }
 
 impl KafkaInfrastructure {
     pub fn new(config: AppConfig) -> Self {
-        let mut kafka_config = ClientConfig::new();
-        kafka_config
-            .set("bootstrap.servers", config.message_broker_kafka.broker_1)
-            .set("message.timeout.ms", "5000")
-            .set("client.id", config.service_api_gateway.name)
-            .set("heartbeat.interval.ms", "3000");
+        let mut client_config = ClientConfig::new();
+        client_config.set(
+            "bootstrap.servers",
+            config.message_broker_kafka.broker_1.clone(),
+        );
+        // Published Config
+        client_config
+            .set("client.id", config.service_shipping.name.clone())
+            .set("message.timeout.ms", "2000");
 
-        Self { kafka_config }
+        Self { client_config }
     }
 
-    pub async fn publish<K, P>(
-        &self,
-        record: FutureRecord<'_, K, P>,
-    ) -> Result<(), anyhow::Error>
+    #[instrument("KafkaInfrastructure.publish")]
+    pub async fn publish<K, P>(&self, record: FutureRecord<'_, K, P>) -> Result<(), anyhow::Error>
     where
-        K: ToBytes + ?Sized,
-        P: ToBytes + ?Sized,
+        K: ToBytes + ?Sized + std::fmt::Debug,
+        P: ToBytes + ?Sized + std::fmt::Debug,
     {
-        let producer: FutureProducer = self.kafka_config.create()?;
+        let producer: FutureProducer = self.client_config.create()?;
         match producer.send(record, Duration::from_secs(5)).await {
             Ok(_) => Ok(()),
             Err(_) => Err(anyhow::Error::msg("Error sending message")),
         }
     }
-
 }

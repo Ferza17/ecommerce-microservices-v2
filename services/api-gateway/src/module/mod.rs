@@ -13,14 +13,13 @@ pub mod user {
     pub mod http_presenter;
     pub mod transport_grpc;
     pub mod transport_kafka;   
-    pub mod transport_rabbitmq;
     pub mod usecase;
 }
 
 pub mod product {
     pub mod http_presenter;
     pub mod transport_grpc;
-    pub mod transport_rabbitmq;
+    pub mod transport_kafka;
     pub mod usecase;
 }
 
@@ -45,6 +44,6 @@ pub mod payment_providers {
 pub mod payment {
     pub mod http_presenter;
     pub mod transport_grpc;
-    pub mod transport_rabbitmq;
+    pub mod transport_kafka;
     pub mod usecase;
 }

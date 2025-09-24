@@ -1,12 +1,9 @@
 use crate::config::message_broker_kafka::MessageBrokerKafka;
-use crate::config::service_event_rabbitmq::ServiceEventRabbitMQ;
 use crate::config::service_user_kafka::ServiceUserKafka;
 use crate::config::{
-    message_broker_rabbitmq::MessageBrokerRabbitMQ, open_policy_agent::OpenPolicyAgent,
-    service_api_gateway::ServiceApiGateway, service_event::ServiceEvent,
-    service_payment::ServicePayment, service_product::ServiceProduct,
-    service_shipping::ServiceShipping, service_shipping_rabbitmq::ServiceShippingRabbitMQ,
-    service_user::ServiceUser, service_user_rabbitmq::ServiceUserRabbitMQ,
+    open_policy_agent::OpenPolicyAgent, service_api_gateway::ServiceApiGateway,
+    service_event::ServiceEvent, service_payment::ServicePayment, service_product::ServiceProduct,
+    service_shipping::ServiceShipping, service_user::ServiceUser,
     telemetry_jaeger::TelemetryJaeger,
 };
 use config::{Config, ConfigError, Environment, File};
@@ -25,10 +22,8 @@ pub struct AppConfig {
     pub service_api_gateway: ServiceApiGateway,
     // FROM CONSUL KV SERVICES/SHIPPING
     pub service_shipping: ServiceShipping,
-    pub service_shipping_rabbitmq: ServiceShippingRabbitMQ,
     // FROM CONSUL KV SERVICE/USER
     pub service_user: ServiceUser,
-    pub service_user_rabbitmq: ServiceUserRabbitMQ,
     pub service_user_kafka: ServiceUserKafka,
     // FROM CONSUL KV SERVICE/PRODUCT
     pub service_product: ServiceProduct,
@@ -36,11 +31,8 @@ pub struct AppConfig {
     pub service_payment: ServicePayment,
     // FROM CONSUL KV SERVICE/EVENT-STORE
     pub service_event: ServiceEvent,
-    pub service_event_rabbitmq: ServiceEventRabbitMQ,
     // FROM CONSUL JAEGER TELEMETRY
     pub telemetry_jaeger: TelemetryJaeger,
-    // FROM CONSUL RABBITMQ
-    pub message_broker_rabbitmq: MessageBrokerRabbitMQ,
     // FROM CONSUL KAFKA
     pub message_broker_kafka: MessageBrokerKafka,
     // FROM CONSUL OPEN POLICY CONFIG
@@ -53,16 +45,12 @@ impl Default for AppConfig {
             // FROM CONFIG/CONFIG.TOML
             config_env: ConfigEnv::default(),
             service_shipping: ServiceShipping::default(),
-            service_shipping_rabbitmq: ServiceShippingRabbitMQ::default(),
             service_api_gateway: ServiceApiGateway::default(),
             service_user: ServiceUser::default(),
-            service_user_rabbitmq: ServiceUserRabbitMQ::default(),
             service_product: ServiceProduct::default(),
             service_payment: ServicePayment::default(),
             service_event: ServiceEvent::default(),
-            service_event_rabbitmq: ServiceEventRabbitMQ::default(),
             telemetry_jaeger: TelemetryJaeger::default(),
-            message_broker_rabbitmq: MessageBrokerRabbitMQ::default(),
             open_policy_agent: OpenPolicyAgent::default(),
             message_broker_kafka: MessageBrokerKafka::default(),
             service_user_kafka: ServiceUserKafka::default(),
@@ -116,15 +104,11 @@ impl AppConfig {
             .with_service_api_gateway(&client)
             .with_service_shipping(&client)
             .with_open_policy_agent(&client)
-            .with_service_shipping_rabbitmq(&client)
             .with_service_user(&client)
-            .with_service_user_rabbitmq(&client)
             .with_service_user_kafka(&client)
             .with_service_payment(&client)
             .with_service_event(&client)
-            .with_service_event_rabbitmq(&client)
             .with_service_product(&client)
-            .with_message_broker_rabbitmq(&client)
             .with_message_broker_kafka(&client)
             .with_telemetry_jaeger(&client)
             .with_register_consul_service(&client))
@@ -149,20 +133,6 @@ impl AppConfig {
         self
     }
 
-    fn with_service_shipping_rabbitmq(mut self, client: &ConsulClient) -> Self {
-        tokio::task::block_in_place(|| {
-            tokio::runtime::Handle::current().block_on(async {
-                self.service_shipping_rabbitmq = ServiceShippingRabbitMQ::default()
-                    .with_consul_client(self.config_env.env.clone(), client)
-                    .await
-                    .unwrap_or_else(|e| {
-                        panic!("Error with_service_shipping_rabbitmq : {:?}", e);
-                    });
-            });
-        });
-        self
-    }
-
     fn with_service_user(mut self, client: &ConsulClient) -> Self {
         tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(async {
@@ -171,20 +141,6 @@ impl AppConfig {
                     .await
                     .unwrap_or_else(|e| {
                         panic!("Error with_service_user :  {:?}", e);
-                    });
-            });
-        });
-        self
-    }
-
-    fn with_service_user_rabbitmq(mut self, client: &ConsulClient) -> Self {
-        tokio::task::block_in_place(|| {
-            tokio::runtime::Handle::current().block_on(async {
-                self.service_user_rabbitmq = ServiceUserRabbitMQ::default()
-                    .with_consul_client(self.config_env.env.clone(), client)
-                    .await
-                    .unwrap_or_else(|e| {
-                        panic!("Error with_service_user_rabbitmq :  {:?}", e);
                     });
             });
         });
@@ -247,20 +203,6 @@ impl AppConfig {
         self
     }
 
-    fn with_service_event_rabbitmq(mut self, client: &ConsulClient) -> Self {
-        tokio::task::block_in_place(|| {
-            tokio::runtime::Handle::current().block_on(async {
-                self.service_event_rabbitmq = ServiceEventRabbitMQ::default()
-                    .with_consul_client(self.config_env.env.clone(), client)
-                    .await
-                    .unwrap_or_else(|e| {
-                        panic!("Error with_service_event_rabbitmq :  {:?}", e);
-                    });
-            });
-        });
-        self
-    }
-
     fn with_telemetry_jaeger(mut self, client: &ConsulClient) -> Self {
         tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(async {
@@ -283,20 +225,6 @@ impl AppConfig {
                     .await
                     .unwrap_or_else(|e| {
                         panic!("Error with_service_user :  {:?}", e);
-                    });
-            });
-        });
-        self
-    }
-
-    fn with_message_broker_rabbitmq(mut self, client: &ConsulClient) -> Self {
-        tokio::task::block_in_place(|| {
-            tokio::runtime::Handle::current().block_on(async {
-                self.message_broker_rabbitmq = MessageBrokerRabbitMQ::default()
-                    .with_consul_client(self.config_env.env.clone(), client)
-                    .await
-                    .unwrap_or_else(|e| {
-                        panic!("Error with_message_broker_rabbitmq :  {:?}", e);
                     });
             });
         });

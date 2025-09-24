@@ -1,3 +1,4 @@
+use crate::config::config::AppConfig;
 use crate::infrastructure::opa::opa::OpaInput;
 use crate::model::rpc::event::{AppendRequest, AppendResponse, Event};
 use crate::model::rpc::user::{
@@ -6,26 +7,25 @@ use crate::model::rpc::user::{
     AuthUserVerifyOtpRequest, AuthUserVerifyOtpResponse, EnumRole, User,
 };
 use tracing::instrument;
-use uuid::Timestamp;
 
 #[derive(Debug, Clone)]
 pub struct UseCase {
+    config: AppConfig,
     auth_transport_grpc: crate::module::auth::transport_grpc::Transport,
-    user_transport_rabbitmq: crate::module::user::transport_rabbitmq::Transport,
     user_transport_kafka: crate::module::user::transport_kafka::Transport,
     opa_infrastructure: crate::infrastructure::opa::opa::OPA,
 }
 
 impl UseCase {
     pub fn new(
+        config: AppConfig,
         auth_transport_grpc: crate::module::auth::transport_grpc::Transport,
-        user_transport_rabbitmq: crate::module::user::transport_rabbitmq::Transport,
         user_transport_kafka: crate::module::user::transport_kafka::Transport,
         opa_infrastructure: crate::infrastructure::opa::opa::OPA,
     ) -> Self {
         Self {
+            config,
             auth_transport_grpc,
-            user_transport_rabbitmq,
             user_transport_kafka,
             opa_infrastructure,
         }
@@ -61,7 +61,16 @@ impl UseCase {
     ) -> Result<(), tonic::Status> {
         match self
             .user_transport_kafka
-            .send_snapshot_users_user_login(request_id, request)
+            .send_snapshot(
+                request_id,
+                request,
+                &self
+                    .config
+                    .service_user_kafka
+                    .topic_snapshot_users_user_login
+                    .clone()
+                    .as_str(),
+            )
             .await
         {
             Ok(_) => Ok(()),

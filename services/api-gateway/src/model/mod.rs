@@ -1,8 +1,8 @@
 pub mod rpc {
+    pub mod event;
     pub mod payment;
-    pub mod shipping;
-    pub mod user;
     pub mod product;
     pub mod response;
-    pub mod event;
+    pub mod shipping;
+    pub mod user;
 }

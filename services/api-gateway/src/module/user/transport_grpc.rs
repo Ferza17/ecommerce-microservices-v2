@@ -6,7 +6,8 @@ use crate::model::rpc::user::{
 use crate::package::context::{auth::AUTHORIZATION_HEADER, request_id::X_REQUEST_ID_HEADER};
 use crate::util::metadata::inject_trace_context;
 use opentelemetry::trace::FutureExt;
-use tracing::{Level, Span, event, instrument};
+use tonic::transport::{Channel, Error};
+use tracing::{Level, Span, error, event, instrument};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 #[derive(Debug, Clone)]
@@ -26,8 +27,9 @@ impl Transport {
             .expect("Failed to connect to user service")
             .connect()
             .await
-            .map_err(|e| panic!("user service not connected : {}", e))
+            .map_err(|e| error!("user service not connected : {}", e))
             .unwrap();
+
         Ok(Self {
             auth_service_client: AuthServiceClient::new(channel.clone()),
             user_service_client: UserServiceClient::new(channel),

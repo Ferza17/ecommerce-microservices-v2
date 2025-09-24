@@ -18,7 +18,7 @@ use tower_http::{
     cors::{Any, CorsLayer},
     trace::TraceLayer,
 };
-use tracing::info_span;
+use tracing::{error, info_span};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
@@ -41,50 +41,61 @@ impl HttpTransport {
 
         // Infrastructure Layer
         let opa = crate::infrastructure::opa::opa::OPA::new(self.config.clone());
-        let rabbitmq =
-            crate::infrastructure::message_broker::rabbitmq::RabbitMQInfrastructure::new(
-                self.config.clone(),
-            )
-            .await;
         let kafka = crate::infrastructure::message_broker::kafka::KafkaInfrastructure::new(
             self.config.clone(),
         );
 
-        // Transport Layer
+        // Transport GRPC Layer
         let user_transport_grpc =
-            crate::module::user::transport_grpc::Transport::new(self.config.clone()).await?;
+            crate::module::user::transport_grpc::Transport::new(self.config.clone())
+                .await
+                .map_err(|e| error!("user_transport_grpc not connected : {}", e))
+                .unwrap();
         let auth_transport_grpc =
-            crate::module::auth::transport_grpc::Transport::new(self.config.clone()).await?;
-        let user_transport_rabbitmq =
-            crate::module::user::transport_rabbitmq::Transport::new(self.config.clone(), rabbitmq);
+            crate::module::auth::transport_grpc::Transport::new(self.config.clone())
+                .await
+                .map_err(|e| error!("auth_transport_grpc not connected : {}", e))
+                .unwrap();
+        let product_transport_grpc =
+            crate::module::product::transport_grpc::Transport::new(self.config.clone())
+                .await
+                .map_err(|e| error!("product_transport_grpc not connected : {}", e))
+                .unwrap();
+        let payment_provider_transport_grpc =
+            crate::module::payment_providers::transport_grpc::Transport::new(self.config.clone())
+                .await
+                .map_err(|e| error!("payment_provider_transport_grpc not connected : {}", e))
+                .unwrap();
+        let payment_transport_grpc =
+            crate::module::payment::transport_grpc::Transport::new(self.config.clone())
+                .await
+                .map_err(|e| error!("payment_transport_grpc not connected : {}", e))
+                .unwrap();
+        let shipping_transport_grpc =
+            crate::module::shipping::transport_grpc::Transport::new(self.config.clone())
+                .await
+                .map_err(|e| error!("shipping_transport_grpc not connected : {}", e))
+                .unwrap();
+        let shipping_provider_transport_grpc =
+            crate::module::shipping_provider::transport_grpc::Transport::new(self.config.clone())
+                .await
+                .map_err(|e| error!("shipping_provider_transport_grpc not connected : {}", e))
+                .unwrap();
+
+        // Transport Kafka Layer
         let user_transport_kafka =
             crate::module::user::transport_kafka::Transport::new(self.config.clone(), kafka);
 
-        let product_transport_grpc =
-            crate::module::product::transport_grpc::Transport::new(self.config.clone()).await?;
-
-        let payment_provider_transport_grpc =
-            crate::module::payment_providers::transport_grpc::Transport::new(self.config.clone())
-                .await?;
-        let payment_transport_grpc =
-            crate::module::payment::transport_grpc::Transport::new(self.config.clone()).await?;
-
-        let shipping_provider_transport_grpc =
-            crate::module::shipping_provider::transport_grpc::Transport::new(self.config.clone())
-                .await?;
-        let shipping_transport_grpc =
-            crate::module::shipping::transport_grpc::Transport::new(self.config.clone()).await?;
-
         // Use case layer
         let auth_use_case = crate::module::auth::usecase::UseCase::new(
+            self.config.clone(),
             auth_transport_grpc,
-            user_transport_rabbitmq.clone(),
-            user_transport_kafka,
+            user_transport_kafka.clone(),
             opa,
         );
         let user_use_case = crate::module::user::usecase::UseCase::new(
             user_transport_grpc.clone(),
-            user_transport_rabbitmq,
+            user_transport_kafka,
         );
         let product_use_case =
             crate::module::product::usecase::UseCase::new(product_transport_grpc.clone());
@@ -134,9 +145,8 @@ impl HttpTransport {
             shipping_use_case,
             auth_use_case,
         );
-        let notification_presenter = crate::module::notification::http_presenter::Presenter::new(
-            notification_use_case,
-        );
+        let notification_presenter =
+            crate::module::notification::http_presenter::Presenter::new(notification_use_case);
 
         let app = Router::new()
             .nest(
@@ -217,6 +227,28 @@ impl HttpTransport {
         let listener = tokio::net::TcpListener::bind(addr.as_str()).await?;
         eprintln!("Starting HTTP server on {}", addr.as_str());
         axum::serve(listener, app).await?;
+        Ok(())
+    }
+
+    pub async fn serve_metric_http_collector(
+        self,
+    ) -> std::result::Result<(), Box<dyn std::error::Error>> {
+        let end_point = format!(
+            "{}:{}",
+            self.config.service_api_gateway.http_host,
+            self.config.service_api_gateway.metric_http_port
+        )
+        .to_string();
+
+        let listener = std::net::TcpListener::bind(end_point.as_str()).unwrap();
+
+        eprintln!("HTTP METRIC COLLECTOR STARTED {}", end_point);
+
+        for stream in listener.incoming() {
+            let _stream = stream.unwrap();
+            eprintln!("Connection established!");
+        }
+
         Ok(())
     }
 }

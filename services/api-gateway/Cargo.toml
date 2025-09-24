@@ -36,6 +36,8 @@ thiserror = "1.0.69"
 
 # KAFKA
 rdkafka = { version = "0.38" }
+schema_registry_converter= { version = "4.5.0", features = ["json", "blocking"] }
+
 
 # GRPC SERVER
 tonic = "0.12.3"
