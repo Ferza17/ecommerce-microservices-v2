@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/orm"
-	"log"
 )
 
 func (r *productElasticsearchRepository) FindProductById(ctx context.Context, requestId string, id string) (*orm.Product, error) {
@@ -29,8 +28,9 @@ func (r *productElasticsearchRepository) FindProductById(ctx context.Context, re
 	var doc struct {
 		Source orm.Product `json:"_source"`
 	}
-	if err := json.NewDecoder(res.Body).Decode(&doc); err != nil {
-		log.Fatalf("Error parsing the response body: %s", err)
+	if err = json.NewDecoder(res.Body).Decode(&doc); err != nil {
+		r.logger.Error(fmt.Sprintf("error while decode response: %v", err))
+		return nil, fmt.Errorf("error while decode response: %v", err)
 	}
 
 	return &doc.Source, nil
