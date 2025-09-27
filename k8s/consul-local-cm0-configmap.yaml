@@ -8,13 +8,11 @@ data:
       sleep 1
     done
 
-
-    # LOAD CONFIG RABBITMQ
+    # LOAD CONFIG KAFKA
     ##########################################################################################################################################################################################################################
-    sh ./rabbitmq/kv_register.sh
-    sh ./rabbitmq/kv_register_exchange.sh
-    sh ./rabbitmq/kv_register_queue.sh
-    sh ./rabbitmq/service_register.sh
+    sh ./kafka/kv_register.sh
+    sh ./kafka/kv_register_topic.sh
+    sh ./kafka/kv_register_connector.sh
 
     # LOAD CONFIG DATABASE
     ##########################################################################################################################################################################################################################

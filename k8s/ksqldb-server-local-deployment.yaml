@@ -12,6 +12,8 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: ksqldb-server-local
+  strategy:
+    type: Recreate
   template:
     metadata:
       annotations:
@@ -21,20 +23,25 @@ spec:
         io.kompose.service: ksqldb-server-local
     spec:
       containers:
-        - env:
-            - name: KSQL_BOOTSTRAP_SERVERS
-              value: kafka-local:9092
-            - name: KSQL_CACHE_MAX_BYTES_BUFFERING
-              value: "0"
-            - name: KSQL_KSQL_CONNECT_URL
-              value: http://kafka-connect-local:8083
-            - name: KSQL_KSQL_SCHEMA_REGISTRY_URL
-              value: http://schema-registry-local:8081
-            - name: KSQL_LISTENERS
-              value: http://0.0.0.0:8088
+        - args:
+            - /etc/ksqldb-server/init.sh
           image: confluentinc/cp-ksqldb-server:7.2.15
+          livenessProbe:
+            exec:
+              command:
+                - curl --fail --silent http://localhost:8088/healthcheck || exit 1
+            failureThreshold: 15
+            periodSeconds: 15
+            timeoutSeconds: 10
           name: ksqldb-server-local
           ports:
             - containerPort: 8088
               protocol: TCP
+          volumeMounts:
+            - mountPath: /etc/ksqldb-server
+              name: ksqldb-server-local-cm0
       restartPolicy: Always
+      volumes:
+        - configMap:
+            name: ksqldb-server-local-cm0
+          name: ksqldb-server-local-cm0

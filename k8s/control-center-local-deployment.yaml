@@ -23,14 +23,16 @@ spec:
       containers:
         - env:
             - name: CONTROL_CENTER_BOOTSTRAP_SERVERS
-              value: kafka-local:9092
+              value: kafka-local-broker-1:29092
             - name: CONTROL_CENTER_CONNECT_CONNECT-DEFAULT_CLUSTER
               value: kafka-connect-local:8083
+            - name: CONTROL_CENTER_CONNECT_HEALTHCHECK_ENDPOINT
+              value: /connectors
             - name: CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS
               value: "1"
-            - name: CONTROL_CENTER_KCONNECT_URL
-              value: kafka-connect-local:8083
-            - name: CONTROL_CENTER_KSQL_KSQLDB-CLUSTER_URL
+            - name: CONTROL_CENTER_KSQL_KSQLDB1_ADVERTISED_URL
+              value: http://ksqldb-server-local:8088
+            - name: CONTROL_CENTER_KSQL_KSQLDB1_URL
               value: http://ksqldb-server-local:8088
             - name: CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS
               value: "1"

@@ -30,10 +30,6 @@
 
     "behavior.on.malformed.documents": "ignore",
 
-    "errors.tolerance": "all",
-    "errors.log.enable": "true",
-    "errors.log.include.messages": "true",
-
     "batch.size": "1000",
     "batch.size.bytes": "10000000",
     "linger.ms": "1000",
@@ -42,6 +38,15 @@
     "input.data.format": "JSON",
 
     "db.timezone": "Asia/Jakarta",
+
+
+    "errors.tolerance": "all",
+    "errors.log.enable": "true",
+    "errors.log.include.messages": "true",
+    "errors.deadletterqueue.topic.name": "dlq-sink-es-products-products",
+    "errors.deadletterqueue.topic.replication.factor": "1",
+    "errors.deadletterqueue.context.headers.enable": "true",
+
     "transforms": "convertUpdatedAt,convertCreatedAt",
 
     "transforms.convertUpdatedAt.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",

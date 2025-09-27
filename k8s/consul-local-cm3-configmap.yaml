@@ -3,193 +3,139 @@ data:
   kv_register.sh: |
     #!/bin/sh
 
-    echo "INIT CONFIG RABBITMQ"
-    ## Local
+    echo "INIT CONFIG KAFKA BROKER"
+    # BROKER local
+    consul kv put local/broker/kafka/BROKER_1 "localhost:9092"
+    # BROKER production
+    consul kv put production/broker/kafka/BROKER_1 "kafka-local-broker-1:29092"
 
-    consul kv put local/broker/rabbitmq/RABBITMQ_USERNAME "rabbitmq"
-    consul kv put local/broker/rabbitmq/RABBITMQ_PASSWORD "1234"
-    consul kv put local/broker/rabbitmq/RABBITMQ_HOST "localhost"
-    consul kv put local/broker/rabbitmq/RABBITMQ_PORT "5672"
-    ## Production
-    consul kv put production/broker/rabbitmq/RABBITMQ_USERNAME "rabbitmq"
-    consul kv put production/broker/rabbitmq/RABBITMQ_PASSWORD "1234"
-    consul kv put production/broker/rabbitmq/RABBITMQ_HOST "rabbitmq-local"
-    consul kv put production/broker/rabbitmq/RABBITMQ_PORT "5672"
+    # SCHEMA REGISTRY local
+    consul kv put local/broker/kafka/SCHEMA_REGISTRY "http://localhost:8081"
+    # SCHEMA REGISTRY local
+    consul kv put production/broker/kafka/SCHEMA_REGISTRY "http://schema-registry-local:8081"
 
-
-    echo "DONE INIT CONFIG RABBITMQ"
-  kv_register_exchange.sh: |
+    echo "DONE INIT CONFIG KAFKA BROKER"
+  kv_register_connector.sh: |
     #!/bin/sh
 
-    echo "INIT CONFIG RABBITMQ EXCHANGE"
+    echo "INIT CONFIG KAFKA TOPICS SINK & SOURCE CONNECTOR"
+    # ----------- NOTIFICATION
 
-    # EXCHANGE LOCAL
-    consul kv put local/broker/rabbitmq/EXCHANGE/PRODUCT "direct.product.exchange"
-    consul kv put local/broker/rabbitmq/EXCHANGE/COMMERCE "direct.commerce.exchange"
-    consul kv put local/broker/rabbitmq/EXCHANGE/EVENT "fanout.event.exchange"
-    consul kv put local/broker/rabbitmq/EXCHANGE/NOTIFICATION "direct.notification.exchange"
-    consul kv put local/broker/rabbitmq/EXCHANGE/USER "direct.user.exchange"
-    consul kv put local/broker/rabbitmq/EXCHANGE/PAYMENT/DIRECT "direct.payment.exchange"
-    consul kv put local/broker/rabbitmq/EXCHANGE/PAYMENT/DELAYED "delayed.payment.exchange"
-    consul kv put local/broker/rabbitmq/EXCHANGE/SHIPPING "direct.shipping.exchange"
+    ## LOCAL
+    consul kv put local/broker/kafka/TOPICS/CONNECTOR/SOURCE/MONGO/NOTIFICATION/NOTIFICATION-TEMPLATES "source-mongo-notification-notification_templates"
 
-    # EXCHANGE PRODUCTION
-    consul kv put production/broker/rabbitmq/EXCHANGE/PRODUCT "direct.product.exchange"
-    consul kv put production/broker/rabbitmq/EXCHANGE/COMMERCE "direct.commerce.exchange"
-    consul kv put production/broker/rabbitmq/EXCHANGE/EVENT "fanout.event.exchange"
-    consul kv put production/broker/rabbitmq/EXCHANGE/NOTIFICATION "direct.notification.exchange"
-    consul kv put production/broker/rabbitmq/EXCHANGE/USER "direct.user.exchange"
-    consul kv put production/broker/rabbitmq/EXCHANGE/PAYMENT/DIRECT "direct.payment.exchange"
-    consul kv put production/broker/rabbitmq/EXCHANGE/PAYMENT/DELAYED "delayed.payment.exchange"
-    consul kv put production/broker/rabbitmq/EXCHANGE/SHIPPING "direct.shipping.exchange"
+    ## PRODUCTION
+    consul kv put production/broker/kafka/TOPICS/CONNECTOR/SOURCE/MONGO/NOTIFICATION/NOTIFICATION-TEMPLATES "source-mongo-notification-notification_templates"
 
-    echo "DONE INIT CONFIG RABBITMQ EXCHANGE"
-  kv_register_queue.sh: |
+    # ----------- PAYMENT
+    ## LOCAL
+    consul kv put local/broker/kafka/TOPICS/CONNECTOR/SINK/PG/PAYMENT/PAYMENT-PROVIDERS "sink-pg-payments-payment_providers"
+    consul kv put local/broker/kafka/TOPICS/CONNECTOR/SINK/PG/PAYMENT/PAYMENT-ITEMS "sink-pg-payments-payment_items"
+    consul kv put local/broker/kafka/TOPICS/CONNECTOR/SINK/PG/PAYMENT/PAYMENTS "sink-pg-payments-payments"
+
+    ## PRODUCTION
+    consul kv put production/broker/kafka/TOPICS/CONNECTOR/SINK/PG/PAYMENT/PAYMENT-PROVIDERS "sink-pg-payments-payment_providers"
+    consul kv put production/broker/kafka/TOPICS/CONNECTOR/SINK/PG/PAYMENT/PAYMENT-ITEMS "sink-pg-payments-payment_items"
+    consul kv put production/broker/kafka/TOPICS/CONNECTOR/SINK/PG/PAYMENT/PAYMENTS "sink-pg-payments-payments"
+
+    # ----------- PRODUCT
+    ## LOCAL
+    consul kv put local/broker/kafka/TOPICS/CONNECTOR/SINK/ES/PRODUCT/PRODUCTS "sink-es-products-products"
+    consul kv put local/broker/kafka/TOPICS/CONNECTOR/SINK/PG/PRODUCT/PRODUCTS "sink-pg-products-products"
+
+    #PRODUCTION
+    consul kv put production/broker/kafka/TOPICS/CONNECTOR/SINK/ES/PRODUCT/PRODUCTS "sink-es-products-products"
+    consul kv put production/broker/kafka/TOPICS/CONNECTOR/SINK/PG/PRODUCT/PRODUCTS "sink-pg-products-products"
+
+    # ----------- SHIPPING
+    ## LOCAL
+    consul kv put local/broker/kafka/TOPICS/CONNECTOR/SINK/PG/SHIPPING/SHIPPING-PROVIDERS "sink-pg-shippings-shipping_providers"
+    consul kv put local/broker/kafka/TOPICS/CONNECTOR/SINK/PG/SHIPPING/SHIPPINGS "sink-pg-shippings-shippings"
+
+    ## PRODUCTION
+    consul kv put production/broker/kafka/TOPICS/CONNECTOR/SINK/PG/SHIPPING/SHIPPING-PROVIDERS "sink-pg-shippings-shipping_providers"
+    consul kv put production/broker/kafka/TOPICS/CONNECTOR/SINK/PG/SHIPPING/SHIPPINGS "sink-pg-shippings-shippings"
+
+    # ----------- USER
+    ## LOCAL
+    consul kv put local/broker/kafka/TOPICS/CONNECTOR/SINK/PG/USER/USERS "sink-pg-users-users"
+    consul kv put local/broker/kafka/TOPICS/CONNECTOR/SINK/PG/USER/ROLES "sink-pg-users-roles"
+
+    ## PRODUCTION
+    consul kv put production/broker/kafka/TOPICS/CONNECTOR/SINK/PG/USER/USERS "sink-pg-users-users"
+    consul kv put production/broker/kafka/TOPICS/CONNECTOR/SINK/PG/USER/ROLES "sink-pg-users-roles"
+
+
+    echo "DONE INIT CONFIG KAFKA TOPICS SINK & SOURCE CONNECTOR"
+  kv_register_topic.sh: |
     #!/bin/sh
 
-    echo "INIT CONFIG RABBITMQ QUEUE"
+    echo "INIT CONFIG KAFKA SNAPSHOT TOPICS"
+    ## user local
+    consul kv put local/broker/kafka/TOPICS/USER/USER_CREATED "snapshot-users-user_created"
+    consul kv put local/broker/kafka/TOPICS/USER/USER_UPDATED "snapshot-users-user_updated"
+    consul kv put local/broker/kafka/TOPICS/USER/USER_LOGIN "snapshot-users-user_login"
+    consul kv put local/broker/kafka/TOPICS/USER/USER_LOGOUT "snapshot-users-user_logout"
 
-    # QUEUE LOCAL USER
-    consul kv put local/broker/rabbitmq/QUEUE/USER/CREATED "direct.user.exchange.user.user_created.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/USER/CREATED/FAILED "direct.user.exchange.user.user_created.failed.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/USER/UPDATED "direct.user.exchange.user.user_updated.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/USER/UPDATED/FAILED "direct.user.exchange.user.user_updated.failed.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/USER/LOGIN "direct.user.exchange.user.user_login.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/USER/LOGIN/FAILED "direct.user.exchange.user.user_login.failed.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/USER/LOGOUT "direct.user.exchange.user.user_logout.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/USER/LOGOUT/FAILED "direct.user.exchange.user.user_logout.failed.queue"
+    ## user production
+    consul kv put production/broker/kafka/TOPICS/USER/USER_CREATED "snapshot-users-user_created"
+    consul kv put production/broker/kafka/TOPICS/USER/USER_UPDATED "snapshot-users-user_updated"
+    consul kv put production/broker/kafka/TOPICS/USER/USER_LOGIN "snapshot-users-user_login"
+    consul kv put production/broker/kafka/TOPICS/USER/USER_LOGOUT "snapshot-users-user_logout"
 
-    #QUEUE PRODUCTION USER
-    consul kv put production/broker/rabbitmq/QUEUE/USER/CREATED "direct.user.exchange.user.user_created.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/USER/CREATED/FAILED "direct.user.exchange.user.user_created.failed.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/USER/UPDATED "direct.user.exchange.user.user_updated.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/USER/UPDATED/FAILED "direct.user.exchange.user.user_updated.failed.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/USER/LOGIN "direct.user.exchange.user.user_login.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/USER/LOGIN/FAILED "direct.user.exchange.user.user_login.failed.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/USER/LOGOUT "direct.user.exchange.user.user_logout.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/USER/LOGOUT/FAILED "direct.user.exchange.user.user_logout.failed.queue"
+    ## product local
+    consul kv put local/broker/kafka/TOPICS/PRODUCT/PRODUCT_CREATED "snapshot-products-product_created"
+    consul kv put local/broker/kafka/TOPICS/PRODUCT/PRODUCT_UPDATED "snapshot-products-product_updated"
+    consul kv put local/broker/kafka/TOPICS/PRODUCT/PRODUCT_DELETED "snapshot-products-product_deleted"
 
-    # QUEUE LOCAL PRODUCT
-    consul kv put local/broker/rabbitmq/QUEUE/PRODUCT/CREATED "direct.product.exchange.product.product_created.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/PRODUCT/CREATED/FAILED "direct.product.exchange.product.product_created.failed.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/PRODUCT/UPDATED "direct.product.exchange.product.product_updated.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/PRODUCT/UPDATED/FAILED "direct.product.exchange.product.product_updated.failed.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/PRODUCT/DELETED "direct.product.exchange.product.product_deleted.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/PRODUCT/DELETED/FAILED "direct.product.exchange.product.product_deleted.failed.queue"
+    ## product production
+    consul kv put production/broker/kafka/TOPICS/PRODUCT/PRODUCT_CREATED "snapshot-products-product_created"
+    consul kv put production/broker/kafka/TOPICS/PRODUCT/PRODUCT_UPDATED "snapshot-products-product_updated"
+    consul kv put production/broker/kafka/TOPICS/PRODUCT/PRODUCT_DELETED "snapshot-products-product_deleted"
 
-    # QUEUE PRODUCTION PRODUCT
-    consul kv put production/broker/rabbitmq/QUEUE/PRODUCT/CREATED "direct.product.exchange.product.product_created.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/PRODUCT/CREATED/FAILED "direct.product.exchange.product.product_created.failed.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/PRODUCT/UPDATED "direct.product.exchange.product.product_updated.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/PRODUCT/UPDATED/FAILED "direct.product.exchange.product.product_updated.failed.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/PRODUCT/DELETED "direct.product.exchange.product.product_deleted.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/PRODUCT/DELETED/FAILED "direct.product.exchange.product.product_deleted.failed.queue"
+    ## notification local
+    consul kv put local/broker/kafka/TOPICS/NOTIFICATION/EMAIL_OTP_CREATED "snapshot-notifications-email_otp_created"
+    consul kv put local/broker/kafka/TOPICS/NOTIFICATION/EMAIL_PAYMENT_ORDER_CREATED "snapshot-notifications-email_payment_order_created"
 
-    # QUEUE LOCAL NOTIFICATION
-    consul kv put local/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/OTP/CREATED "direct.notification.exchange.notification.notification_email_otp_created.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/OTP/CREATED/FAILED "direct.notification.exchange.notification.notification_email_otp_created.failed.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/PAYMENT/ORDER/CREATED "direct.notification.exchange.notification.notification_email_payment_order_created.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/PAYMENT/ORDER/CREATED/FAILED "direct.notification.exchange.notification.notification_email_payment_order_created.failed.queue"
+    ## notification production
+    consul kv put production/broker/kafka/TOPICS/NOTIFICATION/EMAIL_OTP_CREATED "snapshot-notifications-email_otp_created"
+    consul kv put production/broker/kafka/TOPICS/NOTIFICATION/EMAIL_PAYMENT_ORDER_CREATED "snapshot-notifications-email_payment_order_created"
 
-    # QUEUE PRODUCTION NOTIFICATION
-    consul kv put production/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/OTP/CREATED "direct.notification.exchange.notification.notification_email_otp_created.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/OTP/CREATED/FAILED "direct.notification.exchange.notification.notification_email_otp_created.failed.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/PAYMENT/ORDER/CREATED "direct.notification.exchange.notification.notification_email_payment_order_created.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/NOTIFICATION/EMAIL/PAYMENT/ORDER/CREATED/FAILED "direct.notification.exchange.notification.notification_email_payment_order_created.failed.queue"
+    ## commerce local
+    consul kv put local/broker/kafka/TOPICS/COMMERCE/CART_CREATED "snapshot-commerce-cart_created"
+    consul kv put local/broker/kafka/TOPICS/COMMERCE/CART_UPDATED "snapshot-commerce-cart_updated"
+    consul kv put local/broker/kafka/TOPICS/COMMERCE/CART_DELETED "snapshot-commerce-cart_deleted"
+    consul kv put local/broker/kafka/TOPICS/COMMERCE/WISHLIST_CREATED "snapshot-commerce-wishlist_created"
+    consul kv put local/broker/kafka/TOPICS/COMMERCE/WISHLIST_UPDATED "snapshot-commerce-wishlist_updated"
+    consul kv put local/broker/kafka/TOPICS/COMMERCE/WISHLIST_DELETED "snapshot-commerce-wishlist_deleted"
 
-    # QUEUE LOCAL EVENT
-    consul kv put local/broker/rabbitmq/QUEUE/EVENT/EVENT/EVENT-CREATED "fanout.event.exchange.event.event_created.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/EVENT/API-GATEWAY/EVENT-CREATED "fanout.event.exchange.api_gateway.event_created.queue"
+    ## commerce production
+    consul kv put production/broker/kafka/TOPICS/COMMERCE/CART_CREATED "snapshot-commerce-cart_created"
+    consul kv put production/broker/kafka/TOPICS/COMMERCE/CART_UPDATED "snapshot-commerce-cart_updated"
+    consul kv put production/broker/kafka/TOPICS/COMMERCE/CART_DELETED "snapshot-commerce-cart_deleted"
+    consul kv put production/broker/kafka/TOPICS/COMMERCE/WISHLIST_CREATED "snapshot-commerce-wishlist_created"
+    consul kv put production/broker/kafka/TOPICS/COMMERCE/WISHLIST_UPDATED "snapshot-commerce-wishlist_updated"
+    consul kv put production/broker/kafka/TOPICS/COMMERCE/WISHLIST_DELETED "snapshot-commerce-wishlist_deleted"
 
-    # QUEUE PRODUCTION EVENT
-    consul kv put production/broker/rabbitmq/QUEUE/EVENT/EVENT/EVENT-CREATED "fanout.event.exchange.event.event_created.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/EVENT/API-GATEWAY/EVENT-CREATED "fanout.event.exchange.api_gateway.event_created.queue"
+    ## payment local
+    consul kv put local/broker/kafka/TOPICS/PAYMENT/PAYMENT_ORDER_CREATED "snapshot-payments-payment_order_created"
+    consul kv put local/broker/kafka/TOPICS/PAYMENT/PAYMENT_ORDER_CREATED_DELAYED "snapshot-payments-payment_order_cancelled_delayed"
 
+    ## payment production
+    consul kv put production/broker/kafka/TOPICS/PAYMENT/PAYMENT_ORDER_CREATED "snapshot-payments-payment_order_created"
+    consul kv put production/broker/kafka/TOPICS/PAYMENT/PAYMENT_ORDER_CREATED_DELAYED "snapshot-payments-payment_order_cancelled_delayed"
 
-    # QUEUE LOCAL COMMERCE
-    consul kv put local/broker/rabbitmq/QUEUE/COMMERCE/CART/CREATED "direct.commerce.exchange.commerce.cart_created.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/COMMERCE/CART/CREATED/FAILED "direct.commerce.exchange.commerce.cart_created.failed.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/COMMERCE/CART/UPDATED "direct.commerce.exchange.commerce.cart_updated.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/COMMERCE/CART/UPDATED/FAILED "direct.commerce.exchange.commerce.cart_updated.queue.failed"
-    consul kv put local/broker/rabbitmq/QUEUE/COMMERCE/CART/DELETED "direct.commerce.exchange.commerce.cart_deleted.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/COMMERCE/CART/DELETED/FAILED "direct.commerce.exchange.commerce.cart_deleted.failed.queue"
+    ## shipping local
+    consul kv put local/broker/kafka/TOPICS/SHIPPING/SHIPPING_CREATED "snapshot-shippings-shipping_created"
+    consul kv put local/broker/kafka/TOPICS/SHIPPING/SHIPPING_UPDATED "snapshot-shippings-shipping_updated"
 
-    # QUEUE PRODUCTION COMMERCE
-    consul kv put production/broker/rabbitmq/QUEUE/COMMERCE/CART/CREATED "direct.commerce.exchange.commerce.cart_created.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/COMMERCE/CART/CREATED/FAILED "direct.commerce.exchange.commerce.cart_created.failed.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/COMMERCE/CART/UPDATED "direct.commerce.exchange.commerce.cart_updated.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/COMMERCE/CART/UPDATED/FAILED "direct.commerce.exchange.commerce.cart_updated.queue.failed"
-    consul kv put production/broker/rabbitmq/QUEUE/COMMERCE/CART/DELETED "direct.commerce.exchange.commerce.cart_deleted.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/COMMERCE/CART/DELETED/FAILED "direct.commerce.exchange.commerce.cart_deleted.failed.queue"
+    ## shipping production
+    consul kv put production/broker/kafka/TOPICS/SHIPPING/SHIPPING_CREATED "snapshot-shippings-shipping_created"
+    consul kv put production/broker/kafka/TOPICS/SHIPPING/SHIPPING_UPDATED "snapshot-shippings-shipping_updated"
 
-    # QUEUE LOCAL PAYMENT
-    consul kv put local/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED "direct.payment.exchange.payment.payment_order_created.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED/FAILED "direct.payment.exchange.payment.payment_order_created.failed.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED "delayed.payment.exchange.payment.payment_order_created.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED/FAILED "delayed.payment.exchange.payment.payment_order_created.failed.queue"
-
-
-    # QUEUE PRODUCTION PAYMENT
-    consul kv put production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED "direct.payment.exchange.payment.payment_order_created.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CREATED/FAILED "direct.payment.exchange.payment.payment_order_created.failed.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED "delayed.payment.exchange.payment.payment_order_created.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/PAYMENT/ORDER/CANCELLED/FAILED "delayed.payment.exchange.payment.payment_order_created.failed.queue"
-
-
-    #QUEUE LOCAL SHIPPING
-    consul kv put local/broker/rabbitmq/QUEUE/SHIPPING/CREATED "direct.shipping.exchange.shipping.shipping_created.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/SHIPPING/CREATED/FAILED "direct.shipping.exchange.shipping.shipping_created.failed.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/SHIPPING/UPDATED "direct.shipping.exchange.shipping.shipping_updated.queue"
-    consul kv put local/broker/rabbitmq/QUEUE/SHIPPING/UPDATED/FAILED "direct.shipping.exchange.shipping.shipping_updated.failed.queue"
-
-    #QUEUE PRODUCTION SHIPPING
-    consul kv put production/broker/rabbitmq/QUEUE/SHIPPING/CREATED "direct.shipping.exchange.shipping.shipping_created.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/SHIPPING/CREATED/FAILED "direct.shipping.exchange.shipping.shipping_created.failed.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/SHIPPING/UPDATED "direct.shipping.exchange.shipping.shipping_updated.queue"
-    consul kv put production/broker/rabbitmq/QUEUE/SHIPPING/UPDATED/FAILED "direct.shipping.exchange.shipping.shipping_updated.failed.queue"
-
-    echo "DONE INIT CONFIG RABBITMQ QUEUE"
+    echo "DONE INIT CONFIG KAFKA SNAPSHOT TOPICS"
   service_register.sh: |
     #!/bin/sh
-
-    echo "Registering RabbitMQ as proxy service in Consul ..."
-
-    # Wait for RabbitMQ to be available
-    echo "Waiting for RabbitMQ to be available..."
-    until nc -z rabbitmq-local 5672; do
-    echo "RabbitMQ not ready yet, waiting..."
-    sleep 2
-    done
-    echo "RabbitMQ is available"
-
-    # Register MongoDB service
-    consul services register \
-    -name=rabbitmq \
-    -id=rabbitmq-main \
-    -port=5672 \
-    -address=rabbitmq-local \
-    -tag=broker \
-    -tag=proxy \
-    -tag=rabbitmq
-
-
-    # Manual health check registration via HTTP API
-    echo "Adding health checks..."
-
-    # Health check for RabbitMQ
-    curl -s -X PUT http://consul-local:8500/v1/agent/check/register \
-    -H "Content-Type: application/json" \
-    -d '{
-    "ID": "rabbitmq-Health",
-    "Name": "RabbitMQ Health Check",
-    "TCP": "rabbitmq-local:5672",
-    "Interval": "30s",
-    "Timeout": "5s",
-    "ServiceID": "rabbitmq-main"
-    }'
-
-    # Verify registration
-    echo "✅ RabbitMQ proxy registration completed"
 kind: ConfigMap
 metadata:
   labels:

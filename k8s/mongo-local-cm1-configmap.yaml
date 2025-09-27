@@ -1,0 +1,26 @@
+apiVersion: v1
+data:
+  mongodb.key: |
+    Nt7KY9H6JAKOgq6U4THUuGxnHL9OwICGW664sS1n4GTpL824EXUZHO9j1w4YAep2
+    Ax0m2RFr1LGUGXAd7t4iVDNtvr2sVAwDikQ/iPFCiSBKZX/wSXEFWEMit1ZWH50b
+    fucpAL8gsA/Y5kBFGS/5xmzVTYwrLdOXlAGRhVLgO4ECoiguPYvL37iyr9joakP/
+    FheJVG0AdIsIIjr67xCJa1ukCvG3cJBJ+qsfxWm3aO1iiLqR9WkBqDVFJBMi8YBs
+    JYxmyYMpD7hOMXRjI8CtU+HSSXYTvWAo49AI9/PnRZCx97QOFiA+EnDnmjMbKTaY
+    Ag+gNBNK0BbVB9gu7DNgtXjxZYq8H6gkKjwSIrFjBHfHYsO+RI/jem55HSGFZgpg
+    58044ZVtuWtwiu/6k9wzXuREIrmvlZzanHAAECOtFzIb7zmm5sVGM+GLmhbLLrop
+    eBcmHdSWUUAM922P1pwuQvLF/6r0k0xEInKGzFYNOd6Ymuoyl8Nk9ZftC03c9qlD
+    Q/A07l3Db9l3hKKkh0zOE+WU9B3bHlVv5ojE7jTOQGvfETiRexZGQty1emfFC69E
+    43ba1R3FULKXLdFKwNQ5/HU33uyzf2IKaVeMZWTONrpB0F8tuUOb1N5Il6orqU2C
+    5l2vlriucEEmEd71Ndup5nm/nNDHNqkPqVCYI7mnW2hBoEqykg5P3YPuHcuK/dqt
+    avI7zB5daAMK7Oy5AX2ou6f91+AzBEIYFMmdZ+dodkoVGECDzjAyqD7/h/ekq8xx
+    0UHlFjLPBRZzBtqC/Sn/yjKab5e7dutNGlAMzBBwX+qx8ivKlBBqYZjkQ2Pj9JkO
+    gTy5UO1fMw0hn7j+0NDtP2xhCRscRDHVZkEIpKoSCy+B5yUqWmw+whXm1hEjT1m7
+    tFW2AzfCoE3C5SVjkJDGzYdx4yLvS1HKQUjLxSBSrw6TatIH2NfkzZTBVn88OD/b
+    ZCLxE1kGfYxeDd3D9xDhYaAsMC1h
+kind: ConfigMap
+metadata:
+  annotations:
+    use-subpath: "true"
+  labels:
+    io.kompose.service: mongo-local
+  name: mongo-local-cm1

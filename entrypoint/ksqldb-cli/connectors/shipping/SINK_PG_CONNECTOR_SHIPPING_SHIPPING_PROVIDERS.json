@@ -19,10 +19,14 @@
     "pk.mode": "record_key",
     "pk.fields": "id",
     "delete.enabled": true,
+    "db.timezone": "Asia/Jakarta",
+
     "errors.tolerance": "all",
     "errors.log.enable": "true",
     "errors.log.include.messages": "true",
-    "db.timezone": "Asia/Jakarta",
+    "errors.deadletterqueue.topic.name": "dlq-sink-pg-shippings-shipping_providers",
+    "errors.deadletterqueue.topic.replication.factor": "1",
+    "errors.deadletterqueue.context.headers.enable": "true",
 
     "transforms": "convertUpdatedAt,convertCreatedAt",
 

@@ -20,11 +20,8 @@
 
 
     # v1/event/*.proto
-    - Mv1/event/request.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
-    - Mv1/event/response.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
     - Mv1/event/enum.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
     - Mv1/event/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
-    - Mv1/event/service.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event
 
     # v1/notification/*.proto
     - Mv1/notification/model.proto=github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/notification

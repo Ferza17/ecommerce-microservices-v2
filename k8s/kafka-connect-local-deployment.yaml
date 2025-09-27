@@ -12,6 +12,8 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: kafka-connect-local
+  strategy:
+    type: Recreate
   template:
     metadata:
       annotations:
@@ -23,36 +25,48 @@ spec:
       containers:
         - env:
             - name: CONNECT_BOOTSTRAP_SERVERS
-              value: kafka-local:9092
+              value: PLAINTEXT://kafka-local-broker-1:29092
             - name: CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR
               value: "1"
             - name: CONNECT_CONFIG_STORAGE_TOPIC
-              value: connect-configs
+              value: compose-connect-configs
             - name: CONNECT_GROUP_ID
               value: compose-connect-group
-            - name: CONNECT_INTERNAL_KEY_CONVERTER
-              value: org.apache.kafka.connect.json.JsonConverter
-            - name: CONNECT_INTERNAL_VALUE_CONVERTER
-              value: org.apache.kafka.connect.json.JsonConverter
             - name: CONNECT_KEY_CONVERTER
-              value: org.apache.kafka.connect.json.JsonConverter
+              value: org.apache.kafka.connect.storage.StringConverter
+            - name: CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL
+              value: http://schema-registry-local:8081
             - name: CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR
               value: "1"
             - name: CONNECT_OFFSET_STORAGE_TOPIC
-              value: connect-offsets
+              value: compose-connect-offsets
             - name: CONNECT_PLUGIN_PATH
-              value: /usr/share/java,/etc/kafka-connect/jars
+              value: /usr/share/java,/usr/share/confluent-hub-components
             - name: CONNECT_REST_ADVERTISED_HOST_NAME
-              value: kafka-connect
+              value: kafka-connect-local
             - name: CONNECT_REST_PORT
               value: "8083"
             - name: CONNECT_STATUS_STORAGE_REPLICATION_FACTOR
               value: "1"
             - name: CONNECT_STATUS_STORAGE_TOPIC
-              value: connect-status
+              value: compose-connect-status
             - name: CONNECT_VALUE_CONVERTER
               value: org.apache.kafka.connect.json.JsonConverter
+            - name: CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE
+              value: "false"
+            - name: CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL
+              value: http://schema-registry-local:8081
+            - name: KAFKA_HEAP_OPTS
+              value: -Xms512M -Xmx2G
           image: confluentinc/cp-kafka-connect:7.2.15
+          livenessProbe:
+            exec:
+              command:
+                - curl -f http://kafka-connect-local:8083/connectors || exit 1
+            failureThreshold: 10
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
           name: kafka-connect-local
           ports:
             - containerPort: 8083

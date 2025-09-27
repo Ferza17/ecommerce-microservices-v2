@@ -24,9 +24,22 @@ spec:
         - env:
             - name: SCHEMA_REGISTRY_HOST_NAME
               value: schema-registry-local
+            - name: SCHEMA_REGISTRY_JMX_HOSTNAME
+              value: localhost
+            - name: SCHEMA_REGISTRY_JMX_PORT
+              value: "31002"
             - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
-              value: kafka-local:9092
+              value: PLAINTEXT://kafka-local-broker-1:29092
           image: confluentinc/cp-schema-registry:7.2.15
+          livenessProbe:
+            exec:
+              command:
+                - curl
+                - -f
+                - http://localhost:8081/subjects
+            failureThreshold: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
           name: schema-registry-local
           ports:
             - containerPort: 8081

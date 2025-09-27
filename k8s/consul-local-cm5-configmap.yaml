@@ -23,16 +23,25 @@ data:
   service_register.sh: |
     #!/bin/sh
 
-    echo "Registering Mailhog SMTP as proxy service in Consul ..."
+    echo "Registering Mailhog SMTP to Consul ..."
 
-    # Wait for Mailhog SMTP to be available
+
+    # Wait for Mailhog to be available (max 10 retries)
     echo "Waiting for Mailhog to be available..."
-    until nc -z mailhog-local 1025; do
-    echo "Mailhog not ready yet, waiting..."
-    sleep 2
-    done
-    echo "Mailhog is available"
+    max_retries=10
+    count=0
 
+    until nc -z mailhog-local 1025 >/dev/null 2>&1; do
+      count=$((count+1))
+      echo "Mailhog not ready yet, attempt $count/$max_retries..."
+
+      if [ $count -ge $max_retries ]; then
+        echo "⚠️ Mailhog still not available after $max_retries attempts, continuing anyway..."
+        break
+      fi
+      sleep 2
+    done
+    echo "Mailhog check finished"
 
     # Register Mailhog SMTP service
     consul services register \

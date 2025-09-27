@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --file docker-compose.yml --out k8s/
+    kompose.version: 1.36.0 (HEAD)
+  labels:
+    io.kompose.service: ksqldb-cli-local
+  name: ksqldb-cli-local
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: ksqldb-cli-local
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert --file docker-compose.yml --out k8s/
+        kompose.version: 1.36.0 (HEAD)
+      labels:
+        io.kompose.service: ksqldb-cli-local
+    spec:
+      containers:
+        - args:
+            - /init-all.sh
+          command:
+            - /bin/bash
+          image: confluentinc/ksqldb-cli:0.14.0
+          livenessProbe:
+            exec:
+              command:
+                - curl -s http://ksqldb-server-local:8088/info | grep -q '"KsqlServerInfo"'
+            failureThreshold: 5
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          name: ksqldb-cli-local
+          stdin: true
+          tty: true
+          volumeMounts:
+            - mountPath: /connectors
+              name: ksqldb-cli-local-cm0
+            - mountPath: /streams
+              name: ksqldb-cli-local-cm1
+            - mountPath: /init-all.sh
+              name: ksqldb-cli-local-cm2
+              subPath: init-all.sh
+      restartPolicy: Always
+      volumes:
+        - configMap:
+            name: ksqldb-cli-local-cm0
+          name: ksqldb-cli-local-cm0
+        - configMap:
+            name: ksqldb-cli-local-cm1
+          name: ksqldb-cli-local-cm1
+        - configMap:
+            items:
+              - key: init-all.sh
+                path: init-all.sh
+            name: ksqldb-cli-local-cm2
+          name: ksqldb-cli-local-cm2

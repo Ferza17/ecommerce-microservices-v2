@@ -59,7 +59,7 @@ spec:
             - mountPath: /prometheus
               name: consul-local-cm2
               readOnly: true
-            - mountPath: /rabbitmq
+            - mountPath: /kafka
               name: consul-local-cm3
               readOnly: true
             - mountPath: /services

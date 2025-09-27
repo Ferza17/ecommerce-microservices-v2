@@ -1,24 +1,20 @@
 # Naming Convention for RabbitMQ
 ---
 ## SNAPSHOT /  CHANGELOG TOPIC
-- naming convention for snapshot / changelog :`<domain>.<type>.snapshot`
+- naming convention for snapshot / changelog :`snapshot-<namespace>-<event_type>`
+- naming convention for compensation snapshot / changelog :`compensate-snapshot-<namespace>-<event_type>`
 
 ### Example : 
-- `users.login.snapshot`
-- `users.created.snapshot`
-- `users.updated.snapshot`
+- `snapshot-users-users_login`
+- `snapshot-users-users_created`
+- `snapshot-users-users_updated`
 ---
 
 ## SINK CONNECTOR
-- naming convention for snapshot / changelog :`<connector type>.<database provider>.<databases>.<table or collection>`
+- naming convention for sink/connector :`<connector_type>-<provider>-<namespace>-<table or collection>`
+- naming convention for sink/connector error handler :`dlq-<connector_type>-<provider>-<namespace>-<table or collection>`
 
 ### Example :
-- `sink.pg.users.users`
-- `sink.pg.users.roles`
-- `sink.pg.products.products`
-- `sink.pg.shippings.shippings`
-- `sink.pg.shippings.shipping_providers`
-- `sink.pg.payments.payments`
-- `sink.pg.payments.payment_providers`
-- `source.mongo.notification.templates`
+- `sink-pg-users-users`
+- `source-mongo-notification-notification_templates`
 ---

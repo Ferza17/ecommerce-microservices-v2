@@ -10,6 +10,9 @@ TOPICS=(
   "snapshot-users-user_logout:3:1"
 
   "snapshot-products-product_created:3:1"
+  "snapshot-products-product_stock_reserved:3:1"
+  "compensate-snapshot-products-product_stock_reserved:3:1"
+
   "snapshot-products-product_updated:3:1"
   "snapshot-products-product_deleted:3:1"
 
@@ -27,6 +30,7 @@ TOPICS=(
   "snapshot-payments-payment_order_cancelled_delayed:2:1"
 
   "snapshot-shippings-shipping_created:3:1"
+  "compensate-snapshot-shippings-shipping_created:3:1"
   "snapshot-shippings-shipping_updated:3:1"
 )
 

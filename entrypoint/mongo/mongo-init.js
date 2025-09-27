@@ -18,3 +18,12 @@ db.createUser({
 });
 db.createCollection('carts');
 db.createCollection('wishlists');
+
+print("Creating database commerce & collections...");
+db = db.getSiblingDB('event');
+db.createUser({
+    user: "mongo",
+    pwd: "1234",
+    roles: [{ role: "readWrite", db: "commerce" }]
+});
+db.createCollection('event-store');

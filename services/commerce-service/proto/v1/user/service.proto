@@ -1,11 +1,9 @@
 syntax = "proto3";
 package user;
 
-
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
-
 
 // LOCAL IMPORT
 import "v1/user/request.proto";
@@ -110,8 +108,6 @@ service UserService {
     };
   };
 }
-
-
 
 service AuthService {
   // COMMAND

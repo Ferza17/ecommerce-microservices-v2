@@ -12,6 +12,8 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: mongo-local
+  strategy:
+    type: Recreate
   template:
     metadata:
       annotations:
@@ -21,14 +23,47 @@ spec:
         io.kompose.service: mongo-local
     spec:
       containers:
-        - env:
+        - args:
+            - --replSet
+            - rs0
+            - --bind_ip_all
+            - --port
+            - "27017"
+            - --keyFile
+            - /etc/mongo/mongodb.key
+          env:
             - name: MONGO_INITDB_ROOT_PASSWORD
               value: "1234"
             - name: MONGO_INITDB_ROOT_USERNAME
               value: mongo
           image: mongo
+          livenessProbe:
+            exec:
+              command:
+                - mongosh -u mongo -p 1234 --authenticationDatabase admin --eval 'rs.initiate({_id:"rs0",members:[{_id:0,host:"mongo-local:27017"}]})' | mongosh --port 27017 --quiet
+            failureThreshold: 30
+            periodSeconds: 5
+            timeoutSeconds: 30
           name: mongo-local
           ports:
             - containerPort: 27017
               protocol: TCP
+          volumeMounts:
+            - mountPath: /docker-entrypoint-initdb.d
+              name: mongo-local-cm0
+              readOnly: true
+            - mountPath: /etc/mongo/mongodb.key
+              name: mongo-local-cm1
+              readOnly: true
+              subPath: mongodb.key
       restartPolicy: Always
+      volumes:
+        - configMap:
+            name: mongo-local-cm0
+          name: mongo-local-cm0
+        - configMap:
+            items:
+              - key: mongodb.key
+                path: mongodb.key
+            name: mongo-local-cm1
+          name: mongo-local-cm1

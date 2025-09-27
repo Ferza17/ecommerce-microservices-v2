@@ -1,3 +1,0 @@
-package telemetry
-
-// mocktail:ITelemetryInfrastructure

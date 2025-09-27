@@ -1,0 +1,59 @@
+apiVersion: v1
+data:
+  init.sh: |-
+    #!/bin/bash
+    set -e
+    exec ksql-server-start /etc/ksqldb-server/ksql-server.properties
+  ksql-server.properties: |-
+    #######################################
+    # KsqlConfig Server Properties
+    #######################################
+    # Kafka Connect cluster
+    ksql.connect.url=http://kafka-connect-local:8083
+    # Kafka bootstrap servers (from docker-compose)
+    bootstrap.servers=kafka-local-broker-1:29092
+    # Schema Registry
+    ksql.schema.registry.url=http://schema-registry-local:8081
+    # REST listener for CLI / clients
+    listeners=http://0.0.0.0:8088
+    # Unique ksqlDB cluster ID (important if multiple ksqlDB clusters)
+    ksql.service.id=ksql_local_
+    #######################################
+    # Streams settings
+    #######################################
+
+    # replication factor for internal topics (keep 1 for local/dev)
+    ksql.streams.replication.factor=1
+    # number of stream processing threads
+    ksql.streams.num.stream.threads=2
+    # directory for state stores
+    ksql.streams.state.dir=/var/lib/kafka-streams
+    # buffer settings
+    ksql.streams.cache.max.bytes.buffering=0
+    #######################################
+    # Processing log
+    #######################################
+    ksql.logging.processing.stream.auto.create=true
+    ksql.logging.processing.topic.auto.create=true
+    ksql.logging.processing.stream.name=KSQL_PROCESSING_LOG
+    ksql.logging.processing.topic.name=KSQL_PROCESSING_LOG_TOPIC
+    #######################################
+    # Query Config
+    #######################################
+    # Enable pull & push queries
+    ksql.query.pull.table.scan.enabled=true
+    ksql.pull.queries.enable=true
+    #######################################
+    # Metrics (optional)
+    #######################################
+    confluent.telemetry.enabled=false
+
+    #######################################
+    # CONSUMER CONFIG
+    #######################################
+    auto.offset.reset=earliest
+kind: ConfigMap
+metadata:
+  labels:
+    io.kompose.service: ksqldb-server-local
+  name: ksqldb-server-local-cm0

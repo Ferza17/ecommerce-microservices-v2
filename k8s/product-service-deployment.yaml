@@ -26,8 +26,8 @@ spec:
             exec:
               command:
                 - curl -s -o /dev/null -w '%{http_code}' http://product-service:40055/v1/product/check | grep -q '^200$'
-            failureThreshold: 3
-            initialDelaySeconds: 20
+            failureThreshold: 10
+            initialDelaySeconds: 60
             periodSeconds: 30
             timeoutSeconds: 10
           name: product-service
