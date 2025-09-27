@@ -1,5 +1,5 @@
 {
-  "name": "SOURCE_CONNECTOR_MONGO_NOTIFICATIONS_NOTIFICATION_TEMPLATES",
+  "name": "SOURCE_MONGO_NOTIFICATIONS_NOTIFICATION_TEMPLATES",
   "config": {
     "connector.class": "com.mongodb.kafka.connect.MongoSourceConnector",
     "tasks.max": "1",

@@ -24,8 +24,9 @@ type Config struct {
 	ConsulPort string `mapstructure:"CONSUL_PORT"`
 
 	// From Consul
-	BrokerKafka                         *BrokerKafka
-	BrokerKafkaTopicConnectorSinkPgUser *BrokerKafkaTopicConnectorSinkPgUser
+	BrokerKafka                             *BrokerKafka
+	BrokerKafkaTopicConnectorSinkPgUser     *BrokerKafkaTopicConnectorSinkPgUser
+	BrokerKafkaTopicConnectorSinkMongoEvent *BrokerKafkaTopicConnectorSinkMongoEvent
 
 	// TOPICS
 	BrokerKafkaTopicUsers         *BrokerKafkaTopicUsers
@@ -86,6 +87,7 @@ func SetConfig(path string) {
 		withBrokerKafkaTopicUsers(consulClient.KV()).
 		withBrokerKafkaTopicNotifications(consulClient.KV()).
 		withBrokerKafkaTopicConnectorSinkPgUser(consulClient.KV()).
+		withBrokerKafkaTopicConnectorSinkMongoEvent(consulClient.KV()).
 		RegisterConsulService(); err != nil {
 		log.Fatalf("SetConfig | could not register consul service: %v", err)
 		return

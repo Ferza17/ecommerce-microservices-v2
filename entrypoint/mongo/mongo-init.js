@@ -26,4 +26,9 @@ db.createUser({
     pwd: "1234",
     roles: [{ role: "readWrite", db: "commerce" }]
 });
-db.createCollection('event-store');
+db.createCollection('user-event-stores');
+db.createCollection('notification-event-stores');
+db.createCollection('payment-event-stores');
+db.createCollection('product-event-stores');
+db.createCollection('shipping-event-stores');
+db.createCollection('commerce-event-stores');

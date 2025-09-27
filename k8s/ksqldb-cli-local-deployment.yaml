@@ -40,8 +40,6 @@ spec:
           stdin: true
           tty: true
           volumeMounts:
-            - mountPath: /connectors
-              name: ksqldb-cli-local-cm0
             - mountPath: /streams
               name: ksqldb-cli-local-cm1
             - mountPath: /init-all.sh
@@ -49,9 +47,6 @@ spec:
               subPath: init-all.sh
       restartPolicy: Always
       volumes:
-        - configMap:
-            name: ksqldb-cli-local-cm0
-          name: ksqldb-cli-local-cm0
         - configMap:
             name: ksqldb-cli-local-cm1
           name: ksqldb-cli-local-cm1

@@ -28,24 +28,29 @@ data:
         pwd: "1234",
         roles: [{ role: "readWrite", db: "commerce" }]
     });
-    db.createCollection('event-store');
+    db.createCollection('user-event-stores');
+    db.createCollection('notification-event-stores');
+    db.createCollection('payment-event-stores');
+    db.createCollection('product-event-stores');
+    db.createCollection('shipping-event-stores');
+    db.createCollection('commerce-event-stores');
   mongodb.key: |
-    Nt7KY9H6JAKOgq6U4THUuGxnHL9OwICGW664sS1n4GTpL824EXUZHO9j1w4YAep2
-    Ax0m2RFr1LGUGXAd7t4iVDNtvr2sVAwDikQ/iPFCiSBKZX/wSXEFWEMit1ZWH50b
-    fucpAL8gsA/Y5kBFGS/5xmzVTYwrLdOXlAGRhVLgO4ECoiguPYvL37iyr9joakP/
-    FheJVG0AdIsIIjr67xCJa1ukCvG3cJBJ+qsfxWm3aO1iiLqR9WkBqDVFJBMi8YBs
-    JYxmyYMpD7hOMXRjI8CtU+HSSXYTvWAo49AI9/PnRZCx97QOFiA+EnDnmjMbKTaY
-    Ag+gNBNK0BbVB9gu7DNgtXjxZYq8H6gkKjwSIrFjBHfHYsO+RI/jem55HSGFZgpg
-    58044ZVtuWtwiu/6k9wzXuREIrmvlZzanHAAECOtFzIb7zmm5sVGM+GLmhbLLrop
-    eBcmHdSWUUAM922P1pwuQvLF/6r0k0xEInKGzFYNOd6Ymuoyl8Nk9ZftC03c9qlD
-    Q/A07l3Db9l3hKKkh0zOE+WU9B3bHlVv5ojE7jTOQGvfETiRexZGQty1emfFC69E
-    43ba1R3FULKXLdFKwNQ5/HU33uyzf2IKaVeMZWTONrpB0F8tuUOb1N5Il6orqU2C
-    5l2vlriucEEmEd71Ndup5nm/nNDHNqkPqVCYI7mnW2hBoEqykg5P3YPuHcuK/dqt
-    avI7zB5daAMK7Oy5AX2ou6f91+AzBEIYFMmdZ+dodkoVGECDzjAyqD7/h/ekq8xx
-    0UHlFjLPBRZzBtqC/Sn/yjKab5e7dutNGlAMzBBwX+qx8ivKlBBqYZjkQ2Pj9JkO
-    gTy5UO1fMw0hn7j+0NDtP2xhCRscRDHVZkEIpKoSCy+B5yUqWmw+whXm1hEjT1m7
-    tFW2AzfCoE3C5SVjkJDGzYdx4yLvS1HKQUjLxSBSrw6TatIH2NfkzZTBVn88OD/b
-    ZCLxE1kGfYxeDd3D9xDhYaAsMC1h
+    eBdICLGgzv+GU2SNG9WVRLgWr1/yK/nkOrtGAS0rVJcuI3v4XdKhkFb4ncIMgy6L
+    C4Ba8y7eXLupqHbyQC+A8AdUSxBNDLPFMqk9nW9Qk4YzvDvhJHPE3qjIV+dePUq2
+    YpyP+mVyf/jp1O2mVrMonOO+DZwzLR6C8Wrz76GhIalYYNyBy/gdjeX3YXnw1WlC
+    SFfBui0XzATTPfAVW3IJ6lZrbXVFoNP/12MYSlOoZj4PWqEcuAaslrGZrUdzu8BZ
+    ivU13i1o61wf5ABUkdCNMTzzPApQV9HXfG+WdE+SVEzNn2hkKfZkL2lTQExeDeN4
+    ajj9TNHV0ZV7ESjjsQsg3f+9qlqaewtTh+jI8ksYAwP3FUF8Gem0/miPfUQ5uITY
+    HW7Zo79D/fbWycOVoaYdQ4qPsxx+xAxgnXByrHAWyTNwSTGiW5zPJ31ENzWGDfX7
+    wYncJCL1OgfT8GlKISI1PBO1qaUav/P6A9/MjU2gyN28oqzS6jmxeOsfQJYu49Rj
+    yYzYDJMT579fNV9LEimoV47mjKalwizP79PqGgwiMhYjtvbrKEtKrbDGRLcY/X/Z
+    X8KeoNVNJh42xnkmoqS8xzUpyTn+PISOfKxmMiPXbocVWFTEH3Mxugavws9aMQhw
+    pQ6fvlmHc4ALZMBzK3OPvzsD+5r+2eXot3O0JTo6H7ce8gi1Hlbx84psh1buQ/Gh
+    1e2zML2XQgOGEoR9Gs3hn4V+xtQ5Ryn+hZ+lzOpvyEkCFQ/NGg/wdOZAyeI1Me30
+    suPtHVdi7XWV0cQ9/HJLbTbQtHbcZ1QNgPhjHFz7DDr5QYLfKK0IygAcILGNiUbG
+    xKV9Gns+qfEJ3KbU/wPSOALtfSa++CmJlV1ms6jI7rTbQ0w12ahKAVCjjI7Uo5+e
+    NAKV9TT8VcwuTPWWcb5S8+FikqMt5ubf0YO0lE/HUL31TgHd1V0zbHZDV1GwYdvR
+    j3Xn8j+oFO2J2sMA5YDVRhfBgdLP
 kind: ConfigMap
 metadata:
   labels:

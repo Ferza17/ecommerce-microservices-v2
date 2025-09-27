@@ -1,0 +1,32 @@
+{
+  "name": "SINK_MONGO_EVENTS_NOTIFICATION_EVENT_STORES",
+  "config": {
+    "connector.class": "com.mongodb.kafka.connect.MongoSinkConnector",
+    "tasks.max": "1",
+
+    "topics": "sink-mongo-events-notification_event_stores",
+
+    "connection.uri": "mongodb://mongo:1234@mongo-local:27017",
+    "database": "event",
+    "collection": "notification_event_stores",
+
+    "document.id.strategy": "com.mongodb.kafka.connect.sink.processor.id.strategy.ProvidedInKeyStrategy",
+    "writemodel.strategy": "com.mongodb.kafka.connect.sink.writemodel.strategy.ReplaceOneBusinessKeyStrategy",
+
+    "delete.on.null.values": "true",
+    "max.num.retries": "5",
+    "retries.defer.timeout": "5000",
+
+    "errors.tolerance": "all",
+    "errors.log.enable": "true",
+    "errors.log.include.messages": "true",
+    "errors.deadletterqueue.topic.name": "dlq-sink-mongo-events-notification_event_stores",
+    "errors.deadletterqueue.topic.replication.factor": "1",
+    "errors.deadletterqueue.context.headers.enable": "true",
+
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "true",
+    "value.converter.schemas.enable": "true"
+  }
+}

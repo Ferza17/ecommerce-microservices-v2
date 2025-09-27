@@ -8,6 +8,10 @@ echo "kafka-connect server is up! Running initialization scripts..."
 # Get the script directory
 CONNECTOR_DIR="/connectors"
 
+### NAMESPACE EVENT
+echo "Running notification initialization..."
+sh ${CONNECTOR_DIR}/event/init.sh
+
 ### NAMESPACE NOTIFICATION
 echo "Running notification initialization..."
 sh ${CONNECTOR_DIR}/notification/init.sh

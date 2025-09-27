@@ -47,5 +47,19 @@ consul kv put local/broker/kafka/TOPICS/CONNECTOR/SINK/PG/USER/ROLES "sink-pg-us
 consul kv put production/broker/kafka/TOPICS/CONNECTOR/SINK/PG/USER/USERS "sink-pg-users-users"
 consul kv put production/broker/kafka/TOPICS/CONNECTOR/SINK/PG/USER/ROLES "sink-pg-users-roles"
 
+# ----------- EVENT
+## LOCAL
+consul kv put local/broker/kafka/TOPICS/CONNECTOR/SINK/MONGO/EVENTS/COMMERCE "sink-mongo-events-commerce_event_stores"
+consul kv put local/broker/kafka/TOPICS/CONNECTOR/SINK/MONGO/EVENTS/NOTIFICATION "sink-mongo-events-notification_event_stores"
+consul kv put local/broker/kafka/TOPICS/CONNECTOR/SINK/MONGO/EVENTS/PAYMENT "sink-mongo-events-payment_event_stores"
+consul kv put local/broker/kafka/TOPICS/CONNECTOR/SINK/MONGO/EVENTS/PRODUCT "sink-mongo-events-product_event_stores"
+consul kv put local/broker/kafka/TOPICS/CONNECTOR/SINK/MONGO/EVENTS/USER "sink-mongo-events-user_event_stores"
+
+## PRODUCTION
+consul kv put production/broker/kafka/TOPICS/CONNECTOR/SINK/MONGO/EVENTS/COMMERCE "sink-mongo-events-commerce_event_stores"
+consul kv put production/broker/kafka/TOPICS/CONNECTOR/SINK/MONGO/EVENTS/NOTIFICATION "sink-mongo-events-notification_event_stores"
+consul kv put production/broker/kafka/TOPICS/CONNECTOR/SINK/MONGO/EVENTS/PAYMENT "sink-mongo-events-payment_event_stores"
+consul kv put production/broker/kafka/TOPICS/CONNECTOR/SINK/MONGO/EVENTS/PRODUCT "sink-mongo-events-product_event_stores"
+consul kv put production/broker/kafka/TOPICS/CONNECTOR/SINK/MONGO/EVENTS/USER "sink-mongo-events-user_event_stores"
 
 echo "DONE INIT CONFIG KAFKA TOPICS SINK & SOURCE CONNECTOR"
