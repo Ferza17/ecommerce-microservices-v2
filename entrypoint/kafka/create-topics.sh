@@ -3,6 +3,8 @@
 echo ">>> Creating Kafka topics---"
 KAFKA_BROKER="kafka-local-broker-1:29092"
 
+## <TOPIC>:<REPLICATION FACTOR>:<PARTITION>
+
 SNAPSHOT_TOPICS=(
   "snapshot-users-user_created:3:1"
   "confirm_snapshot-users-user_created:3:1"
@@ -83,6 +85,63 @@ SNAPSHOT_TOPICS=(
 )
 
 for t in "${SNAPSHOT_TOPICS[@]}"; do
+  IFS=":" read -r name partitions rf <<< "$t"
+  kafka-topics --create \
+    --if-not-exists \
+    --bootstrap-server $KAFKA_BROKER \
+    --replication-factor $rf \
+    --partitions $partitions \
+    --topic $name
+done
+
+CONNECTOR_TOPICS=(
+  "sink-mongo-events-commerce_event_stores:3:1"
+  "dlq-sink-mongo-events-commerce_event_stores:1:1"
+
+  "sink-mongo-events-notification_event_stores:3:1"
+  "dlq-sink-mongo-events-notification_event_stores:1:1"
+
+  "sink-mongo-events-payment_event_stores:3:1"
+  "dlq-sink-mongo-events-payment_event_stores:1:1"
+
+  "sink-mongo-events-product_event_stores:3:1"
+  "dlq-sink-mongo-events-product_event_stores:1:1"
+
+  "sink-mongo-events-shipping_event_stores:3:1"
+  "dlq-sink-mongo-events-shipping_event_stores:1:1"
+
+  "sink-mongo-events-user_event_stores:3:1"
+  "dlq-sink-mongo-events-user_event_stores:1:1"
+
+  "source-mongo-notification-notification_templates:3:1"
+  "dlq-source-mongo-notification-notification_templates:1:1"
+
+  "sink-pg-payments-payment_items:3:1"
+  "dlq-sink-pg-payments-payment_items:1:1"
+
+  "sink-pg-payments-payment_providers:3:1"
+  "dlq-sink-pg-payments-payment_providers:1:1"
+
+  "sink-pg-payments-payments:3:1"
+  "dlq-sink-pg-payments-payments:1:1"
+
+  "sink-es-products-products:3:1"
+  "dlq-sink-es-products-products:1:1"
+
+  "sink-pg-products-products:3:1"
+  "dlq-sink-pg-products-products:1:1"
+
+  "sink-pg-shippings-shipping_providers:3:1"
+  "dlq-sink-pg-shippings-shipping_providers:1:1"
+
+  "sink-pg-shippings-shippings:3:1"
+  "dlq-sink-pg-shippings-shippings:1:1"
+
+  "sink-pg-users-users:3:1"
+  "dlq-sink-pg-users-users:1:1"
+)
+
+for t in "${CONNECTOR_TOPICS[@]}"; do
   IFS=":" read -r name partitions rf <<< "$t"
   kafka-topics --create \
     --if-not-exists \
