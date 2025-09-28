@@ -21,6 +21,9 @@
 - PAYMENT-SERVICE
 - SHIPPING-SERVICE
 
+### TODO
+- [ ] Rewrite commerce service in spring boot
+
 ### FLOW
 ```mermaid
 flowchart TD
