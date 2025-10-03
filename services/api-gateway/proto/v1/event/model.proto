@@ -3,14 +3,26 @@ package event;
 
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
+
+import "v1/user/model.proto";
+import "v1/product/model.proto";
+import "v1/payment/model.proto";
+import "v1/shipping/model.proto";
 
 message Event {
-  string id = 1;
+  string _id = 1;
   string aggregate_id = 2;
   string aggregate_type = 3;
   string event_type = 4;
-  google.protobuf.Struct event_data = 5;
-  int32 version = 6;
-  google.protobuf.Timestamp timestamp = 7;
-  string saga_id = 8;
+  int32 version = 5;
+  google.protobuf.Timestamp timestamp = 6;
+  string saga_id = 7;
+  map<string, string> metadata = 8;
+  oneof payload {
+    user.User user = 10;
+    product.Product product = 11;
+    payment.Payment payment = 12;
+    shipping.Shipping shipping = 13;
+  }
 }

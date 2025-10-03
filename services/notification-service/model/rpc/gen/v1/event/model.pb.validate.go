@@ -56,42 +56,13 @@ func (m *Event) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	// no validation rules for XId
 
 	// no validation rules for AggregateId
 
 	// no validation rules for AggregateType
 
 	// no validation rules for EventType
-
-	if all {
-		switch v := interface{}(m.GetEventData()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, EventValidationError{
-					field:  "EventData",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, EventValidationError{
-					field:  "EventData",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetEventData()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return EventValidationError{
-				field:  "EventData",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
 
 	// no validation rules for Version
 
@@ -125,6 +96,177 @@ func (m *Event) validate(all bool) error {
 	}
 
 	// no validation rules for SagaId
+
+	// no validation rules for Metadata
+
+	switch v := m.Payload.(type) {
+	case *Event_User:
+		if v == nil {
+			err := EventValidationError{
+				field:  "Payload",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+		if all {
+			switch v := interface{}(m.GetUser()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, EventValidationError{
+						field:  "User",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, EventValidationError{
+						field:  "User",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return EventValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	case *Event_Product:
+		if v == nil {
+			err := EventValidationError{
+				field:  "Payload",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+		if all {
+			switch v := interface{}(m.GetProduct()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, EventValidationError{
+						field:  "Product",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, EventValidationError{
+						field:  "Product",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetProduct()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return EventValidationError{
+					field:  "Product",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	case *Event_Payment:
+		if v == nil {
+			err := EventValidationError{
+				field:  "Payload",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+		if all {
+			switch v := interface{}(m.GetPayment()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, EventValidationError{
+						field:  "Payment",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, EventValidationError{
+						field:  "Payment",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetPayment()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return EventValidationError{
+					field:  "Payment",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	case *Event_Shipping:
+		if v == nil {
+			err := EventValidationError{
+				field:  "Payload",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+		if all {
+			switch v := interface{}(m.GetShipping()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, EventValidationError{
+						field:  "Shipping",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, EventValidationError{
+						field:  "Shipping",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetShipping()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return EventValidationError{
+					field:  "Shipping",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	default:
+		_ = v // ensures v is used
+	}
 
 	if len(errors) > 0 {
 		return EventMultiError(errors)

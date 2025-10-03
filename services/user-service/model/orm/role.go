@@ -2,6 +2,7 @@ package orm
 
 import (
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
 )
 
@@ -34,7 +35,9 @@ func RoleFromProto(proto *pb.Role) *Role {
 
 func (r *Role) ToProto() *pb.Role {
 	proto := &pb.Role{
-		Id: r.ID,
+		Id:        r.ID,
+		CreatedAt: timestamppb.New(r.CreatedAt),
+		UpdatedAt: timestamppb.New(r.UpdatedAt),
 	}
 
 	if r.Role != "" {

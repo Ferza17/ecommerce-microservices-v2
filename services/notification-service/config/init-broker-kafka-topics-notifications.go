@@ -8,7 +8,8 @@ import (
 )
 
 type BrokerKafkaTopicNotifications struct {
-	EmailOtpCreated          string
+	EmailOtpUserLogin        string
+	EmailOtpUserRegister     string
 	EmailPaymentOrderCreated string
 	keyPrefix                string
 }

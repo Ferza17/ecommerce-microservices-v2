@@ -7,81 +7,84 @@ KAFKA_BROKER="kafka-local-broker-1:29092"
 
 SNAPSHOT_TOPICS=(
   "snapshot-users-user_created:3:1"
-  "confirm_snapshot-users-user_created:3:1"
-  "compensate_snapshot-users-user_created:3:1"
+  "confirm-snapshot-users-user_created:3:1"
+  "compensate-snapshot-users-user_created:3:1"
 
   "snapshot-users-user_updated:3:1"
-  "confirm_snapshot-users-user_updated:3:1"
-  "compensate_snapshot-users-user_updated:3:1"
+  "confirm-snapshot-users-user_updated:3:1"
+  "compensate-snapshot-users-user_updated:3:1"
 
   "snapshot-users-user_login:3:1"
-  "confirm_snapshot-users-user_login:3:1"
-  "compensate_snapshot-users-user_login:3:1"
+  "confirm-snapshot-users-user_login:3:1"
+  "compensate-snapshot-users-user_login:3:1"
 
   "snapshot-users-user_logout:3:1"
-  "confirm_snapshot-users-user_logout:3:1"
-  "compensate_snapshot-users-user_logout:3:1"
+  "confirm-snapshot-users-user_logout:3:1"
+  "compensate-snapshot-users-user_logout:3:1"
 
   "snapshot-products-product_created:3:1"
-  "confirm_snapshot-products-product_created:3:1"
-  "compensate_snapshot-products-product_created:3:1"
+  "confirm-snapshot-products-product_created:3:1"
+  "compensate-snapshot-products-product_created:3:1"
 
   "snapshot-products-product_updated:3:1"
-  "confirm_snapshot-products-product_updated:3:1"
-  "compensate_snapshot-products-product_updated:3:1"
+  "confirm-snapshot-products-product_updated:3:1"
+  "compensate-snapshot-products-product_updated:3:1"
 
   "snapshot-products-product_deleted:3:1"
-  "confirm_snapshot-products-product_deleted:3:1"
-  "compensate_snapshot-products-product_deleted:3:1"
+  "confirm-snapshot-products-product_deleted:3:1"
+  "compensate-snapshot-products-product_deleted:3:1"
 
-  "snapshot-notifications-email_otp_created:2:1"
-  "confirm_snapshot-notifications-email_otp_created:2:1"
-  "compensate_snapshot-notifications-email_otp_created:2:1"
+  "snapshot-notifications-email_otp_user_login:2:1"
+  "confirm-snapshot-notifications-email_otp_user_login:2:1"
+  "compensate-snapshot-notifications-email_otp_user_login:2:1"
+
+  "snapshot-notifications-email_otp_user_register:2:1"
+  "confirm-snapshot-notifications-email_otp_user_register:2:1"
+  "compensate-snapshot-notifications-email_otp_user_register:2:1"
 
   "snapshot-notifications-email_payment_order_created:2:1"
-  "confirm_snapshot-notifications-email_payment_order_created:2:1"
-  "compensate_snapshot-notifications-email_payment_order_created:2:1"
+  "confirm-snapshot-notifications-email_payment_order_created:2:1"
+  "compensate-snapshot-notifications-email_payment_order_created:2:1"
 
   "snapshot-commerce-cart_created:3:1"
-  "confirm_snapshot-commerce-cart_created:3:1"
-  "compensate_snapshot-commerce-cart_created:3:1"
+  "confirm-snapshot-commerce-cart_created:3:1"
+  "compensate-snapshot-commerce-cart_created:3:1"
 
   "snapshot-commerce-cart_updated:3:1"
-  "confirm_snapshot-commerce-cart_updated:3:1"
-  "compensate_snapshot-commerce-cart_updated:3:1"
+  "confirm-snapshot-commerce-cart_updated:3:1"
+  "compensate-snapshot-commerce-cart_updated:3:1"
 
   "snapshot-commerce-cart_deleted:3:1"
-  "confirm_snapshot-commerce-cart_deleted:3:1"
-  "compensate_snapshot-commerce-cart_deleted:3:1"
+  "confirm-snapshot-commerce-cart_deleted:3:1"
+  "compensate-snapshot-commerce-cart_deleted:3:1"
 
   "snapshot-commerce-wishlist_created:3:1"
-  "confirm_snapshot-commerce-wishlist_created:3:1"
-  "compensate_snapshot-commerce-wishlist_created:3:1"
+  "confirm-snapshot-commerce-wishlist_created:3:1"
+  "compensate-snapshot-commerce-wishlist_created:3:1"
 
   "snapshot-commerce-wishlist_updated:3:1"
-  "confirm_snapshot-commerce-wishlist_updated:3:1"
-  "compensate_snapshot-commerce-wishlist_updated:3:1"
+  "confirm-snapshot-commerce-wishlist_updated:3:1"
+  "compensate-snapshot-commerce-wishlist_updated:3:1"
 
   "snapshot-commerce-wishlist_deleted:3:1"
-  "confirm_snapshot-commerce-wishlist_deleted:3:1"
-  "compensate_snapshot-commerce-wishlist_deleted:3:1"
+  "confirm-snapshot-commerce-wishlist_deleted:3:1"
+  "compensate-snapshot-commerce-wishlist_deleted:3:1"
 
   "snapshot-payments-payment_order_created:3:1"
-  "confirm_snapshot-payments-payment_order_created:3:1"
-  "compensate_snapshot-payments-payment_order_created:3:1"
+  "confirm-snapshot-payments-payment_order_created:3:1"
+  "compensate-snapshot-payments-payment_order_created:3:1"
 
   "snapshot-payments-payment_order_cancelled_delayed:2:1"
-  "confirm_snapshot-payments-payment_order_cancelled_delayed:2:1"
-  "compensate_snapshot-payments-payment_order_cancelled_delayed:2:1"
+  "confirm-snapshot-payments-payment_order_cancelled_delayed:2:1"
+  "compensate-snapshot-payments-payment_order_cancelled_delayed:2:1"
 
   "snapshot-shippings-shipping_created:3:1"
-  "confirm_snapshot-shippings-shipping_created:3:1"
-  "compensate_snapshot-shippings-shipping_created:3:1"
+  "confirm-snapshot-shippings-shipping_created:3:1"
+  "compensate-snapshot-shippings-shipping_created:3:1"
 
   "snapshot-shippings-shipping_updated:3:1"
-  "confirm_snapshot-shippings-shipping_updated:3:1"
-  "compensate_snapshot-shippings-shipping_updated:3:1"
-
+  "confirm-snapshot-shippings-shipping_updated:3:1"
+  "compensate-snapshot-shippings-shipping_updated:3:1"
 )
 
 for t in "${SNAPSHOT_TOPICS[@]}"; do
@@ -94,51 +97,26 @@ for t in "${SNAPSHOT_TOPICS[@]}"; do
     --topic $name
 done
 
+echo ">>> Done creating SNAPSHOT_TOPICS"
+
 CONNECTOR_TOPICS=(
-  "sink-mongo-events-commerce_event_stores:3:1"
   "dlq-sink-mongo-events-commerce_event_stores:1:1"
-
-  "sink-mongo-events-notification_event_stores:3:1"
   "dlq-sink-mongo-events-notification_event_stores:1:1"
-
-  "sink-mongo-events-payment_event_stores:3:1"
   "dlq-sink-mongo-events-payment_event_stores:1:1"
-
-  "sink-mongo-events-product_event_stores:3:1"
   "dlq-sink-mongo-events-product_event_stores:1:1"
-
-  "sink-mongo-events-shipping_event_stores:3:1"
   "dlq-sink-mongo-events-shipping_event_stores:1:1"
-
-  "sink-mongo-events-user_event_stores:3:1"
   "dlq-sink-mongo-events-user_event_stores:1:1"
+  "dlq-source-mongo-notification-notification_templates:3:1"
+  "dlq-sink-pg-payments-payment_items:3:1"
+  "dlq-sink-pg-payments-payment_providers:3:1"
+  "dlq-sink-pg-payments-payments:3:1"
+  "dlq-sink-es-products-products:3:1"
+  "dlq-sink-pg-products-products:3:1"
+  "dlq-sink-pg-shippings-shipping_providers:3:1"
+  "dlq-sink-pg-shippings-shippings:3:1"
+  "dlq-sink-pg-users-users:3:1"
+  "dlq-sink-pg-users-roles:3:1"
 
-  "source-mongo-notification-notification_templates:3:1"
-  "dlq-source-mongo-notification-notification_templates:1:1"
-
-  "sink-pg-payments-payment_items:3:1"
-  "dlq-sink-pg-payments-payment_items:1:1"
-
-  "sink-pg-payments-payment_providers:3:1"
-  "dlq-sink-pg-payments-payment_providers:1:1"
-
-  "sink-pg-payments-payments:3:1"
-  "dlq-sink-pg-payments-payments:1:1"
-
-  "sink-es-products-products:3:1"
-  "dlq-sink-es-products-products:1:1"
-
-  "sink-pg-products-products:3:1"
-  "dlq-sink-pg-products-products:1:1"
-
-  "sink-pg-shippings-shipping_providers:3:1"
-  "dlq-sink-pg-shippings-shipping_providers:1:1"
-
-  "sink-pg-shippings-shippings:3:1"
-  "dlq-sink-pg-shippings-shippings:1:1"
-
-  "sink-pg-users-users:3:1"
-  "dlq-sink-pg-users-users:1:1"
 )
 
 for t in "${CONNECTOR_TOPICS[@]}"; do
@@ -151,4 +129,4 @@ for t in "${CONNECTOR_TOPICS[@]}"; do
     --topic $name
 done
 
-echo ">>> Done creating topics-"
+echo ">>> Done creating CONNECTOR_TOPICS"

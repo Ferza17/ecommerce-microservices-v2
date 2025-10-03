@@ -28,3 +28,41 @@ func (c *authConsumer) SnapshotUsersUserLogin(ctx context.Context, message *kafk
 
 	return nil
 }
+
+func (c *authConsumer) ConfirmSnapshotUsersUserLogin(ctx context.Context, message *kafka.Message) error {
+	var (
+		request   pb.AuthUserLoginByEmailAndPasswordRequest
+		requestId = pkgContext.GetRequestIDFromContext(ctx)
+	)
+
+	if err := proto.Unmarshal(message.Value, &request); err != nil {
+		c.logger.Info(fmt.Sprintf("proto.Unmarshal: %v", err))
+		return err
+	}
+
+	if _, err := c.authUseCase.AuthUserLoginByEmailAndPassword(ctx, requestId, &request); err != nil {
+		c.logger.Info(fmt.Sprintf("authUseCase.AuthUserLoginByEmailAndPassword: %v", err))
+		return err
+	}
+
+	return nil
+}
+
+func (c *authConsumer) CompensateSnapshotUsersUserLogin(ctx context.Context, message *kafka.Message) error {
+	var (
+		request   pb.AuthUserLoginByEmailAndPasswordRequest
+		requestId = pkgContext.GetRequestIDFromContext(ctx)
+	)
+
+	if err := proto.Unmarshal(message.Value, &request); err != nil {
+		c.logger.Info(fmt.Sprintf("proto.Unmarshal: %v", err))
+		return err
+	}
+
+	if _, err := c.authUseCase.AuthUserLoginByEmailAndPassword(ctx, requestId, &request); err != nil {
+		c.logger.Info(fmt.Sprintf("authUseCase.AuthUserLoginByEmailAndPassword: %v", err))
+		return err
+	}
+
+	return nil
+}

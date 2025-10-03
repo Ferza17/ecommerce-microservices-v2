@@ -12,7 +12,25 @@ data:
     ##########################################################################################################################################################################################################################
     sh ./kafka/kv_register.sh
     sh ./kafka/kv_register_topic.sh
-    sh ./kafka/kv_register_connector.sh
+
+    sh ./kafka/topics/commerce/kv_register_snapshot_topics.sh
+
+    sh ./kafka/topics/event/kv_register_connector_topics.sh
+
+    sh ./kafka/topics/notification/kv_register_connector_topics.sh
+    sh ./kafka/topics/notification/kv_register_snapshot_topics.sh
+
+    sh ./kafka/topics/payment/kv_register_connector_topics.sh
+    sh ./kafka/topics/payment/kv_register_snapshot_topics.sh
+
+    sh ./kafka/topics/product/kv_register_connector_topics.sh
+    sh ./kafka/topics/product/kv_register_snapshot_topics.sh
+
+    sh ./kafka/topics/shipping/kv_register_connector_topics.sh
+    sh ./kafka/topics/shipping/kv_register_snapshot_topics.sh
+
+    sh ./kafka/topics/user/kv_register_connector_topics.sh
+    sh ./kafka/topics/user/kv_register_snapshot_topics.sh
 
     # LOAD CONFIG DATABASE
     ##########################################################################################################################################################################################################################

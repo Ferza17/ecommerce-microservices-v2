@@ -11,17 +11,21 @@ import { Struct } from "../../google/protobuf/struct";
 export const protobufPackage = "notification";
 
 export enum NotificationTypeEnum {
-  NOTIFICATION_EMAIL_USER_OTP = 0,
-  NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED = 1,
+  NOTIFICATION_EMAIL_USER_LOGIN_OTP = 0,
+  NOTIFICATION_EMAIL_USER_REGISTER_OTP = 1,
+  NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED = 2,
   UNRECOGNIZED = -1,
 }
 
 export function notificationTypeEnumFromJSON(object: any): NotificationTypeEnum {
   switch (object) {
     case 0:
-    case "NOTIFICATION_EMAIL_USER_OTP":
-      return NotificationTypeEnum.NOTIFICATION_EMAIL_USER_OTP;
+    case "NOTIFICATION_EMAIL_USER_LOGIN_OTP":
+      return NotificationTypeEnum.NOTIFICATION_EMAIL_USER_LOGIN_OTP;
     case 1:
+    case "NOTIFICATION_EMAIL_USER_REGISTER_OTP":
+      return NotificationTypeEnum.NOTIFICATION_EMAIL_USER_REGISTER_OTP;
+    case 2:
     case "NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED":
       return NotificationTypeEnum.NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED;
     case -1:
@@ -33,8 +37,10 @@ export function notificationTypeEnumFromJSON(object: any): NotificationTypeEnum 
 
 export function notificationTypeEnumToJSON(object: NotificationTypeEnum): string {
   switch (object) {
-    case NotificationTypeEnum.NOTIFICATION_EMAIL_USER_OTP:
-      return "NOTIFICATION_EMAIL_USER_OTP";
+    case NotificationTypeEnum.NOTIFICATION_EMAIL_USER_LOGIN_OTP:
+      return "NOTIFICATION_EMAIL_USER_LOGIN_OTP";
+    case NotificationTypeEnum.NOTIFICATION_EMAIL_USER_REGISTER_OTP:
+      return "NOTIFICATION_EMAIL_USER_REGISTER_OTP";
     case NotificationTypeEnum.NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED:
       return "NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED";
     case NotificationTypeEnum.UNRECOGNIZED:

@@ -7,14 +7,19 @@ import (
 )
 
 type BrokerKafkaTopicConnectorSinkPgUser struct {
-	Users     string
-	Roles     string
+	Users    string
+	DlqUsers string
+
+	Roles    string
+	DlqRoles string
+
 	keyPrefix string
 }
 
 func DefaultBrokerKafkaTopicsConnectorSinkPgUser() *BrokerKafkaTopicConnectorSinkPgUser {
 	return &BrokerKafkaTopicConnectorSinkPgUser{
 		Users:     "",
+		DlqUsers:  "",
 		Roles:     "",
 		keyPrefix: "%s/broker/kafka/TOPICS/CONNECTOR/SINK/PG/USER/%s",
 	}
@@ -35,6 +40,15 @@ func (c *BrokerKafkaTopicConnectorSinkPgUser) WithConsulClient(env string, kv *a
 	}
 	c.Users = string(pair.Value)
 
+	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "DLQ/USERS"), nil)
+	if err != nil {
+		log.Fatalf("SetConfig | could not get DLQ/USERS from consul: %v", err)
+	}
+	if pair == nil {
+		log.Fatal("SetConfig | Consul | DLQ/USERS is required")
+	}
+	c.DlqUsers = string(pair.Value)
+
 	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "ROLES"), nil)
 	if err != nil {
 		log.Fatalf("SetConfig | could not get ROLES from consul: %v", err)
@@ -43,6 +57,15 @@ func (c *BrokerKafkaTopicConnectorSinkPgUser) WithConsulClient(env string, kv *a
 		log.Fatal("SetConfig | Consul | ROLES is required")
 	}
 	c.Roles = string(pair.Value)
+
+	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "DLQ/ROLES"), nil)
+	if err != nil {
+		log.Fatalf("SetConfig | could not get DLQ/ROLES from consul: %v", err)
+	}
+	if pair == nil {
+		log.Fatal("SetConfig | Consul | DLQ/ROLES is required")
+	}
+	c.DlqRoles = string(pair.Value)
 
 	return c
 }

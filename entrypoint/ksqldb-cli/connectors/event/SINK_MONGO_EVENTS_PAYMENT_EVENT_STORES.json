@@ -10,10 +10,10 @@
     "database": "event",
     "collection": "payment_event_stores",
 
-    "document.id.strategy": "com.mongodb.kafka.connect.sink.processor.id.strategy.ProvidedInKeyStrategy",
-    "writemodel.strategy": "com.mongodb.kafka.connect.sink.writemodel.strategy.ReplaceOneBusinessKeyStrategy",
+    "document.id.strategy": "com.mongodb.kafka.connect.sink.processor.id.strategy.ProvidedInValueStrategy",
+    "document.id.strategy.overwrite.existing": "true",
+    "writemodel.strategy": "com.mongodb.kafka.connect.sink.writemodel.strategy.ReplaceOneDefaultStrategy",
 
-    "delete.on.null.values": "true",
     "max.num.retries": "5",
     "retries.defer.timeout": "5000",
 
@@ -24,8 +24,9 @@
     "errors.deadletterqueue.topic.replication.factor": "1",
     "errors.deadletterqueue.context.headers.enable": "true",
 
-    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
-    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "io.confluent.connect.protobuf.ProtobufConverter",
+    "value.converter.schema.registry.url": "http://schema-registry-local:8081",
     "key.converter.schemas.enable": "true",
     "value.converter.schemas.enable": "true"
   }

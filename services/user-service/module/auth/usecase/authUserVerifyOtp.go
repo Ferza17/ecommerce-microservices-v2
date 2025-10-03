@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/kafka"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/util"
@@ -58,7 +59,7 @@ func (u *authUseCase) AuthUserVerifyOtp(ctx context.Context, requestId string, r
 
 	user.IsVerified = true
 	user.UpdatedAt = &now
-	if err = u.kafkaInfrastructure.PublishWithJsonSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkPgUser.Users, user.ID, user); err != nil {
+	if err = u.kafkaInfrastructure.PublishWithSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkPgUser.Users, user.ID, kafka.JSON_SCHEMA, user); err != nil {
 		u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
 		return nil, status.Error(codes.Internal, "internal server error")
 	}

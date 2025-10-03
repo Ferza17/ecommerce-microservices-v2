@@ -3,6 +3,7 @@ package kafka
 import (
 	"context"
 	"fmt"
+	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry/serde/avrov2"
 	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
@@ -18,8 +19,9 @@ import (
 
 type (
 	IKafkaInfrastructure interface {
-		PublishWithJsonSchema(ctx context.Context, topic string, key string, value interface{}) error
+		PublishWithSchema(ctx context.Context, topic string, key string, schemaType SchemaType, value interface{}) error
 		Publish(ctx context.Context, topic string, key string, value []byte) error
+
 		SetupTopics(topics []string) error
 		ReadMessage(duration time.Duration) (*kafka.Message, error)
 		Close() error
@@ -29,11 +31,20 @@ type (
 		producer                *kafka.Producer
 		consumer                *kafka.Consumer
 		jsonSerializer          *jsonschema.Serializer
-		protobufDeserializer    *protobuf.Deserializer
+		protobufSerializer      *protobuf.Serializer
+		avroSerializer          *avrov2.Serializer
 		registryClient          schemaregistry.Client
 		logger                  logger.IZapLogger
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 	}
+
+	SchemaType string
+)
+
+const (
+	JSON_SCHEMA     SchemaType = "JSON"
+	PROTOBUF_SCHEMA SchemaType = "PROTOBUF"
+	AVRO            SchemaType = "AVRO"
 )
 
 func (c *kafkaInfrastructure) Close() error {
@@ -41,6 +52,7 @@ func (c *kafkaInfrastructure) Close() error {
 	c.consumer.Close()
 	c.registryClient.Close()
 	c.jsonSerializer.Close()
+	c.avroSerializer.Close()
 	return nil
 }
 
@@ -86,7 +98,13 @@ func NewKafkaInfrastructure(
 		return nil
 	}
 
-	protobufDeserializer, err := protobuf.NewDeserializer(registryClient, serde.ValueSerde, protobuf.NewDeserializerConfig())
+	protobufSerializer, err := protobuf.NewSerializer(registryClient, serde.ValueSerde, protobuf.NewSerializerConfig())
+	if err != nil {
+		logger.Error(fmt.Sprintf("failed to create kafka deserializer: %v", err))
+		return nil
+	}
+
+	avroSerializer, err := avrov2.NewSerializer(registryClient, serde.ValueSerde, avrov2.NewSerializerConfig())
 	if err != nil {
 		logger.Error(fmt.Sprintf("failed to create kafka deserializer: %v", err))
 		return nil
@@ -96,7 +114,8 @@ func NewKafkaInfrastructure(
 		producer:                producer,
 		consumer:                consumer,
 		jsonSerializer:          jsonSerializer,
-		protobufDeserializer:    protobufDeserializer,
+		protobufSerializer:      protobufSerializer,
+		avroSerializer:          avroSerializer,
 		registryClient:          registryClient,
 		logger:                  logger,
 		telemetryInfrastructure: telemetryInfrastructure,

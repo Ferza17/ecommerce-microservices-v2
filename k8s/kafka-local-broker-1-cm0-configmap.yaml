@@ -6,38 +6,87 @@ data:
     echo ">>> Creating Kafka topics---"
     KAFKA_BROKER="kafka-local-broker-1:29092"
 
-    TOPICS=(
+    ## <TOPIC>:<REPLICATION FACTOR>:<PARTITION>
+
+    SNAPSHOT_TOPICS=(
       "snapshot-users-user_created:3:1"
+      "confirm-snapshot-users-user_created:3:1"
+      "compensate-snapshot-users-user_created:3:1"
+
       "snapshot-users-user_updated:3:1"
+      "confirm-snapshot-users-user_updated:3:1"
+      "compensate-snapshot-users-user_updated:3:1"
+
       "snapshot-users-user_login:3:1"
+      "confirm-snapshot-users-user_login:3:1"
+      "compensate-snapshot-users-user_login:3:1"
+
       "snapshot-users-user_logout:3:1"
+      "confirm-snapshot-users-user_logout:3:1"
+      "compensate-snapshot-users-user_logout:3:1"
 
       "snapshot-products-product_created:3:1"
-      "snapshot-products-product_stock_reserved:3:1"
-      "compensate-snapshot-products-product_stock_reserved:3:1"
+      "confirm-snapshot-products-product_created:3:1"
+      "compensate-snapshot-products-product_created:3:1"
 
       "snapshot-products-product_updated:3:1"
+      "confirm-snapshot-products-product_updated:3:1"
+      "compensate-snapshot-products-product_updated:3:1"
+
       "snapshot-products-product_deleted:3:1"
+      "confirm-snapshot-products-product_deleted:3:1"
+      "compensate-snapshot-products-product_deleted:3:1"
 
       "snapshot-notifications-email_otp_created:2:1"
+      "confirm-snapshot-notifications-email_otp_created:2:1"
+      "compensate-snapshot-notifications-email_otp_created:2:1"
+
       "snapshot-notifications-email_payment_order_created:2:1"
+      "confirm-snapshot-notifications-email_payment_order_created:2:1"
+      "compensate-snapshot-notifications-email_payment_order_created:2:1"
 
       "snapshot-commerce-cart_created:3:1"
+      "confirm-snapshot-commerce-cart_created:3:1"
+      "compensate-snapshot-commerce-cart_created:3:1"
+
       "snapshot-commerce-cart_updated:3:1"
+      "confirm-snapshot-commerce-cart_updated:3:1"
+      "compensate-snapshot-commerce-cart_updated:3:1"
+
       "snapshot-commerce-cart_deleted:3:1"
+      "confirm-snapshot-commerce-cart_deleted:3:1"
+      "compensate-snapshot-commerce-cart_deleted:3:1"
+
       "snapshot-commerce-wishlist_created:3:1"
+      "confirm-snapshot-commerce-wishlist_created:3:1"
+      "compensate-snapshot-commerce-wishlist_created:3:1"
+
       "snapshot-commerce-wishlist_updated:3:1"
+      "confirm-snapshot-commerce-wishlist_updated:3:1"
+      "compensate-snapshot-commerce-wishlist_updated:3:1"
+
       "snapshot-commerce-wishlist_deleted:3:1"
+      "confirm-snapshot-commerce-wishlist_deleted:3:1"
+      "compensate-snapshot-commerce-wishlist_deleted:3:1"
 
       "snapshot-payments-payment_order_created:3:1"
+      "confirm-snapshot-payments-payment_order_created:3:1"
+      "compensate-snapshot-payments-payment_order_created:3:1"
+
       "snapshot-payments-payment_order_cancelled_delayed:2:1"
+      "confirm-snapshot-payments-payment_order_cancelled_delayed:2:1"
+      "compensate-snapshot-payments-payment_order_cancelled_delayed:2:1"
 
       "snapshot-shippings-shipping_created:3:1"
+      "confirm-snapshot-shippings-shipping_created:3:1"
       "compensate-snapshot-shippings-shipping_created:3:1"
+
       "snapshot-shippings-shipping_updated:3:1"
+      "confirm-snapshot-shippings-shipping_updated:3:1"
+      "compensate-snapshot-shippings-shipping_updated:3:1"
     )
 
-    for t in "${TOPICS[@]}"; do
+    for t in "${SNAPSHOT_TOPICS[@]}"; do
       IFS=":" read -r name partitions rf <<< "$t"
       kafka-topics --create \
         --if-not-exists \
@@ -47,7 +96,39 @@ data:
         --topic $name
     done
 
-    echo ">>> Done creating topics-"
+    echo ">>> Done creating SNAPSHOT_TOPICS"
+
+    CONNECTOR_TOPICS=(
+      "dlq-sink-mongo-events-commerce_event_stores:1:1"
+      "dlq-sink-mongo-events-notification_event_stores:1:1"
+      "dlq-sink-mongo-events-payment_event_stores:1:1"
+      "dlq-sink-mongo-events-product_event_stores:1:1"
+      "dlq-sink-mongo-events-shipping_event_stores:1:1"
+      "dlq-sink-mongo-events-user_event_stores:1:1"
+      "dlq-source-mongo-notification-notification_templates:3:1"
+      "dlq-sink-pg-payments-payment_items:3:1"
+      "dlq-sink-pg-payments-payment_providers:3:1"
+      "dlq-sink-pg-payments-payments:3:1"
+      "dlq-sink-es-products-products:3:1"
+      "dlq-sink-pg-products-products:3:1"
+      "dlq-sink-pg-shippings-shipping_providers:3:1"
+      "dlq-sink-pg-shippings-shippings:3:1"
+      "dlq-sink-pg-users-users:3:1"
+      "dlq-sink-pg-users-roles:3:1"
+
+    )
+
+    for t in "${CONNECTOR_TOPICS[@]}"; do
+      IFS=":" read -r name partitions rf <<< "$t"
+      kafka-topics --create \
+        --if-not-exists \
+        --bootstrap-server $KAFKA_BROKER \
+        --replication-factor $rf \
+        --partitions $partitions \
+        --topic $name
+    done
+
+    echo ">>> Done creating CONNECTOR_TOPICS"
 kind: ConfigMap
 metadata:
   annotations:

@@ -6,39 +6,55 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Struct } from "../../google/protobuf/struct";
 import { Timestamp } from "../../google/protobuf/timestamp";
+import { Payment } from "../payment/model";
+import { Product } from "../product/model";
+import { Shipping } from "../shipping/model";
+import { User } from "../user/model";
 
 export const protobufPackage = "event";
 
 export interface Event {
-  id: string;
+  Id: string;
   aggregateId: string;
   aggregateType: string;
   eventType: string;
-  eventData: { [key: string]: any } | undefined;
   version: number;
   timestamp: Date | undefined;
   sagaId: string;
+  metadata: { [key: string]: string };
+  user?: User | undefined;
+  product?: Product | undefined;
+  payment?: Payment | undefined;
+  shipping?: Shipping | undefined;
+}
+
+export interface Event_MetadataEntry {
+  key: string;
+  value: string;
 }
 
 function createBaseEvent(): Event {
   return {
-    id: "",
+    Id: "",
     aggregateId: "",
     aggregateType: "",
     eventType: "",
-    eventData: undefined,
     version: 0,
     timestamp: undefined,
     sagaId: "",
+    metadata: {},
+    user: undefined,
+    product: undefined,
+    payment: undefined,
+    shipping: undefined,
   };
 }
 
 export const Event: MessageFns<Event> = {
   encode(message: Event, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
+    if (message.Id !== "") {
+      writer.uint32(10).string(message.Id);
     }
     if (message.aggregateId !== "") {
       writer.uint32(18).string(message.aggregateId);
@@ -49,17 +65,29 @@ export const Event: MessageFns<Event> = {
     if (message.eventType !== "") {
       writer.uint32(34).string(message.eventType);
     }
-    if (message.eventData !== undefined) {
-      Struct.encode(Struct.wrap(message.eventData), writer.uint32(42).fork()).join();
-    }
     if (message.version !== 0) {
-      writer.uint32(48).int32(message.version);
+      writer.uint32(40).int32(message.version);
     }
     if (message.timestamp !== undefined) {
-      Timestamp.encode(toTimestamp(message.timestamp), writer.uint32(58).fork()).join();
+      Timestamp.encode(toTimestamp(message.timestamp), writer.uint32(50).fork()).join();
     }
     if (message.sagaId !== "") {
-      writer.uint32(66).string(message.sagaId);
+      writer.uint32(58).string(message.sagaId);
+    }
+    Object.entries(message.metadata).forEach(([key, value]) => {
+      Event_MetadataEntry.encode({ key: key as any, value }, writer.uint32(66).fork()).join();
+    });
+    if (message.user !== undefined) {
+      User.encode(message.user, writer.uint32(82).fork()).join();
+    }
+    if (message.product !== undefined) {
+      Product.encode(message.product, writer.uint32(90).fork()).join();
+    }
+    if (message.payment !== undefined) {
+      Payment.encode(message.payment, writer.uint32(98).fork()).join();
+    }
+    if (message.shipping !== undefined) {
+      Shipping.encode(message.shipping, writer.uint32(106).fork()).join();
     }
     return writer;
   },
@@ -76,7 +104,7 @@ export const Event: MessageFns<Event> = {
             break;
           }
 
-          message.id = reader.string();
+          message.Id = reader.string();
           continue;
         }
         case 2: {
@@ -104,19 +132,19 @@ export const Event: MessageFns<Event> = {
           continue;
         }
         case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.eventData = Struct.unwrap(Struct.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 6: {
-          if (tag !== 48) {
+          if (tag !== 40) {
             break;
           }
 
           message.version = reader.int32();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.timestamp = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
         case 7: {
@@ -124,7 +152,7 @@ export const Event: MessageFns<Event> = {
             break;
           }
 
-          message.timestamp = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.sagaId = reader.string();
           continue;
         }
         case 8: {
@@ -132,7 +160,42 @@ export const Event: MessageFns<Event> = {
             break;
           }
 
-          message.sagaId = reader.string();
+          const entry8 = Event_MetadataEntry.decode(reader, reader.uint32());
+          if (entry8.value !== undefined) {
+            message.metadata[entry8.key] = entry8.value;
+          }
+          continue;
+        }
+        case 10: {
+          if (tag !== 82) {
+            break;
+          }
+
+          message.user = User.decode(reader, reader.uint32());
+          continue;
+        }
+        case 11: {
+          if (tag !== 90) {
+            break;
+          }
+
+          message.product = Product.decode(reader, reader.uint32());
+          continue;
+        }
+        case 12: {
+          if (tag !== 98) {
+            break;
+          }
+
+          message.payment = Payment.decode(reader, reader.uint32());
+          continue;
+        }
+        case 13: {
+          if (tag !== 106) {
+            break;
+          }
+
+          message.shipping = Shipping.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -146,21 +209,30 @@ export const Event: MessageFns<Event> = {
 
   fromJSON(object: any): Event {
     return {
-      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      Id: isSet(object.Id) ? globalThis.String(object.Id) : "",
       aggregateId: isSet(object.aggregateId) ? globalThis.String(object.aggregateId) : "",
       aggregateType: isSet(object.aggregateType) ? globalThis.String(object.aggregateType) : "",
       eventType: isSet(object.eventType) ? globalThis.String(object.eventType) : "",
-      eventData: isObject(object.eventData) ? object.eventData : undefined,
       version: isSet(object.version) ? globalThis.Number(object.version) : 0,
       timestamp: isSet(object.timestamp) ? fromJsonTimestamp(object.timestamp) : undefined,
       sagaId: isSet(object.sagaId) ? globalThis.String(object.sagaId) : "",
+      metadata: isObject(object.metadata)
+        ? Object.entries(object.metadata).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+          acc[key] = String(value);
+          return acc;
+        }, {})
+        : {},
+      user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
+      product: isSet(object.product) ? Product.fromJSON(object.product) : undefined,
+      payment: isSet(object.payment) ? Payment.fromJSON(object.payment) : undefined,
+      shipping: isSet(object.shipping) ? Shipping.fromJSON(object.shipping) : undefined,
     };
   },
 
   toJSON(message: Event): unknown {
     const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
+    if (message.Id !== "") {
+      obj.Id = message.Id;
     }
     if (message.aggregateId !== "") {
       obj.aggregateId = message.aggregateId;
@@ -171,9 +243,6 @@ export const Event: MessageFns<Event> = {
     if (message.eventType !== "") {
       obj.eventType = message.eventType;
     }
-    if (message.eventData !== undefined) {
-      obj.eventData = message.eventData;
-    }
     if (message.version !== 0) {
       obj.version = Math.round(message.version);
     }
@@ -183,6 +252,27 @@ export const Event: MessageFns<Event> = {
     if (message.sagaId !== "") {
       obj.sagaId = message.sagaId;
     }
+    if (message.metadata) {
+      const entries = Object.entries(message.metadata);
+      if (entries.length > 0) {
+        obj.metadata = {};
+        entries.forEach(([k, v]) => {
+          obj.metadata[k] = v;
+        });
+      }
+    }
+    if (message.user !== undefined) {
+      obj.user = User.toJSON(message.user);
+    }
+    if (message.product !== undefined) {
+      obj.product = Product.toJSON(message.product);
+    }
+    if (message.payment !== undefined) {
+      obj.payment = Payment.toJSON(message.payment);
+    }
+    if (message.shipping !== undefined) {
+      obj.shipping = Shipping.toJSON(message.shipping);
+    }
     return obj;
   },
 
@@ -191,14 +281,105 @@ export const Event: MessageFns<Event> = {
   },
   fromPartial(object: DeepPartial<Event>): Event {
     const message = createBaseEvent();
-    message.id = object.id ?? "";
+    message.Id = object.Id ?? "";
     message.aggregateId = object.aggregateId ?? "";
     message.aggregateType = object.aggregateType ?? "";
     message.eventType = object.eventType ?? "";
-    message.eventData = object.eventData ?? undefined;
     message.version = object.version ?? 0;
     message.timestamp = object.timestamp ?? undefined;
     message.sagaId = object.sagaId ?? "";
+    message.metadata = Object.entries(object.metadata ?? {}).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = globalThis.String(value);
+      }
+      return acc;
+    }, {});
+    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    message.product = (object.product !== undefined && object.product !== null)
+      ? Product.fromPartial(object.product)
+      : undefined;
+    message.payment = (object.payment !== undefined && object.payment !== null)
+      ? Payment.fromPartial(object.payment)
+      : undefined;
+    message.shipping = (object.shipping !== undefined && object.shipping !== null)
+      ? Shipping.fromPartial(object.shipping)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseEvent_MetadataEntry(): Event_MetadataEntry {
+  return { key: "", value: "" };
+}
+
+export const Event_MetadataEntry: MessageFns<Event_MetadataEntry> = {
+  encode(message: Event_MetadataEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): Event_MetadataEntry {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseEvent_MetadataEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.key = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Event_MetadataEntry {
+    return {
+      key: isSet(object.key) ? globalThis.String(object.key) : "",
+      value: isSet(object.value) ? globalThis.String(object.value) : "",
+    };
+  },
+
+  toJSON(message: Event_MetadataEntry): unknown {
+    const obj: any = {};
+    if (message.key !== "") {
+      obj.key = message.key;
+    }
+    if (message.value !== "") {
+      obj.value = message.value;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<Event_MetadataEntry>): Event_MetadataEntry {
+    return Event_MetadataEntry.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<Event_MetadataEntry>): Event_MetadataEntry {
+    const message = createBaseEvent_MetadataEntry();
+    message.key = object.key ?? "";
+    message.value = object.value ?? "";
     return message;
   },
 };

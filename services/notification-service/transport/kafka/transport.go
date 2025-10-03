@@ -38,7 +38,7 @@ func NewTransport(
 ) *Transport {
 	return &Transport{
 		kafkaInfrastructure:       kafkaInfrastructure,
-		workerPool:                pkgWorker.NewWorkerPoolKafkaTaskQueue("kafka-consumer", 4, 1000),
+		workerPool:                pkgWorker.NewWorkerPoolKafkaTaskQueue("kafka-consumer", 10, 1000),
 		telemetryInfrastructure:   telemetryInfrastructure,
 		logger:                    logger,
 		notificationEmailConsumer: notificationEmailConsumer,

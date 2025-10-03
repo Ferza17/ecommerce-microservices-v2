@@ -11,6 +11,8 @@ import (
 	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/kafka"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	authKafkaConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/consumer/kafka"
+	eventKafkaConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/consumer"
+	roleKafkaConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/consumer/kafka"
 	userKafkaConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/consumer/kafka"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
@@ -27,7 +29,11 @@ type (
 		logger                  logger.IZapLogger
 		authKafkaConsumer       authKafkaConsumer.IAuthConsumer
 		userKafkaConsumer       userKafkaConsumer.IUserConsumer
+		roleKafkaConsumer       roleKafkaConsumer.IRoleConsumer
+		eventConsumer           eventKafkaConsumer.IEventConsumer
 	}
+
+	handler func(ctx context.Context, message *kafka.Message) error
 )
 
 var Set = wire.NewSet(NewTransport)
@@ -37,6 +43,8 @@ func NewTransport(
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	authKafkaConsumer authKafkaConsumer.IAuthConsumer,
 	userKafkaConsumer userKafkaConsumer.IUserConsumer,
+	roleKafkaConsumer roleKafkaConsumer.IRoleConsumer,
+	eventConsumer eventKafkaConsumer.IEventConsumer,
 	logger logger.IZapLogger,
 ) *Transport {
 	return &Transport{
@@ -45,17 +53,22 @@ func NewTransport(
 		telemetryInfrastructure: telemetryInfrastructure,
 		authKafkaConsumer:       authKafkaConsumer,
 		userKafkaConsumer:       userKafkaConsumer,
+		roleKafkaConsumer:       roleKafkaConsumer,
+		eventConsumer:           eventConsumer,
 		logger:                  logger,
 	}
 }
 
 func (srv *Transport) Serve(mainCtx context.Context) error {
 	srv.workerPool.Start()
-	topics := []string{
-		config.Get().BrokerKafkaTopicUsers.UserUserLogin,
-		config.Get().BrokerKafkaTopicUsers.UserUserLogout,
-		config.Get().BrokerKafkaTopicUsers.UserUserCreated,
-		config.Get().BrokerKafkaTopicUsers.UserUserUpdated,
+
+	var (
+		topics        []string
+		kafkaHandlers = srv.RegisterKafkaHandlers()
+	)
+
+	for s, _ := range kafkaHandlers {
+		topics = append(topics, s)
 	}
 
 	if err := srv.kafkaInfrastructure.SetupTopics(topics); err != nil {
@@ -81,8 +94,8 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 			}
 
 			var (
-				requestId   string
-				childCtx, _ = context.WithTimeout(mainCtx, 20*time.Second)
+				requestId string
+				childCtx  = context.WithoutCancel(mainCtx)
 			)
 
 			for _, header := range msg.Headers {
@@ -106,27 +119,13 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 				span.SetAttributes(attribute.String("messaging.destination", *msg.TopicPartition.Topic))
 				span.SetAttributes(attribute.String(pkgContext.CtxKeyRequestID, requestId))
 
-				switch *msg.TopicPartition.Topic {
-				case config.Get().BrokerKafkaTopicUsers.UserUserLogin:
-					task.Handler = func(ctx context.Context, message *kafka.Message) error {
-						return srv.authKafkaConsumer.SnapshotUsersUserLogin(childCtx, message)
-					}
-				case config.Get().BrokerKafkaTopicUsers.UserUserLogout:
-					task.Handler = func(ctx context.Context, message *kafka.Message) error {
-						return srv.authKafkaConsumer.SnapshotUsersUserLogout(childCtx, message)
-					}
-				case config.Get().BrokerKafkaTopicUsers.UserUserCreated:
-					task.Handler = func(ctx context.Context, message *kafka.Message) error {
-						return srv.userKafkaConsumer.SnapshotUsersUserCreated(childCtx, message)
-					}
-				case config.Get().BrokerKafkaTopicUsers.UserUserUpdated:
-					task.Handler = func(ctx context.Context, message *kafka.Message) error {
-						return srv.userKafkaConsumer.SnapshotUsersUserUpdated(childCtx, message)
-					}
-				default:
+				h, ok := kafkaHandlers[*msg.TopicPartition.Topic]
+				if !ok {
 					srv.logger.Error(fmt.Sprintf("invalid topic %s", *msg.TopicPartition.Topic))
+					span.End()
 					continue
 				}
+				task.Handler = h
 			}
 
 			srv.workerPool.AddKafkaTaskQueue(task)
@@ -135,6 +134,35 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 	}
 
 	return nil
+}
+
+func (srv *Transport) RegisterKafkaHandlers() map[string]handler {
+	var handlers = map[string]handler{}
+
+	// SNAPSHOT
+	handlers[config.Get().BrokerKafkaTopicUsers.UserUserLogin] = srv.authKafkaConsumer.SnapshotUsersUserLogin
+	handlers[config.Get().BrokerKafkaTopicUsers.ConfirmUserUserLogin] = srv.authKafkaConsumer.ConfirmSnapshotUsersUserLogin
+	handlers[config.Get().BrokerKafkaTopicUsers.CompensateUserUserLogin] = srv.authKafkaConsumer.CompensateSnapshotUsersUserLogin
+
+	handlers[config.Get().BrokerKafkaTopicUsers.UserUserLogout] = srv.authKafkaConsumer.SnapshotUsersUserLogout
+	handlers[config.Get().BrokerKafkaTopicUsers.ConfirmUserUserLogout] = srv.authKafkaConsumer.ConfirmSnapshotUsersUserLogout
+	handlers[config.Get().BrokerKafkaTopicUsers.CompensateUserUserLogout] = srv.authKafkaConsumer.CompensateSnapshotUsersUserLogout
+
+	handlers[config.Get().BrokerKafkaTopicUsers.UserUserCreated] = srv.userKafkaConsumer.SnapshotUsersUserCreated
+	handlers[config.Get().BrokerKafkaTopicUsers.ConfirmUserUserCreated] = srv.userKafkaConsumer.ConfirmSnapshotUsersUserCreated
+	handlers[config.Get().BrokerKafkaTopicUsers.CompensateUserUserCreated] = srv.userKafkaConsumer.CompensateSnapshotUsersUserCreated
+
+	handlers[config.Get().BrokerKafkaTopicUsers.UserUserUpdated] = srv.userKafkaConsumer.SnapshotUsersUserUpdated
+	handlers[config.Get().BrokerKafkaTopicUsers.ConfirmUserUserUpdated] = srv.userKafkaConsumer.ConfirmSnapshotUsersUserUpdated
+	handlers[config.Get().BrokerKafkaTopicUsers.CompensateUserUserUpdated] = srv.userKafkaConsumer.CompensateSnapshotUsersUserUpdated
+
+	// DLQ
+	handlers[config.Get().BrokerKafkaTopicConnectorSinkPgUser.DlqUsers] = srv.userKafkaConsumer.DlqSinkPgUsersUsers
+	handlers[config.Get().BrokerKafkaTopicConnectorSinkPgUser.DlqRoles] = srv.roleKafkaConsumer.DlqSinkPgUsersRoles
+
+	handlers[config.Get().BrokerKafkaTopicConnectorSinkMongoEvent.DlqUser] = srv.eventConsumer.DlqSinkMongoEventsUserEventStores
+
+	return handlers
 }
 
 func (srv *Transport) Close() {

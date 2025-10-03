@@ -33,7 +33,7 @@ spec:
               command:
                 - curl -s http://ksqldb-server-local:8088/info | grep -q '"KsqlServerInfo"'
             failureThreshold: 5
-            initialDelaySeconds: 30
+            initialDelaySeconds: 60
             periodSeconds: 10
             timeoutSeconds: 5
           name: ksqldb-cli-local

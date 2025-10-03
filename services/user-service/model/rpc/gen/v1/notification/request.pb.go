@@ -81,7 +81,7 @@ func (x *SendOtpEmailNotificationRequest) GetNotificationType() NotificationType
 	if x != nil {
 		return x.NotificationType
 	}
-	return NotificationTypeEnum_NOTIFICATION_EMAIL_USER_OTP
+	return NotificationTypeEnum_NOTIFICATION_EMAIL_USER_LOGIN_OTP
 }
 
 type SendEmailPaymentOrderCreateRequest struct {
@@ -144,7 +144,7 @@ func (x *SendEmailPaymentOrderCreateRequest) GetNotificationType() NotificationT
 	if x != nil {
 		return x.NotificationType
 	}
-	return NotificationTypeEnum_NOTIFICATION_EMAIL_USER_OTP
+	return NotificationTypeEnum_NOTIFICATION_EMAIL_USER_LOGIN_OTP
 }
 
 var File_v1_notification_request_proto protoreflect.FileDescriptor

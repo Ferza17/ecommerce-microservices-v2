@@ -5,10 +5,12 @@ import (
 	"errors"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/orm"
+	pbEvent "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/util"
 	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
@@ -66,10 +68,27 @@ func (u *authUseCase) AuthUserRegister(ctx context.Context, requestId string, re
 		UpdatedAt:  timestamppb.New(now),
 	})
 
-	if err = u.kafkaInfrastructure.PublishWithJsonSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkPgUser.Users, user.ID, user); err != nil {
+	//if err = u.kafkaInfrastructure.PublishWithJsonSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkPgUser.Users, user.ID, user); err != nil {
+	//	u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
+	//	return nil, status.Error(codes.Internal, "internal server error")
+	//}
+
+	// SENT TO EVENT STORE
+	if err = u.eventUseCase.AppendEvent(ctx, &pbEvent.Event{
+		XId:           primitive.NewObjectID().Hex(),
+		AggregateId:   user.ID,
+		AggregateType: "users",
+		EventType:     config.Get().BrokerKafkaTopicUsers.UserUserCreated,
+		Version:       1,
+		Timestamp:     timestamppb.New(now),
+		SagaId:        requestId,
+		Payload:       &pbEvent.Event_User{User: user.ToProto()},
+	}); err != nil {
 		u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
 		return nil, status.Error(codes.Internal, "internal server error")
 	}
+
+	// SENT TO NOTIFICATION
 
 	if err = u.SentOTP(ctx, requestId, user.ToProto()); err != nil {
 		return nil, status.Error(codes.Internal, "internal server error")

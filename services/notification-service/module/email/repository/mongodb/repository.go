@@ -2,17 +2,17 @@ package mongodb
 
 import (
 	"context"
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/enum"
 	mongodbInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mongodb"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/model/bson"
+	pb "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 	"github.com/google/wire"
 )
 
 type (
 	INotificationEmailRepository interface {
-		FindNotificationTemplateByNotificationType(ctx context.Context, requestId string, notificationType enum.NotificationType) (*bson.NotificationTemplate, error)
+		FindNotificationTemplateByNotificationType(ctx context.Context, requestId string, notificationType pb.NotificationTypeEnum) (*bson.NotificationTemplate, error)
 	}
 
 	notificationEmailRepository struct {

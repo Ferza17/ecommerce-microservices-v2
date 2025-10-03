@@ -7,6 +7,7 @@ import (
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	accessControlUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/usecase"
+	eventUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/usecase"
 	rolePostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/repository/postgres"
 	"github.com/google/wire"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -20,10 +21,15 @@ type (
 	IAuthUseCase interface {
 		// COMMAND
 		AuthUserRegister(ctx context.Context, requestId string, req *pb.AuthUserRegisterRequest) (*pb.AuthUserRegisterResponse, error)
+
 		AuthUserLoginByEmailAndPassword(ctx context.Context, requestId string, req *pb.AuthUserLoginByEmailAndPasswordRequest) (*emptypb.Empty, error)
+
 		AuthUserVerifyOtp(ctx context.Context, requestId string, req *pb.AuthUserVerifyOtpRequest) (*pb.AuthUserVerifyOtpResponse, error)
+
 		AuthUserLogoutByToken(ctx context.Context, requestId string, req *pb.AuthUserLogoutByTokenRequest) (*pb.AuthUserLogoutByTokenResponse, error)
+
 		AuthUserVerifyAccessControl(ctx context.Context, requestId string, req *pb.AuthUserVerifyAccessControlRequest) (*pb.AuthUserVerifyAccessControlResponse, error)
+
 		AuthServiceVerifyIsExcluded(ctx context.Context, requestId string, req *pb.AuthServiceVerifyIsExcludedRequest) (*pb.AuthServiceVerifyIsExcludedResponse, error)
 
 		// QUERY
@@ -38,6 +44,7 @@ type (
 		telemetryInfrastructure  telemetryInfrastructure.ITelemetryInfrastructure
 		postgresSQL              postgres.IPostgresSQL
 		logger                   logger.IZapLogger
+		eventUseCase             eventUseCase.IEventUseCase
 	}
 )
 
@@ -52,6 +59,7 @@ func NewAuthUseCase(
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	postgresSQL postgres.IPostgresSQL,
 	logger logger.IZapLogger,
+	eventUseCase eventUseCase.IEventUseCase,
 ) IAuthUseCase {
 	u := &authUseCase{
 		userPostgresqlRepository: userPostgresqlRepository,
@@ -62,6 +70,7 @@ func NewAuthUseCase(
 		telemetryInfrastructure:  telemetryInfrastructure,
 		postgresSQL:              postgresSQL,
 		logger:                   logger,
+		eventUseCase:             eventUseCase,
 	}
 	return u
 }

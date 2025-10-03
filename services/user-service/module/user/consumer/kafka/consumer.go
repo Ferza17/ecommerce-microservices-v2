@@ -12,7 +12,14 @@ import (
 type (
 	IUserConsumer interface {
 		SnapshotUsersUserCreated(ctx context.Context, message *kafka.Message) error
+		ConfirmSnapshotUsersUserCreated(ctx context.Context, message *kafka.Message) error
+		CompensateSnapshotUsersUserCreated(ctx context.Context, message *kafka.Message) error
+
 		SnapshotUsersUserUpdated(ctx context.Context, message *kafka.Message) error
+		ConfirmSnapshotUsersUserUpdated(ctx context.Context, message *kafka.Message) error
+		CompensateSnapshotUsersUserUpdated(ctx context.Context, message *kafka.Message) error
+
+		DlqSinkPgUsersUsers(ctx context.Context, message *kafka.Message) error
 	}
 
 	userConsumer struct {

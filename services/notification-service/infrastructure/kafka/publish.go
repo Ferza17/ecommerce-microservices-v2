@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
-	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/context"
 )
 
 func (c *kafkaInfrastructure) Publish(ctx context.Context, topic string, key string, value []byte) error {

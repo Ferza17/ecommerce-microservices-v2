@@ -21,7 +21,7 @@
     "errors.log.enable": "true",
     "errors.log.include.messages": "true",
     "errors.deadletterqueue.topic.name": "dlq-source-mongo-notification-notification_templates",
-    "errors.deadletterqueue.topic.replication.factor": "1",
+    "errors.deadletterqueue.topic.replication.factor": "3",
     "errors.deadletterqueue.context.headers.enable": "true",
 
     "auto.create": "true",

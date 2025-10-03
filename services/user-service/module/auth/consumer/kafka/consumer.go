@@ -12,7 +12,12 @@ import (
 type (
 	IAuthConsumer interface {
 		SnapshotUsersUserLogin(ctx context.Context, message *kafka.Message) error
+		ConfirmSnapshotUsersUserLogin(ctx context.Context, message *kafka.Message) error
+		CompensateSnapshotUsersUserLogin(ctx context.Context, message *kafka.Message) error
+
 		SnapshotUsersUserLogout(ctx context.Context, message *kafka.Message) error
+		ConfirmSnapshotUsersUserLogout(ctx context.Context, message *kafka.Message) error
+		CompensateSnapshotUsersUserLogout(ctx context.Context, message *kafka.Message) error
 	}
 
 	authConsumer struct {
