@@ -11,7 +11,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func (c *notificationEmailConsumer) SnapshotNotificationsEmailOtpCreated(ctx context.Context, message *kafka.Message) error {
+func (c *notificationEmailConsumer) SnapshotNotificationsEmailOtpUserRegister(ctx context.Context, message *kafka.Message) error {
 	var (
 		request   pb.SendOtpEmailNotificationRequest
 		requestId = pkgContext.GetRequestIDFromContext(ctx)

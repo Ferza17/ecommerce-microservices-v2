@@ -35,6 +35,7 @@ type Config struct {
 
 	BrokerKafka                   *BrokerKafka
 	BrokerKafkaTopicNotifications *BrokerKafkaTopicNotifications
+	BrokerKafkaTopicUsers         *BrokerKafkaTopicUsers
 
 	ConfigSmtp *ConfigSmtp
 
@@ -79,6 +80,7 @@ func SetConfig(path string) {
 	if err = c.
 		withBrokerKafka(consulClient.KV()).
 		withBrokerKafkaTopicNotifications(consulClient.KV()).
+		withBrokerKafkaTopicUsers(consulClient.KV()).
 		withConfigTelemetry(consulClient.KV()).
 		withConfigDatabaseMongo(consulClient.KV()).
 		withConfigServiceNotification(consulClient.KV()).

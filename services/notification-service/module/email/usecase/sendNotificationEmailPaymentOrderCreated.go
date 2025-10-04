@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/enum"
 	mailHogInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mailhog"
 	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification"
 	pb "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment"
@@ -19,15 +18,21 @@ func (u *notificationEmailUseCase) SendNotificationEmailPaymentOrderCreated(ctx 
 	)
 
 	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "UseCase.SendUserOtpEmailNotification")
-	defer span.End()
+	defer func(err error) {
+		if err == nil {
+			// TODO:
+			// Publish to topic confirm-snapshot-payments-payment_order_created
 
-	notificationType, err := enum.NotificationTypeParseIntToNotificationType(int(req.NotificationType))
-	if err != nil {
-		u.logger.Error(fmt.Sprintf("error parsing email type: %s", err.Error()))
-		return err
-	}
+		} else {
+			// TODO:
+			// Publish to topic compensate-snapshot-payments-payment_order_created
 
-	fetchTemplate, err := u.notificationRepository.FindNotificationTemplateByNotificationType(ctx, requestId, notificationType)
+			span.RecordError(err)
+		}
+		span.End()
+	}(err)
+
+	fetchTemplate, err := u.notificationRepository.FindNotificationTemplateByNotificationType(ctx, requestId, req.NotificationType)
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("error finding email template by email type: %s", err.Error()))
 		return status.Error(codes.Internal, "error finding email template by email type")

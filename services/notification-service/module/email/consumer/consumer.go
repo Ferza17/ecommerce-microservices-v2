@@ -13,7 +13,9 @@ import (
 
 type (
 	INotificationEmailConsumer interface {
-		SnapshotNotificationsEmailOtpCreated(ctx context.Context, message *kafka.Message) error
+		SnapshotNotificationsEmailOtpUserLogin(ctx context.Context, message *kafka.Message) error
+		SnapshotNotificationsEmailOtpUserRegister(ctx context.Context, message *kafka.Message) error
+
 		SnapshotNotificationsEmailPaymentOrderCreated(ctx context.Context, message *kafka.Message) error
 	}
 

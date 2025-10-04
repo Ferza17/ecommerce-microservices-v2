@@ -200,6 +200,61 @@ func (*Event_Payment) isEvent_Payload() {}
 
 func (*Event_Shipping) isEvent_Payload() {}
 
+type ReserveEvent struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	SagaId        string `protobuf:"bytes,1,opt,name=saga_id,json=sagaId,proto3" json:"saga_id,omitempty"`
+	AggregateType string `protobuf:"bytes,2,opt,name=aggregate_type,json=aggregateType,proto3" json:"aggregate_type,omitempty"`
+}
+
+func (x *ReserveEvent) Reset() {
+	*x = ReserveEvent{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_v1_event_model_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ReserveEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReserveEvent) ProtoMessage() {}
+
+func (x *ReserveEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_event_model_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReserveEvent.ProtoReflect.Descriptor instead.
+func (*ReserveEvent) Descriptor() ([]byte, []int) {
+	return file_v1_event_model_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *ReserveEvent) GetSagaId() string {
+	if x != nil {
+		return x.SagaId
+	}
+	return ""
+}
+
+func (x *ReserveEvent) GetAggregateType() string {
+	if x != nil {
+		return x.AggregateType
+	}
+	return ""
+}
+
 var File_v1_event_model_proto protoreflect.FileDescriptor
 
 var file_v1_event_model_proto_rawDesc = []byte{
@@ -250,7 +305,12 @@ var file_v1_event_model_proto_rawDesc = []byte{
 	0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65,
 	0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
 	0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x42, 0x09, 0x0a, 0x07, 0x70,
-	0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x42, 0x4d, 0x0a, 0x09, 0x63, 0x6f, 0x6d, 0x2e, 0x65, 0x76,
+	0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x22, 0x4e, 0x0a, 0x0c, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76,
+	0x65, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x12, 0x17, 0x0a, 0x07, 0x73, 0x61, 0x67, 0x61, 0x5f, 0x69,
+	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x61, 0x67, 0x61, 0x49, 0x64, 0x12,
+	0x25, 0x0a, 0x0e, 0x61, 0x67, 0x67, 0x72, 0x65, 0x67, 0x61, 0x74, 0x65, 0x5f, 0x74, 0x79, 0x70,
+	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x61, 0x67, 0x67, 0x72, 0x65, 0x67, 0x61,
+	0x74, 0x65, 0x54, 0x79, 0x70, 0x65, 0x42, 0x4d, 0x0a, 0x09, 0x63, 0x6f, 0x6d, 0x2e, 0x65, 0x76,
 	0x65, 0x6e, 0x74, 0x42, 0x0a, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x48,
 	0x02, 0x50, 0x01, 0xa2, 0x02, 0x03, 0x45, 0x58, 0x58, 0xaa, 0x02, 0x05, 0x45, 0x76, 0x65, 0x6e,
 	0x74, 0xca, 0x02, 0x05, 0x45, 0x76, 0x65, 0x6e, 0x74, 0xe2, 0x02, 0x11, 0x45, 0x76, 0x65, 0x6e,
@@ -270,23 +330,24 @@ func file_v1_event_model_proto_rawDescGZIP() []byte {
 	return file_v1_event_model_proto_rawDescData
 }
 
-var file_v1_event_model_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_v1_event_model_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_v1_event_model_proto_goTypes = []interface{}{
 	(*Event)(nil),                 // 0: event.Event
-	nil,                           // 1: event.Event.MetadataEntry
-	(*timestamppb.Timestamp)(nil), // 2: google.protobuf.Timestamp
-	(*user.User)(nil),             // 3: user.User
-	(*product.Product)(nil),       // 4: product.Product
-	(*payment.Payment)(nil),       // 5: payment.Payment
-	(*shipping.Shipping)(nil),     // 6: shipping.Shipping
+	(*ReserveEvent)(nil),          // 1: event.ReserveEvent
+	nil,                           // 2: event.Event.MetadataEntry
+	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
+	(*user.User)(nil),             // 4: user.User
+	(*product.Product)(nil),       // 5: product.Product
+	(*payment.Payment)(nil),       // 6: payment.Payment
+	(*shipping.Shipping)(nil),     // 7: shipping.Shipping
 }
 var file_v1_event_model_proto_depIdxs = []int32{
-	2, // 0: event.Event.timestamp:type_name -> google.protobuf.Timestamp
-	1, // 1: event.Event.metadata:type_name -> event.Event.MetadataEntry
-	3, // 2: event.Event.user:type_name -> user.User
-	4, // 3: event.Event.product:type_name -> product.Product
-	5, // 4: event.Event.payment:type_name -> payment.Payment
-	6, // 5: event.Event.shipping:type_name -> shipping.Shipping
+	3, // 0: event.Event.timestamp:type_name -> google.protobuf.Timestamp
+	2, // 1: event.Event.metadata:type_name -> event.Event.MetadataEntry
+	4, // 2: event.Event.user:type_name -> user.User
+	5, // 3: event.Event.product:type_name -> product.Product
+	6, // 4: event.Event.payment:type_name -> payment.Payment
+	7, // 5: event.Event.shipping:type_name -> shipping.Shipping
 	6, // [6:6] is the sub-list for method output_type
 	6, // [6:6] is the sub-list for method input_type
 	6, // [6:6] is the sub-list for extension type_name
@@ -312,6 +373,18 @@ func file_v1_event_model_proto_init() {
 				return nil
 			}
 		}
+		file_v1_event_model_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ReserveEvent); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	file_v1_event_model_proto_msgTypes[0].OneofWrappers = []interface{}{
 		(*Event_User)(nil),
@@ -325,7 +398,7 @@ func file_v1_event_model_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_v1_event_model_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

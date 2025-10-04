@@ -16,9 +16,7 @@ type BrokerKafkaTopicNotifications struct {
 
 func DefaultKafkaBrokerTopicNotifications() *BrokerKafkaTopicNotifications {
 	return &BrokerKafkaTopicNotifications{
-		EmailOtpCreated:          "",
-		EmailPaymentOrderCreated: "",
-		keyPrefix:                "%s/broker/kafka/TOPICS/NOTIFICATION/%s",
+		keyPrefix: "%s/broker/kafka/TOPICS/NOTIFICATION/%s",
 	}
 }
 
@@ -28,14 +26,23 @@ func (c *Config) withBrokerKafkaTopicNotifications(kv *api.KV) *Config {
 }
 
 func (c *BrokerKafkaTopicNotifications) WithConsulClient(env string, kv *api.KV) *BrokerKafkaTopicNotifications {
-	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "EMAIL_OTP_CREATED"), nil)
+	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "EMAIL_OTP_USER_LOGIN"), nil)
 	if err != nil {
-		log.Fatalf("SetConfig | could not get EMAIL_OTP_CREATED from consul: %v", err)
+		log.Fatalf("SetConfig | could not get EMAIL_OTP_USER_LOGIN from consul: %v", err)
 	}
 	if pair == nil {
-		log.Fatal("SetConfig | Consul | EMAIL_OTP_CREATED is required")
+		log.Fatal("SetConfig | Consul | EMAIL_OTP_USER_LOGIN is required")
 	}
-	c.EmailOtpCreated = string(pair.Value)
+	c.EmailOtpUserLogin = string(pair.Value)
+
+	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "EMAIL_OTP_USER_REGISTER"), nil)
+	if err != nil {
+		log.Fatalf("SetConfig | could not get EMAIL_OTP_USER_REGISTER from consul: %v", err)
+	}
+	if pair == nil {
+		log.Fatal("SetConfig | Consul | EMAIL_OTP_USER_REGISTER is required")
+	}
+	c.EmailOtpUserRegister = string(pair.Value)
 
 	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "EMAIL_PAYMENT_ORDER_CREATED"), nil)
 	if err != nil {
