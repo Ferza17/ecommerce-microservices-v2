@@ -50,7 +50,8 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 
 	topics := []string{
 		config.Get().BrokerKafkaTopicNotifications.EmailPaymentOrderCreated,
-		config.Get().BrokerKafkaTopicNotifications.EmailOtpCreated,
+		config.Get().BrokerKafkaTopicNotifications.EmailOtpUserLogin,
+		config.Get().BrokerKafkaTopicNotifications.EmailOtpUserRegister,
 	}
 
 	if err := srv.kafkaInfrastructure.SetupTopics(topics); err != nil {
@@ -100,9 +101,13 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 				span.SetAttributes(attribute.String(pkgContext.CtxKeyRequestID, requestId))
 
 				switch *msg.TopicPartition.Topic {
-				case config.Get().BrokerKafkaTopicNotifications.EmailOtpCreated:
+				case config.Get().BrokerKafkaTopicNotifications.EmailOtpUserLogin:
 					task.Handler = func(ctx context.Context, message *kafka.Message) error {
-						return srv.notificationEmailConsumer.SnapshotNotificationsEmailOtpCreated(childCtx, message)
+						return srv.notificationEmailConsumer.SnapshotNotificationsEmailOtpUserLogin(childCtx, message)
+					}
+				case config.Get().BrokerKafkaTopicNotifications.EmailOtpUserRegister:
+					task.Handler = func(ctx context.Context, message *kafka.Message) error {
+						return srv.notificationEmailConsumer.SnapshotNotificationsEmailOtpUserRegister(childCtx, message)
 					}
 				case config.Get().BrokerKafkaTopicNotifications.EmailPaymentOrderCreated:
 					task.Handler = func(ctx context.Context, message *kafka.Message) error {

@@ -37,9 +37,13 @@ data:
       "confirm-snapshot-products-product_deleted:3:1"
       "compensate-snapshot-products-product_deleted:3:1"
 
-      "snapshot-notifications-email_otp_created:2:1"
-      "confirm-snapshot-notifications-email_otp_created:2:1"
-      "compensate-snapshot-notifications-email_otp_created:2:1"
+      "snapshot-notifications-email_otp_user_login:2:1"
+      "confirm-snapshot-notifications-email_otp_user_login:2:1"
+      "compensate-snapshot-notifications-email_otp_user_login:2:1"
+
+      "snapshot-notifications-email_otp_user_register:2:1"
+      "confirm-snapshot-notifications-email_otp_user_register:2:1"
+      "compensate-snapshot-notifications-email_otp_user_register:2:1"
 
       "snapshot-notifications-email_payment_order_created:2:1"
       "confirm-snapshot-notifications-email_payment_order_created:2:1"

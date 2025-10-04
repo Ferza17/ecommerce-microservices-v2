@@ -15,6 +15,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 )
@@ -73,16 +74,23 @@ func (u *authUseCase) AuthUserRegister(ctx context.Context, requestId string, re
 	//	return nil, status.Error(codes.Internal, "internal server error")
 	//}
 
+	payload, err := proto.Marshal(user.ToProto())
+	if err != nil {
+		u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
+		return nil, status.Error(codes.Internal, "internal server error")
+	}
+
 	// SENT TO EVENT STORE
 	if err = u.eventUseCase.AppendEvent(ctx, &pbEvent.Event{
 		XId:           primitive.NewObjectID().Hex(),
 		AggregateId:   user.ID,
-		AggregateType: "users",
+		AggregateType: "users", // TODO: Move To Enum
 		EventType:     config.Get().BrokerKafkaTopicUsers.UserUserCreated,
 		Version:       1,
 		Timestamp:     timestamppb.New(now),
 		SagaId:        requestId,
-		Payload:       &pbEvent.Event_User{User: user.ToProto()},
+		//Payload:       &pbEvent.Event_User{User: user.ToProto()},
+		Payload: payload,
 	}); err != nil {
 		u.logger.Error("AuthUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
 		return nil, status.Error(codes.Internal, "internal server error")

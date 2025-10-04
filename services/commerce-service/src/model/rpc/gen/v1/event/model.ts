@@ -7,10 +7,6 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { Timestamp } from "../../google/protobuf/timestamp";
-import { Payment } from "../payment/model";
-import { Product } from "../product/model";
-import { Shipping } from "../shipping/model";
-import { User } from "../user/model";
 
 export const protobufPackage = "event";
 
@@ -23,15 +19,25 @@ export interface Event {
   timestamp: Date | undefined;
   sagaId: string;
   metadata: { [key: string]: string };
-  user?: User | undefined;
-  product?: Product | undefined;
-  payment?: Payment | undefined;
-  shipping?: Shipping | undefined;
+  /**
+   * oneof payload {
+   *    user.User user = 10;
+   *    product.Product product = 11;
+   *    payment.Payment payment = 12;
+   *    shipping.Shipping shipping = 13;
+   *  }
+   */
+  payload: Buffer;
 }
 
 export interface Event_MetadataEntry {
   key: string;
   value: string;
+}
+
+export interface ReserveEvent {
+  sagaId: string;
+  aggregateType: string;
 }
 
 function createBaseEvent(): Event {
@@ -44,10 +50,7 @@ function createBaseEvent(): Event {
     timestamp: undefined,
     sagaId: "",
     metadata: {},
-    user: undefined,
-    product: undefined,
-    payment: undefined,
-    shipping: undefined,
+    payload: Buffer.alloc(0),
   };
 }
 
@@ -77,17 +80,8 @@ export const Event: MessageFns<Event> = {
     Object.entries(message.metadata).forEach(([key, value]) => {
       Event_MetadataEntry.encode({ key: key as any, value }, writer.uint32(66).fork()).join();
     });
-    if (message.user !== undefined) {
-      User.encode(message.user, writer.uint32(82).fork()).join();
-    }
-    if (message.product !== undefined) {
-      Product.encode(message.product, writer.uint32(90).fork()).join();
-    }
-    if (message.payment !== undefined) {
-      Payment.encode(message.payment, writer.uint32(98).fork()).join();
-    }
-    if (message.shipping !== undefined) {
-      Shipping.encode(message.shipping, writer.uint32(106).fork()).join();
+    if (message.payload.length !== 0) {
+      writer.uint32(74).bytes(message.payload);
     }
     return writer;
   },
@@ -166,36 +160,12 @@ export const Event: MessageFns<Event> = {
           }
           continue;
         }
-        case 10: {
-          if (tag !== 82) {
+        case 9: {
+          if (tag !== 74) {
             break;
           }
 
-          message.user = User.decode(reader, reader.uint32());
-          continue;
-        }
-        case 11: {
-          if (tag !== 90) {
-            break;
-          }
-
-          message.product = Product.decode(reader, reader.uint32());
-          continue;
-        }
-        case 12: {
-          if (tag !== 98) {
-            break;
-          }
-
-          message.payment = Payment.decode(reader, reader.uint32());
-          continue;
-        }
-        case 13: {
-          if (tag !== 106) {
-            break;
-          }
-
-          message.shipping = Shipping.decode(reader, reader.uint32());
+          message.payload = Buffer.from(reader.bytes());
           continue;
         }
       }
@@ -222,10 +192,7 @@ export const Event: MessageFns<Event> = {
           return acc;
         }, {})
         : {},
-      user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
-      product: isSet(object.product) ? Product.fromJSON(object.product) : undefined,
-      payment: isSet(object.payment) ? Payment.fromJSON(object.payment) : undefined,
-      shipping: isSet(object.shipping) ? Shipping.fromJSON(object.shipping) : undefined,
+      payload: isSet(object.payload) ? Buffer.from(bytesFromBase64(object.payload)) : Buffer.alloc(0),
     };
   },
 
@@ -261,17 +228,8 @@ export const Event: MessageFns<Event> = {
         });
       }
     }
-    if (message.user !== undefined) {
-      obj.user = User.toJSON(message.user);
-    }
-    if (message.product !== undefined) {
-      obj.product = Product.toJSON(message.product);
-    }
-    if (message.payment !== undefined) {
-      obj.payment = Payment.toJSON(message.payment);
-    }
-    if (message.shipping !== undefined) {
-      obj.shipping = Shipping.toJSON(message.shipping);
+    if (message.payload.length !== 0) {
+      obj.payload = base64FromBytes(message.payload);
     }
     return obj;
   },
@@ -294,16 +252,7 @@ export const Event: MessageFns<Event> = {
       }
       return acc;
     }, {});
-    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
-    message.product = (object.product !== undefined && object.product !== null)
-      ? Product.fromPartial(object.product)
-      : undefined;
-    message.payment = (object.payment !== undefined && object.payment !== null)
-      ? Payment.fromPartial(object.payment)
-      : undefined;
-    message.shipping = (object.shipping !== undefined && object.shipping !== null)
-      ? Shipping.fromPartial(object.shipping)
-      : undefined;
+    message.payload = object.payload ?? Buffer.alloc(0);
     return message;
   },
 };
@@ -383,6 +332,90 @@ export const Event_MetadataEntry: MessageFns<Event_MetadataEntry> = {
     return message;
   },
 };
+
+function createBaseReserveEvent(): ReserveEvent {
+  return { sagaId: "", aggregateType: "" };
+}
+
+export const ReserveEvent: MessageFns<ReserveEvent> = {
+  encode(message: ReserveEvent, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.sagaId !== "") {
+      writer.uint32(10).string(message.sagaId);
+    }
+    if (message.aggregateType !== "") {
+      writer.uint32(18).string(message.aggregateType);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ReserveEvent {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseReserveEvent();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.sagaId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.aggregateType = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ReserveEvent {
+    return {
+      sagaId: isSet(object.sagaId) ? globalThis.String(object.sagaId) : "",
+      aggregateType: isSet(object.aggregateType) ? globalThis.String(object.aggregateType) : "",
+    };
+  },
+
+  toJSON(message: ReserveEvent): unknown {
+    const obj: any = {};
+    if (message.sagaId !== "") {
+      obj.sagaId = message.sagaId;
+    }
+    if (message.aggregateType !== "") {
+      obj.aggregateType = message.aggregateType;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<ReserveEvent>): ReserveEvent {
+    return ReserveEvent.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<ReserveEvent>): ReserveEvent {
+    const message = createBaseReserveEvent();
+    message.sagaId = object.sagaId ?? "";
+    message.aggregateType = object.aggregateType ?? "";
+    return message;
+  },
+};
+
+function bytesFromBase64(b64: string): Uint8Array {
+  return Uint8Array.from(globalThis.Buffer.from(b64, "base64"));
+}
+
+function base64FromBytes(arr: Uint8Array): string {
+  return globalThis.Buffer.from(arr).toString("base64");
+}
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 

@@ -19,10 +19,16 @@ message Event {
   google.protobuf.Timestamp timestamp = 6;
   string saga_id = 7;
   map<string, string> metadata = 8;
-  oneof payload {
-    user.User user = 10;
-    product.Product product = 11;
-    payment.Payment payment = 12;
-    shipping.Shipping shipping = 13;
-  }
+  //  oneof payload {
+  //    user.User user = 10;
+  //    product.Product product = 11;
+  //    payment.Payment payment = 12;
+  //    shipping.Shipping shipping = 13;
+  //  }
+  bytes payload = 9;
+}
+
+message ReserveEvent {
+  string saga_id = 1;
+  string aggregate_type = 2;
 }

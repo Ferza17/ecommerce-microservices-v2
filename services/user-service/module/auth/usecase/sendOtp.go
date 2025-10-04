@@ -13,6 +13,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// TODO: Handle For Register And Login
+
 func (u *authUseCase) SentOTP(ctx context.Context, requestId string, user *pb.User) error {
 	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "AuthUseCase.SentOTP")
 	defer span.End()
@@ -26,7 +28,7 @@ func (u *authUseCase) SentOTP(ctx context.Context, requestId string, user *pb.Us
 	reqUserEmailOtp := &notificationRpc.SendOtpEmailNotificationRequest{
 		Email:            user.Email,
 		Otp:              otp,
-		NotificationType: notificationRpc.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_OTP,
+		NotificationType: notificationRpc.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_REGISTER_OTP,
 	}
 
 	message, err := proto.Marshal(reqUserEmailOtp)
@@ -35,7 +37,7 @@ func (u *authUseCase) SentOTP(ctx context.Context, requestId string, user *pb.Us
 		return status.Error(codes.Internal, err.Error())
 	}
 
-	if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicNotifications.EmailOtpCreated, requestId, message); err != nil {
+	if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicNotifications.EmailOtpUserRegister, requestId, message); err != nil {
 		u.logger.Error("AuthUseCase.SentOTP", zap.String("requestId", requestId), zap.Error(err))
 		return status.Error(codes.Internal, err.Error())
 	}
