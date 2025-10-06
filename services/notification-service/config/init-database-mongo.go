@@ -8,23 +8,18 @@ import (
 )
 
 type DatabaseMongo struct {
-	Username     string
-	Password     string
-	Host         string
-	Port         string
-	DatabaseName string
+	Username                 string
+	Password                 string
+	Host                     string
+	Port                     string
+	DatabaseNameNotification string
 
 	keyPrefix string
 }
 
 func DefaultDatabaseMongo() *DatabaseMongo {
 	return &DatabaseMongo{
-		Username:     "",
-		Password:     "",
-		Host:         "",
-		Port:         "",
-		DatabaseName: "",
-		keyPrefix:    "%s/database/mongodb/%s",
+		keyPrefix: "%s/database/mongodb/%s",
 	}
 }
 
@@ -77,7 +72,7 @@ func (c *DatabaseMongo) WithConsulClient(env string, kv *api.KV) *DatabaseMongo 
 	if pair == nil {
 		log.Fatal("SetConfig | Consul | MONGO_DATABASE_NAME/NOTIFICATION is required")
 	}
-	c.DatabaseName = string(pair.Value)
+	c.DatabaseNameNotification = string(pair.Value)
 
 	return c
 }

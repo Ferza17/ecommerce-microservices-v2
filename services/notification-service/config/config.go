@@ -33,9 +33,10 @@ type Config struct {
 
 	ConfigTelemetry *ConfigTelemetry
 
-	BrokerKafka                   *BrokerKafka
-	BrokerKafkaTopicNotifications *BrokerKafkaTopicNotifications
-	BrokerKafkaTopicUsers         *BrokerKafkaTopicUsers
+	BrokerKafka                             *BrokerKafka
+	BrokerKafkaTopicNotifications           *BrokerKafkaTopicNotifications
+	BrokerKafkaTopicUsers                   *BrokerKafkaTopicUsers
+	BrokerKafkaTopicConnectorSinkMongoEvent *BrokerKafkaTopicConnectorSinkMongoEvent
 
 	ConfigSmtp *ConfigSmtp
 

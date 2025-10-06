@@ -15,7 +15,7 @@ import (
 
 type (
 	IMongoDBInfrastructure interface {
-		GetCollection(database enum.Database, collection enum.Collection) *mongo.Collection
+		GetCollection(database enum.Database, collection string) *mongo.Collection
 		GetConnectionString() string
 		Close(ctx context.Context) error
 		StartSession() (mongo.Session, error)
@@ -36,7 +36,7 @@ func NewMongoDBInfrastructure(logger logger.IZapLogger) IMongoDBInfrastructure {
 		config.Get().DatabaseMongo.Password,
 		config.Get().DatabaseMongo.Host,
 		config.Get().DatabaseMongo.Port,
-		config.Get().DatabaseMongo.DatabaseName,
+		config.Get().DatabaseMongo.DatabaseNameNotification,
 	)
 	conn, err := mongo.Connect(
 		context.Background(),
@@ -74,8 +74,8 @@ func (m *MongoDBInfrastructure) StartSession() (mongo.Session, error) {
 	return m.mongoClient.StartSession()
 }
 
-func (m *MongoDBInfrastructure) GetCollection(database enum.Database, collection enum.Collection) *mongo.Collection {
-	return m.mongoClient.Database(database.String()).Collection(collection.String())
+func (m *MongoDBInfrastructure) GetCollection(database enum.Database, collection string) *mongo.Collection {
+	return m.mongoClient.Database(database.String()).Collection(collection)
 }
 
 func (m *MongoDBInfrastructure) GetConnectionString() string {
@@ -84,6 +84,6 @@ func (m *MongoDBInfrastructure) GetConnectionString() string {
 		config.Get().DatabaseMongo.Password,
 		config.Get().DatabaseMongo.Host,
 		config.Get().DatabaseMongo.Port,
-		config.Get().DatabaseMongo.DatabaseName,
+		config.Get().DatabaseMongo.DatabaseNameNotification,
 	)
 }
