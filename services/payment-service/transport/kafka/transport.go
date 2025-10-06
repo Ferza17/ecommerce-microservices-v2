@@ -3,6 +3,9 @@ package kafka
 import (
 	"context"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
 	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/kafka"
@@ -13,8 +16,6 @@ import (
 	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/worker"
 	"github.com/google/wire"
 	"go.opentelemetry.io/otel/attribute"
-	"strings"
-	"time"
 )
 
 type (
@@ -26,6 +27,8 @@ type (
 		logger                  logger.IZapLogger
 		topics                  []string
 	}
+
+	handler func(ctx context.Context, message *kafka.Message) error
 )
 
 var Set = wire.NewSet(
@@ -55,7 +58,16 @@ func NewTransport(
 func (srv *Transport) Serve(mainCtx context.Context) error {
 	srv.workerPool.Start()
 
-	if err := srv.kafkaInfrastructure.SetupTopics(srv.topics); err != nil {
+	var (
+		topics        []string
+		kafkaHandlers = srv.RegisterKafkaHandlers()
+	)
+
+	for s, _ := range kafkaHandlers {
+		topics = append(topics, s)
+	}
+
+	if err := srv.kafkaInfrastructure.SetupTopics(topics); err != nil {
 		srv.logger.Error(fmt.Sprintf("failed to setup kafka topics: %v", err))
 		return err
 	}
@@ -78,8 +90,8 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 			}
 
 			var (
-				requestId   string
-				childCtx, _ = context.WithTimeout(mainCtx, 20*time.Second)
+				requestId string
+				childCtx  = context.WithoutCancel(mainCtx)
 			)
 
 			for _, header := range msg.Headers {
@@ -93,32 +105,46 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 				}
 			}
 			childCtx, span := srv.telemetryInfrastructure.StartSpanFromKafkaHeader(childCtx, msg.Headers, "KafkaTransport")
+
 			task := pkgWorker.KafkaTaskQueue{
 				Message: msg,
 				Ctx:     childCtx,
 			}
+
 			if msg.TopicPartition.Topic != nil {
 				span.SetAttributes(attribute.String("messaging.destination", *msg.TopicPartition.Topic))
 				span.SetAttributes(attribute.String(pkgContext.CtxKeyRequestID, requestId))
 
-				switch *msg.TopicPartition.Topic {
-				case config.Get().BrokerKafkaTopicPayments.PaymentOrderCreated:
-					task.Handler = func(ctx context.Context, message *kafka.Message) error {
-						return srv.paymentConsumer.SnapshotPaymentsPaymentOrderCreated(childCtx, message)
-					}
-				case config.Get().BrokerKafkaTopicPayments.PaymentOrderCreatedDelayed:
-					task.Handler = func(ctx context.Context, message *kafka.Message) error {
-						return srv.paymentConsumer.SnapshotPaymentsPaymentOrderCancelledDelayed(childCtx, message)
-					}
-				default:
+				h, ok := kafkaHandlers[*msg.TopicPartition.Topic]
+				if !ok {
 					srv.logger.Error(fmt.Sprintf("invalid topic %s", *msg.TopicPartition.Topic))
+					span.End()
 					continue
 				}
+				task.Handler = h
 			}
 
 			srv.workerPool.AddKafkaTaskQueue(task)
 			span.End()
 		}
 	}
+
 	return nil
+}
+
+func (srv *Transport) RegisterKafkaHandlers() map[string]handler {
+	var handlers = map[string]handler{}
+
+	// SNAPSHOT
+	handlers[config.Get().BrokerKafkaTopicPayments.PaymentOrderCreated] = srv.paymentConsumer.SnapshotPaymentsPaymentOrderCreated
+
+	handlers[config.Get().BrokerKafkaTopicPayments.PaymentOrderCreatedDelayed] = srv.paymentConsumer.SnapshotPaymentsPaymentOrderCancelledDelayed
+
+	return handlers
+}
+
+func (srv *Transport) Close() {
+	if err := srv.kafkaInfrastructure.Close(); err != nil {
+		srv.logger.Error(fmt.Sprintf("failed to close kafka infrastructure: %v", err))
+	}
 }

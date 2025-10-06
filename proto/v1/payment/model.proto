@@ -34,7 +34,8 @@ message Payment {
   payment.PaymentStatus status = 5 ;
   string provider_id = 6 ;
   string user_id = 7 ;
-  google.protobuf.Timestamp created_at = 8 ;
-  google.protobuf.Timestamp updated_at = 9 ;
-  optional google.protobuf.Timestamp discarded_at = 10 ;
+  repeated payment.PaymentItem items = 8;
+  google.protobuf.Timestamp created_at = 9 ;
+  google.protobuf.Timestamp updated_at = 10 ;
+  optional google.protobuf.Timestamp discarded_at = 11 ;
 }

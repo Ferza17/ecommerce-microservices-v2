@@ -380,6 +380,13 @@
         "userId": {
           "type": "string"
         },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/paymentPaymentItem"
+          }
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"

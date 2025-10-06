@@ -2,6 +2,7 @@ package consumer
 
 import (
 	"context"
+
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/usecase"
@@ -12,6 +13,9 @@ import (
 type (
 	IPaymentConsumer interface {
 		SnapshotPaymentsPaymentOrderCreated(ctx context.Context, message *kafka.Message) error
+		CompensateSnapshotPaymentsPaymentOrderCreated(ctx context.Context, message *kafka.Message) error
+		ConfirmSnapshotPaymentsPaymentOrderCreated(ctx context.Context, message *kafka.Message) error
+
 		SnapshotPaymentsPaymentOrderCancelledDelayed(ctx context.Context, message *kafka.Message) error
 	}
 

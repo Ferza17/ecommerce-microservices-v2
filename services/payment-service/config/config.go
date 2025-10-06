@@ -2,13 +2,14 @@ package config
 
 import (
 	"fmt"
+	"log"
+	"os"
+
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/enum"
 	pkgMetric "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/metric"
 	"github.com/hashicorp/consul/api"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/viper"
-	"log"
-	"os"
 )
 
 var c *Config
@@ -26,9 +27,9 @@ type Config struct {
 
 	// POSTGRES CONFIG
 	DatabasePostgres *DatabasePostgres
-
 	// REDIS Config
 	DatabaseRedis *DatabaseRedis
+	DatabaseMongo *DatabaseMongo
 
 	// User Service Config
 	ConfigServiceUser *ConfigServiceUser
@@ -42,11 +43,12 @@ type Config struct {
 	// Shipping Service Config
 	ConfigServiceShipping *ConfigServiceShipping
 
-	BrokerKafka                            *BrokerKafka
-	BrokerKafkaTopicConnectorSinkPgPayment *BrokerKafkaTopicConnectorSinkPgPayment
-	BrokerKafkaTopicPayments               *BrokerKafkaTopicPayments
-	BrokerKafkaTopicNotifications          *BrokerKafkaTopicNotifications
-	BrokerKafkaTopicShippings              *BrokerKafkaTopicShippings
+	BrokerKafka                             *BrokerKafka
+	BrokerKafkaTopicConnectorSinkPgPayment  *BrokerKafkaTopicConnectorSinkPgPayment
+	BrokerKafkaTopicPayments                *BrokerKafkaTopicPayments
+	BrokerKafkaTopicNotifications           *BrokerKafkaTopicNotifications
+	BrokerKafkaTopicShippings               *BrokerKafkaTopicShippings
+	BrokerKafkaTopicConnectorSinkMongoEvent *BrokerKafkaTopicConnectorSinkMongoEvent
 }
 
 func SetConfig(path string) {
@@ -109,6 +111,8 @@ func SetConfig(path string) {
 		withServiceProduct(client.KV()).
 		withDatabasePostgres(client.KV()).
 		withDatabaseRedis(client.KV()).
+		withConfigDatabaseMongo(client.KV()).
+		withBrokerKafkaTopicConnectorSinkMongoEvent(client.KV()).
 		RegisterConsulService(); err != nil {
 		log.Fatalf("SetConfig | could not register service: %v", err)
 		return

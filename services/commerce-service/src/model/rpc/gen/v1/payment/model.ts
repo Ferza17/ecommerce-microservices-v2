@@ -48,6 +48,7 @@ export interface Payment {
   status: PaymentStatus;
   providerId: string;
   userId: string;
+  items: PaymentItem[];
   createdAt: Date | undefined;
   updatedAt: Date | undefined;
   discardedAt?: Date | undefined;
@@ -382,6 +383,7 @@ function createBasePayment(): Payment {
     status: 0,
     providerId: "",
     userId: "",
+    items: [],
     createdAt: undefined,
     updatedAt: undefined,
     discardedAt: undefined,
@@ -408,14 +410,17 @@ export const Payment: MessageFns<Payment> = {
     if (message.userId !== "") {
       writer.uint32(58).string(message.userId);
     }
+    for (const v of message.items) {
+      PaymentItem.encode(v!, writer.uint32(66).fork()).join();
+    }
     if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(66).fork()).join();
+      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(74).fork()).join();
     }
     if (message.updatedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.updatedAt), writer.uint32(74).fork()).join();
+      Timestamp.encode(toTimestamp(message.updatedAt), writer.uint32(82).fork()).join();
     }
     if (message.discardedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.discardedAt), writer.uint32(82).fork()).join();
+      Timestamp.encode(toTimestamp(message.discardedAt), writer.uint32(90).fork()).join();
     }
     return writer;
   },
@@ -480,7 +485,7 @@ export const Payment: MessageFns<Payment> = {
             break;
           }
 
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.items.push(PaymentItem.decode(reader, reader.uint32()));
           continue;
         }
         case 9: {
@@ -488,11 +493,19 @@ export const Payment: MessageFns<Payment> = {
             break;
           }
 
-          message.updatedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
         case 10: {
           if (tag !== 82) {
+            break;
+          }
+
+          message.updatedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 11: {
+          if (tag !== 90) {
             break;
           }
 
@@ -516,6 +529,7 @@ export const Payment: MessageFns<Payment> = {
       status: isSet(object.status) ? paymentStatusFromJSON(object.status) : 0,
       providerId: isSet(object.providerId) ? globalThis.String(object.providerId) : "",
       userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
+      items: globalThis.Array.isArray(object?.items) ? object.items.map((e: any) => PaymentItem.fromJSON(e)) : [],
       createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
       updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
       discardedAt: isSet(object.discardedAt) ? fromJsonTimestamp(object.discardedAt) : undefined,
@@ -542,6 +556,9 @@ export const Payment: MessageFns<Payment> = {
     if (message.userId !== "") {
       obj.userId = message.userId;
     }
+    if (message.items?.length) {
+      obj.items = message.items.map((e) => PaymentItem.toJSON(e));
+    }
     if (message.createdAt !== undefined) {
       obj.createdAt = message.createdAt.toISOString();
     }
@@ -565,6 +582,7 @@ export const Payment: MessageFns<Payment> = {
     message.status = object.status ?? 0;
     message.providerId = object.providerId ?? "";
     message.userId = object.userId ?? "";
+    message.items = object.items?.map((e) => PaymentItem.fromPartial(e)) || [];
     message.createdAt = object.createdAt ?? undefined;
     message.updatedAt = object.updatedAt ?? undefined;
     message.discardedAt = object.discardedAt ?? undefined;

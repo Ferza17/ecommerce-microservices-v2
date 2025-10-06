@@ -3,6 +3,9 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/model/orm"
@@ -11,8 +14,6 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/util"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
-	"os"
-	"time"
 )
 
 var insertMockCommand = &cobra.Command{
@@ -44,7 +45,7 @@ var insertMockCommand = &cobra.Command{
 			provider.CreatedAt = &now
 			provider.UpdatedAt = &now
 
-			if err = kafkaInfra.PublishWithJsonSchema(cmd.Context(), config.Get().BrokerKafkaTopicConnectorSinkPgPayment.PaymentProviders, provider.ID, provider); err != nil {
+			if err = kafkaInfra.PublishWithSchema(cmd.Context(), config.Get().BrokerKafkaTopicConnectorSinkPgPayment.PaymentProviders, provider.ID, kafka.JSON_SCHEMA, provider); err != nil {
 				logger.Error(fmt.Sprintf("error publishing to kafka with id : %s ,name: %s", provider.ID, provider.Name), zap.Error(err))
 				continue
 			}

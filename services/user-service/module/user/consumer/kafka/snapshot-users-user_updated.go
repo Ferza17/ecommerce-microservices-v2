@@ -18,19 +18,23 @@ import (
 func (c *userConsumer) SnapshotUsersUserUpdated(ctx context.Context, message *kafka.Message) error {
 	var (
 		req pbUser.UpdateUserByIdRequest
+		err error
 	)
 	ctx, span := c.telemetryInfrastructure.StartSpanFromContext(ctx, "UserConsumer.FindUserByEmail")
-	defer span.End()
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+		}
+		span.End()
+	}()
 
-	if err := proto.Unmarshal(message.Value, &req); err != nil {
+	if err = proto.Unmarshal(message.Value, &req); err != nil {
 		c.logger.Error("SnapshotUsersUserUpdated", zap.Error(err))
-		span.RecordError(err)
 		return err
 	}
 
-	if _, err := c.userUseCase.UpdateUserById(ctx, pkgContext.GetRequestIDFromContext(ctx), &req); err != nil {
+	if _, err = c.userUseCase.UpdateUserById(ctx, pkgContext.GetRequestIDFromContext(ctx), &req); err != nil {
 		c.logger.Error("SnapshotUsersUserUpdated", zap.Error(err))
-		span.RecordError(err)
 		return err
 	}
 

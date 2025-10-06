@@ -19,14 +19,6 @@ export interface Event {
   timestamp: Date | undefined;
   sagaId: string;
   metadata: { [key: string]: string };
-  /**
-   * oneof payload {
-   *    user.User user = 10;
-   *    product.Product product = 11;
-   *    payment.Payment payment = 12;
-   *    shipping.Shipping shipping = 13;
-   *  }
-   */
   payload: Buffer;
 }
 

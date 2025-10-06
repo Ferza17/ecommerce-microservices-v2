@@ -24,8 +24,17 @@ import (
 )
 
 func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.AuthUserRegisterRequest) (*pb.AuthUserRegisterResponse, error) {
+	var (
+		err error
+	)
+
 	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "UserUseCase.CreateUser")
-	defer span.End()
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+		}
+		span.End()
+	}()
 
 	now, err := util.GetNowWithTimeZone(pkgContext.CtxValueAsiaJakarta)
 	if err != nil {
@@ -124,8 +133,16 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 }
 
 func (u *userUseCase) ConfirmCreateUser(ctx context.Context, requestId string, req *pbEvent.ReserveEvent) error {
+	var (
+		err error
+	)
 	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "UserUseCase.ConfirmCreateUser")
-	defer span.End()
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+		}
+		span.End()
+	}()
 
 	savedEvent, err := u.eventMongoDBRepository.FindEventBySagaIDAndAggregateType(ctx, req.SagaId, "users")
 	if err != nil {
@@ -148,10 +165,19 @@ func (u *userUseCase) ConfirmCreateUser(ctx context.Context, requestId string, r
 }
 
 func (u *userUseCase) CompensateCreateUser(ctx context.Context, requestId string, req *pbEvent.ReserveEvent) error {
-	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "UserUseCase.CompensateCreateUser")
-	defer span.End()
+	var (
+		err error
+	)
 
-	if err := u.eventMongoDBRepository.DeleteEventBySagaId(ctx, req.SagaId); err != nil {
+	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "UserUseCase.CompensateCreateUser")
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+		}
+		span.End()
+	}()
+
+	if err = u.eventMongoDBRepository.DeleteEventBySagaId(ctx, req.SagaId); err != nil {
 		u.logger.Error("UserUseCase.SentOTP", zap.String("requestId", requestId), zap.Error(err))
 		return err
 	}

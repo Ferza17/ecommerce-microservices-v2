@@ -1,9 +1,10 @@
 package orm
 
 import (
+	"time"
+
 	pb "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"time"
 )
 
 // Payment GORM model
@@ -57,6 +58,13 @@ func (p *Payment) ToProto() *pb.Payment {
 			}
 			return nil
 		}(),
+		Items: func() []*pb.PaymentItem {
+			var items []*pb.PaymentItem
+			if p.PaymentItems != nil {
+				items = PaymentItemsToProto(p.PaymentItems)
+			}
+			return items
+		}(),
 	}
 }
 
@@ -88,6 +96,13 @@ func PaymentFromProto(proto *pb.Payment) *Payment {
 				return &t
 			}
 			return nil
+		}(),
+		PaymentItems: func() []*PaymentItem {
+			var items []*PaymentItem
+			if proto.Items != nil {
+				items = PaymentItemsFromProto(proto.Items)
+			}
+			return items
 		}(),
 	}
 }

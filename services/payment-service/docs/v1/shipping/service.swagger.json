@@ -388,6 +388,48 @@
         "userId": {
           "type": "string"
         },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/paymentPaymentItem"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "discardedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "title": "REFERRED TO DATABASE SCHEMA"
+    },
+    "paymentPaymentItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "productId": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number",
+          "format": "double"
+        },
+        "qty": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "paymentId": {
+          "type": "string"
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"
