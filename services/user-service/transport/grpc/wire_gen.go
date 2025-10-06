@@ -8,6 +8,7 @@ package grpc
 
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/kafka"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/mongodb"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/postgres"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/redis"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
@@ -17,6 +18,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/presenter"
 	redis2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
 	usecase3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
+	mongodb2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/repository/mongodb"
 	usecase2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/usecase"
 	postgres3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/repository/postgres"
 	presenter2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/presenter"
@@ -42,7 +44,9 @@ func Provide() *Transport {
 	iEventUseCase := usecase2.NewEventUseCase(iKafkaInfrastructure, iTelemetryInfrastructure)
 	iAuthUseCase := usecase3.NewAuthUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iKafkaInfrastructure, iAuthRedisRepository, iAccessControlUseCase, iTelemetryInfrastructure, iPostgresSQL, iZapLogger, iEventUseCase)
 	authPresenter := presenter.NewAuthPresenter(iAuthUseCase, iTelemetryInfrastructure, iZapLogger)
-	iUserUseCase := usecase4.NewUserUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iKafkaInfrastructure, iAuthRedisRepository, iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
+	iMongoDBInfrastructure := mongodb.NewMongoDBInfrastructure(iZapLogger)
+	iEventMongoRepository := mongodb2.NewEventMongoDBRepository(iMongoDBInfrastructure, iTelemetryInfrastructure, iZapLogger)
+	iUserUseCase := usecase4.NewUserUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iKafkaInfrastructure, iAuthRedisRepository, iPostgresSQL, iTelemetryInfrastructure, iEventUseCase, iEventMongoRepository, iZapLogger)
 	userPresenter := presenter2.NewUserPresenter(iUserUseCase, iAuthUseCase, iTelemetryInfrastructure, iZapLogger)
 	transport := NewTransport(iZapLogger, iTelemetryInfrastructure, authPresenter, userPresenter, iAccessControlUseCase, iAuthUseCase)
 	return transport

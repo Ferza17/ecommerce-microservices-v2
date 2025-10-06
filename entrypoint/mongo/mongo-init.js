@@ -1,5 +1,5 @@
 
-// Create databases & collections
+// Create databases & collections NOTIFICATION
 print("Creating database notifications & collections...");
 db = db.getSiblingDB('notification');
 db.createUser({
@@ -7,8 +7,9 @@ db.createUser({
     pwd: "1234",
     roles: [{ role: "readWrite", db: "notification" }]
 });
-db.createCollection('notification_templates');
+db.createCollection('notification_templates')
 
+// Create databases & collections COMMERCE
 print("Creating database commerce & collections...");
 db = db.getSiblingDB('commerce');
 db.createUser({
@@ -19,12 +20,13 @@ db.createUser({
 db.createCollection('carts');
 db.createCollection('wishlists');
 
+// Create databases & collections EVENT
 print("Creating database commerce & collections...");
 db = db.getSiblingDB('event');
 db.createUser({
     user: "mongo",
     pwd: "1234",
-    roles: [{ role: "readWrite", db: "commerce" }]
+    roles: [{ role: "readWrite", db: "event" }]
 });
 db.createCollection('user_event_stores');
 db.createCollection('notification_event_stores');
