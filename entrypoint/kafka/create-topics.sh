@@ -11,8 +11,6 @@ SNAPSHOT_TOPICS=(
   "compensate-snapshot-users-user_created:3:1"
 
   "snapshot-users-user_updated:3:1"
-  "confirm-snapshot-users-user_updated:3:1"
-  "compensate-snapshot-users-user_updated:3:1"
 
   "snapshot-users-user_login:3:1"
   "confirm-snapshot-users-user_login:3:1"

@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
+
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/model/orm"
@@ -149,5 +150,11 @@ func (u *userUseCase) ConfirmCreateUser(ctx context.Context, requestId string, r
 func (u *userUseCase) CompensateCreateUser(ctx context.Context, requestId string, req *pbEvent.ReserveEvent) error {
 	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "UserUseCase.CompensateCreateUser")
 	defer span.End()
+
+	if err := u.eventMongoDBRepository.DeleteEventBySagaId(ctx, req.SagaId); err != nil {
+		u.logger.Error("UserUseCase.SentOTP", zap.String("requestId", requestId), zap.Error(err))
+		return err
+	}
+
 	return nil
 }

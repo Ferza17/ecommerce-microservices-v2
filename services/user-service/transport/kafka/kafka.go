@@ -153,8 +153,6 @@ func (srv *Transport) RegisterKafkaHandlers() map[string]handler {
 	handlers[config.Get().BrokerKafkaTopicUsers.CompensateUserUserCreated] = srv.userKafkaConsumer.CompensateSnapshotUsersUserCreated
 
 	handlers[config.Get().BrokerKafkaTopicUsers.UserUserUpdated] = srv.userKafkaConsumer.SnapshotUsersUserUpdated
-	handlers[config.Get().BrokerKafkaTopicUsers.ConfirmUserUserUpdated] = srv.userKafkaConsumer.ConfirmSnapshotUsersUserUpdated
-	handlers[config.Get().BrokerKafkaTopicUsers.CompensateUserUserUpdated] = srv.userKafkaConsumer.CompensateSnapshotUsersUserUpdated
 
 	// DLQ
 	handlers[config.Get().BrokerKafkaTopicConnectorSinkPgUser.DlqUsers] = srv.userKafkaConsumer.DlqSinkPgUsersUsers

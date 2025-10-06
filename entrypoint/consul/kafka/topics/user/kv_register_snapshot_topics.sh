@@ -8,8 +8,6 @@ consul kv put local/broker/kafka/TOPICS/USER/CONFIRM/USER_CREATED "confirm-snaps
 consul kv put local/broker/kafka/TOPICS/USER/COMPENSATE/USER_CREATED "compensate-snapshot-users-user_created"
 
 consul kv put local/broker/kafka/TOPICS/USER/USER_UPDATED "snapshot-users-user_updated"
-consul kv put local/broker/kafka/TOPICS/USER/CONFIRM/USER_UPDATED "confirm-snapshot-users-user_updated"
-consul kv put local/broker/kafka/TOPICS/USER/COMPENSATE/USER_UPDATED "compensate-snapshot-users-user_updated"
 
 consul kv put local/broker/kafka/TOPICS/USER/USER_LOGIN "snapshot-users-user_login"
 consul kv put local/broker/kafka/TOPICS/USER/CONFIRM/USER_LOGIN "confirm-snapshot-users-user_login"
@@ -25,8 +23,6 @@ consul kv put production/broker/kafka/TOPICS/USER/CONFIRM/USER_CREATED "confirm-
 consul kv put production/broker/kafka/TOPICS/USER/COMPENSATE/USER_CREATED "compensate-snapshot-users-user_created"
 
 consul kv put production/broker/kafka/TOPICS/USER/USER_UPDATED "snapshot-users-user_updated"
-consul kv put production/broker/kafka/TOPICS/USER/CONFIRM/USER_UPDATED "confirm-snapshot-users-user_updated"
-consul kv put production/broker/kafka/TOPICS/USER/COMPENSATE/USER_UPDATED "compensate-snapshot-users-user_updated"
 
 consul kv put production/broker/kafka/TOPICS/USER/USER_LOGIN "snapshot-users-user_login"
 consul kv put production/broker/kafka/TOPICS/USER/CONFIRM/USER_LOGIN "confirm-snapshot-users-user_login"

@@ -2,6 +2,7 @@ package presenter
 
 import (
 	"context"
+
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"go.uber.org/zap"
@@ -19,7 +20,7 @@ func (p *AuthPresenter) AuthUserRegister(ctx context.Context, req *pb.AuthUserRe
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	resp, err := p.authUseCase.AuthUserRegister(ctx, requestID, req)
+	resp, err := p.userUseCase.CreateUser(ctx, requestID, req)
 	if err != nil {
 		p.logger.Error("AuthPresenter.AuthUserRegister", zap.String("requestID", requestID), zap.Error(err))
 		return nil, err

@@ -2,7 +2,12 @@ package kafka
 
 import (
 	"context"
+
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
+	pbUser "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
+	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
+	"go.uber.org/zap"
+	"google.golang.org/protobuf/proto"
 )
 
 //TODO
@@ -11,16 +16,24 @@ import (
 // 3. Handle Compensate
 
 func (c *userConsumer) SnapshotUsersUserUpdated(ctx context.Context, message *kafka.Message) error {
-	//TODO implement me
-	panic("implement me")
-}
+	var (
+		req pbUser.UpdateUserByIdRequest
+	)
+	ctx, span := c.telemetryInfrastructure.StartSpanFromContext(ctx, "UserConsumer.FindUserByEmail")
+	defer span.End()
 
-func (c *userConsumer) ConfirmSnapshotUsersUserUpdated(ctx context.Context, message *kafka.Message) error {
-	//TODO implement me
-	panic("implement me")
-}
+	if err := proto.Unmarshal(message.Value, &req); err != nil {
+		c.logger.Error("SnapshotUsersUserUpdated", zap.Error(err))
+		span.RecordError(err)
+		return err
+	}
 
-func (c *userConsumer) CompensateSnapshotUsersUserUpdated(ctx context.Context, message *kafka.Message) error {
-	//TODO implement me
-	panic("implement me")
+	if _, err := c.userUseCase.UpdateUserById(ctx, pkgContext.GetRequestIDFromContext(ctx), &req); err != nil {
+		c.logger.Error("SnapshotUsersUserUpdated", zap.Error(err))
+		span.RecordError(err)
+		return err
+	}
+
+	return nil
+
 }

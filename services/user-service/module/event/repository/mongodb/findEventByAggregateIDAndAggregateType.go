@@ -9,21 +9,21 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (r *eventMongoRepository) FindEventBySagaIDAndAggregateType(ctx context.Context, sagaID string, aggregateType string) (*eventModel.Event, error) {
+func (r *eventMongoRepository) FindEventByAggregateIDAndAggregateType(ctx context.Context, aggregateID string, aggregateType string) (*eventModel.Event, error) {
 	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "EventMongoDBRepository.FindEventBySagaIDAndAggregateType")
 	defer span.End()
 
 	resp := new(eventModel.Event)
-	filter := bson.M{"saga_id": sagaID, "aggregate_type": aggregateType}
+
+	filter := bson.M{"aggregate_id": aggregateID, "aggregate_type": aggregateType}
 	opts := options.FindOne().SetSort(bson.D{{"timestamp", -1}})
 	if err := r.mongoDB.
 		GetCollection(resp.CollectionName()).
 		FindOne(ctx, filter, opts).
 		Decode(resp); err != nil {
-		r.logger.Error(fmt.Sprintf("EventMongoDBRepository.FindEventBySagaIDAndAggregateType : %s", err.Error()))
+		r.logger.Error(fmt.Sprintf("EventMongoDBRepository.FindEventByAggregateIDAndAggregateType : %s", err.Error()))
 		span.RecordError(err)
 		return nil, err
 	}
-
 	return resp, nil
 }

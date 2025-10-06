@@ -12,9 +12,7 @@ type BrokerKafkaTopicUsers struct {
 	ConfirmUserUserCreated    string
 	CompensateUserUserCreated string
 
-	UserUserUpdated           string
-	ConfirmUserUserUpdated    string
-	CompensateUserUserUpdated string
+	UserUserUpdated string
 
 	UserUserLogin           string
 	ConfirmUserUserLogin    string
@@ -71,23 +69,6 @@ func (c *BrokerKafkaTopicUsers) WithConsulClient(env string, kv *api.KV) *Broker
 	if pair == nil {
 		log.Fatal("SetConfig | Consul | USER_UPDATED is required")
 	}
-	c.UserUserUpdated = string(pair.Value)
-	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "CONFIRM/USER_UPDATED"), nil)
-	if err != nil {
-		log.Fatalf("SetConfig | could not get CONFIRM/USER_UPDATED from consul: %v", err)
-	}
-	if pair == nil {
-		log.Fatal("SetConfig | Consul | CONFIRM/USER_UPDATED is required")
-	}
-	c.ConfirmUserUserUpdated = string(pair.Value)
-	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "COMPENSATE/USER_UPDATED"), nil)
-	if err != nil {
-		log.Fatalf("SetConfig | could not get COMPENSATE/USER_UPDATED from consul: %v", err)
-	}
-	if pair == nil {
-		log.Fatal("SetConfig | Consul | COMPENSATE/USER_UPDATED is required")
-	}
-	c.CompensateUserUserUpdated = string(pair.Value)
 
 	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "USER_LOGIN"), nil)
 	if err != nil {
