@@ -15,6 +15,7 @@ import (
 	shippingRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/shipping"
 	userRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/user"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"time"
@@ -281,7 +282,7 @@ func (u *paymentUseCase) CompensateCreatePayment(ctx context.Context, requestId 
 		span.End()
 	}()
 
-	if err = u.eventMongoDBRepository.DeleteEventBySagaId(ctx, req.SagaId); err != nil {
+	if err = u.eventMongoDBRepository.DeleteEventBySagaId(ctx, req.SagaId); err != nil && err != mongo.ErrNoDocuments {
 		u.logger.Error("PaymentUseCase.CompensateCreatePayment", zap.Error(err))
 		return err
 	}

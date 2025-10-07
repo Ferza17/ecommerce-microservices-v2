@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
+	pbEvent "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event"
 	pb "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/context"
 	"go.uber.org/zap"
@@ -21,6 +22,15 @@ func (c *paymentConsumer) SnapshotPaymentsPaymentOrderCreated(ctx context.Contex
 	defer func() {
 		if err != nil {
 			span.RecordError(err)
+
+			if err = c.paymentUseCase.CompensateCreatePayment(ctx, requestId, &pbEvent.ReserveEvent{
+				SagaId:        requestId,
+				AggregateType: "payments",
+			}); err != nil {
+				span.RecordError(err)
+				c.logger.Error(fmt.Sprintf("Failed to compensateCreatePayment: %v", err))
+			}
+
 		}
 		span.End()
 	}()
@@ -40,7 +50,9 @@ func (c *paymentConsumer) SnapshotPaymentsPaymentOrderCreated(ctx context.Contex
 
 func (c *paymentConsumer) CompensateSnapshotPaymentsPaymentOrderCreated(ctx context.Context, message *kafka.Message) error {
 	var (
-		err error
+		request   pbEvent.ReserveEvent
+		err       error
+		requestId = pkgContext.GetRequestIDFromContext(ctx)
 	)
 	ctx, span := c.telemetryInfrastructure.StartSpanFromContext(ctx, "UserConsumer.FindUserByEmail")
 	defer func() {
@@ -49,21 +61,50 @@ func (c *paymentConsumer) CompensateSnapshotPaymentsPaymentOrderCreated(ctx cont
 		}
 		span.End()
 	}()
+
+	if err = proto.Unmarshal(message.Value, &request); err != nil {
+		c.logger.Info(fmt.Sprintf("proto.Unmarshal: %v", err))
+		return err
+	}
+
+	if err = c.paymentUseCase.CompensateCreatePayment(ctx, requestId, &request); err != nil {
+		c.logger.Info(fmt.Sprintf("c.paymentUseCase.CompensateCreatePayment: %v", err))
+		return err
+	}
 
 	return nil
 }
 
 func (c *paymentConsumer) ConfirmSnapshotPaymentsPaymentOrderCreated(ctx context.Context, message *kafka.Message) error {
 	var (
-		err error
+		request   pbEvent.ReserveEvent
+		err       error
+		requestId = pkgContext.GetRequestIDFromContext(ctx)
 	)
 	ctx, span := c.telemetryInfrastructure.StartSpanFromContext(ctx, "UserConsumer.FindUserByEmail")
 	defer func() {
 		if err != nil {
 			span.RecordError(err)
+			if err = c.paymentUseCase.CompensateCreatePayment(ctx, requestId, &pbEvent.ReserveEvent{
+				SagaId:        requestId,
+				AggregateType: "payments",
+			}); err != nil {
+				span.RecordError(err)
+				c.logger.Error(fmt.Sprintf("Failed to compensateCreatePayment: %v", err))
+			}
 		}
 		span.End()
 	}()
+
+	if err = proto.Unmarshal(message.Value, &request); err != nil {
+		c.logger.Info(fmt.Sprintf("proto.Unmarshal: %v", err))
+		return err
+	}
+
+	if err = c.paymentUseCase.ConfirmCreatePayment(ctx, requestId, &request); err != nil {
+		c.logger.Info(fmt.Sprintf("c.paymentUseCase.ConfirmCreatePayment: %v", err))
+		return err
+	}
 
 	return nil
 }
