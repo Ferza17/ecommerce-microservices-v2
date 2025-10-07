@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/model/orm"
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
 	"gorm.io/gorm"
@@ -12,6 +13,10 @@ func (r *paymentProviderRepository) FindPaymentProviders(ctx context.Context, re
 	ctx, span := r.telemetryInfrastructure.StartSpanFromContext(ctx, "ProviderRepository.FindPaymentProviders")
 	defer span.End()
 	var providers []*orm.Provider
+
+	if tx == nil {
+		tx = r.postgresSQLInfrastructure.GormDB
+	}
 
 	// Query the database for all providers
 	result := tx.WithContext(ctx).Find(&providers)

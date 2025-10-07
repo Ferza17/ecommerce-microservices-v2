@@ -3,6 +3,9 @@ package presenter
 import (
 	"context"
 	"fmt"
+	"time"
+
+	pbEvent "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event"
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/context"
 	"go.uber.org/zap"
@@ -18,12 +21,27 @@ func (p *paymentPresenter) CreatePayment(ctx context.Context, request *paymentRp
 		return nil, err
 	}
 
-	// Call the use case's CreatePayment method
 	response, err := p.paymentUseCase.CreatePayment(ctx, requestId, request)
 	if err != nil {
 		p.logger.Error(fmt.Sprintf("Failed to create payment. RequestId: %s, Error: %v", requestId, err))
 		return nil, err
 	}
+
+	// Fire Forget
+	go func(ctx context.Context) {
+		bgCtx := context.WithoutCancel(ctx)
+		select {
+		case <-time.After(1 * time.Second):
+			if err = p.paymentUseCase.ConfirmCreatePayment(bgCtx, requestId, &pbEvent.ReserveEvent{
+				SagaId:        requestId,
+				AggregateType: "payments",
+			}); err != nil {
+				p.logger.Error(fmt.Sprintf("Failed to confirm payment. RequestId: %s, Error: %v", requestId, err))
+				return
+			}
+			return
+		}
+	}(ctx)
 
 	return response, nil
 }

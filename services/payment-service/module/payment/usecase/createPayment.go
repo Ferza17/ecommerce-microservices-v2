@@ -2,14 +2,12 @@ package usecase
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/model/orm"
 	pbEvent "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event"
-	notificationPb "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/notification"
 	paymentPb "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
 	productPb "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/product"
 	shippingRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/shipping"
@@ -17,6 +15,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"gorm.io/gorm"
 
 	"time"
 
@@ -45,7 +44,10 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 	// VALIDATE PAYMENT PROVIDER
 	if _, err = u.paymentProviderRepository.FindPaymentProviderById(ctx, requestId, request.ProviderId, nil); err != nil {
 		u.logger.Error(fmt.Sprintf("payment provider id not found, provider_id: %s ,requestId: %s, error: %v", request.ProviderId, requestId, err))
-		return nil, fmt.Errorf("failed to create payment: %w", err)
+		if err == gorm.ErrRecordNotFound {
+			return nil, status.Errorf(codes.NotFound, "provider id not found")
+		}
+		return nil, status.Errorf(codes.Internal, "invalid payment provider")
 	}
 
 	// VALIDATE SHIPPING PROVIDER
@@ -53,7 +55,7 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 		Id: request.ShippingProviderId,
 	}); err != nil {
 		u.logger.Error(fmt.Sprintf("shipping provider id not found, shipping_provider_id: %s ,requestId: %s, error: %v", request.ShippingProviderId, requestId, err))
-		return nil, fmt.Errorf("failed to create payment: %w", err)
+		return nil, err
 	}
 
 	// VALIDATE PRODUCT AND SET AMOUNT
@@ -100,8 +102,10 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 		TotalPrice:   0,
 		Status:       paymentPb.PaymentStatus_PENDING.String(),
 		ProviderID:   request.ProviderId,
-		UserID:       request.UserId,
+		UserID:       user.Data.User.Id,
 		PaymentItems: []*orm.PaymentItem{},
+		CreatedAt:    &now,
+		UpdatedAt:    &now,
 	}
 	// Process PaymentItems
 	for _, item := range request.Items {
@@ -146,17 +150,19 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 		ShippingProviderId: request.ShippingProviderId,
 	}); err != nil {
 		u.logger.Error(fmt.Sprintf("Failed to publish CreateShipping request, requestId: %s, error: %v", requestId, err))
-	}
-
-	// Publish to Notification Payment Order Created
-	if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicNotifications.PaymentOrderCreated, payment.ID, kafka.PROTOBUF_SCHEMA, &notificationPb.SendEmailPaymentOrderCreateRequest{
-		Email:            user.Data.User.Email,
-		PaymentId:        payment.ID,
-		NotificationType: notificationPb.NotificationTypeEnum_NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED,
-	}); err != nil {
-		u.logger.Error(fmt.Sprintf("Failed to publish SendEmailPaymentOrderCreateRequest request, requestId: %s, error: %v", requestId, err))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
+
+	// TODO: UPDATE PROTO SEND EMAIL PAYMENT ORDER CREATED REQUEST
+	// Publish to Notification Payment Order Created
+	//if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicNotifications.EmailPaymentOrderCreated, payment.ID, kafka.PROTOBUF_SCHEMA, &notificationPb.SendEmailPaymentOrderCreateRequest{
+	//	Email:            user.Data.User.Email,
+	//	PaymentId:        payment.ID,
+	//	NotificationType: notificationPb.NotificationTypeEnum_NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED,
+	//}); err != nil {
+	//	u.logger.Error(fmt.Sprintf("Failed to publish SendEmailPaymentOrderCreateRequest request, requestId: %s, error: %v", requestId, err))
+	//	return nil, status.Error(codes.Internal, err.Error())
+	//}
 
 	// Append Event
 	payload, err := proto.Marshal(payment.ToProto())
@@ -233,23 +239,16 @@ func (u *paymentUseCase) ConfirmCreatePayment(ctx context.Context, requestId str
 		return err
 	}
 
-	var (
-		payload []byte
-	)
 	for _, item := range payment.Items {
-		payload, err = json.Marshal(item)
-		if err != nil {
-			u.logger.Error(fmt.Sprintf("Failed to marshal event: %s", err.Error()))
-			return err
-		}
-		if err = u.kafkaInfrastructure.PublishWithSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkPgPayment.PaymentItems, item.Id, kafka.JSON_SCHEMA, payload); err != nil {
+		if err = u.kafkaInfrastructure.PublishWithSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkPgPayment.PaymentItems, item.Id, kafka.JSON_SCHEMA, orm.PaymentItemFromProto(item)); err != nil {
 			u.logger.Error(fmt.Sprintf("Error publishing event to kafka for payment item creation: %s", err.Error()))
 			return err
 		}
 	}
 
 	// 1. Publish to topic product updated confirm
-	if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicProducts.ConfirmProductUpdated, req.SagaId, kafka.PROTOBUF_SCHEMA, &pbEvent.ReserveEvent{
+	t := config.Get().BrokerKafkaTopicProducts.ConfirmProductUpdated
+	if err = u.kafkaInfrastructure.Publish(ctx, t, req.SagaId, kafka.PROTOBUF_SCHEMA, &pbEvent.ReserveEvent{
 		SagaId:        req.SagaId,
 		AggregateType: "products",
 	}); err != nil {

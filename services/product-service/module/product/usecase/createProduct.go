@@ -87,26 +87,28 @@ func (u *productUseCase) ConfirmCreateProduct(ctx context.Context, requestId str
 		span.End()
 	}()
 
-	savedEvent, err := u.eventMongoDBRepository.FindEventBySagaID(ctx, req.SagaId)
+	savedEvents, err := u.eventMongoDBRepository.FindEventsBySagaID(ctx, req.SagaId)
 	if err != nil {
 		u.logger.Error("ProductUseCase.ConfirmCreateProduct", zap.String("requestId", requestId), zap.Error(err))
 		return err
 	}
 
-	var product pbProduct.Product
-	if err = proto.Unmarshal(savedEvent.Payload, &product); err != nil {
-		u.logger.Error("ProductUseCase.ConfirmCreateProduct", zap.String("requestId", requestId), zap.Error(err))
-		return err
-	}
+	for _, event := range savedEvents {
+		var product pbProduct.Product
+		if err = proto.Unmarshal(event.Payload, &product); err != nil {
+			u.logger.Error("ProductUseCase.ConfirmCreateProduct", zap.String("requestId", requestId), zap.Error(err))
+			return err
+		}
 
-	if err = u.kafkaInfrastructure.PublishWithSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkProduct.PgProducts, product.Id, kafka.JSON_SCHEMA, orm.ProductFromProto(&product)); err != nil {
-		u.logger.Error("ProductUseCase.ConfirmCreateProduct", zap.String("requestId", requestId), zap.Error(err))
-		return err
-	}
+		if err = u.kafkaInfrastructure.PublishWithSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkProduct.PgProducts, product.Id, kafka.JSON_SCHEMA, orm.ProductFromProto(&product)); err != nil {
+			u.logger.Error("ProductUseCase.ConfirmCreateProduct", zap.String("requestId", requestId), zap.Error(err))
+			return err
+		}
 
-	if err = u.kafkaInfrastructure.PublishWithSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkProduct.EsProducts, product.Id, kafka.JSON_SCHEMA, orm.ProductFromProto(&product)); err != nil {
-		u.logger.Error("ProductUseCase.ConfirmCreateProduct", zap.String("requestId", requestId), zap.Error(err))
-		return err
+		if err = u.kafkaInfrastructure.PublishWithSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkProduct.EsProducts, product.Id, kafka.JSON_SCHEMA, orm.ProductFromProto(&product)); err != nil {
+			u.logger.Error("ProductUseCase.ConfirmCreateProduct", zap.String("requestId", requestId), zap.Error(err))
+			return err
+		}
 	}
 
 	return nil

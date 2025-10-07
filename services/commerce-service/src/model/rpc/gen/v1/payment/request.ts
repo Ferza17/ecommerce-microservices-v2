@@ -18,7 +18,6 @@ export interface CreatePaymentItemRequest {
 
 export interface CreatePaymentRequest {
   items: CreatePaymentItemRequest[];
-  userId: string;
   providerId: string;
   shippingProviderId: string;
 }
@@ -127,7 +126,7 @@ export const CreatePaymentItemRequest: MessageFns<CreatePaymentItemRequest> = {
 };
 
 function createBaseCreatePaymentRequest(): CreatePaymentRequest {
-  return { items: [], userId: "", providerId: "", shippingProviderId: "" };
+  return { items: [], providerId: "", shippingProviderId: "" };
 }
 
 export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
@@ -135,14 +134,11 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
     for (const v of message.items) {
       CreatePaymentItemRequest.encode(v!, writer.uint32(10).fork()).join();
     }
-    if (message.userId !== "") {
-      writer.uint32(18).string(message.userId);
-    }
     if (message.providerId !== "") {
-      writer.uint32(34).string(message.providerId);
+      writer.uint32(18).string(message.providerId);
     }
     if (message.shippingProviderId !== "") {
-      writer.uint32(42).string(message.shippingProviderId);
+      writer.uint32(26).string(message.shippingProviderId);
     }
     return writer;
   },
@@ -167,19 +163,11 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
             break;
           }
 
-          message.userId = reader.string();
-          continue;
-        }
-        case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
           message.providerId = reader.string();
           continue;
         }
-        case 5: {
-          if (tag !== 42) {
+        case 3: {
+          if (tag !== 26) {
             break;
           }
 
@@ -200,7 +188,6 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
       items: globalThis.Array.isArray(object?.items)
         ? object.items.map((e: any) => CreatePaymentItemRequest.fromJSON(e))
         : [],
-      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
       providerId: isSet(object.providerId) ? globalThis.String(object.providerId) : "",
       shippingProviderId: isSet(object.shippingProviderId) ? globalThis.String(object.shippingProviderId) : "",
     };
@@ -210,9 +197,6 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
     const obj: any = {};
     if (message.items?.length) {
       obj.items = message.items.map((e) => CreatePaymentItemRequest.toJSON(e));
-    }
-    if (message.userId !== "") {
-      obj.userId = message.userId;
     }
     if (message.providerId !== "") {
       obj.providerId = message.providerId;
@@ -229,7 +213,6 @@ export const CreatePaymentRequest: MessageFns<CreatePaymentRequest> = {
   fromPartial(object: DeepPartial<CreatePaymentRequest>): CreatePaymentRequest {
     const message = createBaseCreatePaymentRequest();
     message.items = object.items?.map((e) => CreatePaymentItemRequest.fromPartial(e)) || [];
-    message.userId = object.userId ?? "";
     message.providerId = object.providerId ?? "";
     message.shippingProviderId = object.shippingProviderId ?? "";
     return message;

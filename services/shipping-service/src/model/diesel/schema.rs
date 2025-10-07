@@ -27,7 +27,4 @@ diesel::table! {
 
 diesel::joinable!(shippings -> shipping_providers (shipping_provider_id));
 
-diesel::allow_tables_to_appear_in_same_query!(
-    shipping_providers,
-    shippings,
-);
+diesel::allow_tables_to_appear_in_same_query!(shipping_providers, shippings,);

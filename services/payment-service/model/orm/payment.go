@@ -28,13 +28,18 @@ func (Payment) TableName() string {
 }
 
 func (p *Payment) ToProto() *pb.Payment {
+	if p == nil {
+		return nil
+	}
 	return &pb.Payment{
 		Id:         p.ID,
 		Code:       p.Code,
 		TotalPrice: p.TotalPrice,
 		Status: func() pb.PaymentStatus {
 			if p.Status != "" {
-				return pb.PaymentStatus(pb.PaymentStatus_value[p.Status])
+				if s, ok := pb.PaymentStatus_value[p.Status]; ok {
+					return pb.PaymentStatus(s)
+				}
 			}
 			return pb.PaymentStatus_FAILED
 		}(),
@@ -59,11 +64,10 @@ func (p *Payment) ToProto() *pb.Payment {
 			return nil
 		}(),
 		Items: func() []*pb.PaymentItem {
-			var items []*pb.PaymentItem
 			if p.PaymentItems != nil {
-				items = PaymentItemsToProto(p.PaymentItems)
+				return PaymentItemsToProto(p.PaymentItems)
 			}
-			return items
+			return nil
 		}(),
 	}
 }

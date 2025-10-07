@@ -3,6 +3,7 @@ package consumer
 import (
 	"context"
 	"fmt"
+
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	pb "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/context"
@@ -26,5 +27,13 @@ func (c *productConsumer) SnapshotProductsProductCreated(ctx context.Context, me
 		return err
 	}
 
+	return nil
+}
+
+func (c *productConsumer) ConfirmSnapshotProductsProductCreated(ctx context.Context, message *kafka.Message) error {
+	return nil
+}
+
+func (c *productConsumer) CompensateSnapshotProductsProductCreated(ctx context.Context, message *kafka.Message) error {
 	return nil
 }

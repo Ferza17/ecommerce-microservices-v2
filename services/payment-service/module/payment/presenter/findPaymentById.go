@@ -3,6 +3,7 @@ package presenter
 import (
 	"context"
 	"fmt"
+
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/context"
 	"go.uber.org/zap"
@@ -19,11 +20,11 @@ func (p *paymentPresenter) FindPaymentById(ctx context.Context, req *paymentRpc.
 	}
 
 	// Call the use case's FindPaymentById method
-	payment, err := p.paymentUseCase.FindPaymentById(ctx, requestId, req)
+	response, err := p.paymentUseCase.FindPaymentById(ctx, requestId, req)
 	if err != nil {
 		p.logger.Error(fmt.Sprintf("Failed to find payment. RequestId: %s, Error: %v", requestId, err))
 		return nil, err
 	}
 
-	return payment, nil
+	return response, nil
 }

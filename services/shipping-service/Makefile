@@ -8,3 +8,10 @@ generate-orm:
 	--model-path crate::model::diesel:: \
 	--connection-type diesel::pg::PgConnection
 
+migration-run:
+	diesel migration run \
+	--migration-dir ./migrations
+
+insert-mock:
+	cargo run insert-mock \
+	 --direction local

@@ -8,16 +8,15 @@ import (
 )
 
 type BrokerKafkaTopicNotifications struct {
-	PaymentOrderCreated          string
-	PaymentOrderDelayedCancelled string
-	keyPrefix                    string
+	EmailOtpUserLogin        string
+	EmailOtpUserRegister     string
+	EmailPaymentOrderCreated string
+	keyPrefix                string
 }
 
 func DefaultKafkaBrokerTopicNotifications() *BrokerKafkaTopicNotifications {
 	return &BrokerKafkaTopicNotifications{
-		PaymentOrderCreated:          "",
-		PaymentOrderDelayedCancelled: "",
-		keyPrefix:                    "%s/broker/kafka/TOPICS/PAYMENT/%s",
+		keyPrefix: "%s/broker/kafka/TOPICS/NOTIFICATION/%s",
 	}
 }
 
@@ -27,22 +26,31 @@ func (c *Config) withBrokerKafkaTopicNotifications(kv *api.KV) *Config {
 }
 
 func (c *BrokerKafkaTopicNotifications) WithConsulClient(env string, kv *api.KV) *BrokerKafkaTopicNotifications {
-	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "PAYMENT_ORDER_CREATED"), nil)
+	pair, _, err := kv.Get(fmt.Sprintf(c.keyPrefix, env, "EMAIL_OTP_USER_LOGIN"), nil)
 	if err != nil {
-		log.Fatalf("SetConfig | could not get PAYMENT_ORDER_CREATED from consul: %v", err)
+		log.Fatalf("SetConfig | could not get EMAIL_OTP_USER_LOGIN from consul: %v", err)
 	}
 	if pair == nil {
-		log.Fatal("SetConfig | Consul | PAYMENT_ORDER_CREATED is required")
+		log.Fatal("SetConfig | Consul | EMAIL_OTP_USER_LOGIN is required")
 	}
-	c.PaymentOrderCreated = string(pair.Value)
+	c.EmailOtpUserLogin = string(pair.Value)
 
-	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "PAYMENT_ORDER_CREATED_DELAYED"), nil)
+	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "EMAIL_OTP_USER_REGISTER"), nil)
 	if err != nil {
-		log.Fatalf("SetConfig | could not get PAYMENT_ORDER_CREATED_DELAYED from consul: %v", err)
+		log.Fatalf("SetConfig | could not get EMAIL_OTP_USER_REGISTER from consul: %v", err)
 	}
 	if pair == nil {
-		log.Fatal("SetConfig | Consul | PAYMENT_ORDER_CREATED_DELAYED is required")
+		log.Fatal("SetConfig | Consul | EMAIL_OTP_USER_REGISTER is required")
 	}
-	c.PaymentOrderDelayedCancelled = string(pair.Value)
+	c.EmailOtpUserRegister = string(pair.Value)
+
+	pair, _, err = kv.Get(fmt.Sprintf(c.keyPrefix, env, "EMAIL_PAYMENT_ORDER_CREATED"), nil)
+	if err != nil {
+		log.Fatalf("SetConfig | could not get EMAIL_PAYMENT_ORDER_CREATED from consul: %v", err)
+	}
+	if pair == nil {
+		log.Fatal("SetConfig | Consul | EMAIL_PAYMENT_ORDER_CREATED is required")
+	}
+	c.EmailPaymentOrderCreated = string(pair.Value)
 	return c
 }

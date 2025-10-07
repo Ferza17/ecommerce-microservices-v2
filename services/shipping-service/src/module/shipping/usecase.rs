@@ -117,27 +117,6 @@ impl ShippingUseCase for ShippingUseCaseImpl {
                 Status::from(e)
             })?;
 
-        // VALIDATE PAYMENT_ID
-        self
-            .payment_service
-            .clone()
-            .find_payment_by_id(
-                request_id.clone(),
-                token.clone(),
-                FindPaymentByIdRequest {
-                    id: request.get_ref().payment_id.clone(),
-                },
-            )
-            .await
-            .map_err(|e| {
-                eprintln!("find_payment_by_id {:?}", e);
-                event!(name: "ShippingUseCase.create_shipping.error", Level::ERROR, request_id = request_id, error = ?e);
-                if e.to_string().contains("payment id not found") {
-                    return Status::not_found("not found".to_string());
-                }
-                Status::internal("error".to_string())
-            })?;
-
         // VALIDATE SHIPPING_PROVIDER_ID
         self
             .shipping_provider_repository

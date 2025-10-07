@@ -78,9 +78,8 @@ func (x *CreatePaymentItemRequest) GetQty() int32 {
 type CreatePaymentRequest struct {
 	state              protoimpl.MessageState      `protogen:"open.v1"`
 	Items              []*CreatePaymentItemRequest `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	UserId             string                      `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	ProviderId         string                      `protobuf:"bytes,4,opt,name=provider_id,json=providerId,proto3" json:"provider_id,omitempty"`
-	ShippingProviderId string                      `protobuf:"bytes,5,opt,name=shipping_provider_id,json=shippingProviderId,proto3" json:"shipping_provider_id,omitempty"`
+	ProviderId         string                      `protobuf:"bytes,2,opt,name=provider_id,json=providerId,proto3" json:"provider_id,omitempty"`
+	ShippingProviderId string                      `protobuf:"bytes,3,opt,name=shipping_provider_id,json=shippingProviderId,proto3" json:"shipping_provider_id,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -120,13 +119,6 @@ func (x *CreatePaymentRequest) GetItems() []*CreatePaymentItemRequest {
 		return x.Items
 	}
 	return nil
-}
-
-func (x *CreatePaymentRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
 }
 
 func (x *CreatePaymentRequest) GetProviderId() string {
@@ -431,13 +423,12 @@ const file_v1_payment_request_proto_rawDesc = "" +
 	"\x18v1/payment/request.proto\x12\apayment\x1a\x16v1/payment/model.proto\x1a external/validate/validate.proto\x1a\x15v1/payment/enum.proto\"]\n" +
 	"\x18CreatePaymentItemRequest\x12&\n" +
 	"\tproductId\x18\x01 \x01(\tB\b\xfaB\x05r\x03\xd0\x01\x00R\tproductId\x12\x19\n" +
-	"\x03qty\x18\x02 \x01(\x05B\a\xfaB\x04\x1a\x02 \x00R\x03qty\"\xe3\x01\n" +
+	"\x03qty\x18\x02 \x01(\x05B\a\xfaB\x04\x1a\x02 \x00R\x03qty\"\xc0\x01\n" +
 	"\x14CreatePaymentRequest\x12A\n" +
-	"\x05items\x18\x01 \x03(\v2!.payment.CreatePaymentItemRequestB\b\xfaB\x05\x92\x01\x02(\x00R\x05items\x12!\n" +
-	"\auser_id\x18\x02 \x01(\tB\b\xfaB\x05r\x03\xd0\x01\x00R\x06userId\x12)\n" +
-	"\vprovider_id\x18\x04 \x01(\tB\b\xfaB\x05r\x03\xd0\x01\x00R\n" +
+	"\x05items\x18\x01 \x03(\v2!.payment.CreatePaymentItemRequestB\b\xfaB\x05\x92\x01\x02(\x00R\x05items\x12)\n" +
+	"\vprovider_id\x18\x02 \x01(\tB\b\xfaB\x05r\x03\xd0\x01\x00R\n" +
 	"providerId\x12:\n" +
-	"\x14shipping_provider_id\x18\x05 \x01(\tB\b\xfaB\x05r\x03\xd0\x01\x00R\x12shippingProviderId\"?\n" +
+	"\x14shipping_provider_id\x18\x03 \x01(\tB\b\xfaB\x05r\x03\xd0\x01\x00R\x12shippingProviderId\"?\n" +
 	"#PaymentOrderDelayedCancelledRequest\x12\x18\n" +
 	"\x02id\x18\x01 \x01(\tB\b\xfaB\x05r\x03\xd0\x01\x00R\x02id\"h\n" +
 	"\x16CallBackPaymentRequest\x12&\n" +

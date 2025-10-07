@@ -14,6 +14,7 @@ type (
 	IEventMongoRepository interface {
 		FindEventByAggregateIDAndAggregateType(ctx context.Context, aggregateID string, aggregateType string) (*eventModel.Event, error)
 		FindEventBySagaID(ctx context.Context, sagaID string) (*eventModel.Event, error)
+		FindEventsBySagaID(ctx context.Context, sagaID string) ([]*eventModel.Event, error)
 		DeleteEventBySagaId(ctx context.Context, sagaID string) error
 	}
 

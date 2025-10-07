@@ -279,9 +279,6 @@
             "$ref": "#/definitions/paymentCreatePaymentItemRequest"
           }
         },
-        "userId": {
-          "type": "string"
-        },
         "providerId": {
           "type": "string"
         },

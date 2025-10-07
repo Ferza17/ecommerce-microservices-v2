@@ -3,6 +3,9 @@ package kafka
 import (
 	"context"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/kafka"
@@ -13,18 +16,20 @@ import (
 	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/worker"
 	"github.com/google/wire"
 	"go.opentelemetry.io/otel/attribute"
-	"strings"
-	"time"
 )
 
-type Transport struct {
-	workerPool              *pkgWorker.WorkerPool
-	kafkaInfrastructure     kafkaInfrastructure.IKafkaInfrastructure
-	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
-	productConsumer         productConsumer.IProductConsumer
-	logger                  logger.IZapLogger
-	topics                  []string
-}
+type (
+	Transport struct {
+		workerPool              *pkgWorker.WorkerPool
+		kafkaInfrastructure     kafkaInfrastructure.IKafkaInfrastructure
+		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
+		productConsumer         productConsumer.IProductConsumer
+		logger                  logger.IZapLogger
+		topics                  []string
+	}
+
+	handler func(ctx context.Context, message *kafka.Message) error
+)
 
 var Set = wire.NewSet(
 	NewTransport,
@@ -52,7 +57,16 @@ func NewTransport(
 
 func (srv *Transport) Serve(mainCtx context.Context) error {
 	srv.workerPool.Start()
-	if err := srv.kafkaInfrastructure.SetupTopics(srv.topics); err != nil {
+	var (
+		topics        []string
+		kafkaHandlers = srv.RegisterKafkaHandlers()
+	)
+
+	for s, _ := range kafkaHandlers {
+		topics = append(topics, s)
+	}
+
+	if err := srv.kafkaInfrastructure.SetupTopics(topics); err != nil {
 		srv.logger.Error(fmt.Sprintf("failed to setup kafka topics: %v", err))
 		return err
 	}
@@ -75,8 +89,8 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 			}
 
 			var (
-				requestId   string
-				childCtx, _ = context.WithTimeout(mainCtx, 20*time.Second)
+				requestId string
+				childCtx  = context.WithoutCancel(mainCtx)
 			)
 
 			for _, header := range msg.Headers {
@@ -89,8 +103,8 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 					childCtx = pkgContext.SetTokenAuthorizationToContext(childCtx, string(header.Value))
 				}
 			}
-
 			childCtx, span := srv.telemetryInfrastructure.StartSpanFromKafkaHeader(childCtx, msg.Headers, "KafkaTransport")
+
 			task := pkgWorker.KafkaTaskQueue{
 				Message: msg,
 				Ctx:     childCtx,
@@ -100,23 +114,13 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 				span.SetAttributes(attribute.String("messaging.destination", *msg.TopicPartition.Topic))
 				span.SetAttributes(attribute.String(pkgContext.CtxKeyRequestID, requestId))
 
-				switch *msg.TopicPartition.Topic {
-				case config.Get().BrokerKafkaTopicProducts.ProductCreated:
-					task.Handler = func(ctx context.Context, message *kafka.Message) error {
-						return srv.productConsumer.SnapshotProductsProductCreated(childCtx, message)
-					}
-				case config.Get().BrokerKafkaTopicProducts.ProductUpdated:
-					task.Handler = func(ctx context.Context, message *kafka.Message) error {
-						return srv.productConsumer.SnapshotProductsProductUpdated(childCtx, message)
-					}
-				case config.Get().BrokerKafkaTopicProducts.ProductDeleted:
-					task.Handler = func(ctx context.Context, message *kafka.Message) error {
-						return srv.productConsumer.SnapshotProductsProductDeleted(childCtx, message)
-					}
-				default:
+				h, ok := kafkaHandlers[*msg.TopicPartition.Topic]
+				if !ok {
 					srv.logger.Error(fmt.Sprintf("invalid topic %s", *msg.TopicPartition.Topic))
+					span.End()
 					continue
 				}
+				task.Handler = h
 			}
 
 			srv.workerPool.AddKafkaTaskQueue(task)
@@ -125,4 +129,22 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 	}
 
 	return nil
+}
+
+func (srv *Transport) RegisterKafkaHandlers() map[string]handler {
+	var handlers = map[string]handler{}
+
+	handlers[config.Get().BrokerKafkaTopicProducts.ProductCreated] = srv.productConsumer.SnapshotProductsProductCreated
+	handlers[config.Get().BrokerKafkaTopicProducts.ConfirmProductCreated] = srv.productConsumer.ConfirmSnapshotProductsProductCreated
+	handlers[config.Get().BrokerKafkaTopicProducts.CompensateProductCreated] = srv.productConsumer.CompensateSnapshotProductsProductCreated
+
+	handlers[config.Get().BrokerKafkaTopicProducts.ProductUpdated] = srv.productConsumer.SnapshotProductsProductUpdated
+	handlers[config.Get().BrokerKafkaTopicProducts.ConfirmProductUpdated] = srv.productConsumer.ConfirmSnapshotProductsProductUpdated
+	handlers[config.Get().BrokerKafkaTopicProducts.CompensateProductUpdated] = srv.productConsumer.CompensateSnapshotProductsProductUpdated
+
+	handlers[config.Get().BrokerKafkaTopicProducts.ProductDeleted] = srv.productConsumer.SnapshotProductsProductDeleted
+	handlers[config.Get().BrokerKafkaTopicProducts.ConfirmProductDeleted] = srv.productConsumer.ConfirmSnapshotProductsProductDeleted
+	handlers[config.Get().BrokerKafkaTopicProducts.CompensateProductDeleted] = srv.productConsumer.CompensateSnapshotProductsProductDeleted
+
+	return handlers
 }

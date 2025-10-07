@@ -156,15 +156,18 @@ pub struct Payment {
     #[prost(string, tag = "7")]
     #[validate(name = "payment.Payment.user_id")]
     pub user_id: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "8")]
+    #[prost(message, repeated, tag = "8")]
+    #[validate(name = "payment.Payment.items")]
+    pub items: ::prost::alloc::vec::Vec<PaymentItem>,
+    #[prost(message, optional, tag = "9")]
     #[validate(name = "payment.Payment.created_at")]
     #[schema(value_type = String, format = "date-time")]
     pub created_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
-    #[prost(message, optional, tag = "9")]
+    #[prost(message, optional, tag = "10")]
     #[validate(name = "payment.Payment.updated_at")]
     #[schema(value_type = String, format = "date-time")]
     pub updated_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
-    #[prost(message, optional, tag = "10")]
+    #[prost(message, optional, tag = "11")]
     #[validate(name = "payment.Payment.discarded_at")]
     #[schema(value_type = String, format = "date-time")]
     pub discarded_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
@@ -194,14 +197,10 @@ pub struct CreatePaymentRequest {
     #[validate(r#type(repeated(ignore_empty = false)))]
     pub items: ::prost::alloc::vec::Vec<CreatePaymentItemRequest>,
     #[prost(string, tag = "2")]
-    #[validate(name = "payment.CreatePaymentRequest.user_id")]
-    #[validate(r#type(string(ignore_empty = false)))]
-    pub user_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "4")]
     #[validate(name = "payment.CreatePaymentRequest.provider_id")]
     #[validate(r#type(string(ignore_empty = false)))]
     pub provider_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "5")]
+    #[prost(string, tag = "3")]
     #[validate(name = "payment.CreatePaymentRequest.shipping_provider_id")]
     #[validate(r#type(string(ignore_empty = false)))]
     pub shipping_provider_id: ::prost::alloc::string::String,
