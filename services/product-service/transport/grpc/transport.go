@@ -3,10 +3,10 @@ package grpc
 import (
 	"context"
 	"fmt"
+
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	userService "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/service/user"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
-	authInterceptor "github.com/ferza17/ecommerce-microservices-v2/product-service/interceptor/auth"
 	loggerInterceptor "github.com/ferza17/ecommerce-microservices-v2/product-service/interceptor/logger"
 	requestIdInterceptor "github.com/ferza17/ecommerce-microservices-v2/product-service/interceptor/requestid"
 	telemetryInterceptor "github.com/ferza17/ecommerce-microservices-v2/product-service/interceptor/telemetry"
@@ -16,13 +16,14 @@ import (
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
 
+	"log"
+	"net"
+
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/presenter"
 	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/worker"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"log"
-	"net"
 )
 
 type (
@@ -76,7 +77,7 @@ func (srv *Transport) Serve(ctx context.Context) error {
 			requestIdInterceptor.RequestIDRPCInterceptor(),
 			telemetryInterceptor.TelemetryRPCInterceptor(srv.telemetryInfrastructure),
 			loggerInterceptor.LoggerRPCInterceptor(srv.logger),
-			authInterceptor.AuthRPCUnaryInterceptor(srv.logger),
+			//authInterceptor.AuthRPCUnaryInterceptor(srv.logger),
 		),
 	}
 	srv.grpcServer = grpc.NewServer(opts...)

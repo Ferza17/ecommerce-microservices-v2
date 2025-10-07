@@ -3,10 +3,10 @@ package mongodb
 import (
 	"context"
 
-	mongodbInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mongodb"
-	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
-	eventModel "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/bson"
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
+	mongodbInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/mongodb"
+	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
+	eventModel "github.com/ferza17/ecommerce-microservices-v2/product-service/model/bson"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/logger"
 	"github.com/google/wire"
 )
 

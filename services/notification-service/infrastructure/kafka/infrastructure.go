@@ -3,8 +3,9 @@ package kafka
 import (
 	"context"
 	"fmt"
-	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry/serde/avrov2"
 	"time"
+
+	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry/serde/avrov2"
 
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry"
@@ -20,7 +21,7 @@ import (
 type (
 	IKafkaInfrastructure interface {
 		PublishWithSchema(ctx context.Context, topic string, key string, schemaType SchemaType, value interface{}) error
-		Publish(ctx context.Context, topic string, key string, value []byte) error
+		Publish(ctx context.Context, topic string, key string, schemaType SchemaType, value interface{}) error
 
 		SetupTopics(topics []string) error
 		ReadMessage(duration time.Duration) (*kafka.Message, error)

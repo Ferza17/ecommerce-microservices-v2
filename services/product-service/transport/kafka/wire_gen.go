@@ -9,12 +9,15 @@ package kafka
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/elasticsearch"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/kafka"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/mongodb"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/postgres"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
+	mongodb2 "github.com/ferza17/ecommerce-microservices-v2/product-service/module/event/repository/mongodb"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/module/event/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/consumer"
 	elasticsearch2 "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/repository/elasticsearch"
 	postgres2 "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/repository/postgres"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/usecase"
+	usecase2 "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/logger"
 )
 
@@ -26,9 +29,12 @@ func Provide() *Transport {
 	iKafkaInfrastructure := kafka.NewKafkaInfrastructure(iZapLogger, iTelemetryInfrastructure)
 	postgresSQL := postgres.NewPostgresqlInfrastructure(iZapLogger)
 	iProductPostgresqlRepository := postgres2.NewProductPostgresqlRepository(postgresSQL, iTelemetryInfrastructure, iZapLogger)
+	iMongoDBInfrastructure := mongodb.NewMongoDBInfrastructure(iZapLogger)
+	iEventMongoRepository := mongodb2.NewEventMongoDBRepository(iMongoDBInfrastructure, iTelemetryInfrastructure, iZapLogger)
 	iElasticsearchInfrastructure := elasticsearch.NewElasticsearchInfrastructure(iTelemetryInfrastructure, iZapLogger)
 	iProductElasticsearchRepository := elasticsearch2.NewProductElasticsearchRepository(iElasticsearchInfrastructure, iTelemetryInfrastructure, iZapLogger)
-	iProductUseCase := usecase.NewProductUseCase(postgresSQL, iProductPostgresqlRepository, iKafkaInfrastructure, iProductElasticsearchRepository, iTelemetryInfrastructure, iZapLogger)
+	iEventUseCase := usecase.NewEventUseCase(iEventMongoRepository, iKafkaInfrastructure, iTelemetryInfrastructure)
+	iProductUseCase := usecase2.NewProductUseCase(postgresSQL, iProductPostgresqlRepository, iEventMongoRepository, iKafkaInfrastructure, iProductElasticsearchRepository, iTelemetryInfrastructure, iEventUseCase, iZapLogger)
 	iProductConsumer := consumer.NewProductConsumer(iKafkaInfrastructure, iProductUseCase, iTelemetryInfrastructure, iZapLogger)
 	transport := NewTransport(iProductConsumer, iKafkaInfrastructure, iTelemetryInfrastructure, iZapLogger)
 	return transport

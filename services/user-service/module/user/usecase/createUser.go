@@ -109,19 +109,11 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	reqUserEmailOtp := &notificationRpc.SendOtpEmailNotificationRequest{
+	if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicNotifications.EmailOtpUserRegister, requestId, kafka.PROTOBUF_SCHEMA, &notificationRpc.SendOtpEmailNotificationRequest{
 		Email:            user.Email,
 		Otp:              otp,
 		NotificationType: notificationRpc.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_REGISTER_OTP,
-	}
-
-	message, err := proto.Marshal(reqUserEmailOtp)
-	if err != nil {
-		u.logger.Error("UserUseCase.SentOTP", zap.String("requestId", requestId), zap.Error(err))
-		return nil, status.Error(codes.Internal, err.Error())
-	}
-
-	if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicNotifications.EmailOtpUserRegister, requestId, message); err != nil {
+	}); err != nil {
 		u.logger.Error("UserUseCase.SentOTP", zap.String("requestId", requestId), zap.Error(err))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -152,7 +144,7 @@ func (u *userUseCase) ConfirmCreateUser(ctx context.Context, requestId string, r
 
 	var user pb.User
 	if err = proto.Unmarshal(savedEvent.Payload, &user); err != nil {
-		u.logger.Error("UserUseCase.SentOTP", zap.String("requestId", requestId), zap.Error(err))
+		u.logger.Error("UserUseCase.Unmarshal", zap.String("requestId", requestId), zap.Error(err))
 		return err
 	}
 

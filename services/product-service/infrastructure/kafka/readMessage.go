@@ -2,8 +2,9 @@ package kafka
 
 import (
 	"fmt"
-	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"time"
+
+	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 )
 
 func (c *kafkaInfrastructure) ReadMessage(duration time.Duration) (*kafka.Message, error) {

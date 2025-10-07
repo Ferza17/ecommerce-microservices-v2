@@ -2,13 +2,14 @@ package config
 
 import (
 	"fmt"
+	"log"
+	"os"
+
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/enum"
 	pkgMetric "github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/metric"
 	"github.com/hashicorp/consul/api"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/viper"
-	"log"
-	"os"
 )
 
 var c *Config
@@ -28,6 +29,7 @@ type Config struct {
 
 	DatabasePostgres      *DatabasePostgres
 	DatabaseElasticsearch *DatabaseElasticsearch
+	DatabaseMongo         *DatabaseMongo
 
 	// USER SERVICE
 	ConfigServiceUser *ConfigServiceUser
@@ -35,9 +37,10 @@ type Config struct {
 	// PRODUCT SERVICE
 	ConfigServiceProduct *ConfigServiceProduct
 
-	BrokerKafka                          *BrokerKafka
-	BrokerKafkaTopicProducts             *BrokerKafkaTopicProducts
-	BrokerKafkaTopicConnectorSinkProduct *BrokerKafkaTopicConnectorSinkProduct
+	BrokerKafka                             *BrokerKafka
+	BrokerKafkaTopicProducts                *BrokerKafkaTopicProducts
+	BrokerKafkaTopicConnectorSinkProduct    *BrokerKafkaTopicConnectorSinkProduct
+	BrokerKafkaTopicConnectorSinkMongoEvent *BrokerKafkaTopicConnectorSinkMongoEvent
 }
 
 func SetConfig(path string) {
@@ -80,9 +83,11 @@ func SetConfig(path string) {
 	c.withServiceUser(consulClient.KV())
 	c.withDatabaseElasticsearch(consulClient.KV())
 	c.withDatabasePostgres(consulClient.KV())
+	c.withConfigDatabaseMongo(consulClient.KV())
 	c.withConfigTelemetry(consulClient.KV())
 	c.withBrokerKafka(consulClient.KV())
 	c.withBrokerKafkaTopicConnectorSinkProduct(consulClient.KV())
+	c.withBrokerKafkaTopicConnectorSinkMongoEvent(consulClient.KV())
 	c.withBrokerKafkaTopicProducts(consulClient.KV())
 
 	if err = c.RegisterConsulService(); err != nil {

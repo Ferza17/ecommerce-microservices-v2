@@ -4,8 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/enum"
-	eventModel "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/bson"
+	eventModel "github.com/ferza17/ecommerce-microservices-v2/product-service/model/bson"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -19,7 +18,7 @@ func (r *eventMongoRepository) FindEventByAggregateIDAndAggregateType(ctx contex
 	filter := bson.M{"aggregate_id": aggregateID, "aggregate_type": aggregateType}
 	opts := options.FindOne().SetSort(bson.D{{"timestamp", -1}})
 	if err := r.mongoDB.
-		GetCollection(enum.DatabaseNotification, resp.CollectionName()). // TODO: Change to database notification_event_stores
+		GetCollection(resp.CollectionName()).
 		FindOne(ctx, filter, opts).
 		Decode(resp); err != nil {
 		r.logger.Error(fmt.Sprintf("EventMongoDBRepository.FindEventByAggregateIDAndAggregateType : %s", err.Error()))
