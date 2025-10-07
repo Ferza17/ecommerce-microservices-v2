@@ -21,7 +21,7 @@ import (
 type (
 	IKafkaInfrastructure interface {
 		PublishWithSchema(ctx context.Context, topic string, key string, schemaType SchemaType, value interface{}) error
-		Publish(ctx context.Context, topic string, key string, value []byte) error
+		Publish(ctx context.Context, topic string, key string, schemaType SchemaType, value interface{}) error
 
 		SetupTopics(topics []string) error
 		ReadMessage(duration time.Duration) (*kafka.Message, error)

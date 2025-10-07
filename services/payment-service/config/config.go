@@ -48,6 +48,7 @@ type Config struct {
 	BrokerKafkaTopicPayments                *BrokerKafkaTopicPayments
 	BrokerKafkaTopicNotifications           *BrokerKafkaTopicNotifications
 	BrokerKafkaTopicShippings               *BrokerKafkaTopicShippings
+	BrokerKafkaTopicProducts                *BrokerKafkaTopicProducts
 	BrokerKafkaTopicConnectorSinkMongoEvent *BrokerKafkaTopicConnectorSinkMongoEvent
 }
 
@@ -103,6 +104,7 @@ func SetConfig(path string) {
 		withBrokerKafkaTopicConnectorSinkPgPayment(client.KV()).
 		withBrokerKafkaTopicNotifications(client.KV()).
 		withBrokerKafkaTopicShippings(client.KV()).
+		withBrokerKafkaTopicProducts(client.KV()).
 		withBrokerKafkaTopicPayments(client.KV()).
 		withConfigTelemetry(client.KV()).
 		withConfigServicePayment(client.KV()).

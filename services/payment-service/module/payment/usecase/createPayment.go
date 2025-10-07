@@ -57,14 +57,12 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 
 	// VALIDATE PRODUCT AND SET AMOUNT
 	var (
-		productIds    []string
-		mapProductQty = map[string]int32{}              // product_id as a key
-		mapProduct    = map[string]*productPb.Product{} // product_id as a key
-		totalAmount   = float64(0)
+		productIds []string
+		mapProduct = map[string]*productPb.Product{} // product_id as a key
+		now        = time.Now()
 	)
 
 	for _, item := range request.Items {
-		mapProductQty[item.ProductId] = item.Qty
 		productIds = append(productIds, item.ProductId)
 	}
 
@@ -84,24 +82,7 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 	}
 
 	for _, datum := range fetchProducts.Data.Data {
-		productQty, ok := mapProductQty[datum.Id]
-		if !ok {
-			u.logger.Error(fmt.Sprintf("failed to fetch product qty with id : %s : %v", datum.Id, err))
-			return nil, fmt.Errorf("failed to fetch product qty with id %s : %w", datum.Id, err)
-		}
 		mapProduct[datum.Id] = datum
-		totalAmount += float64(productQty) * datum.Price
-	}
-
-	now := time.Now()
-	payment := &orm.Payment{
-		ID:           uuid.NewString(),
-		Code:         util.GenerateInvoiceCode(),
-		TotalPrice:   totalAmount,
-		Status:       paymentPb.PaymentStatus_PENDING.String(),
-		ProviderID:   request.ProviderId,
-		UserID:       request.UserId,
-		PaymentItems: []*orm.PaymentItem{},
 	}
 
 	user, err := u.userService.AuthUserFindUserByToken(ctx, requestId, &userRpc.AuthUserFindUserByTokenRequest{
@@ -112,65 +93,73 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 		return nil, fmt.Errorf("failed to find user by provided token: %w", err)
 	}
 
+	payment := &orm.Payment{
+		ID:           uuid.NewString(),
+		Code:         util.GenerateInvoiceCode(),
+		TotalPrice:   0,
+		Status:       paymentPb.PaymentStatus_PENDING.String(),
+		ProviderID:   request.ProviderId,
+		UserID:       request.UserId,
+		PaymentItems: []*orm.PaymentItem{},
+	}
 	// Process PaymentItems
 	for _, item := range request.Items {
-		productQty, ok := mapProductQty[item.ProductId]
-		if !ok {
-			u.logger.Error(fmt.Sprintf("failed to fetch product qty with id : %s : %v", item.ProductId, err))
-			return nil, fmt.Errorf("failed to fetch product qty with id %s : %w", item.ProductId, err)
-		}
-
 		product, ok := mapProduct[item.ProductId]
 		if !ok {
 			u.logger.Error(fmt.Sprintf("failed to fetch product with id : %s : %v", item.ProductId, err))
 			return nil, fmt.Errorf("failed to fetch product with id %s : %w", item.ProductId, err)
 		}
 
-		// TODO: Send to topic product update
-		// 1. update qty
+		stock := product.Stock - int64(item.Qty)
+		if stock < 0 {
+			u.logger.Error(fmt.Sprintf("invalid product qty stock with id : %s : %v", item.ProductId, err))
+			return nil, fmt.Errorf("invalid product qty stock with id : %s : %w", item.ProductId, err)
+		}
+		product.Stock = stock
+
+		// Send to topic product update for updating product stock
+		if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicProducts.ProductUpdated, product.Id, kafka.PROTOBUF_SCHEMA, product); err != nil {
+			u.logger.Error(fmt.Sprintf("failed to publish product updated event: %v", err))
+			return nil, fmt.Errorf("failed to publish product updated event: %w", err)
+		}
+
+		amount := float64(item.Qty) * product.Price
+		payment.TotalPrice += amount
 
 		payment.PaymentItems = append(payment.PaymentItems, &orm.PaymentItem{
 			ID:          uuid.NewString(),
 			ProductID:   item.ProductId,
-			Amount:      float64(productQty) * product.Price,
+			Amount:      amount,
 			Qty:         item.Qty,
 			PaymentID:   payment.ID,
 			CreatedAt:   &now,
 			UpdatedAt:   &now,
 			DiscardedAt: nil,
 		})
-	}
 
-	//TODO: Publish to shipping.created
-	payload, err := proto.Marshal(&shippingRpc.CreateShippingRequest{
+	}
+	// Publish to Shipping Created
+	if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicShippings.ShippingCreated, uuid.NewString(), kafka.PROTOBUF_SCHEMA, &shippingRpc.CreateShippingRequest{
 		UserId:             user.Data.User.Id,
 		PaymentId:          payment.ID,
 		ShippingProviderId: request.ShippingProviderId,
-	})
-	if err != nil {
-		u.logger.Error(fmt.Sprintf("Failed to marshal CreateShipping request, requestId: %s, error: %v", requestId, err))
-		return nil, fmt.Errorf("failed to marshal CreateShipping request: %w", err)
-	}
-	if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicShippings.ShippingCreated, uuid.NewString(), payload); err != nil {
+	}); err != nil {
 		u.logger.Error(fmt.Sprintf("Failed to publish CreateShipping request, requestId: %s, error: %v", requestId, err))
 	}
 
-	//TODO: Publish to Notification Payment Order Created
-	if payload, err = proto.Marshal(&notificationPb.SendEmailPaymentOrderCreateRequest{
+	// Publish to Notification Payment Order Created
+	if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicNotifications.PaymentOrderCreated, payment.ID, kafka.PROTOBUF_SCHEMA, &notificationPb.SendEmailPaymentOrderCreateRequest{
 		Email:            user.Data.User.Email,
 		PaymentId:        payment.ID,
 		NotificationType: notificationPb.NotificationTypeEnum_NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED,
 	}); err != nil {
-		u.logger.Error("NotificationTypeEnum_NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED", zap.String("requestId", requestId), zap.Error(err))
-		return nil, status.Error(codes.Internal, err.Error())
-	}
-	if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicNotifications.PaymentOrderCreated, fmt.Sprintf("%s:%s", user.Data.User.Email, payment.ID), payload); err != nil {
 		u.logger.Error(fmt.Sprintf("Failed to publish SendEmailPaymentOrderCreateRequest request, requestId: %s, error: %v", requestId, err))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	// Append Event
-	if payload, err = proto.Marshal(payment.ToProto()); err != nil {
+	payload, err := proto.Marshal(payment.ToProto())
+	if err != nil {
 		u.logger.Error("PaymentUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
 		return nil, status.Error(codes.Internal, "internal server error")
 	}
@@ -258,6 +247,24 @@ func (u *paymentUseCase) ConfirmCreatePayment(ctx context.Context, requestId str
 		}
 	}
 
+	// 1. Publish to topic product updated confirm
+	if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicProducts.ConfirmProductUpdated, req.SagaId, kafka.PROTOBUF_SCHEMA, &pbEvent.ReserveEvent{
+		SagaId:        req.SagaId,
+		AggregateType: "products",
+	}); err != nil {
+		u.logger.Error(fmt.Sprintf("Error publishing event to kafka for reserve event: %s", err.Error()))
+		return err
+	}
+
+	// 2. Publish to topic shipping created confirm
+	if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicShippings.ConfirmShippingCreated, req.SagaId, kafka.PROTOBUF_SCHEMA, &pbEvent.ReserveEvent{
+		SagaId:        req.SagaId,
+		AggregateType: "shippings",
+	}); err != nil {
+		u.logger.Error(fmt.Sprintf("Error publishing event to kafka for reserve event: %s", err.Error()))
+		return err
+	}
+
 	return nil
 }
 
@@ -273,6 +280,29 @@ func (u *paymentUseCase) CompensateCreatePayment(ctx context.Context, requestId 
 		}
 		span.End()
 	}()
+
+	if err = u.eventMongoDBRepository.DeleteEventBySagaId(ctx, req.SagaId); err != nil {
+		u.logger.Error("PaymentUseCase.CompensateCreatePayment", zap.Error(err))
+		return err
+	}
+
+	// 1. Publish to topic product updated confirm
+	if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicProducts.CompensateProductUpdated, req.SagaId, kafka.PROTOBUF_SCHEMA, &pbEvent.ReserveEvent{
+		SagaId:        req.SagaId,
+		AggregateType: "products",
+	}); err != nil {
+		u.logger.Error(fmt.Sprintf("Error publishing event to kafka for reserve event: %s", err.Error()))
+		return err
+	}
+
+	// 2. Publish to topic shipping created confirm
+	if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicShippings.CompensateShippingCreated, req.SagaId, kafka.PROTOBUF_SCHEMA, &pbEvent.ReserveEvent{
+		SagaId:        req.SagaId,
+		AggregateType: "shippings",
+	}); err != nil {
+		u.logger.Error(fmt.Sprintf("Error publishing event to kafka for reserve event: %s", err.Error()))
+		return err
+	}
 
 	return nil
 }
