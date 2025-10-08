@@ -8,6 +8,7 @@ package notification
 
 import (
 	_ "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/external/validate"
+	payment "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -85,8 +86,9 @@ func (x *SendOtpEmailNotificationRequest) GetNotificationType() NotificationType
 type SendEmailPaymentOrderCreateRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
 	Email            string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
-	PaymentId        string                 `protobuf:"bytes,2,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
-	NotificationType NotificationTypeEnum   `protobuf:"varint,3,opt,name=notificationType,proto3,enum=notification.NotificationTypeEnum" json:"notificationType,omitempty"`
+	Payment          *payment.Payment       `protobuf:"bytes,2,opt,name=payment,proto3" json:"payment,omitempty"`
+	PaymentProvider  *payment.Provider      `protobuf:"bytes,3,opt,name=payment_provider,json=paymentProvider,proto3" json:"payment_provider,omitempty"`
+	NotificationType NotificationTypeEnum   `protobuf:"varint,4,opt,name=notificationType,proto3,enum=notification.NotificationTypeEnum" json:"notificationType,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -128,11 +130,18 @@ func (x *SendEmailPaymentOrderCreateRequest) GetEmail() string {
 	return ""
 }
 
-func (x *SendEmailPaymentOrderCreateRequest) GetPaymentId() string {
+func (x *SendEmailPaymentOrderCreateRequest) GetPayment() *payment.Payment {
 	if x != nil {
-		return x.PaymentId
+		return x.Payment
 	}
-	return ""
+	return nil
+}
+
+func (x *SendEmailPaymentOrderCreateRequest) GetPaymentProvider() *payment.Provider {
+	if x != nil {
+		return x.PaymentProvider
+	}
+	return nil
 }
 
 func (x *SendEmailPaymentOrderCreateRequest) GetNotificationType() NotificationTypeEnum {
@@ -146,16 +155,16 @@ var File_v1_notification_request_proto protoreflect.FileDescriptor
 
 const file_v1_notification_request_proto_rawDesc = "" +
 	"\n" +
-	"\x1dv1/notification/request.proto\x12\fnotification\x1a\x1bv1/notification/model.proto\x1a external/validate/validate.proto\"\xab\x01\n" +
+	"\x1dv1/notification/request.proto\x12\fnotification\x1a\x1bv1/notification/model.proto\x1a\x16v1/payment/model.proto\x1a external/validate/validate.proto\"\xab\x01\n" +
 	"\x1fSendOtpEmailNotificationRequest\x12\x19\n" +
 	"\x03otp\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\x03otp\x12\x1d\n" +
 	"\x05email\x18\x02 \x01(\tB\a\xfaB\x04r\x02`\x01R\x05email\x12N\n" +
-	"\x10notificationType\x18\x03 \x01(\x0e2\".notification.NotificationTypeEnumR\x10notificationType\"\xc6\x01\n" +
+	"\x10notificationType\x18\x03 \x01(\x0e2\".notification.NotificationTypeEnumR\x10notificationType\"\x9b\x02\n" +
 	"\"SendEmailPaymentOrderCreateRequest\x12\x1d\n" +
-	"\x05email\x18\x01 \x01(\tB\a\xfaB\x04r\x02`\x01R\x05email\x12'\n" +
-	"\n" +
-	"payment_id\x18\x02 \x01(\tB\b\xfaB\x05r\x03\xd0\x01\x00R\tpaymentId\x12X\n" +
-	"\x10notificationType\x18\x03 \x01(\x0e2\".notification.NotificationTypeEnumB\b\xfaB\x05\x82\x01\x02\x10\x01R\x10notificationTypeBr\n" +
+	"\x05email\x18\x01 \x01(\tB\a\xfaB\x04r\x02`\x01R\x05email\x124\n" +
+	"\apayment\x18\x02 \x01(\v2\x10.payment.PaymentB\b\xfaB\x05\x8a\x01\x02\x10\x01R\apayment\x12F\n" +
+	"\x10payment_provider\x18\x03 \x01(\v2\x11.payment.ProviderB\b\xfaB\x05\x8a\x01\x02\x10\x01R\x0fpaymentProvider\x12X\n" +
+	"\x10notificationType\x18\x04 \x01(\x0e2\".notification.NotificationTypeEnumB\b\xfaB\x05\x82\x01\x02\x10\x01R\x10notificationTypeBr\n" +
 	"\x10com.notificationB\fRequestProtoH\x02P\x01\xa2\x02\x03NXX\xaa\x02\fNotification\xca\x02\fNotification\xe2\x02\x18Notification\\GPBMetadata\xea\x02\fNotificationb\x06proto3"
 
 var (
@@ -175,15 +184,19 @@ var file_v1_notification_request_proto_goTypes = []any{
 	(*SendOtpEmailNotificationRequest)(nil),    // 0: notification.SendOtpEmailNotificationRequest
 	(*SendEmailPaymentOrderCreateRequest)(nil), // 1: notification.SendEmailPaymentOrderCreateRequest
 	(NotificationTypeEnum)(0),                  // 2: notification.NotificationTypeEnum
+	(*payment.Payment)(nil),                    // 3: payment.Payment
+	(*payment.Provider)(nil),                   // 4: payment.Provider
 }
 var file_v1_notification_request_proto_depIdxs = []int32{
 	2, // 0: notification.SendOtpEmailNotificationRequest.notificationType:type_name -> notification.NotificationTypeEnum
-	2, // 1: notification.SendEmailPaymentOrderCreateRequest.notificationType:type_name -> notification.NotificationTypeEnum
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	3, // 1: notification.SendEmailPaymentOrderCreateRequest.payment:type_name -> payment.Payment
+	4, // 2: notification.SendEmailPaymentOrderCreateRequest.payment_provider:type_name -> payment.Provider
+	2, // 3: notification.SendEmailPaymentOrderCreateRequest.notificationType:type_name -> notification.NotificationTypeEnum
+	4, // [4:4] is the sub-list for method output_type
+	4, // [4:4] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_v1_notification_request_proto_init() }

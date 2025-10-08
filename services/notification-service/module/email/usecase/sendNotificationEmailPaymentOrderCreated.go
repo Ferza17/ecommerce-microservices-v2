@@ -3,13 +3,13 @@ package usecase
 import (
 	"context"
 	"fmt"
-	mailHogInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mailhog"
-	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification"
-	pb "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/payment"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"strings"
 	"time"
+
+	mailHogInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mailhog"
+	notificationRpc "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (u *notificationEmailUseCase) SendNotificationEmailPaymentOrderCreated(ctx context.Context, requestId string, req *notificationRpc.SendEmailPaymentOrderCreateRequest) error {
@@ -43,31 +43,23 @@ func (u *notificationEmailUseCase) SendNotificationEmailPaymentOrderCreated(ctx 
 		return status.Error(codes.NotFound, "email template not found")
 	}
 
-	fetchPayment, err := u.paymentSvc.FindPaymentById(ctx, requestId, &pb.FindPaymentByIdRequest{
-		Id: req.PaymentId,
-	})
-	if err != nil {
-		u.logger.Error(fmt.Sprintf("error finding email payment by id: %s", err.Error()))
-		return status.Error(codes.Internal, "error finding email payment by id")
-	}
-
 	var (
 		templateVars = map[string]any{
-			"Code":   fetchPayment.Data.Payment.Code,
-			"Status": strings.ToLower(fetchPayment.Data.Payment.Status.String()),
+			"Code":   req.Payment.Code,
+			"Status": strings.ToLower(req.Payment.Status.String()),
 			"Provider": struct {
 				Name      string
 				Method    string
 				CreatedAt time.Time
 				UpdatedAt time.Time
 			}{
-				Name:      fetchPayment.Data.Provider.Name,
-				Method:    fetchPayment.Data.Provider.Method.String(),
-				CreatedAt: fetchPayment.Data.Provider.CreatedAt.AsTime(),
-				UpdatedAt: fetchPayment.Data.Provider.UpdatedAt.AsTime(),
+				Name:      req.PaymentProvider.Name,
+				Method:    req.PaymentProvider.Method.String(),
+				CreatedAt: req.PaymentProvider.CreatedAt.AsTime(),
+				UpdatedAt: req.PaymentProvider.UpdatedAt.AsTime(),
 			},
-			"CreatedAt":    fetchPayment.Data.Payment.CreatedAt.AsTime(),
-			"TotalPrice":   fetchPayment.Data.Payment.TotalPrice,
+			"CreatedAt":    req.Payment.CreatedAt.AsTime(),
+			"TotalPrice":   req.Payment.TotalPrice,
 			"PaymentItems": "",
 		}
 	)
@@ -80,7 +72,7 @@ func (u *notificationEmailUseCase) SendNotificationEmailPaymentOrderCreated(ctx 
 		UpdatedAt time.Time
 	}
 
-	for _, item := range fetchPayment.Data.PaymentItems {
+	for _, item := range req.Payment.Items {
 		paymentItems = append(paymentItems, struct {
 			ProductID string
 			Amount    float64

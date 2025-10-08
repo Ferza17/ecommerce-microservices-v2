@@ -6,6 +6,7 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+import { Payment, Provider } from "../payment/model";
 import { NotificationTypeEnum, notificationTypeEnumFromJSON, notificationTypeEnumToJSON } from "./model";
 
 export const protobufPackage = "notification";
@@ -18,7 +19,8 @@ export interface SendOtpEmailNotificationRequest {
 
 export interface SendEmailPaymentOrderCreateRequest {
   email: string;
-  paymentId: string;
+  payment: Payment | undefined;
+  paymentProvider: Provider | undefined;
   notificationType: NotificationTypeEnum;
 }
 
@@ -115,7 +117,7 @@ export const SendOtpEmailNotificationRequest: MessageFns<SendOtpEmailNotificatio
 };
 
 function createBaseSendEmailPaymentOrderCreateRequest(): SendEmailPaymentOrderCreateRequest {
-  return { email: "", paymentId: "", notificationType: 0 };
+  return { email: "", payment: undefined, paymentProvider: undefined, notificationType: 0 };
 }
 
 export const SendEmailPaymentOrderCreateRequest: MessageFns<SendEmailPaymentOrderCreateRequest> = {
@@ -123,11 +125,14 @@ export const SendEmailPaymentOrderCreateRequest: MessageFns<SendEmailPaymentOrde
     if (message.email !== "") {
       writer.uint32(10).string(message.email);
     }
-    if (message.paymentId !== "") {
-      writer.uint32(18).string(message.paymentId);
+    if (message.payment !== undefined) {
+      Payment.encode(message.payment, writer.uint32(18).fork()).join();
+    }
+    if (message.paymentProvider !== undefined) {
+      Provider.encode(message.paymentProvider, writer.uint32(26).fork()).join();
     }
     if (message.notificationType !== 0) {
-      writer.uint32(24).int32(message.notificationType);
+      writer.uint32(32).int32(message.notificationType);
     }
     return writer;
   },
@@ -152,11 +157,19 @@ export const SendEmailPaymentOrderCreateRequest: MessageFns<SendEmailPaymentOrde
             break;
           }
 
-          message.paymentId = reader.string();
+          message.payment = Payment.decode(reader, reader.uint32());
           continue;
         }
         case 3: {
-          if (tag !== 24) {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.paymentProvider = Provider.decode(reader, reader.uint32());
+          continue;
+        }
+        case 4: {
+          if (tag !== 32) {
             break;
           }
 
@@ -175,7 +188,8 @@ export const SendEmailPaymentOrderCreateRequest: MessageFns<SendEmailPaymentOrde
   fromJSON(object: any): SendEmailPaymentOrderCreateRequest {
     return {
       email: isSet(object.email) ? globalThis.String(object.email) : "",
-      paymentId: isSet(object.paymentId) ? globalThis.String(object.paymentId) : "",
+      payment: isSet(object.payment) ? Payment.fromJSON(object.payment) : undefined,
+      paymentProvider: isSet(object.paymentProvider) ? Provider.fromJSON(object.paymentProvider) : undefined,
       notificationType: isSet(object.notificationType) ? notificationTypeEnumFromJSON(object.notificationType) : 0,
     };
   },
@@ -185,8 +199,11 @@ export const SendEmailPaymentOrderCreateRequest: MessageFns<SendEmailPaymentOrde
     if (message.email !== "") {
       obj.email = message.email;
     }
-    if (message.paymentId !== "") {
-      obj.paymentId = message.paymentId;
+    if (message.payment !== undefined) {
+      obj.payment = Payment.toJSON(message.payment);
+    }
+    if (message.paymentProvider !== undefined) {
+      obj.paymentProvider = Provider.toJSON(message.paymentProvider);
     }
     if (message.notificationType !== 0) {
       obj.notificationType = notificationTypeEnumToJSON(message.notificationType);
@@ -200,7 +217,12 @@ export const SendEmailPaymentOrderCreateRequest: MessageFns<SendEmailPaymentOrde
   fromPartial(object: DeepPartial<SendEmailPaymentOrderCreateRequest>): SendEmailPaymentOrderCreateRequest {
     const message = createBaseSendEmailPaymentOrderCreateRequest();
     message.email = object.email ?? "";
-    message.paymentId = object.paymentId ?? "";
+    message.payment = (object.payment !== undefined && object.payment !== null)
+      ? Payment.fromPartial(object.payment)
+      : undefined;
+    message.paymentProvider = (object.paymentProvider !== undefined && object.paymentProvider !== null)
+      ? Provider.fromPartial(object.paymentProvider)
+      : undefined;
     message.notificationType = object.notificationType ?? 0;
     return message;
   },
