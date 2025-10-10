@@ -9,3 +9,4 @@ mod service_shipping;
 mod service_user;
 mod telemetry_jaeger;
 mod message_broker_kafka_topic_shipping;
+mod database_mongodb;

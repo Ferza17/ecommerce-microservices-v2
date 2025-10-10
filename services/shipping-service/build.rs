@@ -21,6 +21,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "proto/v1/payment/response.proto",
         "proto/v1/payment/model.proto",
         "proto/v1/payment/enum.proto",
+        // EVENT
+        "proto/v1/event/enum.proto",
+        "proto/v1/event/model.proto",
+        
         // COMMON
         "proto/v1/common/response/response.proto",
     ];

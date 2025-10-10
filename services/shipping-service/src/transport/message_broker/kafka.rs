@@ -74,6 +74,7 @@ impl Transport {
         while let Some(message) = stream.next().await {
             match message {
                 Ok(m) => match m.topic() {
+                    // SHIPPING CREATED
                     topic
                         if topic
                             == self
@@ -100,6 +101,12 @@ impl Transport {
                             Err(_) => continue,
                         }
                     }
+                    // CONFIRM SHIPPING CREATED
+                    
+                    // COMPENSATE SHIPPING CREATED
+                    
+
+
                     topic
                         if topic
                             == self

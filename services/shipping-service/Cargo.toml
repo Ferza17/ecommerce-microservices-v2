@@ -73,21 +73,17 @@ axum = "0.8.4"
 hyper = { version = "1.6.0", features = ["full"] }
 tower-http = { version = "0.6.2", features = ["cors", "trace"] }
 
-
 # OpenAPI
 utoipa = "5"
 utoipa-swagger-ui = { version = "9", features = ["axum"] }
 
-# RABBIQ MQ
-lapin = "2.3"
 thiserror = "1.0.69"
 
 # KAFKA
 rdkafka = "0.38"
-schema_registry_converter= { version = "4.5.0", features = ["json", "blocking"] }
+schema_registry_converter = { version = "4.5.0", features = ["json", "proto_decoder", "proto_raw", "blocking"] }
 
-
-
-
+#MONGODB
+mongodb = "3.3.0"
 
 

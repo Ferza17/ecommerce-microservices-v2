@@ -38,6 +38,7 @@ pub async fn handle_run_command(args: RunArgs) {
 
     cfg = cfg
         .with_database_postgres_from_consul(&client)
+        .with_database_mongodb_from_consul(&client)
         .with_service_payment_from_consul(&client)
         .with_service_shipping_from_consul(&client)
         .with_service_user_from_consul(&client)

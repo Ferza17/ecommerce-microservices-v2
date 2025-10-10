@@ -2,6 +2,7 @@ pub mod services;
 
 pub mod database {
     pub mod async_postgres;
+    pub mod mongodb;
     pub mod redis;
 }
 

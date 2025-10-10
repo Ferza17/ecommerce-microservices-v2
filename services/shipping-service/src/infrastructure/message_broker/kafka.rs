@@ -88,6 +88,8 @@ impl KafkaInfrastructure {
                 schema_type: SchemaType::Json,
                 schema: schema.to_string(),
                 references: vec![],
+                properties: None,
+                tags: None,
             },
         )
         .await

@@ -3,6 +3,7 @@ use consulrs::client::{ConsulClient, ConsulClientSettingsBuilder};
 use consulrs::{kv, service};
 use serde::Deserialize;
 
+use crate::config::database_mongodb::DatabaseMongoDB;
 use crate::config::database_postgres::DatabasePostgres;
 use crate::config::message_broker_kafka::MessageBrokerKafka;
 use crate::config::message_broker_kafka_topic_shipping::MessageBrokerKafkaTopicShipping;
@@ -22,6 +23,8 @@ pub struct AppConfig {
     pub config_env: ConfigEnv,
     // FROM CONSUL DATABASE POSTGRES
     pub database_postgres: DatabasePostgres,
+    pub database_mongodb: DatabaseMongoDB,
+
     // FROM CONSUL KV SERVICES/SHIPPING
     pub service_shipping: ServiceShipping,
     // FROM CONSUL KV SERVICE/USER
@@ -41,6 +44,7 @@ impl Default for AppConfig {
         Self {
             config_env: ConfigEnv::default(),
             database_postgres: DatabasePostgres::default(),
+            database_mongodb: Default::default(),
             service_shipping: ServiceShipping::default(),
             service_user: ServiceUser::default(),
             service_payment: ServicePayment::default(),
@@ -111,6 +115,20 @@ impl AppConfig {
                     .await
                     .unwrap_or_else(|e| {
                         panic!("Error with_database_postgres_from_consul :  {:?}", e);
+                    });
+            });
+        });
+        self
+    }
+
+    pub fn with_database_mongodb_from_consul(mut self, client: &ConsulClient) -> Self {
+        tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                self.database_mongodb = DatabaseMongoDB::default()
+                    .with_consul_client(self.config_env.env.clone(), client)
+                    .await
+                    .unwrap_or_else(|e| {
+                        panic!("Error with_database_mongodb_from_consul :  {:?}", e);
                     });
             });
         });
