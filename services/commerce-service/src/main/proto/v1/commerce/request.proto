@@ -1,0 +1,52 @@
+syntax = "proto3";
+package commerce;
+
+
+
+// CART ITEM REQUEST DEFINITION
+message CreateCartItemRequest {
+  string productId = 1;
+  string userId = 2;
+  int32 qty = 3;
+  double price = 4;
+}
+
+message UpdateCartItemByIdRequest {
+  string id = 1;
+  string productId = 2;
+  string userId = 3;
+  int32 qty = 4;
+  double price = 5;
+}
+
+message FindCartItemsWithPaginationRequest {
+  string userId = 1;
+  repeated string productIds = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message FindCartItemByIdRequest {
+  string id = 1;
+}
+
+message DeleteCartItemByIdRequest {
+  string id = 1;
+}
+
+// WISHLIST ITEM REQUEST DEFINITION
+message CreateWishlistItemRequest {
+  string productId = 1;
+  string userId = 2;
+}
+
+message FindWishlistItemWithPaginationRequest {
+  string userId = 1;
+  repeated string productIds = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message DeleteWishlistItemByIdRequest {
+  string id = 1;
+}

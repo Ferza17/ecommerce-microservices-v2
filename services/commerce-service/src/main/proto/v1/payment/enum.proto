@@ -1,0 +1,18 @@
+syntax = "proto3";
+package payment;
+
+
+enum PaymentStatus {
+  PENDING = 0;
+  PARTIAL = 1;
+  SUCCESS = 2;
+  FAILED = 3;
+}
+
+enum ProviderMethod  {
+  BANK = 0;
+  CRYPTO_CURRENCY = 1;
+  DEBIT = 2;
+  CREDIT = 3;
+  CASH_ON_DELIVERY = 4;
+}

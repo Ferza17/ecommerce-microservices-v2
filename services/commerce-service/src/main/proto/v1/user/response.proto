@@ -1,0 +1,102 @@
+syntax = "proto3";
+package user;
+
+import "v1/user/model.proto";
+
+// ============= AUTH RESPONSE DEFINITION
+message AuthUserRegisterResponse {
+  string status = 1;
+  string message = 2;
+  message AuthUserRegisterResponseData {
+    user.User user = 1;
+    user.Role role = 2;
+    repeated user.AccessControl access_control = 3;
+  }
+  AuthUserRegisterResponseData data = 4;
+}
+
+message AuthUserVerifyOtpResponse {
+  string status = 1;
+  string message = 2;
+  message AuthUserVerifyOtpResponseData {
+    string accessToken = 1;
+    string refreshToken = 2;
+  }
+  AuthUserVerifyOtpResponseData data = 4;
+}
+
+message AuthUserLogoutByTokenResponse {
+  string status = 1;
+  string message = 2;
+  message AuthUserLogoutByTokenResponseData {
+    bool is_valid = 1;
+  }
+  AuthUserLogoutByTokenResponseData data = 5;
+}
+
+message AuthUserVerifyAccessControlResponse {
+  string status = 1;
+  string message = 2;
+  message AuthUserVerifyAccessControlResponseData {
+    bool isValid = 1;
+    user.User user = 2;
+    user.Role role = 3;
+    repeated user.AccessControl access_controls = 4;
+  }
+  AuthUserVerifyAccessControlResponseData data = 4;
+}
+
+message AuthUserFindUserByTokenResponse {
+  string status = 1;
+  string message = 2;
+  message AuthUserFindUserByTokenResponseData {
+    user.User user = 1;
+  }
+  AuthUserFindUserByTokenResponseData data = 4;
+}
+
+message AuthServiceVerifyIsExcludedResponse {
+  string status = 1;
+  string message = 2;
+  message AuthServiceVerifyIsExcludedResponseData {
+    bool IsExcluded = 1;
+  }
+  AuthServiceVerifyIsExcludedResponseData data = 4;
+}
+
+// ============= USER RESPONSE DEFINITION
+message UpdateUserByIdResponse {
+  string status = 1;
+  string message = 2;
+  message UpdateUserByIdResponseData {
+    string id = 1;
+  }
+  UpdateUserByIdResponseData data = 4;
+}
+
+message FindUserByIdResponse{
+  string status = 1;
+  string message = 2;
+  message FindUserByIdResponseData {
+    user.User user = 1;
+  }
+  FindUserByIdResponseData data = 4;
+}
+
+message FindUserByEmailAndPasswordResponse{
+  string status = 1;
+  string message = 2;
+  message FindUserByEmailAndPasswordResponseData {
+    user.User user = 1;
+  }
+  FindUserByEmailAndPasswordResponseData data = 4;
+}
+
+message FindUserByEmailResponse {
+  string status = 1;
+  string message = 2;
+  message FindUserByEmailResponseData {
+    user.User user = 1;
+  }
+  FindUserByEmailResponseData data = 4;
+}

@@ -1,0 +1,38 @@
+syntax = "proto3";
+package product;
+
+// LOCAL IMPORT
+import "v1/product/model.proto";
+
+
+
+message FindProductsWithPaginationResponse {
+  string status = 1;
+  string message = 2;
+  message FindProductsWithPaginationResponseData {
+    repeated product.Product data = 1;
+    int32 limit = 2;
+    int32 page = 3;
+    int32 total = 4;
+  }
+  FindProductsWithPaginationResponseData data = 3;
+}
+
+message CreateProductResponse {
+  string status = 1;
+  string message = 2;
+  message CreateProductResponseData {
+    string  id = 1;
+  }
+  CreateProductResponseData data = 3;
+}
+
+message DeleteProductByIdResponse {
+  string status = 1;
+  string message = 2;
+  message DeleteProductByIdResponseData {
+    string message = 1;
+  }
+  DeleteProductByIdResponseData data = 3;
+}
+
