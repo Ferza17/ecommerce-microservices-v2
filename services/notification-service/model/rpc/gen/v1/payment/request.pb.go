@@ -420,7 +420,7 @@ var File_v1_payment_request_proto protoreflect.FileDescriptor
 
 const file_v1_payment_request_proto_rawDesc = "" +
 	"\n" +
-	"\x18v1/payment/request.proto\x12\apayment\x1a\x16v1/payment/model.proto\x1a external/validate/validate.proto\x1a\x15v1/payment/enum.proto\"]\n" +
+	"\x18v1/payment/request.proto\x12\apayment\x1a external/validate/validate.proto\x1a\x15v1/payment/enum.proto\"]\n" +
 	"\x18CreatePaymentItemRequest\x12&\n" +
 	"\tproductId\x18\x01 \x01(\tB\b\xfaB\x05r\x03\xd0\x01\x00R\tproductId\x12\x19\n" +
 	"\x03qty\x18\x02 \x01(\x05B\a\xfaB\x04\x1a\x02 \x00R\x03qty\"\xc0\x01\n" +
@@ -485,7 +485,6 @@ func file_v1_payment_request_proto_init() {
 	if File_v1_payment_request_proto != nil {
 		return
 	}
-	file_v1_payment_model_proto_init()
 	file_v1_payment_enum_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{

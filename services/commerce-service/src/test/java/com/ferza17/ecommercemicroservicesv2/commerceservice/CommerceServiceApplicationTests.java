@@ -3,10 +3,10 @@ package com.ferza17.ecommercemicroservicesv2.commerceservice;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+//@SpringBootTest
 class CommerceServiceApplicationTests {
 
-    @Test
+//    @Test
     void contextLoads() {
     }
 

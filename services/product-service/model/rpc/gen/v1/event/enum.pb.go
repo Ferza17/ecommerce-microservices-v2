@@ -10,6 +10,7 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
+	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -20,14 +21,94 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type AggregateType int32
+
+const (
+	AggregateType_USER         AggregateType = 0
+	AggregateType_NOTIFICATION AggregateType = 1
+	AggregateType_PAYMENT      AggregateType = 2
+	AggregateType_PRODUCT      AggregateType = 3
+	AggregateType_SHIPPING     AggregateType = 4
+	AggregateType_COMMERCE     AggregateType = 5
+)
+
+// Enum value maps for AggregateType.
+var (
+	AggregateType_name = map[int32]string{
+		0: "USER",
+		1: "NOTIFICATION",
+		2: "PAYMENT",
+		3: "PRODUCT",
+		4: "SHIPPING",
+		5: "COMMERCE",
+	}
+	AggregateType_value = map[string]int32{
+		"USER":         0,
+		"NOTIFICATION": 1,
+		"PAYMENT":      2,
+		"PRODUCT":      3,
+		"SHIPPING":     4,
+		"COMMERCE":     5,
+	}
+)
+
+func (x AggregateType) Enum() *AggregateType {
+	p := new(AggregateType)
+	*p = x
+	return p
+}
+
+func (x AggregateType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AggregateType) Descriptor() protoreflect.EnumDescriptor {
+	return file_v1_event_enum_proto_enumTypes[0].Descriptor()
+}
+
+func (AggregateType) Type() protoreflect.EnumType {
+	return &file_v1_event_enum_proto_enumTypes[0]
+}
+
+func (x AggregateType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AggregateType.Descriptor instead.
+func (AggregateType) EnumDescriptor() ([]byte, []int) {
+	return file_v1_event_enum_proto_rawDescGZIP(), []int{0}
+}
+
 var File_v1_event_enum_proto protoreflect.FileDescriptor
 
 const file_v1_event_enum_proto_rawDesc = "" +
 	"\n" +
-	"\x13v1/event/enum.proto\x12\x05eventBL\n" +
+	"\x13v1/event/enum.proto\x12\x05event*a\n" +
+	"\rAggregateType\x12\b\n" +
+	"\x04USER\x10\x00\x12\x10\n" +
+	"\fNOTIFICATION\x10\x01\x12\v\n" +
+	"\aPAYMENT\x10\x02\x12\v\n" +
+	"\aPRODUCT\x10\x03\x12\f\n" +
+	"\bSHIPPING\x10\x04\x12\f\n" +
+	"\bCOMMERCE\x10\x05BL\n" +
 	"\tcom.eventB\tEnumProtoH\x02P\x01\xa2\x02\x03EXX\xaa\x02\x05Event\xca\x02\x05Event\xe2\x02\x11Event\\GPBMetadata\xea\x02\x05Eventb\x06proto3"
 
-var file_v1_event_enum_proto_goTypes = []any{}
+var (
+	file_v1_event_enum_proto_rawDescOnce sync.Once
+	file_v1_event_enum_proto_rawDescData []byte
+)
+
+func file_v1_event_enum_proto_rawDescGZIP() []byte {
+	file_v1_event_enum_proto_rawDescOnce.Do(func() {
+		file_v1_event_enum_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_v1_event_enum_proto_rawDesc), len(file_v1_event_enum_proto_rawDesc)))
+	})
+	return file_v1_event_enum_proto_rawDescData
+}
+
+var file_v1_event_enum_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_v1_event_enum_proto_goTypes = []any{
+	(AggregateType)(0), // 0: event.AggregateType
+}
 var file_v1_event_enum_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type
@@ -46,13 +127,14 @@ func file_v1_event_enum_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_event_enum_proto_rawDesc), len(file_v1_event_enum_proto_rawDesc)),
-			NumEnums:      0,
+			NumEnums:      1,
 			NumMessages:   0,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_v1_event_enum_proto_goTypes,
 		DependencyIndexes: file_v1_event_enum_proto_depIdxs,
+		EnumInfos:         file_v1_event_enum_proto_enumTypes,
 	}.Build()
 	File_v1_event_enum_proto = out.File
 	file_v1_event_enum_proto_goTypes = nil

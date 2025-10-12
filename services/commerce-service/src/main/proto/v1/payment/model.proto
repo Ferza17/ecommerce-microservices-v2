@@ -1,5 +1,7 @@
 syntax = "proto3";
 package payment;
+option java_package = "com.ferza17.ecommercemicroservicesv2.v1.payment";
+
 
 import "google/protobuf/timestamp.proto";
 import "v1/payment/enum.proto";

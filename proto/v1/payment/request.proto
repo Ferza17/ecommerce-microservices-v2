@@ -1,10 +1,9 @@
 syntax = "proto3";
 package payment;
-
+option java_package = "com.ferza17.ecommercemicroservicesv2.v1.payment";
 
 
 // LOCAL IMPORT
-import "v1/payment/model.proto";
 import "external/validate/validate.proto";
 import "v1/payment/enum.proto";
 

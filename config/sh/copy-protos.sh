@@ -6,7 +6,7 @@ echo ">>> copy file .proto to services/commerce-service/proto <<<"
 echo "=================================================="
 
 # COPY TO COMMERCE SERVICE
-TARGET_DIR="services/commerce-service/proto";
+TARGET_DIR="services/commerce-service/src/main/proto";
 mkdir -p "$TARGET_DIR";
 rsync -av --include='*.proto' --include='*/' --exclude='*' "proto/" "$TARGET_DIR";
 

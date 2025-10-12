@@ -1,9 +1,8 @@
 syntax = "proto3";
 package notification;
+option java_package = "com.ferza17.ecommercemicroservicesv2.v1.notification";
+
 import "google/protobuf/struct.proto";
-
-
-
 
 message NotificationTemplate {
   string id = 1;

@@ -9,7 +9,6 @@ package event
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	_ "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -187,7 +186,7 @@ var File_v1_event_model_proto protoreflect.FileDescriptor
 
 const file_v1_event_model_proto_rawDesc = "" +
 	"\n" +
-	"\x14v1/event/model.proto\x12\x05event\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfd\x02\n" +
+	"\x14v1/event/model.proto\x12\x05event\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfd\x02\n" +
 	"\x05Event\x12\x0f\n" +
 	"\x03_id\x18\x01 \x01(\tR\x02Id\x12!\n" +
 	"\faggregate_id\x18\x02 \x01(\tR\vaggregateId\x12%\n" +

@@ -1,8 +1,9 @@
 syntax = "proto3";
 package commerce;
+option java_package = "com.ferza17.ecommercemicroservicesv2.v1.commerce";
+
 
 import "protoc-gen-openapiv2/options/annotations.proto";
-import "google/api/http.proto";
 import "google/api/annotations.proto";
 
 

@@ -28,7 +28,7 @@ var File_v1_product_service_proto protoreflect.FileDescriptor
 
 const file_v1_product_service_proto_rawDesc = "" +
 	"\n" +
-	"\x18v1/product/service.proto\x12\aproduct\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x15google/api/http.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x16v1/product/model.proto\x1a\x18v1/product/request.proto\x1a\x19v1/product/response.proto\x1a\x14v1/user/option.proto2\xc3\a\n" +
+	"\x18v1/product/service.proto\x12\aproduct\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x16v1/product/model.proto\x1a\x18v1/product/request.proto\x1a\x19v1/product/response.proto\x1a\x14v1/user/option.proto2\xc3\a\n" +
 	"\x0eProductService\x12\xa1\x01\n" +
 	"\rCreateProduct\x12\x1d.product.CreateProductRequest\x1a\x16.google.protobuf.Empty\"Y\x92A-\n" +
 	"\aPRODUCT\x12\x14create a new productb\f\n" +

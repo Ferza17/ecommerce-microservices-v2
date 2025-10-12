@@ -1,8 +1,0 @@
-- plugin: buf.build/community/stephenh-ts-proto
-  out: services/commerce-service/src/model/rpc/gen
-  opt:
-    - esModuleInterop=true
-    - outputServices=grpc-js
-    - useExactTypes=false
-    - import_style=relative
-    - env=node

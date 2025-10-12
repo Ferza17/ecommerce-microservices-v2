@@ -10,7 +10,6 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	_ "google.golang.org/protobuf/types/known/wrapperspb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -143,7 +142,7 @@ var File_v1_product_model_proto protoreflect.FileDescriptor
 
 const file_v1_product_model_proto_rawDesc = "" +
 	"\n" +
-	"\x16v1/product/model.proto\x12\aproduct\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xee\x02\n" +
+	"\x16v1/product/model.proto\x12\aproduct\x1a\x1fgoogle/protobuf/timestamp.proto\"\xee\x02\n" +
 	"\aProduct\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +

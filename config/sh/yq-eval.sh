@@ -3,7 +3,6 @@
 echo ">>> Merging config/gen/*.yml into buf.gen.yaml"
 
 mkdir -p config/buf/plugins/temp_all
-yq eval-all '[.]' config/buf/plugins/commerce-service/*.yml | yq eval 'flatten' > config/buf/plugins/temp_all/commerce_service_plugins.yml
 yq eval-all '[.]' config/buf/plugins/notification-service/*.yml | yq eval 'flatten' > config/buf/plugins/temp_all/notification_service_plugins.yml
 yq eval-all '[.]' config/buf/plugins/payment-service/*.yml | yq eval 'flatten' > config/buf/plugins/temp_all/payment_service_plugins.yml
 yq eval-all '[.]' config/buf/plugins/product-service/*.yml | yq eval 'flatten' > config/buf/plugins/temp_all/product_service_plugins.yml

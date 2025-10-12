@@ -1,7 +1,6 @@
 syntax = "proto3";
 package commerce;
-
-
+option java_package = "com.ferza17.ecommercemicroservicesv2.v1.commerce";
 
 // CART ITEM REQUEST DEFINITION
 message CreateCartItemRequest {

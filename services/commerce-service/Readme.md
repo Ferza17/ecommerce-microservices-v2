@@ -1,0 +1,12 @@
+### TODO : 
+- [ ] Health Check Endpoint
+- [ ] Consul Service Discovery
+- [ ] Load configuration data from consul kv
+- [ ] Create GRPC Service For Commerce (Cart, Wishlist)
+- [ ] Connect to MongoDB Database Commerce, Collection (carts, wishlists)
+- [ ] Connect to MongoDB Database Event, Collection (commerce_event_stores)
+- [ ] Connect to Kafka Broker 1
+- [ ] Implement CQRS, for Command -> Sink Mongo to db Commerce and Event, for Query Direct to MongoDB
+- [ ] Consume / Subscribe from kafka
+- [ ] Publish message to Kafka
+- [ ] Build Dockerfile

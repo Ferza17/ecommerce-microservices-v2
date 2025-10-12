@@ -27,7 +27,7 @@ var File_v1_commerce_service_proto protoreflect.FileDescriptor
 
 const file_v1_commerce_service_proto_rawDesc = "" +
 	"\n" +
-	"\x19v1/commerce/service.proto\x12\bcommerce\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x15google/api/http.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17v1/commerce/model.proto\x1a\x19v1/commerce/request.proto\x1a\x1av1/commerce/response.proto\x1a\x14v1/user/option.proto2\x84\a\n" +
+	"\x19v1/commerce/service.proto\x12\bcommerce\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17v1/commerce/model.proto\x1a\x19v1/commerce/request.proto\x1a\x1av1/commerce/response.proto\x1a\x14v1/user/option.proto2\x84\a\n" +
 	"\vCartService\x12\xa3\x01\n" +
 	"\x0eCreateCartItem\x12\x1f.commerce.CreateCartItemRequest\x1a .commerce.CreateCartItemResponse\"N\x92A'\n" +
 	"\x04CART\x12\x11Create a new cartb\f\n" +
