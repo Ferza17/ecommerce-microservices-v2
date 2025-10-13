@@ -1,6 +1,6 @@
 syntax = "proto3";
 package shipping;
-option java_package = "com.ferza17.ecommercemicroservicesv2.v1.shipping";
+option java_package = "com.ferza17.ecommercemicroservicesv2.proto.v1.shipping";
 
 import "external/validate/validate.proto";
 

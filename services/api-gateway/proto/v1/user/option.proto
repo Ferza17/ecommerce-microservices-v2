@@ -1,6 +1,6 @@
 syntax = "proto3";
 package user;
-option java_package = "com.ferza17.ecommercemicroservicesv2.v1.user";
+option java_package = "com.ferza17.ecommercemicroservicesv2.proto.v1.user";
 
 import "google/protobuf/descriptor.proto";
 import "v1/user/enum.proto";

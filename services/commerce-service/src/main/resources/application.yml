@@ -5,6 +5,10 @@ spring:
   config:
     import: "consul:"
 
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/commerce
+
   cloud:
     consul:
 
@@ -28,9 +32,9 @@ spring:
         healthCheckInterval: 15s
 
 server:
-  http:
-    port: 40051
-    metric:
-      port: 30051
+  port: 40051
+  metric:
+    port: 30051
   grpc:
     port: 50051
+    enable-reflection: true

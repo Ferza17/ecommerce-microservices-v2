@@ -1,6 +1,6 @@
 syntax = "proto3";
 package notification;
-option java_package = "com.ferza17.ecommercemicroservicesv2.v1.notification";
+option java_package = "com.ferza17.ecommercemicroservicesv2.proto.v1.notification";
 
 
 // LOCAL IMPORT

@@ -1,6 +1,6 @@
 syntax = "proto3";
 package payment;
-option java_package = "com.ferza17.ecommercemicroservicesv2.v1.payment";
+option java_package = "com.ferza17.ecommercemicroservicesv2.proto.v1.payment";
 
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "google/api/annotations.proto";
