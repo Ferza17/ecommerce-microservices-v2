@@ -2,9 +2,10 @@ package config
 
 import (
 	"fmt"
-	"github.com/hashicorp/consul/api"
 	"log"
 	"strconv"
+
+	"github.com/hashicorp/consul/api"
 )
 
 func (c *Config) RegisterConsulService() error {
@@ -24,7 +25,7 @@ func (c *Config) RegisterConsulService() error {
 		Name:    c.ConfigServiceUser.ServiceName,
 		Address: c.ConfigServiceUser.RpcHost,
 		Port:    int(port),
-		Tags:    []string{"service", "rabbitmq-client"},
+		Tags:    []string{"service", "kafka-subscriber"},
 		Check: &api.AgentServiceCheck{
 			GRPC:                           fmt.Sprintf("%s:%s", c.ConfigServiceUser.RpcHost, c.ConfigServiceUser.RpcPort),
 			GRPCUseTLS:                     false,

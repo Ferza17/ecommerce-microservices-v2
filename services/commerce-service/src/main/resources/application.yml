@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: commerce-service
+
+  config:
+    import: "consul:"
+
+  cloud:
+    consul:
+
+      host: localhost
+      port: 8500
+
+      config:
+        prefix: config
+        default-context: application
+        profile-separator: ","
+
+      discovery:
+        enabled: true
+        instance-id: commerce-service
+        serviceName: ${spring.application.name}
+        management-port: ${server.grpc.port}
+        management-tags:
+          - service
+          - kafka-subscriber
+        healthCheckPath: ${management.server.servlet.context-path}/check
+        healthCheckInterval: 15s
+
+server:
+  http:
+    port: 40051
+    metric:
+      port: 30051
+  grpc:
+    port: 50051
