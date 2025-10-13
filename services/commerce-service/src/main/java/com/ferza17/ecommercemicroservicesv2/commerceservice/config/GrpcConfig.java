@@ -1,5 +1,6 @@
 package com.ferza17.ecommercemicroservicesv2.commerceservice.config;
 
+import com.ferza17.ecommercemicroservicesv2.commerceservice.module.cart.GrpcService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.protobuf.services.ProtoReflectionServiceV1;
@@ -15,8 +16,8 @@ public class GrpcConfig {
 
     @Bean
     public Server grpcServer(
-            com.ferza17.ecommercemicroservicesv2.commerceservice.module.cart.PresenterGrpc cartPresenterGrpc,
-            com.ferza17.ecommercemicroservicesv2.commerceservice.module.wishlist.PresenterGrpc wishlistPresenterGrpc
+            GrpcService cartPresenterGrpc,
+            com.ferza17.ecommercemicroservicesv2.commerceservice.module.wishlist.GrpcService wishlistPresenterGrpc
     ) throws IOException {
         Server server = ServerBuilder.
                 forPort(grpcServerPort).

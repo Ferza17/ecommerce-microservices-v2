@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
-@RestController
+@org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1/commerce/wishlists")
-public class PresenterHttp {
+public class RestController {
     private final ManagedChannel grpcChannel;
     private final WishlistServiceGrpc.WishlistServiceBlockingStub blockingStub;
 
-    public PresenterHttp(ManagedChannel grpcChannel, WishlistServiceGrpc.WishlistServiceBlockingStub blockingStub) {
+    public RestController(ManagedChannel grpcChannel, WishlistServiceGrpc.WishlistServiceBlockingStub blockingStub) {
         this.grpcChannel = grpcChannel;
         this.blockingStub = blockingStub;
     }
