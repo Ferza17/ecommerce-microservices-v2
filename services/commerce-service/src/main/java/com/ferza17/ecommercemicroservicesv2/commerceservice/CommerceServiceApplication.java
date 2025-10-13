@@ -1,29 +1,24 @@
 package com.ferza17.ecommercemicroservicesv2.commerceservice;
 
-import com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.WorkerPool;
-import com.ferza17.ecommercemicroservicesv2.commerceservice.transport.Grpc;
-import com.ferza17.ecommercemicroservicesv2.commerceservice.transport.Http;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 @SpringBootApplication
+@EnableAsync
 public class CommerceServiceApplication {
 
     public static void main(String[] args) {
-        try {
-            System.out.println("🚀 Starting Commerce Service...");
+        SpringApplication.run(CommerceServiceApplication.class, args);
+    }
 
-            WorkerPool.submit(new Grpc());
-            WorkerPool.submit(new Http());
-
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                System.out.println("🛑 Shutting down worker pool...");
-                WorkerPool.shutdown();
-            }));
-
-        } catch (Exception e) {
-            System.err.println("❌ Failed to start gRPC server: " + e.getMessage());
-        }
-
+    @Bean(name = "grpcExecutor")
+    public Executor grpcExecutor() {
+        return Executors.newVirtualThreadPerTaskExecutor();
     }
 
 }

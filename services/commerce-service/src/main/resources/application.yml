@@ -7,7 +7,20 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://localhost:27017/commerce
+      uri: mongodb://localhost:27017/
+      database: commerce
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: commerce-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
 
   cloud:
     consul:
@@ -33,8 +46,18 @@ spring:
 
 server:
   port: 40051
-  metric:
-    port: 30051
-  grpc:
+
+grpc:
+  server:
+    host: localhost
     port: 50051
-    enable-reflection: true
+
+metric:
+  server:
+    port: 30051
+
+logging:
+  level:
+    root: INFO
+    com.ferza17.ecommercemicroservicesv2: DEBUG
+    io.grpc: DEBUG
