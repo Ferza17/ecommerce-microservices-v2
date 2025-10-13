@@ -6,11 +6,11 @@ import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Response;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Model;
 
 @org.springframework.grpc.server.service.GrpcService
-public class GrpcService extends CartServiceGrpc.CartServiceImplBase {
+public class CartGrpcService extends CartServiceGrpc.CartServiceImplBase {
 
-    private final com.ferza17.ecommercemicroservicesv2.commerceservice.module.cart.UseCase useCase;
+    private final CartUseCase useCase;
 
-    public GrpcService(UseCase useCase) {
+    public CartGrpcService(CartUseCase useCase) {
         this.useCase = useCase;
     }
 
@@ -20,7 +20,7 @@ public class GrpcService extends CartServiceGrpc.CartServiceImplBase {
         try {
             // TODO:
             // 1. Trace Span
-            // 2. Get RequestID
+            // 2. Get RequestIDFilter
             // 3. Validate
             Response.CreateCartItemResponse createCartItemResponse = this.useCase.createCartItem(request);
             responseObserver.onNext(createCartItemResponse);
@@ -35,7 +35,7 @@ public class GrpcService extends CartServiceGrpc.CartServiceImplBase {
         try {
             // TODO:
             // 1. Trace Span
-            // 2. Get RequestID
+            // 2. Get RequestIDFilter
             // 3. Validate
             Model.CartItem cartItem = this.useCase.findCartItemById(request);
             responseObserver.onNext(cartItem);
@@ -51,7 +51,7 @@ public class GrpcService extends CartServiceGrpc.CartServiceImplBase {
         try {
             // TODO:
             // 1. Trace Span
-            // 2. Get RequestID
+            // 2. Get RequestIDFilter
             // 3. Validate
             Response.FindCartItemsWithPaginationResponse response = this.useCase.findCartItemsWithPagination(request);
             responseObserver.onNext(response);
@@ -66,7 +66,7 @@ public class GrpcService extends CartServiceGrpc.CartServiceImplBase {
         try {
             // TODO:
             // 1. Trace Span
-            // 2. Get RequestID
+            // 2. Get RequestIDFilter
             // 3. Validate
             Response.UpdateCartItemByIdResponse response = this.useCase.updateCartItemById(request);
             responseObserver.onNext(response);
@@ -81,7 +81,7 @@ public class GrpcService extends CartServiceGrpc.CartServiceImplBase {
         try {
             // TODO:
             // 1. Trace Span
-            // 2. Get RequestID
+            // 2. Get RequestIDFilter
             // 3. Validate
             Response.DeleteCartItemByIdResponse response = this.useCase.deleteCartItemById(request);
             responseObserver.onNext(response);

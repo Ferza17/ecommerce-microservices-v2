@@ -1,4 +1,4 @@
 package com.ferza17.ecommercemicroservicesv2.commerceservice.module.event;
 
-public class MongoDBRepository {
+public class EventMongoDBRepository {
 }

@@ -47,13 +47,10 @@ spring:
 server:
   port: 40051
 
-grpc:
-  server:
-    host: localhost
+  grpc:
     port: 50051
 
-metric:
-  server:
+  metric:
     port: 30051
 
 logging:

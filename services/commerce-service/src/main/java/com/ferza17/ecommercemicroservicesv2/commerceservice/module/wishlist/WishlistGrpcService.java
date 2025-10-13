@@ -5,11 +5,11 @@ import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Request;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Response;
 
 @org.springframework.grpc.server.service.GrpcService
-public class GrpcService extends WishlistServiceGrpc.WishlistServiceImplBase {
+public class WishlistGrpcService extends WishlistServiceGrpc.WishlistServiceImplBase {
 
-    private final com.ferza17.ecommercemicroservicesv2.commerceservice.module.wishlist.UseCase useCase;
+    private final WishlistUseCase useCase;
 
-    public GrpcService(UseCase useCase) {
+    public WishlistGrpcService(WishlistUseCase useCase) {
         this.useCase = useCase;
     }
 
@@ -19,7 +19,7 @@ public class GrpcService extends WishlistServiceGrpc.WishlistServiceImplBase {
         try {
             // TODO:
             // 1. Trace Span
-            // 2. Get RequestID
+            // 2. Get RequestIDFilter
             // 3. Validate
             Response.FindWishlistItemWithPaginationResponse response = this.useCase.findWishlistItemWithPagination(request);
             responseObserver.onNext(response);
@@ -34,7 +34,7 @@ public class GrpcService extends WishlistServiceGrpc.WishlistServiceImplBase {
         try {
             // TODO:
             // 1. Trace Span
-            // 2. Get RequestID
+            // 2. Get RequestIDFilter
             // 3. Validate
             Response.CreateWishlistItemResponse response = this.useCase.createWishlistItem(request);
             responseObserver.onNext(response);
@@ -49,7 +49,7 @@ public class GrpcService extends WishlistServiceGrpc.WishlistServiceImplBase {
         try {
             // TODO:
             // 1. Trace Span
-            // 2. Get RequestID
+            // 2. Get RequestIDFilter
             // 3. Validate
             Response.DeleteWishlistItemByIdResponse response = this.useCase.deleteCartItemById(request);
             responseObserver.onNext(response);

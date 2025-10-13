@@ -1,4 +1,5 @@
 package com.ferza17.ecommercemicroservicesv2.commerceservice.module.event;
 
-public class KafkaConsumer {
+@org.springframework.stereotype.Service
+public class EventUseCase {
 }

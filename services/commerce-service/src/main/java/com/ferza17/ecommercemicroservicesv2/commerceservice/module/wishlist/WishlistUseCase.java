@@ -4,7 +4,7 @@ import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Request;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Response;
 
 @org.springframework.stereotype.Service
-public class UseCase {
+public class WishlistUseCase {
 
     public Response.FindWishlistItemWithPaginationResponse findWishlistItemWithPagination(Request.FindWishlistItemWithPaginationRequest request) {
         try {

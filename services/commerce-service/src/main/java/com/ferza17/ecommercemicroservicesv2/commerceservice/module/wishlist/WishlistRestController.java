@@ -2,9 +2,7 @@ package com.ferza17.ecommercemicroservicesv2.commerceservice.module.wishlist;
 
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Request;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Response;
-import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.WishlistServiceGrpc;
 
-import io.grpc.ManagedChannel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,13 +10,11 @@ import java.util.ArrayList;
 
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1/commerce/wishlists")
-public class RestController {
-    private final ManagedChannel grpcChannel;
-    private final WishlistServiceGrpc.WishlistServiceBlockingStub blockingStub;
+public class WishlistRestController {
+    private final WishlistUseCase WishlistUseCase;
 
-    public RestController(ManagedChannel grpcChannel, WishlistServiceGrpc.WishlistServiceBlockingStub blockingStub) {
-        this.grpcChannel = grpcChannel;
-        this.blockingStub = blockingStub;
+    public WishlistRestController(WishlistUseCase wishlistUseCase) {
+        WishlistUseCase = wishlistUseCase;
     }
 
 

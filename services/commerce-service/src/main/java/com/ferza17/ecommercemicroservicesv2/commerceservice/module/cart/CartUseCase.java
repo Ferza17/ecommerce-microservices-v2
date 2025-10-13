@@ -6,7 +6,7 @@ import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Response;
 
 
 @org.springframework.stereotype.Service
-public class UseCase {
+public class CartUseCase {
 
     public Response.CreateCartItemResponse createCartItem(Request.CreateCartItemRequest request) {
         try {
