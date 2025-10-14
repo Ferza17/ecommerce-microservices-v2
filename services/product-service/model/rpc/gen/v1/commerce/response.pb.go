@@ -588,6 +588,7 @@ type FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationRespon
 	Items         []*WishlistItem        `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
 	Page          int32                  `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
 	Limit         int32                  `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
+	Total         int32                  `protobuf:"varint,4,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -640,6 +641,13 @@ func (x *FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationRe
 func (x *FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData) GetLimit() int32 {
 	if x != nil {
 		return x.Limit
+	}
+	return 0
+}
+
+func (x *FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData) GetTotal() int32 {
+	if x != nil {
+		return x.Total
 	}
 	return 0
 }
@@ -719,15 +727,16 @@ const file_v1_commerce_response_proto_rawDesc = "" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12M\n" +
 	"\x04data\x18\x03 \x01(\v29.commerce.AddToWishlistResponse.AddToWishlistResponseDataR\x04data\x1a+\n" +
 	"\x19AddToWishlistResponseData\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"\xd2\x02\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\xe8\x02\n" +
 	"&FindWishlistItemWithPaginationResponse\x12\x16\n" +
 	"\x06status\x18\x01 \x01(\tR\x06status\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12o\n" +
-	"\x04data\x18\x03 \x01(\v2[.commerce.FindWishlistItemWithPaginationResponse.FindWishlistItemWithPaginationResponseDataR\x04data\x1a\x84\x01\n" +
+	"\x04data\x18\x03 \x01(\v2[.commerce.FindWishlistItemWithPaginationResponse.FindWishlistItemWithPaginationResponseDataR\x04data\x1a\x9a\x01\n" +
 	"*FindWishlistItemWithPaginationResponseData\x12,\n" +
 	"\x05items\x18\x01 \x03(\v2\x16.commerce.WishlistItemR\x05items\x12\x12\n" +
 	"\x04page\x18\x02 \x01(\x05R\x04page\x12\x14\n" +
-	"\x05limit\x18\x03 \x01(\x05R\x05limit\"\xf2\x01\n" +
+	"\x05limit\x18\x03 \x01(\x05R\x05limit\x12\x14\n" +
+	"\x05total\x18\x04 \x01(\x05R\x05total\"\xf2\x01\n" +
 	"\x1eDeleteWishlistItemByIdResponse\x12\x16\n" +
 	"\x06status\x18\x01 \x01(\tR\x06status\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12_\n" +

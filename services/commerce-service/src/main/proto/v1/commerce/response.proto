@@ -49,6 +49,7 @@ message FindWishlistItemWithPaginationResponse{
     repeated WishlistItem items = 1;
     int32 page = 2;
     int32 limit = 3;
+    int32 total = 4;
   }
   FindWishlistItemWithPaginationResponseData data = 3;
 }

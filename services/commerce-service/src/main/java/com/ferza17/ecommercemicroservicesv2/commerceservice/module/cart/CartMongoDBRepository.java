@@ -16,6 +16,5 @@ public interface CartMongoDBRepository extends MongoRepository<CartModelMongoDB,
     Optional<CartModelMongoDB> findByProductIdAndUserId(String productId, String userId);
 
     @Query("{ 'user_id': ?0 }")
-    Page<CartModelMongoDB> findAllByUser(String user_id, Pageable pageable);
-
+    Page<CartModelMongoDB> findAllWithPagination(String user_id, Pageable pageable);
 }

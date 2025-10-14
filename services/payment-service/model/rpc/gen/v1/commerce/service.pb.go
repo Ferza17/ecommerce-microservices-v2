@@ -27,7 +27,7 @@ var File_v1_commerce_service_proto protoreflect.FileDescriptor
 
 const file_v1_commerce_service_proto_rawDesc = "" +
 	"\n" +
-	"\x19v1/commerce/service.proto\x12\bcommerce\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17v1/commerce/model.proto\x1a\x19v1/commerce/request.proto\x1a\x1av1/commerce/response.proto\x1a\x14v1/user/option.proto2\x9e\x04\n" +
+	"\x19v1/commerce/service.proto\x12\bcommerce\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x19v1/commerce/request.proto\x1a\x1av1/commerce/response.proto\x1a\x14v1/user/option.proto2\x9e\x04\n" +
 	"\vCartService\x12\x8e\x01\n" +
 	"\tAddToCart\x12\x1a.commerce.AddToCartRequest\x1a\x1b.commerce.AddToCartResponse\"H\x92A!\n" +
 	"\x04CART\x12\vadd to cartb\f\n" +
@@ -92,7 +92,6 @@ func file_v1_commerce_service_proto_init() {
 	if File_v1_commerce_service_proto != nil {
 		return
 	}
-	file_v1_commerce_model_proto_init()
 	file_v1_commerce_request_proto_init()
 	file_v1_commerce_response_proto_init()
 	type x struct{}

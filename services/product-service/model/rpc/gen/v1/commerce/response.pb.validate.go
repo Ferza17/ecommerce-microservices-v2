@@ -1417,6 +1417,8 @@ func (m *FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationRe
 
 	// no validation rules for Limit
 
+	// no validation rules for Total
+
 	if len(errors) > 0 {
 		return FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataMultiError(errors)
 	}

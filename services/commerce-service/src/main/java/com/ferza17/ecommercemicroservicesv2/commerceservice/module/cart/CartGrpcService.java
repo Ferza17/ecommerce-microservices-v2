@@ -22,6 +22,7 @@ public class CartGrpcService extends CartServiceGrpc.CartServiceImplBase {
             // 1. Trace Span
             // 2. Get RequestIDFilter
             // 3. Validate
+
             Response.AddToCartResponse createCartItemResponse = this.useCase.addToCart(request);
             responseObserver.onNext(createCartItemResponse);
             responseObserver.onCompleted();

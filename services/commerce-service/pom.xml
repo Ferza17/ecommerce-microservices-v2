@@ -99,6 +99,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>build.buf.protoc-gen-validate</groupId>
+            <artifactId>pgv-java-stub</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+
 
         <!-- KAFKA -->
         <dependency>
@@ -162,6 +168,7 @@
 
     <build>
         <plugins>
+            <!-- Java compiler with Lombok -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -174,11 +181,14 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+
+            <!-- Protobuf plugin -->
             <plugin>
                 <groupId>io.github.ascopes</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
+                    <!-- Version of protoc binary -->
                     <protocVersion>${protobuf-java.version}</protocVersion>
                     <binaryMavenPlugins>
                         <binaryMavenPlugin>
@@ -196,8 +206,10 @@
                             <goal>generate</goal>
                         </goals>
                     </execution>
+
                 </executions>
             </plugin>
+            <!-- Spring Boot plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

@@ -8,7 +8,6 @@ import "google/api/annotations.proto";
 
 
 // LOCAL PROTO
-import "v1/commerce/model.proto";
 import "v1/commerce/request.proto";
 import "v1/commerce/response.proto";
 import "v1/user/option.proto";

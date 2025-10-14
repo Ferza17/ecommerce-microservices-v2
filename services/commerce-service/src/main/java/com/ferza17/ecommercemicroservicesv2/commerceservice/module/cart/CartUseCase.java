@@ -44,12 +44,16 @@ public class CartUseCase {
             return Response
                     .AddToCartResponse
                     .newBuilder()
+                    .setStatus("success")
+                    .setMessage("addToCart")
                     .setData(Response.AddToCartResponse.AddToCartResponseData.newBuilder().setId(cart.getId()).build())
                     .build();
         } catch (Exception ex) {
             return Response
                     .AddToCartResponse
                     .newBuilder()
+                    .setStatus("failure")
+                    .setMessage("addToCart")
                     .build();
         }
     }
@@ -62,7 +66,7 @@ public class CartUseCase {
 
             Page<CartModelMongoDB> cartPage = this
                     .cartMongoDBRepository
-                    .findAllByUser(request.getUserId(), pageRequest);
+                    .findAllWithPagination(request.getUserId(), pageRequest);
 
             Response.FindCartItemsWithPaginationResponse.FindCartItemsWithPaginationResponseData.Builder responseData = Response
                     .FindCartItemsWithPaginationResponse
@@ -74,11 +78,7 @@ public class CartUseCase {
 
             cartPage
                     .stream()
-                    .forEach(cart -> {
-                        responseData.addItems(
-                                CartMapper.toProto(cart)
-                        );
-                    });
+                    .forEach(c -> responseData.addItems(CartMapper.toProto(c)));
 
             return Response
                     .FindCartItemsWithPaginationResponse
@@ -93,6 +93,8 @@ public class CartUseCase {
             return Response
                     .FindCartItemsWithPaginationResponse
                     .newBuilder()
+                    .setStatus("failure")
+                    .setMessage("FindCartItemsWithPagination")
                     .build();
         }
     }
@@ -108,12 +110,16 @@ public class CartUseCase {
             return Response
                     .DeleteCartItemByIdResponse
                     .newBuilder()
+                    .setStatus("success")
+                    .setMessage("deleteCartItemById")
                     .build();
         } catch (Exception ex) {
 
             return Response
                     .DeleteCartItemByIdResponse
                     .newBuilder()
+                    .setStatus("failure")
+                    .setMessage("deleteCartItemById")
                     .build();
         }
     }
