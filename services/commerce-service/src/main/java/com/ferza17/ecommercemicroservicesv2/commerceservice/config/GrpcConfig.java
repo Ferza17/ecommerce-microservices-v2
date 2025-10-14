@@ -16,16 +16,16 @@ import java.io.IOException;
 
 @Configuration
 public class GrpcConfig {
-    @Value("${grpc.server.port:50051}")
+    @Value("${server.grpc.port:50051}")
     private int grpcServerPort;
 
     @Bean
-    public Server grpcServer(
+    public Server setupGrpcConfig(
             CartGrpcService cartPresenterGrpc,
             WishlistGrpcService wishlistPresenterGrpc
     ) throws IOException {
         Server server = ServerBuilder.
-                forPort(grpcServerPort).
+                forPort(this.grpcServerPort).
                 addService(cartPresenterGrpc).
                 addService(wishlistPresenterGrpc).
                 addService(new HealthStatusManager().getHealthService()).

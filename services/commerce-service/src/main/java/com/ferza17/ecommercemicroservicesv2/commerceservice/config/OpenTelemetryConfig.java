@@ -1,7 +1,6 @@
 package com.ferza17.ecommercemicroservicesv2.commerceservice.config;
 
-import io.opentelemetry.api.GlobalOpenTelemetry;
-import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
+import io.opentelemetry.exporter.jaeger.JaegerGrpcSpanExporter;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
@@ -19,24 +18,10 @@ public class OpenTelemetryConfig {
     private String serviceName;
 
     @Bean
-    public io.opentelemetry.api.OpenTelemetry openTelemetry() {
-        Resource serviceNameResource = Resource.getDefault()
-                .merge(Resource.create(io.opentelemetry.api.common.Attributes.of(SERVICE_NAME, this.serviceName)));
-
-        OtlpGrpcSpanExporter exporter = OtlpGrpcSpanExporter.builder()
-                .setEndpoint("http://localhost:4317") // adjust for your OTLP collector
-                .build();
-
-        SdkTracerProvider tracerProvider = SdkTracerProvider.builder()
-                .addSpanProcessor(BatchSpanProcessor.builder(exporter).build())
-                .setResource(serviceNameResource)
-                .build();
-
-        OpenTelemetrySdk openTelemetry = OpenTelemetrySdk.builder()
-                .setTracerProvider(tracerProvider)
-                .buildAndRegisterGlobal();
-
-        GlobalOpenTelemetry.set(openTelemetry);
-        return openTelemetry;
+    public io.opentelemetry.api.OpenTelemetry setupOpenTelemetry() {
+        JaegerGrpcSpanExporter jaegerExporter = JaegerGrpcSpanExporter.builder().setEndpoint("http://localhost:4317").build();
+        Resource serviceNameResource = Resource.getDefault().merge(Resource.create(io.opentelemetry.api.common.Attributes.of(SERVICE_NAME, this.serviceName)));
+        SdkTracerProvider tracerProvider = SdkTracerProvider.builder().addSpanProcessor(BatchSpanProcessor.builder(jaegerExporter).build()).setResource(serviceNameResource).build();
+        return OpenTelemetrySdk.builder().setTracerProvider(tracerProvider).build();
     }
 }

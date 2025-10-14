@@ -5,9 +5,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class EventKafkaConsumer {
-    @KafkaListener(topics = "dlq-sink-mongo-event-commerce_event_stores", groupId = "commerce-service")
-    public void handleDqlSinkMongoEventCommerceEventStores(String message) {
+    @KafkaListener(topics = "dlq-sink-mongo-events-commerce_event_stores", groupId = "commerce-service")
+    public void handleDlqSinkMongoEventsCommerceEventStores(String message) {
 
     }
-
 }

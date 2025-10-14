@@ -8,8 +8,12 @@ echo "kafka-connect server is up! Running initialization scripts..."
 # Get the script directory
 CONNECTOR_DIR="/connectors"
 
+### NAMESPACE COMMERCE
+echo "Running commerce initialization..."
+sh ${CONNECTOR_DIR}/commerce/init.sh
+
 ### NAMESPACE EVENT
-echo "Running notification initialization..."
+echo "Running event initialization..."
 sh ${CONNECTOR_DIR}/event/init.sh
 
 ### NAMESPACE NOTIFICATION
@@ -23,7 +27,6 @@ sh ${CONNECTOR_DIR}/payment/init.sh
 ### NAMESPACE PRODUCT
 echo "Running product initialization..."
 sh ${CONNECTOR_DIR}/product/init.sh
-
 
 ### NAMESPACE SHIPPING
 echo "Running shipping initialization..."
