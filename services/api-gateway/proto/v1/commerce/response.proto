@@ -5,46 +5,58 @@ option java_package = "com.ferza17.ecommercemicroservicesv2.proto.v1.commerce";
 import "v1/commerce/model.proto";
 
 // CART ITEM RESPONSE DEFINITION
-message CreateCartItemResponse {
-  
-  string id = 1;
+message AddToCartResponse {
+  string status = 1;
+  string message = 2;
+  message AddToCartResponseData {
+    string id = 1;
+  }
+  AddToCartResponseData data = 3;
 }
-
-message UpdateCartItemByIdResponse {
-  
-  string id = 1;
-}
-
 message FindCartItemsWithPaginationResponse{
-  
-  repeated CartItem items = 1;
-  int32 page = 2;
-  int32 limit = 3;
-  int32 total = 4;
+  string status = 1;
+  string message = 2;
+  message FindCartItemsWithPaginationResponseData {
+    repeated CartItem items = 1;
+    int32 page = 2;
+    int32 limit = 3;
+    int32 total = 4;
+  }
+  FindCartItemsWithPaginationResponseData data = 3;
 }
-
 message DeleteCartItemByIdResponse {
-  
-  string message=1;
+  string status = 1;
+  string message = 2;
+  message DeleteCartItemByIdResponseData {
+    string message = 1;
+  }
+  DeleteCartItemByIdResponseData data = 3;
 }
-
-message CreateWishlistItemResponse {
-  
-  string id = 1;
-}
-
 
 // WISHLIST ITEM RESPONSE DEFINITION
-message FindWishlistItemWithPaginationResponse{
-  
-  repeated WishlistItem items = 1;
-  int32 page = 2;
-  int32 limit = 3;
+message AddToWishlistResponse {
+  string status = 1;
+  string message = 2;
+  message AddToWishlistResponseData {
+    string id = 1;
+  }
+  AddToWishlistResponseData data = 3;
 }
-
-
-
+message FindWishlistItemWithPaginationResponse{
+  string status = 1;
+  string message = 2;
+  message FindWishlistItemWithPaginationResponseData {
+    repeated WishlistItem items = 1;
+    int32 page = 2;
+    int32 limit = 3;
+  }
+  FindWishlistItemWithPaginationResponseData data = 3;
+}
 message DeleteWishlistItemByIdResponse {
-  
-  string userId = 1;
+  string status = 1;
+  string message = 2;
+  message DeleteWishlistItemByIdResponseData {
+    string user_id = 1;
+  }
+  DeleteWishlistItemByIdResponseData data = 3;
 }

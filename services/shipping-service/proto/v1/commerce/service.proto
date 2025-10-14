@@ -43,7 +43,7 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 
 
 service CartService {
-  rpc CreateCartItem(commerce.CreateCartItemRequest) returns (commerce.CreateCartItemResponse) {
+  rpc AddToCart(commerce.AddToCartRequest) returns (commerce.AddToCartResponse) {
     option (user.acl) = {
       roles: [CUSTOMER_MEMBERSHIP],
       is_public: false,
@@ -53,26 +53,13 @@ service CartService {
       body: "*",
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      summary: "Create a new cart";
+      summary: "add to cart";
       tags: ["CART"];
       security: {
         security_requirement: {
           key: "bearer";
         }
       };
-    };
-  };
-  rpc FindCartItemById(commerce.FindCartItemByIdRequest) returns (commerce.CartItem) {
-    option (user.acl) = {
-      roles: [CUSTOMER_MEMBERSHIP],
-      is_public: false,
-    };
-    option (google.api.http) = {
-      get: "/v1/commerce/carts/{id}"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      summary: "get cart item details by ID";
-      tags: ["CART"];
     };
   };
   rpc FindCartItemsWithPagination(commerce.FindCartItemsWithPaginationRequest) returns (commerce.FindCartItemsWithPaginationResponse){
@@ -85,20 +72,6 @@ service CartService {
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       summary: "get all cart item with pagination";
-      tags: ["CART"];
-    };
-  };
-  rpc UpdateCartItemById(commerce.UpdateCartItemByIdRequest) returns (commerce.UpdateCartItemByIdResponse){
-    option (user.acl) = {
-      roles: [CUSTOMER_MEMBERSHIP],
-      is_public: false,
-    };
-    option (google.api.http) = {
-      put: "/v1/commerce/carts/{id}"
-      body: "*"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      summary: "update cart item by provided id";
       tags: ["CART"];
     };
   };
@@ -132,9 +105,8 @@ service WishlistService {
       tags: ["WISHLIST"];
     };
   };
-
   // COMMAND
-  rpc CreateWishlistItem(commerce.CreateWishlistItemRequest) returns (commerce.CreateWishlistItemResponse){
+  rpc AddToWishlist(commerce.AddToWishlistRequest) returns (commerce.AddToWishlistResponse){
     option (user.acl) = {
       roles: [CUSTOMER_MEMBERSHIP],
       is_public: false,

@@ -25,8 +25,8 @@ const (
 type CartItem struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	ProductId     string                 `protobuf:"bytes,2,opt,name=productId,proto3" json:"productId,omitempty"`
-	UserId        string                 `protobuf:"bytes,3,opt,name=userId,proto3" json:"userId,omitempty"`
+	ProductId     string                 `protobuf:"bytes,2,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
+	UserId        string                 `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Qty           int32                  `protobuf:"varint,4,opt,name=qty,proto3" json:"qty,omitempty"`
 	Price         float64                `protobuf:"fixed64,5,opt,name=price,proto3" json:"price,omitempty"`
 	CratedAt      *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=crated_at,json=cratedAt,proto3" json:"crated_at,omitempty"`
@@ -117,8 +117,10 @@ func (x *CartItem) GetUpdatedAt() *timestamppb.Timestamp {
 type WishlistItem struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	ProductId     string                 `protobuf:"bytes,2,opt,name=productId,proto3" json:"productId,omitempty"`
-	UserId        string                 `protobuf:"bytes,3,opt,name=userId,proto3" json:"userId,omitempty"`
+	ProductId     string                 `protobuf:"bytes,2,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
+	UserId        string                 `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	CratedAt      *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=crated_at,json=cratedAt,proto3" json:"crated_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -174,24 +176,43 @@ func (x *WishlistItem) GetUserId() string {
 	return ""
 }
 
+func (x *WishlistItem) GetCratedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CratedAt
+	}
+	return nil
+}
+
+func (x *WishlistItem) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
 var File_v1_commerce_model_proto protoreflect.FileDescriptor
 
 const file_v1_commerce_model_proto_rawDesc = "" +
 	"\n" +
-	"\x17v1/commerce/model.proto\x12\bcommerce\x1a\x1fgoogle/protobuf/timestamp.proto\"\xec\x01\n" +
+	"\x17v1/commerce/model.proto\x12\bcommerce\x1a\x1fgoogle/protobuf/timestamp.proto\"\xee\x01\n" +
 	"\bCartItem\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1c\n" +
-	"\tproductId\x18\x02 \x01(\tR\tproductId\x12\x16\n" +
-	"\x06userId\x18\x03 \x01(\tR\x06userId\x12\x10\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
+	"\n" +
+	"product_id\x18\x02 \x01(\tR\tproductId\x12\x17\n" +
+	"\auser_id\x18\x03 \x01(\tR\x06userId\x12\x10\n" +
 	"\x03qty\x18\x04 \x01(\x05R\x03qty\x12\x14\n" +
 	"\x05price\x18\x05 \x01(\x01R\x05price\x127\n" +
 	"\tcrated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\bcratedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"T\n" +
+	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xca\x01\n" +
 	"\fWishlistItem\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1c\n" +
-	"\tproductId\x18\x02 \x01(\tR\tproductId\x12\x16\n" +
-	"\x06userId\x18\x03 \x01(\tR\x06userIdB\\\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
+	"\n" +
+	"product_id\x18\x02 \x01(\tR\tproductId\x12\x17\n" +
+	"\auser_id\x18\x03 \x01(\tR\x06userId\x127\n" +
+	"\tcrated_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\bcratedAt\x129\n" +
+	"\n" +
+	"updated_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\\\n" +
 	"\fcom.commerceB\n" +
 	"ModelProtoH\x02P\x01\xa2\x02\x03CXX\xaa\x02\bCommerce\xca\x02\bCommerce\xe2\x02\x14Commerce\\GPBMetadata\xea\x02\bCommerceb\x06proto3"
 
@@ -216,11 +237,13 @@ var file_v1_commerce_model_proto_goTypes = []any{
 var file_v1_commerce_model_proto_depIdxs = []int32{
 	2, // 0: commerce.CartItem.crated_at:type_name -> google.protobuf.Timestamp
 	2, // 1: commerce.CartItem.updated_at:type_name -> google.protobuf.Timestamp
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	2, // 2: commerce.WishlistItem.crated_at:type_name -> google.protobuf.Timestamp
+	2, // 3: commerce.WishlistItem.updated_at:type_name -> google.protobuf.Timestamp
+	4, // [4:4] is the sub-list for method output_type
+	4, // [4:4] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_v1_commerce_model_proto_init() }

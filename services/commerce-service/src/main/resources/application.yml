@@ -7,13 +7,13 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://localhost:27017/
+      uri: mongodb://mongo:1234@localhost:27017/commerce?directConnection=true&replicaSet=rs0
       database: commerce
 
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
-      group-id: commerce-service-group
+      group-id: commerce-service
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer

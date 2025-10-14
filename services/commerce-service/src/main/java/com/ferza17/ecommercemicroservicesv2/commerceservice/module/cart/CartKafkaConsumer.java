@@ -5,18 +5,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CartKafkaConsumer {
+    private final CartUseCase cartUseCase;
+    public CartKafkaConsumer(CartUseCase cartUseCase) {
+        this.cartUseCase = cartUseCase;
+    }
+
     @KafkaListener(topics = "snapshot-commerce-cart_created", groupId = "commerce-service")
     public void handleSnapshotCommerceCartCreated(String message) {
-        System.out.println("📥 Received Kafka message: " + message);
-    }
-
-    @KafkaListener(topics = "confirm-snapshot-commerce-cart_created", groupId = "commerce-service")
-    public void handleConfirmSnapshotCommerceCartCreated(String message) {
-        System.out.println("📥 Received Kafka message: " + message);
-    }
-
-    @KafkaListener(topics = "compensate-snapshot-commerce-cart_created", groupId = "commerce-service")
-    public void handleCompensateSnapshotCommerceCartCreated(String message) {
         System.out.println("📥 Received Kafka message: " + message);
     }
 
@@ -25,28 +20,8 @@ public class CartKafkaConsumer {
         System.out.println("📥 Received Kafka message: " + message);
     }
 
-    @KafkaListener(topics = "confirm-snapshot-commerce-cart_updated", groupId = "commerce-service")
-    public void handleConfirmSnapshotCommerceCartUpdated(String message) {
-        System.out.println("📥 Received Kafka message: " + message);
-    }
-
-    @KafkaListener(topics = "compensate-snapshot-commerce-cart_updated", groupId = "commerce-service")
-    public void handleCompensateSnapshotCommerceCartUpdated(String message) {
-        System.out.println("📥 Received Kafka message: " + message);
-    }
-
     @KafkaListener(topics = "snapshot-commerce-cart_deleted", groupId = "commerce-service")
     public void handleSnapshotCommerceCartDeleted(String message) {
-        System.out.println("📥 Received Kafka message: " + message);
-    }
-
-    @KafkaListener(topics = "confirm-snapshot-commerce-cart_deleted", groupId = "commerce-service")
-    public void handleConfirmSnapshotCommerceCartDeleted(String message) {
-        System.out.println("📥 Received Kafka message: " + message);
-    }
-
-    @KafkaListener(topics = "compensate-snapshot-commerce-cart_deleted", groupId = "commerce-service")
-    public void handleCompensateSnapshotCommerceCartDeleted(String message) {
         System.out.println("📥 Received Kafka message: " + message);
     }
 

@@ -1,55 +1,120 @@
 package com.ferza17.ecommercemicroservicesv2.commerceservice.module.cart;
 
-import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Model;
+import com.ferza17.ecommercemicroservicesv2.commerceservice.model.mapper.CartMapper;
+import com.ferza17.ecommercemicroservicesv2.commerceservice.model.mongodb.CartModelMongoDB;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Request;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Response;
+import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
+import java.time.Instant;
 
 
 @org.springframework.stereotype.Service
 public class CartUseCase {
+    private final CartMongoDBRepository cartMongoDBRepository;
 
-    public Response.CreateCartItemResponse createCartItem(Request.CreateCartItemRequest request) {
-        try {
-            // TODO: Fetch Repo Here
-            return Response.CreateCartItemResponse.newBuilder().build();
-        } catch (Exception ex) {
-            return Response.CreateCartItemResponse.newBuilder().build();
-        }
+    public CartUseCase(CartMongoDBRepository cartMongoDBRepository) {
+        this.cartMongoDBRepository = cartMongoDBRepository;
     }
 
-    public Model.CartItem findCartItemById(Request.FindCartItemByIdRequest request) {
+    public Response.AddToCartResponse addToCart(Request.AddToCartRequest request) {
         try {
-            // TODO: Fetch Repo Here
-            return Model.CartItem.newBuilder().build();
+            // TODO:
+            // 1. Validate in DB
+            // 2. Insert Via Sink Connector Event
+            // 3. Insert Via Sink Connector Commerce
+
+            Instant now = Instant
+                    .now();
+            CartModelMongoDB cart = CartModelMongoDB
+                    .builder()
+                    .id(ObjectId.get().toHexString())
+                    .userId(request.getUserId())
+                    .productId(request.getProductId())
+                    .userId(request.getUserId())
+                    .qty(request.getQty())
+                    .price(request.getPrice())
+                    .createdAt(now)
+                    .updatedAt(now)
+                    .build();
+
+            this.cartMongoDBRepository.save(cart);
+            return Response
+                    .AddToCartResponse
+                    .newBuilder()
+                    .setData(Response.AddToCartResponse.AddToCartResponseData.newBuilder().setId(cart.getId()).build())
+                    .build();
         } catch (Exception ex) {
-            return Model.CartItem.newBuilder().build();
+            return Response
+                    .AddToCartResponse
+                    .newBuilder()
+                    .build();
         }
     }
 
     public Response.FindCartItemsWithPaginationResponse findCartItemsWithPagination(Request.FindCartItemsWithPaginationRequest request) {
         try {
-            // TODO: Fetch Repo Here
-            return Response.FindCartItemsWithPaginationResponse.newBuilder().build();
-        } catch (Exception ex) {
-            return Response.FindCartItemsWithPaginationResponse.newBuilder().build();
-        }
-    }
+            int page = Math.max(request.getPage() - 1, 0);
+            PageRequest pageRequest = PageRequest
+                    .of(page, request.getLimit());
 
-    public Response.UpdateCartItemByIdResponse updateCartItemById(Request.UpdateCartItemByIdRequest request) {
-        try {
-            // TODO: Fetch Repo Here
-            return Response.UpdateCartItemByIdResponse.newBuilder().build();
+            Page<CartModelMongoDB> cartPage = this
+                    .cartMongoDBRepository
+                    .findAllByUser(request.getUserId(), pageRequest);
+
+            Response.FindCartItemsWithPaginationResponse.FindCartItemsWithPaginationResponseData.Builder responseData = Response
+                    .FindCartItemsWithPaginationResponse
+                    .FindCartItemsWithPaginationResponseData
+                    .newBuilder()
+                    .setLimit(cartPage.getSize())
+                    .setPage(cartPage.getNumber() + 1)
+                    .setTotal(Math.toIntExact(cartPage.getTotalElements()));
+
+            cartPage
+                    .stream()
+                    .forEach(cart -> {
+                        responseData.addItems(
+                                CartMapper.toProto(cart)
+                        );
+                    });
+
+            return Response
+                    .FindCartItemsWithPaginationResponse
+                    .newBuilder()
+                    .setStatus("success")
+                    .setMessage("FindCartItemsWithPagination")
+                    .setData(responseData.build())
+                    .build();
+
         } catch (Exception ex) {
-            return Response.UpdateCartItemByIdResponse.newBuilder().build();
+
+            return Response
+                    .FindCartItemsWithPaginationResponse
+                    .newBuilder()
+                    .build();
         }
     }
 
     public Response.DeleteCartItemByIdResponse deleteCartItemById(Request.DeleteCartItemByIdRequest request) {
         try {
-            // TODO: Fetch Repo Here
-            return Response.DeleteCartItemByIdResponse.newBuilder().build();
+            // TODO:
+            // 1. Validate in DB
+            // 2. Delete in DB Event
+            // 3. Delete in DB Commerce
+
+            this.cartMongoDBRepository.deleteById(request.getId());
+            return Response
+                    .DeleteCartItemByIdResponse
+                    .newBuilder()
+                    .build();
         } catch (Exception ex) {
-            return Response.DeleteCartItemByIdResponse.newBuilder().build();
+
+            return Response
+                    .DeleteCartItemByIdResponse
+                    .newBuilder()
+                    .build();
         }
     }
 

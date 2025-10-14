@@ -27,25 +27,21 @@ var File_v1_commerce_service_proto protoreflect.FileDescriptor
 
 const file_v1_commerce_service_proto_rawDesc = "" +
 	"\n" +
-	"\x19v1/commerce/service.proto\x12\bcommerce\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17v1/commerce/model.proto\x1a\x19v1/commerce/request.proto\x1a\x1av1/commerce/response.proto\x1a\x14v1/user/option.proto2\x84\a\n" +
-	"\vCartService\x12\xa3\x01\n" +
-	"\x0eCreateCartItem\x12\x1f.commerce.CreateCartItemRequest\x1a .commerce.CreateCartItemResponse\"N\x92A'\n" +
-	"\x04CART\x12\x11Create a new cartb\f\n" +
+	"\x19v1/commerce/service.proto\x12\bcommerce\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17v1/commerce/model.proto\x1a\x19v1/commerce/request.proto\x1a\x1av1/commerce/response.proto\x1a\x14v1/user/option.proto2\x9e\x04\n" +
+	"\vCartService\x12\x8e\x01\n" +
+	"\tAddToCart\x12\x1a.commerce.AddToCartRequest\x1a\x1b.commerce.AddToCartResponse\"H\x92A!\n" +
+	"\x04CART\x12\vadd to cartb\f\n" +
 	"\n" +
 	"\n" +
-	"\x06bearer\x12\x00\x92\xb5\x18\x03\x12\x01\x01\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/v1/commerce/carts\x12\x97\x01\n" +
-	"\x10FindCartItemById\x12!.commerce.FindCartItemByIdRequest\x1a\x12.commerce.CartItem\"L\x92A#\n" +
-	"\x04CART\x12\x1bget cart item details by ID\x92\xb5\x18\x03\x12\x01\x01\x82\xd3\xe4\x93\x02\x19\x12\x17/v1/commerce/carts/{id}\x12\xc9\x01\n" +
+	"\x06bearer\x12\x00\x92\xb5\x18\x03\x12\x01\x01\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/v1/commerce/carts\x12\xc9\x01\n" +
 	"\x1bFindCartItemsWithPagination\x12,.commerce.FindCartItemsWithPaginationRequest\x1a-.commerce.FindCartItemsWithPaginationResponse\"M\x92A)\n" +
-	"\x04CART\x12!get all cart item with pagination\x92\xb5\x18\x03\x12\x01\x01\x82\xd3\xe4\x93\x02\x14\x12\x12/v1/commerce/carts\x12\xb4\x01\n" +
-	"\x12UpdateCartItemById\x12#.commerce.UpdateCartItemByIdRequest\x1a$.commerce.UpdateCartItemByIdResponse\"S\x92A'\n" +
-	"\x04CART\x12\x1fupdate cart item by provided id\x92\xb5\x18\x03\x12\x01\x01\x82\xd3\xe4\x93\x02\x1c:\x01*\x1a\x17/v1/commerce/carts/{id}\x12\xb1\x01\n" +
+	"\x04CART\x12!get all cart item with pagination\x92\xb5\x18\x03\x12\x01\x01\x82\xd3\xe4\x93\x02\x14\x12\x12/v1/commerce/carts\x12\xb1\x01\n" +
 	"\x12DeleteCartItemById\x12#.commerce.DeleteCartItemByIdRequest\x1a$.commerce.DeleteCartItemByIdResponse\"P\x92A'\n" +
-	"\x04CART\x12\x1fdelete cart item by provided id\x92\xb5\x18\x03\x12\x01\x01\x82\xd3\xe4\x93\x02\x19*\x17/v1/commerce/carts/{id}2\xf0\x04\n" +
+	"\x04CART\x12\x1fdelete cart item by provided id\x92\xb5\x18\x03\x12\x01\x01\x82\xd3\xe4\x93\x02\x19*\x17/v1/commerce/carts/{id}2\xe1\x04\n" +
 	"\x0fWishlistService\x12\xde\x01\n" +
 	"\x1eFindWishlistItemWithPagination\x12/.commerce.FindWishlistItemWithPaginationRequest\x1a0.commerce.FindWishlistItemWithPaginationResponse\"Y\x92A1\n" +
-	"\bWISHLIST\x12%get all wishlist item with pagination\x92\xb5\x18\x03\x12\x01\x01\x82\xd3\xe4\x93\x02\x18\x12\x16/v1/commerce/wishlists\x12\xad\x01\n" +
-	"\x12CreateWishlistItem\x12#.commerce.CreateWishlistItemRequest\x1a$.commerce.CreateWishlistItemResponse\"L\x92A!\n" +
+	"\bWISHLIST\x12%get all wishlist item with pagination\x92\xb5\x18\x03\x12\x01\x01\x82\xd3\xe4\x93\x02\x18\x12\x16/v1/commerce/wishlists\x12\x9e\x01\n" +
+	"\rAddToWishlist\x12\x1e.commerce.AddToWishlistRequest\x1a\x1f.commerce.AddToWishlistResponse\"L\x92A!\n" +
 	"\bWISHLIST\x12\x15create a new wishlist\x92\xb5\x18\x03\x12\x01\x01\x82\xd3\xe4\x93\x02\x1b:\x01*\"\x16/v1/commerce/wishlists\x12\xcb\x01\n" +
 	"\x16DeleteWishlistItemById\x12'.commerce.DeleteWishlistItemByIdRequest\x1a(.commerce.DeleteWishlistItemByIdResponse\"^\x92A1\n" +
 	"\bWISHLIST\x12%delete wishlist item with provided id\x92\xb5\x18\x03\x12\x01\x01\x82\xd3\xe4\x93\x02\x1d*\x1b/v1/commerce/wishlists/{id}B\xd1\x02\x92A\xef\x01\x12R\n" +
@@ -58,42 +54,34 @@ const file_v1_commerce_service_proto_rawDesc = "" +
 	"\fcom.commerceB\fServiceProtoH\x02P\x01\xa2\x02\x03CXX\xaa\x02\bCommerce\xca\x02\bCommerce\xe2\x02\x14Commerce\\GPBMetadata\xea\x02\bCommerceb\x06proto3"
 
 var file_v1_commerce_service_proto_goTypes = []any{
-	(*CreateCartItemRequest)(nil),                  // 0: commerce.CreateCartItemRequest
-	(*FindCartItemByIdRequest)(nil),                // 1: commerce.FindCartItemByIdRequest
-	(*FindCartItemsWithPaginationRequest)(nil),     // 2: commerce.FindCartItemsWithPaginationRequest
-	(*UpdateCartItemByIdRequest)(nil),              // 3: commerce.UpdateCartItemByIdRequest
-	(*DeleteCartItemByIdRequest)(nil),              // 4: commerce.DeleteCartItemByIdRequest
-	(*FindWishlistItemWithPaginationRequest)(nil),  // 5: commerce.FindWishlistItemWithPaginationRequest
-	(*CreateWishlistItemRequest)(nil),              // 6: commerce.CreateWishlistItemRequest
-	(*DeleteWishlistItemByIdRequest)(nil),          // 7: commerce.DeleteWishlistItemByIdRequest
-	(*CreateCartItemResponse)(nil),                 // 8: commerce.CreateCartItemResponse
-	(*CartItem)(nil),                               // 9: commerce.CartItem
-	(*FindCartItemsWithPaginationResponse)(nil),    // 10: commerce.FindCartItemsWithPaginationResponse
-	(*UpdateCartItemByIdResponse)(nil),             // 11: commerce.UpdateCartItemByIdResponse
-	(*DeleteCartItemByIdResponse)(nil),             // 12: commerce.DeleteCartItemByIdResponse
-	(*FindWishlistItemWithPaginationResponse)(nil), // 13: commerce.FindWishlistItemWithPaginationResponse
-	(*CreateWishlistItemResponse)(nil),             // 14: commerce.CreateWishlistItemResponse
-	(*DeleteWishlistItemByIdResponse)(nil),         // 15: commerce.DeleteWishlistItemByIdResponse
+	(*AddToCartRequest)(nil),                       // 0: commerce.AddToCartRequest
+	(*FindCartItemsWithPaginationRequest)(nil),     // 1: commerce.FindCartItemsWithPaginationRequest
+	(*DeleteCartItemByIdRequest)(nil),              // 2: commerce.DeleteCartItemByIdRequest
+	(*FindWishlistItemWithPaginationRequest)(nil),  // 3: commerce.FindWishlistItemWithPaginationRequest
+	(*AddToWishlistRequest)(nil),                   // 4: commerce.AddToWishlistRequest
+	(*DeleteWishlistItemByIdRequest)(nil),          // 5: commerce.DeleteWishlistItemByIdRequest
+	(*AddToCartResponse)(nil),                      // 6: commerce.AddToCartResponse
+	(*FindCartItemsWithPaginationResponse)(nil),    // 7: commerce.FindCartItemsWithPaginationResponse
+	(*DeleteCartItemByIdResponse)(nil),             // 8: commerce.DeleteCartItemByIdResponse
+	(*FindWishlistItemWithPaginationResponse)(nil), // 9: commerce.FindWishlistItemWithPaginationResponse
+	(*AddToWishlistResponse)(nil),                  // 10: commerce.AddToWishlistResponse
+	(*DeleteWishlistItemByIdResponse)(nil),         // 11: commerce.DeleteWishlistItemByIdResponse
 }
 var file_v1_commerce_service_proto_depIdxs = []int32{
-	0,  // 0: commerce.CartService.CreateCartItem:input_type -> commerce.CreateCartItemRequest
-	1,  // 1: commerce.CartService.FindCartItemById:input_type -> commerce.FindCartItemByIdRequest
-	2,  // 2: commerce.CartService.FindCartItemsWithPagination:input_type -> commerce.FindCartItemsWithPaginationRequest
-	3,  // 3: commerce.CartService.UpdateCartItemById:input_type -> commerce.UpdateCartItemByIdRequest
-	4,  // 4: commerce.CartService.DeleteCartItemById:input_type -> commerce.DeleteCartItemByIdRequest
-	5,  // 5: commerce.WishlistService.FindWishlistItemWithPagination:input_type -> commerce.FindWishlistItemWithPaginationRequest
-	6,  // 6: commerce.WishlistService.CreateWishlistItem:input_type -> commerce.CreateWishlistItemRequest
-	7,  // 7: commerce.WishlistService.DeleteWishlistItemById:input_type -> commerce.DeleteWishlistItemByIdRequest
-	8,  // 8: commerce.CartService.CreateCartItem:output_type -> commerce.CreateCartItemResponse
-	9,  // 9: commerce.CartService.FindCartItemById:output_type -> commerce.CartItem
-	10, // 10: commerce.CartService.FindCartItemsWithPagination:output_type -> commerce.FindCartItemsWithPaginationResponse
-	11, // 11: commerce.CartService.UpdateCartItemById:output_type -> commerce.UpdateCartItemByIdResponse
-	12, // 12: commerce.CartService.DeleteCartItemById:output_type -> commerce.DeleteCartItemByIdResponse
-	13, // 13: commerce.WishlistService.FindWishlistItemWithPagination:output_type -> commerce.FindWishlistItemWithPaginationResponse
-	14, // 14: commerce.WishlistService.CreateWishlistItem:output_type -> commerce.CreateWishlistItemResponse
-	15, // 15: commerce.WishlistService.DeleteWishlistItemById:output_type -> commerce.DeleteWishlistItemByIdResponse
-	8,  // [8:16] is the sub-list for method output_type
-	0,  // [0:8] is the sub-list for method input_type
+	0,  // 0: commerce.CartService.AddToCart:input_type -> commerce.AddToCartRequest
+	1,  // 1: commerce.CartService.FindCartItemsWithPagination:input_type -> commerce.FindCartItemsWithPaginationRequest
+	2,  // 2: commerce.CartService.DeleteCartItemById:input_type -> commerce.DeleteCartItemByIdRequest
+	3,  // 3: commerce.WishlistService.FindWishlistItemWithPagination:input_type -> commerce.FindWishlistItemWithPaginationRequest
+	4,  // 4: commerce.WishlistService.AddToWishlist:input_type -> commerce.AddToWishlistRequest
+	5,  // 5: commerce.WishlistService.DeleteWishlistItemById:input_type -> commerce.DeleteWishlistItemByIdRequest
+	6,  // 6: commerce.CartService.AddToCart:output_type -> commerce.AddToCartResponse
+	7,  // 7: commerce.CartService.FindCartItemsWithPagination:output_type -> commerce.FindCartItemsWithPaginationResponse
+	8,  // 8: commerce.CartService.DeleteCartItemById:output_type -> commerce.DeleteCartItemByIdResponse
+	9,  // 9: commerce.WishlistService.FindWishlistItemWithPagination:output_type -> commerce.FindWishlistItemWithPaginationResponse
+	10, // 10: commerce.WishlistService.AddToWishlist:output_type -> commerce.AddToWishlistResponse
+	11, // 11: commerce.WishlistService.DeleteWishlistItemById:output_type -> commerce.DeleteWishlistItemByIdResponse
+	6,  // [6:12] is the sub-list for method output_type
+	0,  // [0:6] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name

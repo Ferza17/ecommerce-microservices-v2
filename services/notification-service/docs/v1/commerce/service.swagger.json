@@ -78,13 +78,13 @@
         ]
       },
       "post": {
-        "summary": "Create a new cart",
-        "operationId": "CartService_CreateCartItem",
+        "summary": "add to cart",
+        "operationId": "CartService_AddToCart",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commerceCreateCartItemResponse"
+              "$ref": "#/definitions/commerceAddToCartResponse"
             }
           },
           "default": {
@@ -100,7 +100,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/commerceCreateCartItemRequest"
+              "$ref": "#/definitions/commerceAddToCartRequest"
             }
           }
         ],
@@ -115,35 +115,6 @@
       }
     },
     "/v1/commerce/carts/{id}": {
-      "get": {
-        "summary": "get cart item details by ID",
-        "operationId": "CartService_FindCartItemById",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/commerceCartItem"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "CART"
-        ]
-      },
       "delete": {
         "summary": "delete cart item by provided id",
         "operationId": "CartService_DeleteCartItemById",
@@ -167,43 +138,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          }
-        ],
-        "tags": [
-          "CART"
-        ]
-      },
-      "put": {
-        "summary": "update cart item by provided id",
-        "operationId": "CartService_UpdateCartItemById",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/commerceUpdateCartItemByIdResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/CartServiceUpdateCartItemByIdBody"
-            }
           }
         ],
         "tags": [
@@ -267,12 +201,12 @@
       },
       "post": {
         "summary": "create a new wishlist",
-        "operationId": "WishlistService_CreateWishlistItem",
+        "operationId": "WishlistService_AddToWishlist",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commerceCreateWishlistItemResponse"
+              "$ref": "#/definitions/commerceAddToWishlistResponse"
             }
           },
           "default": {
@@ -288,7 +222,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/commerceCreateWishlistItemRequest"
+              "$ref": "#/definitions/commerceAddToWishlistRequest"
             }
           }
         ],
@@ -330,7 +264,83 @@
     }
   },
   "definitions": {
-    "CartServiceUpdateCartItemByIdBody": {
+    "AddToCartResponseAddToCartResponseData": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "AddToWishlistResponseAddToWishlistResponseData": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "DeleteCartItemByIdResponseDeleteCartItemByIdResponseData": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "DeleteWishlistItemByIdResponseDeleteWishlistItemByIdResponseData": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        }
+      }
+    },
+    "FindCartItemsWithPaginationResponseFindCartItemsWithPaginationResponseData": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/commerceCartItem"
+          }
+        },
+        "page": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "FindWishlistItemWithPaginationResponseFindWishlistItemWithPaginationResponseData": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/commerceWishlistItem"
+          }
+        },
+        "page": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "commerceAddToCartRequest": {
       "type": "object",
       "properties": {
         "productId": {
@@ -347,7 +357,50 @@
           "type": "number",
           "format": "double"
         }
-      }
+      },
+      "title": "CART ITEM REQUEST DEFINITION"
+    },
+    "commerceAddToCartResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/AddToCartResponseAddToCartResponseData"
+        }
+      },
+      "title": "CART ITEM RESPONSE DEFINITION"
+    },
+    "commerceAddToWishlistRequest": {
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        }
+      },
+      "title": "WISHLIST ITEM REQUEST DEFINITION"
+    },
+    "commerceAddToWishlistResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/AddToWishlistResponseAddToWishlistResponseData"
+        }
+      },
+      "title": "WISHLIST ITEM RESPONSE DEFINITION"
     },
     "commerceCartItem": {
       "type": "object",
@@ -379,121 +432,59 @@
         }
       }
     },
-    "commerceCreateCartItemRequest": {
-      "type": "object",
-      "properties": {
-        "productId": {
-          "type": "string"
-        },
-        "userId": {
-          "type": "string"
-        },
-        "qty": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "price": {
-          "type": "number",
-          "format": "double"
-        }
-      },
-      "title": "CART ITEM REQUEST DEFINITION"
-    },
-    "commerceCreateCartItemResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        }
-      },
-      "title": "CART ITEM RESPONSE DEFINITION"
-    },
-    "commerceCreateWishlistItemRequest": {
-      "type": "object",
-      "properties": {
-        "productId": {
-          "type": "string"
-        },
-        "userId": {
-          "type": "string"
-        }
-      },
-      "title": "WISHLIST ITEM REQUEST DEFINITION"
-    },
-    "commerceCreateWishlistItemResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        }
-      }
-    },
     "commerceDeleteCartItemByIdResponse": {
       "type": "object",
       "properties": {
+        "status": {
+          "type": "string"
+        },
         "message": {
           "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/DeleteCartItemByIdResponseDeleteCartItemByIdResponseData"
         }
       }
     },
     "commerceDeleteWishlistItemByIdResponse": {
       "type": "object",
       "properties": {
-        "userId": {
+        "status": {
           "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/DeleteWishlistItemByIdResponseDeleteWishlistItemByIdResponseData"
         }
       }
     },
     "commerceFindCartItemsWithPaginationResponse": {
       "type": "object",
       "properties": {
-        "items": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/commerceCartItem"
-          }
+        "status": {
+          "type": "string"
         },
-        "page": {
-          "type": "integer",
-          "format": "int32"
+        "message": {
+          "type": "string"
         },
-        "limit": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "total": {
-          "type": "integer",
-          "format": "int32"
+        "data": {
+          "$ref": "#/definitions/FindCartItemsWithPaginationResponseFindCartItemsWithPaginationResponseData"
         }
       }
     },
     "commerceFindWishlistItemWithPaginationResponse": {
       "type": "object",
       "properties": {
-        "items": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/commerceWishlistItem"
-          }
-        },
-        "page": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "limit": {
-          "type": "integer",
-          "format": "int32"
-        }
-      },
-      "title": "WISHLIST ITEM RESPONSE DEFINITION"
-    },
-    "commerceUpdateCartItemByIdResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
+        "status": {
           "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/FindWishlistItemWithPaginationResponseFindWishlistItemWithPaginationResponseData"
         }
       }
     },
@@ -508,6 +499,14 @@
         },
         "userId": {
           "type": "string"
+        },
+        "cratedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

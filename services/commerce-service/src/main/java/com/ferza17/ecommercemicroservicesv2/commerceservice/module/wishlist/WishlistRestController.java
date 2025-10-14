@@ -12,20 +12,19 @@ import java.util.ArrayList;
 @RequestMapping("/api/v1/commerce/wishlists")
 public class WishlistRestController {
     private final WishlistUseCase WishlistUseCase;
-
     public WishlistRestController(WishlistUseCase wishlistUseCase) {
         WishlistUseCase = wishlistUseCase;
     }
 
 
     @PostMapping("/items")
-    public ResponseEntity<Response.CreateCartItemResponse> createCartItem(@RequestBody Request.CreateCartItemRequest request) {
+    public ResponseEntity<Response.AddToWishlistResponse> addToWishlist(@RequestBody Request.AddToWishlistRequest request) {
         // TODO: Implement Me
         return null;
     }
 
     @GetMapping("/items")
-    public ResponseEntity<Response.CreateCartItemResponse> findWishlistItemWithPagination(
+    public ResponseEntity<Response.FindWishlistItemWithPaginationResponse> findWishlistItemWithPagination(
             @PathVariable("user_id") String userId,
             @PathVariable("product_ids") ArrayList<String> productIds,
             @PathVariable("page") int page,
@@ -35,7 +34,7 @@ public class WishlistRestController {
     }
 
     @DeleteMapping("/items/{id}")
-    public ResponseEntity<Response.DeleteCartItemByIdResponse> deleteCartItemById(@PathVariable("id") String id) {
+    public ResponseEntity<Response.DeleteWishlistItemByIdResponse> deleteCartItemById(@PathVariable("id") String id) {
         // TODO: Implement Me
         return null;
     }

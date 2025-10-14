@@ -6,7 +6,6 @@ import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.protobuf.services.HealthStatusManager;
 import io.grpc.protobuf.services.ProtoReflectionService;
-import io.grpc.protobuf.services.ProtoReflectionServiceV1;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,17 +19,8 @@ public class GrpcConfig {
     private int grpcServerPort;
 
     @Bean
-    public Server setupGrpcConfig(
-            CartGrpcService cartPresenterGrpc,
-            WishlistGrpcService wishlistPresenterGrpc
-    ) throws IOException {
-        Server server = ServerBuilder.
-                forPort(this.grpcServerPort).
-                addService(cartPresenterGrpc).
-                addService(wishlistPresenterGrpc).
-                addService(new HealthStatusManager().getHealthService()).
-                addService(ProtoReflectionService.newInstance()).
-                build();
+    public Server setupGrpcConfig(CartGrpcService cartPresenterGrpc, WishlistGrpcService wishlistPresenterGrpc) throws IOException {
+        Server server = ServerBuilder.forPort(this.grpcServerPort).addService(cartPresenterGrpc).addService(wishlistPresenterGrpc).addService(new HealthStatusManager().getHealthService()).addService(ProtoReflectionService.newInstance()).build();
 
         server.start();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

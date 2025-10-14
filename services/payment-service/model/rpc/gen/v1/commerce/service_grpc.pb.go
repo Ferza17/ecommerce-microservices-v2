@@ -19,10 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CartService_CreateCartItem_FullMethodName              = "/commerce.CartService/CreateCartItem"
-	CartService_FindCartItemById_FullMethodName            = "/commerce.CartService/FindCartItemById"
+	CartService_AddToCart_FullMethodName                   = "/commerce.CartService/AddToCart"
 	CartService_FindCartItemsWithPagination_FullMethodName = "/commerce.CartService/FindCartItemsWithPagination"
-	CartService_UpdateCartItemById_FullMethodName          = "/commerce.CartService/UpdateCartItemById"
 	CartService_DeleteCartItemById_FullMethodName          = "/commerce.CartService/DeleteCartItemById"
 )
 
@@ -30,10 +28,8 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CartServiceClient interface {
-	CreateCartItem(ctx context.Context, in *CreateCartItemRequest, opts ...grpc.CallOption) (*CreateCartItemResponse, error)
-	FindCartItemById(ctx context.Context, in *FindCartItemByIdRequest, opts ...grpc.CallOption) (*CartItem, error)
+	AddToCart(ctx context.Context, in *AddToCartRequest, opts ...grpc.CallOption) (*AddToCartResponse, error)
 	FindCartItemsWithPagination(ctx context.Context, in *FindCartItemsWithPaginationRequest, opts ...grpc.CallOption) (*FindCartItemsWithPaginationResponse, error)
-	UpdateCartItemById(ctx context.Context, in *UpdateCartItemByIdRequest, opts ...grpc.CallOption) (*UpdateCartItemByIdResponse, error)
 	DeleteCartItemById(ctx context.Context, in *DeleteCartItemByIdRequest, opts ...grpc.CallOption) (*DeleteCartItemByIdResponse, error)
 }
 
@@ -45,20 +41,10 @@ func NewCartServiceClient(cc grpc.ClientConnInterface) CartServiceClient {
 	return &cartServiceClient{cc}
 }
 
-func (c *cartServiceClient) CreateCartItem(ctx context.Context, in *CreateCartItemRequest, opts ...grpc.CallOption) (*CreateCartItemResponse, error) {
+func (c *cartServiceClient) AddToCart(ctx context.Context, in *AddToCartRequest, opts ...grpc.CallOption) (*AddToCartResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateCartItemResponse)
-	err := c.cc.Invoke(ctx, CartService_CreateCartItem_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *cartServiceClient) FindCartItemById(ctx context.Context, in *FindCartItemByIdRequest, opts ...grpc.CallOption) (*CartItem, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CartItem)
-	err := c.cc.Invoke(ctx, CartService_FindCartItemById_FullMethodName, in, out, cOpts...)
+	out := new(AddToCartResponse)
+	err := c.cc.Invoke(ctx, CartService_AddToCart_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -69,16 +55,6 @@ func (c *cartServiceClient) FindCartItemsWithPagination(ctx context.Context, in 
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(FindCartItemsWithPaginationResponse)
 	err := c.cc.Invoke(ctx, CartService_FindCartItemsWithPagination_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *cartServiceClient) UpdateCartItemById(ctx context.Context, in *UpdateCartItemByIdRequest, opts ...grpc.CallOption) (*UpdateCartItemByIdResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateCartItemByIdResponse)
-	err := c.cc.Invoke(ctx, CartService_UpdateCartItemById_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -99,10 +75,8 @@ func (c *cartServiceClient) DeleteCartItemById(ctx context.Context, in *DeleteCa
 // All implementations should embed UnimplementedCartServiceServer
 // for forward compatibility.
 type CartServiceServer interface {
-	CreateCartItem(context.Context, *CreateCartItemRequest) (*CreateCartItemResponse, error)
-	FindCartItemById(context.Context, *FindCartItemByIdRequest) (*CartItem, error)
+	AddToCart(context.Context, *AddToCartRequest) (*AddToCartResponse, error)
 	FindCartItemsWithPagination(context.Context, *FindCartItemsWithPaginationRequest) (*FindCartItemsWithPaginationResponse, error)
-	UpdateCartItemById(context.Context, *UpdateCartItemByIdRequest) (*UpdateCartItemByIdResponse, error)
 	DeleteCartItemById(context.Context, *DeleteCartItemByIdRequest) (*DeleteCartItemByIdResponse, error)
 }
 
@@ -113,17 +87,11 @@ type CartServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedCartServiceServer struct{}
 
-func (UnimplementedCartServiceServer) CreateCartItem(context.Context, *CreateCartItemRequest) (*CreateCartItemResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateCartItem not implemented")
-}
-func (UnimplementedCartServiceServer) FindCartItemById(context.Context, *FindCartItemByIdRequest) (*CartItem, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FindCartItemById not implemented")
+func (UnimplementedCartServiceServer) AddToCart(context.Context, *AddToCartRequest) (*AddToCartResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddToCart not implemented")
 }
 func (UnimplementedCartServiceServer) FindCartItemsWithPagination(context.Context, *FindCartItemsWithPaginationRequest) (*FindCartItemsWithPaginationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindCartItemsWithPagination not implemented")
-}
-func (UnimplementedCartServiceServer) UpdateCartItemById(context.Context, *UpdateCartItemByIdRequest) (*UpdateCartItemByIdResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateCartItemById not implemented")
 }
 func (UnimplementedCartServiceServer) DeleteCartItemById(context.Context, *DeleteCartItemByIdRequest) (*DeleteCartItemByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCartItemById not implemented")
@@ -148,38 +116,20 @@ func RegisterCartServiceServer(s grpc.ServiceRegistrar, srv CartServiceServer) {
 	s.RegisterService(&CartService_ServiceDesc, srv)
 }
 
-func _CartService_CreateCartItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateCartItemRequest)
+func _CartService_AddToCart_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddToCartRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CartServiceServer).CreateCartItem(ctx, in)
+		return srv.(CartServiceServer).AddToCart(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CartService_CreateCartItem_FullMethodName,
+		FullMethod: CartService_AddToCart_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CartServiceServer).CreateCartItem(ctx, req.(*CreateCartItemRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _CartService_FindCartItemById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FindCartItemByIdRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CartServiceServer).FindCartItemById(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: CartService_FindCartItemById_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CartServiceServer).FindCartItemById(ctx, req.(*FindCartItemByIdRequest))
+		return srv.(CartServiceServer).AddToCart(ctx, req.(*AddToCartRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -198,24 +148,6 @@ func _CartService_FindCartItemsWithPagination_Handler(srv interface{}, ctx conte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CartServiceServer).FindCartItemsWithPagination(ctx, req.(*FindCartItemsWithPaginationRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _CartService_UpdateCartItemById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateCartItemByIdRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CartServiceServer).UpdateCartItemById(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: CartService_UpdateCartItemById_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CartServiceServer).UpdateCartItemById(ctx, req.(*UpdateCartItemByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -246,20 +178,12 @@ var CartService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*CartServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateCartItem",
-			Handler:    _CartService_CreateCartItem_Handler,
-		},
-		{
-			MethodName: "FindCartItemById",
-			Handler:    _CartService_FindCartItemById_Handler,
+			MethodName: "AddToCart",
+			Handler:    _CartService_AddToCart_Handler,
 		},
 		{
 			MethodName: "FindCartItemsWithPagination",
 			Handler:    _CartService_FindCartItemsWithPagination_Handler,
-		},
-		{
-			MethodName: "UpdateCartItemById",
-			Handler:    _CartService_UpdateCartItemById_Handler,
 		},
 		{
 			MethodName: "DeleteCartItemById",
@@ -272,7 +196,7 @@ var CartService_ServiceDesc = grpc.ServiceDesc{
 
 const (
 	WishlistService_FindWishlistItemWithPagination_FullMethodName = "/commerce.WishlistService/FindWishlistItemWithPagination"
-	WishlistService_CreateWishlistItem_FullMethodName             = "/commerce.WishlistService/CreateWishlistItem"
+	WishlistService_AddToWishlist_FullMethodName                  = "/commerce.WishlistService/AddToWishlist"
 	WishlistService_DeleteWishlistItemById_FullMethodName         = "/commerce.WishlistService/DeleteWishlistItemById"
 )
 
@@ -283,7 +207,7 @@ type WishlistServiceClient interface {
 	// QUERY
 	FindWishlistItemWithPagination(ctx context.Context, in *FindWishlistItemWithPaginationRequest, opts ...grpc.CallOption) (*FindWishlistItemWithPaginationResponse, error)
 	// COMMAND
-	CreateWishlistItem(ctx context.Context, in *CreateWishlistItemRequest, opts ...grpc.CallOption) (*CreateWishlistItemResponse, error)
+	AddToWishlist(ctx context.Context, in *AddToWishlistRequest, opts ...grpc.CallOption) (*AddToWishlistResponse, error)
 	DeleteWishlistItemById(ctx context.Context, in *DeleteWishlistItemByIdRequest, opts ...grpc.CallOption) (*DeleteWishlistItemByIdResponse, error)
 }
 
@@ -305,10 +229,10 @@ func (c *wishlistServiceClient) FindWishlistItemWithPagination(ctx context.Conte
 	return out, nil
 }
 
-func (c *wishlistServiceClient) CreateWishlistItem(ctx context.Context, in *CreateWishlistItemRequest, opts ...grpc.CallOption) (*CreateWishlistItemResponse, error) {
+func (c *wishlistServiceClient) AddToWishlist(ctx context.Context, in *AddToWishlistRequest, opts ...grpc.CallOption) (*AddToWishlistResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateWishlistItemResponse)
-	err := c.cc.Invoke(ctx, WishlistService_CreateWishlistItem_FullMethodName, in, out, cOpts...)
+	out := new(AddToWishlistResponse)
+	err := c.cc.Invoke(ctx, WishlistService_AddToWishlist_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -332,7 +256,7 @@ type WishlistServiceServer interface {
 	// QUERY
 	FindWishlistItemWithPagination(context.Context, *FindWishlistItemWithPaginationRequest) (*FindWishlistItemWithPaginationResponse, error)
 	// COMMAND
-	CreateWishlistItem(context.Context, *CreateWishlistItemRequest) (*CreateWishlistItemResponse, error)
+	AddToWishlist(context.Context, *AddToWishlistRequest) (*AddToWishlistResponse, error)
 	DeleteWishlistItemById(context.Context, *DeleteWishlistItemByIdRequest) (*DeleteWishlistItemByIdResponse, error)
 }
 
@@ -346,8 +270,8 @@ type UnimplementedWishlistServiceServer struct{}
 func (UnimplementedWishlistServiceServer) FindWishlistItemWithPagination(context.Context, *FindWishlistItemWithPaginationRequest) (*FindWishlistItemWithPaginationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindWishlistItemWithPagination not implemented")
 }
-func (UnimplementedWishlistServiceServer) CreateWishlistItem(context.Context, *CreateWishlistItemRequest) (*CreateWishlistItemResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateWishlistItem not implemented")
+func (UnimplementedWishlistServiceServer) AddToWishlist(context.Context, *AddToWishlistRequest) (*AddToWishlistResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddToWishlist not implemented")
 }
 func (UnimplementedWishlistServiceServer) DeleteWishlistItemById(context.Context, *DeleteWishlistItemByIdRequest) (*DeleteWishlistItemByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteWishlistItemById not implemented")
@@ -390,20 +314,20 @@ func _WishlistService_FindWishlistItemWithPagination_Handler(srv interface{}, ct
 	return interceptor(ctx, in, info, handler)
 }
 
-func _WishlistService_CreateWishlistItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateWishlistItemRequest)
+func _WishlistService_AddToWishlist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddToWishlistRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WishlistServiceServer).CreateWishlistItem(ctx, in)
+		return srv.(WishlistServiceServer).AddToWishlist(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: WishlistService_CreateWishlistItem_FullMethodName,
+		FullMethod: WishlistService_AddToWishlist_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WishlistServiceServer).CreateWishlistItem(ctx, req.(*CreateWishlistItemRequest))
+		return srv.(WishlistServiceServer).AddToWishlist(ctx, req.(*AddToWishlistRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -438,8 +362,8 @@ var WishlistService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _WishlistService_FindWishlistItemWithPagination_Handler,
 		},
 		{
-			MethodName: "CreateWishlistItem",
-			Handler:    _WishlistService_CreateWishlistItem_Handler,
+			MethodName: "AddToWishlist",
+			Handler:    _WishlistService_AddToWishlist_Handler,
 		},
 		{
 			MethodName: "DeleteWishlistItemById",

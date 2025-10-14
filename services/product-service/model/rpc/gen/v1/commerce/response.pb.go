@@ -22,27 +22,29 @@ const (
 )
 
 // CART ITEM RESPONSE DEFINITION
-type CreateCartItemResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+type AddToCartResponse struct {
+	state         protoimpl.MessageState                   `protogen:"open.v1"`
+	Status        string                                   `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	Message       string                                   `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Data          *AddToCartResponse_AddToCartResponseData `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CreateCartItemResponse) Reset() {
-	*x = CreateCartItemResponse{}
+func (x *AddToCartResponse) Reset() {
+	*x = AddToCartResponse{}
 	mi := &file_v1_commerce_response_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreateCartItemResponse) String() string {
+func (x *AddToCartResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateCartItemResponse) ProtoMessage() {}
+func (*AddToCartResponse) ProtoMessage() {}
 
-func (x *CreateCartItemResponse) ProtoReflect() protoreflect.Message {
+func (x *AddToCartResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_v1_commerce_response_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -54,75 +56,44 @@ func (x *CreateCartItemResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateCartItemResponse.ProtoReflect.Descriptor instead.
-func (*CreateCartItemResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use AddToCartResponse.ProtoReflect.Descriptor instead.
+func (*AddToCartResponse) Descriptor() ([]byte, []int) {
 	return file_v1_commerce_response_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *CreateCartItemResponse) GetId() string {
+func (x *AddToCartResponse) GetStatus() string {
 	if x != nil {
-		return x.Id
+		return x.Status
 	}
 	return ""
 }
 
-type UpdateCartItemByIdResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *UpdateCartItemByIdResponse) Reset() {
-	*x = UpdateCartItemByIdResponse{}
-	mi := &file_v1_commerce_response_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UpdateCartItemByIdResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpdateCartItemByIdResponse) ProtoMessage() {}
-
-func (x *UpdateCartItemByIdResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_commerce_response_proto_msgTypes[1]
+func (x *AddToCartResponse) GetMessage() string {
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UpdateCartItemByIdResponse.ProtoReflect.Descriptor instead.
-func (*UpdateCartItemByIdResponse) Descriptor() ([]byte, []int) {
-	return file_v1_commerce_response_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *UpdateCartItemByIdResponse) GetId() string {
-	if x != nil {
-		return x.Id
+		return x.Message
 	}
 	return ""
+}
+
+func (x *AddToCartResponse) GetData() *AddToCartResponse_AddToCartResponseData {
+	if x != nil {
+		return x.Data
+	}
+	return nil
 }
 
 type FindCartItemsWithPaginationResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Items         []*CartItem            `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	Page          int32                  `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
-	Limit         int32                  `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
-	Total         int32                  `protobuf:"varint,4,opt,name=total,proto3" json:"total,omitempty"`
+	state         protoimpl.MessageState                                                       `protogen:"open.v1"`
+	Status        string                                                                       `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	Message       string                                                                       `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Data          *FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *FindCartItemsWithPaginationResponse) Reset() {
 	*x = FindCartItemsWithPaginationResponse{}
-	mi := &file_v1_commerce_response_proto_msgTypes[2]
+	mi := &file_v1_commerce_response_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -134,7 +105,7 @@ func (x *FindCartItemsWithPaginationResponse) String() string {
 func (*FindCartItemsWithPaginationResponse) ProtoMessage() {}
 
 func (x *FindCartItemsWithPaginationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_commerce_response_proto_msgTypes[2]
+	mi := &file_v1_commerce_response_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -147,47 +118,42 @@ func (x *FindCartItemsWithPaginationResponse) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use FindCartItemsWithPaginationResponse.ProtoReflect.Descriptor instead.
 func (*FindCartItemsWithPaginationResponse) Descriptor() ([]byte, []int) {
-	return file_v1_commerce_response_proto_rawDescGZIP(), []int{2}
+	return file_v1_commerce_response_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *FindCartItemsWithPaginationResponse) GetItems() []*CartItem {
+func (x *FindCartItemsWithPaginationResponse) GetStatus() string {
 	if x != nil {
-		return x.Items
+		return x.Status
+	}
+	return ""
+}
+
+func (x *FindCartItemsWithPaginationResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *FindCartItemsWithPaginationResponse) GetData() *FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData {
+	if x != nil {
+		return x.Data
 	}
 	return nil
 }
 
-func (x *FindCartItemsWithPaginationResponse) GetPage() int32 {
-	if x != nil {
-		return x.Page
-	}
-	return 0
-}
-
-func (x *FindCartItemsWithPaginationResponse) GetLimit() int32 {
-	if x != nil {
-		return x.Limit
-	}
-	return 0
-}
-
-func (x *FindCartItemsWithPaginationResponse) GetTotal() int32 {
-	if x != nil {
-		return x.Total
-	}
-	return 0
-}
-
 type DeleteCartItemByIdResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	state         protoimpl.MessageState                                     `protogen:"open.v1"`
+	Status        string                                                     `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	Message       string                                                     `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Data          *DeleteCartItemByIdResponse_DeleteCartItemByIdResponseData `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DeleteCartItemByIdResponse) Reset() {
 	*x = DeleteCartItemByIdResponse{}
-	mi := &file_v1_commerce_response_proto_msgTypes[3]
+	mi := &file_v1_commerce_response_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -199,7 +165,7 @@ func (x *DeleteCartItemByIdResponse) String() string {
 func (*DeleteCartItemByIdResponse) ProtoMessage() {}
 
 func (x *DeleteCartItemByIdResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_commerce_response_proto_msgTypes[3]
+	mi := &file_v1_commerce_response_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -212,7 +178,14 @@ func (x *DeleteCartItemByIdResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteCartItemByIdResponse.ProtoReflect.Descriptor instead.
 func (*DeleteCartItemByIdResponse) Descriptor() ([]byte, []int) {
-	return file_v1_commerce_response_proto_rawDescGZIP(), []int{3}
+	return file_v1_commerce_response_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *DeleteCartItemByIdResponse) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
 }
 
 func (x *DeleteCartItemByIdResponse) GetMessage() string {
@@ -222,28 +195,38 @@ func (x *DeleteCartItemByIdResponse) GetMessage() string {
 	return ""
 }
 
-type CreateWishlistItemResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+func (x *DeleteCartItemByIdResponse) GetData() *DeleteCartItemByIdResponse_DeleteCartItemByIdResponseData {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+// WISHLIST ITEM RESPONSE DEFINITION
+type AddToWishlistResponse struct {
+	state         protoimpl.MessageState                           `protogen:"open.v1"`
+	Status        string                                           `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	Message       string                                           `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Data          *AddToWishlistResponse_AddToWishlistResponseData `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CreateWishlistItemResponse) Reset() {
-	*x = CreateWishlistItemResponse{}
-	mi := &file_v1_commerce_response_proto_msgTypes[4]
+func (x *AddToWishlistResponse) Reset() {
+	*x = AddToWishlistResponse{}
+	mi := &file_v1_commerce_response_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreateWishlistItemResponse) String() string {
+func (x *AddToWishlistResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateWishlistItemResponse) ProtoMessage() {}
+func (*AddToWishlistResponse) ProtoMessage() {}
 
-func (x *CreateWishlistItemResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_commerce_response_proto_msgTypes[4]
+func (x *AddToWishlistResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_commerce_response_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -254,31 +237,44 @@ func (x *CreateWishlistItemResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateWishlistItemResponse.ProtoReflect.Descriptor instead.
-func (*CreateWishlistItemResponse) Descriptor() ([]byte, []int) {
-	return file_v1_commerce_response_proto_rawDescGZIP(), []int{4}
+// Deprecated: Use AddToWishlistResponse.ProtoReflect.Descriptor instead.
+func (*AddToWishlistResponse) Descriptor() ([]byte, []int) {
+	return file_v1_commerce_response_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *CreateWishlistItemResponse) GetId() string {
+func (x *AddToWishlistResponse) GetStatus() string {
 	if x != nil {
-		return x.Id
+		return x.Status
 	}
 	return ""
 }
 
-// WISHLIST ITEM RESPONSE DEFINITION
+func (x *AddToWishlistResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *AddToWishlistResponse) GetData() *AddToWishlistResponse_AddToWishlistResponseData {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
 type FindWishlistItemWithPaginationResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Items         []*WishlistItem        `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	Page          int32                  `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
-	Limit         int32                  `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
+	state         protoimpl.MessageState                                                             `protogen:"open.v1"`
+	Status        string                                                                             `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	Message       string                                                                             `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Data          *FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *FindWishlistItemWithPaginationResponse) Reset() {
 	*x = FindWishlistItemWithPaginationResponse{}
-	mi := &file_v1_commerce_response_proto_msgTypes[5]
+	mi := &file_v1_commerce_response_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -290,7 +286,7 @@ func (x *FindWishlistItemWithPaginationResponse) String() string {
 func (*FindWishlistItemWithPaginationResponse) ProtoMessage() {}
 
 func (x *FindWishlistItemWithPaginationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_commerce_response_proto_msgTypes[5]
+	mi := &file_v1_commerce_response_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -303,40 +299,42 @@ func (x *FindWishlistItemWithPaginationResponse) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use FindWishlistItemWithPaginationResponse.ProtoReflect.Descriptor instead.
 func (*FindWishlistItemWithPaginationResponse) Descriptor() ([]byte, []int) {
-	return file_v1_commerce_response_proto_rawDescGZIP(), []int{5}
+	return file_v1_commerce_response_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *FindWishlistItemWithPaginationResponse) GetItems() []*WishlistItem {
+func (x *FindWishlistItemWithPaginationResponse) GetStatus() string {
 	if x != nil {
-		return x.Items
+		return x.Status
+	}
+	return ""
+}
+
+func (x *FindWishlistItemWithPaginationResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *FindWishlistItemWithPaginationResponse) GetData() *FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData {
+	if x != nil {
+		return x.Data
 	}
 	return nil
 }
 
-func (x *FindWishlistItemWithPaginationResponse) GetPage() int32 {
-	if x != nil {
-		return x.Page
-	}
-	return 0
-}
-
-func (x *FindWishlistItemWithPaginationResponse) GetLimit() int32 {
-	if x != nil {
-		return x.Limit
-	}
-	return 0
-}
-
 type DeleteWishlistItemByIdResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        string                 `protobuf:"bytes,1,opt,name=userId,proto3" json:"userId,omitempty"`
+	state         protoimpl.MessageState                                             `protogen:"open.v1"`
+	Status        string                                                             `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	Message       string                                                             `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Data          *DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseData `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DeleteWishlistItemByIdResponse) Reset() {
 	*x = DeleteWishlistItemByIdResponse{}
-	mi := &file_v1_commerce_response_proto_msgTypes[6]
+	mi := &file_v1_commerce_response_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -348,7 +346,7 @@ func (x *DeleteWishlistItemByIdResponse) String() string {
 func (*DeleteWishlistItemByIdResponse) ProtoMessage() {}
 
 func (x *DeleteWishlistItemByIdResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_commerce_response_proto_msgTypes[6]
+	mi := &file_v1_commerce_response_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -361,10 +359,329 @@ func (x *DeleteWishlistItemByIdResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteWishlistItemByIdResponse.ProtoReflect.Descriptor instead.
 func (*DeleteWishlistItemByIdResponse) Descriptor() ([]byte, []int) {
-	return file_v1_commerce_response_proto_rawDescGZIP(), []int{6}
+	return file_v1_commerce_response_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *DeleteWishlistItemByIdResponse) GetUserId() string {
+func (x *DeleteWishlistItemByIdResponse) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *DeleteWishlistItemByIdResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *DeleteWishlistItemByIdResponse) GetData() *DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseData {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+type AddToCartResponse_AddToCartResponseData struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddToCartResponse_AddToCartResponseData) Reset() {
+	*x = AddToCartResponse_AddToCartResponseData{}
+	mi := &file_v1_commerce_response_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddToCartResponse_AddToCartResponseData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddToCartResponse_AddToCartResponseData) ProtoMessage() {}
+
+func (x *AddToCartResponse_AddToCartResponseData) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_commerce_response_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddToCartResponse_AddToCartResponseData.ProtoReflect.Descriptor instead.
+func (*AddToCartResponse_AddToCartResponseData) Descriptor() ([]byte, []int) {
+	return file_v1_commerce_response_proto_rawDescGZIP(), []int{0, 0}
+}
+
+func (x *AddToCartResponse_AddToCartResponseData) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Items         []*CartItem            `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	Page          int32                  `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
+	Limit         int32                  `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
+	Total         int32                  `protobuf:"varint,4,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData) Reset() {
+	*x = FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData{}
+	mi := &file_v1_commerce_response_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData) ProtoMessage() {}
+
+func (x *FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_commerce_response_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData.ProtoReflect.Descriptor instead.
+func (*FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData) Descriptor() ([]byte, []int) {
+	return file_v1_commerce_response_proto_rawDescGZIP(), []int{1, 0}
+}
+
+func (x *FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData) GetItems() []*CartItem {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+func (x *FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData) GetLimit() int32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+func (x *FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData) GetTotal() int32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+type DeleteCartItemByIdResponse_DeleteCartItemByIdResponseData struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteCartItemByIdResponse_DeleteCartItemByIdResponseData) Reset() {
+	*x = DeleteCartItemByIdResponse_DeleteCartItemByIdResponseData{}
+	mi := &file_v1_commerce_response_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteCartItemByIdResponse_DeleteCartItemByIdResponseData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteCartItemByIdResponse_DeleteCartItemByIdResponseData) ProtoMessage() {}
+
+func (x *DeleteCartItemByIdResponse_DeleteCartItemByIdResponseData) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_commerce_response_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteCartItemByIdResponse_DeleteCartItemByIdResponseData.ProtoReflect.Descriptor instead.
+func (*DeleteCartItemByIdResponse_DeleteCartItemByIdResponseData) Descriptor() ([]byte, []int) {
+	return file_v1_commerce_response_proto_rawDescGZIP(), []int{2, 0}
+}
+
+func (x *DeleteCartItemByIdResponse_DeleteCartItemByIdResponseData) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+type AddToWishlistResponse_AddToWishlistResponseData struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddToWishlistResponse_AddToWishlistResponseData) Reset() {
+	*x = AddToWishlistResponse_AddToWishlistResponseData{}
+	mi := &file_v1_commerce_response_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddToWishlistResponse_AddToWishlistResponseData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddToWishlistResponse_AddToWishlistResponseData) ProtoMessage() {}
+
+func (x *AddToWishlistResponse_AddToWishlistResponseData) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_commerce_response_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddToWishlistResponse_AddToWishlistResponseData.ProtoReflect.Descriptor instead.
+func (*AddToWishlistResponse_AddToWishlistResponseData) Descriptor() ([]byte, []int) {
+	return file_v1_commerce_response_proto_rawDescGZIP(), []int{3, 0}
+}
+
+func (x *AddToWishlistResponse_AddToWishlistResponseData) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Items         []*WishlistItem        `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	Page          int32                  `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
+	Limit         int32                  `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData) Reset() {
+	*x = FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData{}
+	mi := &file_v1_commerce_response_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData) ProtoMessage() {
+}
+
+func (x *FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_commerce_response_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData.ProtoReflect.Descriptor instead.
+func (*FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData) Descriptor() ([]byte, []int) {
+	return file_v1_commerce_response_proto_rawDescGZIP(), []int{4, 0}
+}
+
+func (x *FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData) GetItems() []*WishlistItem {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+func (x *FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData) GetLimit() int32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+type DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseData struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseData) Reset() {
+	*x = DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseData{}
+	mi := &file_v1_commerce_response_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseData) ProtoMessage() {}
+
+func (x *DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseData) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_commerce_response_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseData.ProtoReflect.Descriptor instead.
+func (*DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseData) Descriptor() ([]byte, []int) {
+	return file_v1_commerce_response_proto_rawDescGZIP(), []int{5, 0}
+}
+
+func (x *DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseData) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
@@ -375,26 +692,48 @@ var File_v1_commerce_response_proto protoreflect.FileDescriptor
 
 const file_v1_commerce_response_proto_rawDesc = "" +
 	"\n" +
-	"\x1av1/commerce/response.proto\x12\bcommerce\x1a\x17v1/commerce/model.proto\"(\n" +
-	"\x16CreateCartItemResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\",\n" +
-	"\x1aUpdateCartItemByIdResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"\x8f\x01\n" +
-	"#FindCartItemsWithPaginationResponse\x12(\n" +
+	"\x1av1/commerce/response.proto\x12\bcommerce\x1a\x17v1/commerce/model.proto\"\xb5\x01\n" +
+	"\x11AddToCartResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\tR\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12E\n" +
+	"\x04data\x18\x03 \x01(\v21.commerce.AddToCartResponse.AddToCartResponseDataR\x04data\x1a'\n" +
+	"\x15AddToCartResponseData\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\xd8\x02\n" +
+	"#FindCartItemsWithPaginationResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\tR\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12i\n" +
+	"\x04data\x18\x03 \x01(\v2U.commerce.FindCartItemsWithPaginationResponse.FindCartItemsWithPaginationResponseDataR\x04data\x1a\x93\x01\n" +
+	"'FindCartItemsWithPaginationResponseData\x12(\n" +
 	"\x05items\x18\x01 \x03(\v2\x12.commerce.CartItemR\x05items\x12\x12\n" +
 	"\x04page\x18\x02 \x01(\x05R\x04page\x12\x14\n" +
 	"\x05limit\x18\x03 \x01(\x05R\x05limit\x12\x14\n" +
-	"\x05total\x18\x04 \x01(\x05R\x05total\"6\n" +
-	"\x1aDeleteCartItemByIdResponse\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage\",\n" +
-	"\x1aCreateWishlistItemResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"\x80\x01\n" +
-	"&FindWishlistItemWithPaginationResponse\x12,\n" +
+	"\x05total\x18\x04 \x01(\x05R\x05total\"\xe3\x01\n" +
+	"\x1aDeleteCartItemByIdResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\tR\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12W\n" +
+	"\x04data\x18\x03 \x01(\v2C.commerce.DeleteCartItemByIdResponse.DeleteCartItemByIdResponseDataR\x04data\x1a:\n" +
+	"\x1eDeleteCartItemByIdResponseData\x12\x18\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\"\xc5\x01\n" +
+	"\x15AddToWishlistResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\tR\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12M\n" +
+	"\x04data\x18\x03 \x01(\v29.commerce.AddToWishlistResponse.AddToWishlistResponseDataR\x04data\x1a+\n" +
+	"\x19AddToWishlistResponseData\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\xd2\x02\n" +
+	"&FindWishlistItemWithPaginationResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\tR\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12o\n" +
+	"\x04data\x18\x03 \x01(\v2[.commerce.FindWishlistItemWithPaginationResponse.FindWishlistItemWithPaginationResponseDataR\x04data\x1a\x84\x01\n" +
+	"*FindWishlistItemWithPaginationResponseData\x12,\n" +
 	"\x05items\x18\x01 \x03(\v2\x16.commerce.WishlistItemR\x05items\x12\x12\n" +
 	"\x04page\x18\x02 \x01(\x05R\x04page\x12\x14\n" +
-	"\x05limit\x18\x03 \x01(\x05R\x05limit\"8\n" +
+	"\x05limit\x18\x03 \x01(\x05R\x05limit\"\xf2\x01\n" +
 	"\x1eDeleteWishlistItemByIdResponse\x12\x16\n" +
-	"\x06userId\x18\x01 \x01(\tR\x06userIdB_\n" +
+	"\x06status\x18\x01 \x01(\tR\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12_\n" +
+	"\x04data\x18\x03 \x01(\v2K.commerce.DeleteWishlistItemByIdResponse.DeleteWishlistItemByIdResponseDataR\x04data\x1a=\n" +
+	"\"DeleteWishlistItemByIdResponseData\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userIdB_\n" +
 	"\fcom.commerceB\rResponseProtoH\x02P\x01\xa2\x02\x03CXX\xaa\x02\bCommerce\xca\x02\bCommerce\xe2\x02\x14Commerce\\GPBMetadata\xea\x02\bCommerceb\x06proto3"
 
 var (
@@ -409,26 +748,37 @@ func file_v1_commerce_response_proto_rawDescGZIP() []byte {
 	return file_v1_commerce_response_proto_rawDescData
 }
 
-var file_v1_commerce_response_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_v1_commerce_response_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_v1_commerce_response_proto_goTypes = []any{
-	(*CreateCartItemResponse)(nil),                 // 0: commerce.CreateCartItemResponse
-	(*UpdateCartItemByIdResponse)(nil),             // 1: commerce.UpdateCartItemByIdResponse
-	(*FindCartItemsWithPaginationResponse)(nil),    // 2: commerce.FindCartItemsWithPaginationResponse
-	(*DeleteCartItemByIdResponse)(nil),             // 3: commerce.DeleteCartItemByIdResponse
-	(*CreateWishlistItemResponse)(nil),             // 4: commerce.CreateWishlistItemResponse
-	(*FindWishlistItemWithPaginationResponse)(nil), // 5: commerce.FindWishlistItemWithPaginationResponse
-	(*DeleteWishlistItemByIdResponse)(nil),         // 6: commerce.DeleteWishlistItemByIdResponse
-	(*CartItem)(nil),                               // 7: commerce.CartItem
-	(*WishlistItem)(nil),                           // 8: commerce.WishlistItem
+	(*AddToCartResponse)(nil),                                                                 // 0: commerce.AddToCartResponse
+	(*FindCartItemsWithPaginationResponse)(nil),                                               // 1: commerce.FindCartItemsWithPaginationResponse
+	(*DeleteCartItemByIdResponse)(nil),                                                        // 2: commerce.DeleteCartItemByIdResponse
+	(*AddToWishlistResponse)(nil),                                                             // 3: commerce.AddToWishlistResponse
+	(*FindWishlistItemWithPaginationResponse)(nil),                                            // 4: commerce.FindWishlistItemWithPaginationResponse
+	(*DeleteWishlistItemByIdResponse)(nil),                                                    // 5: commerce.DeleteWishlistItemByIdResponse
+	(*AddToCartResponse_AddToCartResponseData)(nil),                                           // 6: commerce.AddToCartResponse.AddToCartResponseData
+	(*FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData)(nil),       // 7: commerce.FindCartItemsWithPaginationResponse.FindCartItemsWithPaginationResponseData
+	(*DeleteCartItemByIdResponse_DeleteCartItemByIdResponseData)(nil),                         // 8: commerce.DeleteCartItemByIdResponse.DeleteCartItemByIdResponseData
+	(*AddToWishlistResponse_AddToWishlistResponseData)(nil),                                   // 9: commerce.AddToWishlistResponse.AddToWishlistResponseData
+	(*FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData)(nil), // 10: commerce.FindWishlistItemWithPaginationResponse.FindWishlistItemWithPaginationResponseData
+	(*DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseData)(nil),                 // 11: commerce.DeleteWishlistItemByIdResponse.DeleteWishlistItemByIdResponseData
+	(*CartItem)(nil),     // 12: commerce.CartItem
+	(*WishlistItem)(nil), // 13: commerce.WishlistItem
 }
 var file_v1_commerce_response_proto_depIdxs = []int32{
-	7, // 0: commerce.FindCartItemsWithPaginationResponse.items:type_name -> commerce.CartItem
-	8, // 1: commerce.FindWishlistItemWithPaginationResponse.items:type_name -> commerce.WishlistItem
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	6,  // 0: commerce.AddToCartResponse.data:type_name -> commerce.AddToCartResponse.AddToCartResponseData
+	7,  // 1: commerce.FindCartItemsWithPaginationResponse.data:type_name -> commerce.FindCartItemsWithPaginationResponse.FindCartItemsWithPaginationResponseData
+	8,  // 2: commerce.DeleteCartItemByIdResponse.data:type_name -> commerce.DeleteCartItemByIdResponse.DeleteCartItemByIdResponseData
+	9,  // 3: commerce.AddToWishlistResponse.data:type_name -> commerce.AddToWishlistResponse.AddToWishlistResponseData
+	10, // 4: commerce.FindWishlistItemWithPaginationResponse.data:type_name -> commerce.FindWishlistItemWithPaginationResponse.FindWishlistItemWithPaginationResponseData
+	11, // 5: commerce.DeleteWishlistItemByIdResponse.data:type_name -> commerce.DeleteWishlistItemByIdResponse.DeleteWishlistItemByIdResponseData
+	12, // 6: commerce.FindCartItemsWithPaginationResponse.FindCartItemsWithPaginationResponseData.items:type_name -> commerce.CartItem
+	13, // 7: commerce.FindWishlistItemWithPaginationResponse.FindWishlistItemWithPaginationResponseData.items:type_name -> commerce.WishlistItem
+	8,  // [8:8] is the sub-list for method output_type
+	8,  // [8:8] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_v1_commerce_response_proto_init() }
@@ -443,7 +793,7 @@ func file_v1_commerce_response_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_commerce_response_proto_rawDesc), len(file_v1_commerce_response_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -35,50 +35,86 @@ var (
 	_ = sort.Sort
 )
 
-// Validate checks the field values on CreateCartItemRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *CreateCartItemRequest) Validate() error {
+// Validate checks the field values on AddToCartRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *AddToCartRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on CreateCartItemRequest with the rules
+// ValidateAll checks the field values on AddToCartRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// CreateCartItemRequestMultiError, or nil if none found.
-func (m *CreateCartItemRequest) ValidateAll() error {
+// AddToCartRequestMultiError, or nil if none found.
+func (m *AddToCartRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *CreateCartItemRequest) validate(all bool) error {
+func (m *AddToCartRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	// no validation rules for ProductId
+	if utf8.RuneCountInString(m.GetProductId()) < 1 {
+		err := AddToCartRequestValidationError{
+			field:  "ProductId",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for UserId
+	if utf8.RuneCountInString(m.GetUserId()) < 1 {
+		err := AddToCartRequestValidationError{
+			field:  "UserId",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for Qty
+	if m.GetQty() <= 0 {
+		err := AddToCartRequestValidationError{
+			field:  "Qty",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for Price
+	if m.GetPrice() <= 0 {
+		err := AddToCartRequestValidationError{
+			field:  "Price",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
-		return CreateCartItemRequestMultiError(errors)
+		return AddToCartRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// CreateCartItemRequestMultiError is an error wrapping multiple validation
-// errors returned by CreateCartItemRequest.ValidateAll() if the designated
-// constraints aren't met.
-type CreateCartItemRequestMultiError []error
+// AddToCartRequestMultiError is an error wrapping multiple validation errors
+// returned by AddToCartRequest.ValidateAll() if the designated constraints
+// aren't met.
+type AddToCartRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m CreateCartItemRequestMultiError) Error() string {
+func (m AddToCartRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -87,11 +123,11 @@ func (m CreateCartItemRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m CreateCartItemRequestMultiError) AllErrors() []error { return m }
+func (m AddToCartRequestMultiError) AllErrors() []error { return m }
 
-// CreateCartItemRequestValidationError is the validation error returned by
-// CreateCartItemRequest.Validate if the designated constraints aren't met.
-type CreateCartItemRequestValidationError struct {
+// AddToCartRequestValidationError is the validation error returned by
+// AddToCartRequest.Validate if the designated constraints aren't met.
+type AddToCartRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -99,24 +135,22 @@ type CreateCartItemRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e CreateCartItemRequestValidationError) Field() string { return e.field }
+func (e AddToCartRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e CreateCartItemRequestValidationError) Reason() string { return e.reason }
+func (e AddToCartRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e CreateCartItemRequestValidationError) Cause() error { return e.cause }
+func (e AddToCartRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e CreateCartItemRequestValidationError) Key() bool { return e.key }
+func (e AddToCartRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e CreateCartItemRequestValidationError) ErrorName() string {
-	return "CreateCartItemRequestValidationError"
-}
+func (e AddToCartRequestValidationError) ErrorName() string { return "AddToCartRequestValidationError" }
 
 // Error satisfies the builtin error interface
-func (e CreateCartItemRequestValidationError) Error() string {
+func (e AddToCartRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -128,14 +162,14 @@ func (e CreateCartItemRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sCreateCartItemRequest.%s: %s%s",
+		"invalid %sAddToCartRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = CreateCartItemRequestValidationError{}
+var _ error = AddToCartRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -143,119 +177,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = CreateCartItemRequestValidationError{}
-
-// Validate checks the field values on UpdateCartItemByIdRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *UpdateCartItemByIdRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on UpdateCartItemByIdRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// UpdateCartItemByIdRequestMultiError, or nil if none found.
-func (m *UpdateCartItemByIdRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *UpdateCartItemByIdRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Id
-
-	// no validation rules for ProductId
-
-	// no validation rules for UserId
-
-	// no validation rules for Qty
-
-	// no validation rules for Price
-
-	if len(errors) > 0 {
-		return UpdateCartItemByIdRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// UpdateCartItemByIdRequestMultiError is an error wrapping multiple validation
-// errors returned by UpdateCartItemByIdRequest.ValidateAll() if the
-// designated constraints aren't met.
-type UpdateCartItemByIdRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m UpdateCartItemByIdRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m UpdateCartItemByIdRequestMultiError) AllErrors() []error { return m }
-
-// UpdateCartItemByIdRequestValidationError is the validation error returned by
-// UpdateCartItemByIdRequest.Validate if the designated constraints aren't met.
-type UpdateCartItemByIdRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e UpdateCartItemByIdRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e UpdateCartItemByIdRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e UpdateCartItemByIdRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e UpdateCartItemByIdRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e UpdateCartItemByIdRequestValidationError) ErrorName() string {
-	return "UpdateCartItemByIdRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e UpdateCartItemByIdRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sUpdateCartItemByIdRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = UpdateCartItemByIdRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = UpdateCartItemByIdRequestValidationError{}
+} = AddToCartRequestValidationError{}
 
 // Validate checks the field values on FindCartItemsWithPaginationRequest with
 // the rules defined in the proto definition for this message. If any rules
@@ -280,7 +202,20 @@ func (m *FindCartItemsWithPaginationRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for UserId
+	if utf8.RuneCountInString(m.GetUserId()) < 1 {
+		err := FindCartItemsWithPaginationRequestValidationError{
+			field:  "UserId",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(m.GetProductIds()) > 0 {
+
+	}
 
 	// no validation rules for Page
 
@@ -367,110 +302,6 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = FindCartItemsWithPaginationRequestValidationError{}
-
-// Validate checks the field values on FindCartItemByIdRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *FindCartItemByIdRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on FindCartItemByIdRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// FindCartItemByIdRequestMultiError, or nil if none found.
-func (m *FindCartItemByIdRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *FindCartItemByIdRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Id
-
-	if len(errors) > 0 {
-		return FindCartItemByIdRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// FindCartItemByIdRequestMultiError is an error wrapping multiple validation
-// errors returned by FindCartItemByIdRequest.ValidateAll() if the designated
-// constraints aren't met.
-type FindCartItemByIdRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m FindCartItemByIdRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m FindCartItemByIdRequestMultiError) AllErrors() []error { return m }
-
-// FindCartItemByIdRequestValidationError is the validation error returned by
-// FindCartItemByIdRequest.Validate if the designated constraints aren't met.
-type FindCartItemByIdRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e FindCartItemByIdRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e FindCartItemByIdRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e FindCartItemByIdRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e FindCartItemByIdRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e FindCartItemByIdRequestValidationError) ErrorName() string {
-	return "FindCartItemByIdRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e FindCartItemByIdRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sFindCartItemByIdRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = FindCartItemByIdRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = FindCartItemByIdRequestValidationError{}
 
 // Validate checks the field values on DeleteCartItemByIdRequest with the rules
 // defined in the proto definition for this message. If any rules are
@@ -576,22 +407,22 @@ var _ interface {
 	ErrorName() string
 } = DeleteCartItemByIdRequestValidationError{}
 
-// Validate checks the field values on CreateWishlistItemRequest with the rules
+// Validate checks the field values on AddToWishlistRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *CreateWishlistItemRequest) Validate() error {
+func (m *AddToWishlistRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on CreateWishlistItemRequest with the
-// rules defined in the proto definition for this message. If any rules are
+// ValidateAll checks the field values on AddToWishlistRequest with the rules
+// defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// CreateWishlistItemRequestMultiError, or nil if none found.
-func (m *CreateWishlistItemRequest) ValidateAll() error {
+// AddToWishlistRequestMultiError, or nil if none found.
+func (m *AddToWishlistRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *CreateWishlistItemRequest) validate(all bool) error {
+func (m *AddToWishlistRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -603,19 +434,19 @@ func (m *CreateWishlistItemRequest) validate(all bool) error {
 	// no validation rules for UserId
 
 	if len(errors) > 0 {
-		return CreateWishlistItemRequestMultiError(errors)
+		return AddToWishlistRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// CreateWishlistItemRequestMultiError is an error wrapping multiple validation
-// errors returned by CreateWishlistItemRequest.ValidateAll() if the
-// designated constraints aren't met.
-type CreateWishlistItemRequestMultiError []error
+// AddToWishlistRequestMultiError is an error wrapping multiple validation
+// errors returned by AddToWishlistRequest.ValidateAll() if the designated
+// constraints aren't met.
+type AddToWishlistRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m CreateWishlistItemRequestMultiError) Error() string {
+func (m AddToWishlistRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -624,11 +455,11 @@ func (m CreateWishlistItemRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m CreateWishlistItemRequestMultiError) AllErrors() []error { return m }
+func (m AddToWishlistRequestMultiError) AllErrors() []error { return m }
 
-// CreateWishlistItemRequestValidationError is the validation error returned by
-// CreateWishlistItemRequest.Validate if the designated constraints aren't met.
-type CreateWishlistItemRequestValidationError struct {
+// AddToWishlistRequestValidationError is the validation error returned by
+// AddToWishlistRequest.Validate if the designated constraints aren't met.
+type AddToWishlistRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -636,24 +467,24 @@ type CreateWishlistItemRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e CreateWishlistItemRequestValidationError) Field() string { return e.field }
+func (e AddToWishlistRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e CreateWishlistItemRequestValidationError) Reason() string { return e.reason }
+func (e AddToWishlistRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e CreateWishlistItemRequestValidationError) Cause() error { return e.cause }
+func (e AddToWishlistRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e CreateWishlistItemRequestValidationError) Key() bool { return e.key }
+func (e AddToWishlistRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e CreateWishlistItemRequestValidationError) ErrorName() string {
-	return "CreateWishlistItemRequestValidationError"
+func (e AddToWishlistRequestValidationError) ErrorName() string {
+	return "AddToWishlistRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e CreateWishlistItemRequestValidationError) Error() string {
+func (e AddToWishlistRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -665,14 +496,14 @@ func (e CreateWishlistItemRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sCreateWishlistItemRequest.%s: %s%s",
+		"invalid %sAddToWishlistRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = CreateWishlistItemRequestValidationError{}
+var _ error = AddToWishlistRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -680,7 +511,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = CreateWishlistItemRequestValidationError{}
+} = AddToWishlistRequestValidationError{}
 
 // Validate checks the field values on FindWishlistItemWithPaginationRequest
 // with the rules defined in the proto definition for this message. If any

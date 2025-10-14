@@ -7,6 +7,7 @@
 package commerce
 
 import (
+	_ "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/external/validate"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -22,30 +23,30 @@ const (
 )
 
 // CART ITEM REQUEST DEFINITION
-type CreateCartItemRequest struct {
+type AddToCartRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ProductId     string                 `protobuf:"bytes,1,opt,name=productId,proto3" json:"productId,omitempty"`
-	UserId        string                 `protobuf:"bytes,2,opt,name=userId,proto3" json:"userId,omitempty"`
+	ProductId     string                 `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
+	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Qty           int32                  `protobuf:"varint,3,opt,name=qty,proto3" json:"qty,omitempty"`
 	Price         float64                `protobuf:"fixed64,4,opt,name=price,proto3" json:"price,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CreateCartItemRequest) Reset() {
-	*x = CreateCartItemRequest{}
+func (x *AddToCartRequest) Reset() {
+	*x = AddToCartRequest{}
 	mi := &file_v1_commerce_request_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreateCartItemRequest) String() string {
+func (x *AddToCartRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateCartItemRequest) ProtoMessage() {}
+func (*AddToCartRequest) ProtoMessage() {}
 
-func (x *CreateCartItemRequest) ProtoReflect() protoreflect.Message {
+func (x *AddToCartRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_v1_commerce_request_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -57,109 +58,33 @@ func (x *CreateCartItemRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateCartItemRequest.ProtoReflect.Descriptor instead.
-func (*CreateCartItemRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use AddToCartRequest.ProtoReflect.Descriptor instead.
+func (*AddToCartRequest) Descriptor() ([]byte, []int) {
 	return file_v1_commerce_request_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *CreateCartItemRequest) GetProductId() string {
+func (x *AddToCartRequest) GetProductId() string {
 	if x != nil {
 		return x.ProductId
 	}
 	return ""
 }
 
-func (x *CreateCartItemRequest) GetUserId() string {
+func (x *AddToCartRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-func (x *CreateCartItemRequest) GetQty() int32 {
+func (x *AddToCartRequest) GetQty() int32 {
 	if x != nil {
 		return x.Qty
 	}
 	return 0
 }
 
-func (x *CreateCartItemRequest) GetPrice() float64 {
-	if x != nil {
-		return x.Price
-	}
-	return 0
-}
-
-type UpdateCartItemByIdRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	ProductId     string                 `protobuf:"bytes,2,opt,name=productId,proto3" json:"productId,omitempty"`
-	UserId        string                 `protobuf:"bytes,3,opt,name=userId,proto3" json:"userId,omitempty"`
-	Qty           int32                  `protobuf:"varint,4,opt,name=qty,proto3" json:"qty,omitempty"`
-	Price         float64                `protobuf:"fixed64,5,opt,name=price,proto3" json:"price,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *UpdateCartItemByIdRequest) Reset() {
-	*x = UpdateCartItemByIdRequest{}
-	mi := &file_v1_commerce_request_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UpdateCartItemByIdRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpdateCartItemByIdRequest) ProtoMessage() {}
-
-func (x *UpdateCartItemByIdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_commerce_request_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UpdateCartItemByIdRequest.ProtoReflect.Descriptor instead.
-func (*UpdateCartItemByIdRequest) Descriptor() ([]byte, []int) {
-	return file_v1_commerce_request_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *UpdateCartItemByIdRequest) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-func (x *UpdateCartItemByIdRequest) GetProductId() string {
-	if x != nil {
-		return x.ProductId
-	}
-	return ""
-}
-
-func (x *UpdateCartItemByIdRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *UpdateCartItemByIdRequest) GetQty() int32 {
-	if x != nil {
-		return x.Qty
-	}
-	return 0
-}
-
-func (x *UpdateCartItemByIdRequest) GetPrice() float64 {
+func (x *AddToCartRequest) GetPrice() float64 {
 	if x != nil {
 		return x.Price
 	}
@@ -168,7 +93,7 @@ func (x *UpdateCartItemByIdRequest) GetPrice() float64 {
 
 type FindCartItemsWithPaginationRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        string                 `protobuf:"bytes,1,opt,name=userId,proto3" json:"userId,omitempty"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	ProductIds    []string               `protobuf:"bytes,2,rep,name=productIds,proto3" json:"productIds,omitempty"`
 	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
 	Limit         int32                  `protobuf:"varint,4,opt,name=limit,proto3" json:"limit,omitempty"`
@@ -178,7 +103,7 @@ type FindCartItemsWithPaginationRequest struct {
 
 func (x *FindCartItemsWithPaginationRequest) Reset() {
 	*x = FindCartItemsWithPaginationRequest{}
-	mi := &file_v1_commerce_request_proto_msgTypes[2]
+	mi := &file_v1_commerce_request_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -190,7 +115,7 @@ func (x *FindCartItemsWithPaginationRequest) String() string {
 func (*FindCartItemsWithPaginationRequest) ProtoMessage() {}
 
 func (x *FindCartItemsWithPaginationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_commerce_request_proto_msgTypes[2]
+	mi := &file_v1_commerce_request_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -203,7 +128,7 @@ func (x *FindCartItemsWithPaginationRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use FindCartItemsWithPaginationRequest.ProtoReflect.Descriptor instead.
 func (*FindCartItemsWithPaginationRequest) Descriptor() ([]byte, []int) {
-	return file_v1_commerce_request_proto_rawDescGZIP(), []int{2}
+	return file_v1_commerce_request_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *FindCartItemsWithPaginationRequest) GetUserId() string {
@@ -234,50 +159,6 @@ func (x *FindCartItemsWithPaginationRequest) GetLimit() int32 {
 	return 0
 }
 
-type FindCartItemByIdRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *FindCartItemByIdRequest) Reset() {
-	*x = FindCartItemByIdRequest{}
-	mi := &file_v1_commerce_request_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *FindCartItemByIdRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*FindCartItemByIdRequest) ProtoMessage() {}
-
-func (x *FindCartItemByIdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_commerce_request_proto_msgTypes[3]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use FindCartItemByIdRequest.ProtoReflect.Descriptor instead.
-func (*FindCartItemByIdRequest) Descriptor() ([]byte, []int) {
-	return file_v1_commerce_request_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *FindCartItemByIdRequest) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
 type DeleteCartItemByIdRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -287,7 +168,7 @@ type DeleteCartItemByIdRequest struct {
 
 func (x *DeleteCartItemByIdRequest) Reset() {
 	*x = DeleteCartItemByIdRequest{}
-	mi := &file_v1_commerce_request_proto_msgTypes[4]
+	mi := &file_v1_commerce_request_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -299,7 +180,7 @@ func (x *DeleteCartItemByIdRequest) String() string {
 func (*DeleteCartItemByIdRequest) ProtoMessage() {}
 
 func (x *DeleteCartItemByIdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_commerce_request_proto_msgTypes[4]
+	mi := &file_v1_commerce_request_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -312,7 +193,7 @@ func (x *DeleteCartItemByIdRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteCartItemByIdRequest.ProtoReflect.Descriptor instead.
 func (*DeleteCartItemByIdRequest) Descriptor() ([]byte, []int) {
-	return file_v1_commerce_request_proto_rawDescGZIP(), []int{4}
+	return file_v1_commerce_request_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *DeleteCartItemByIdRequest) GetId() string {
@@ -323,29 +204,29 @@ func (x *DeleteCartItemByIdRequest) GetId() string {
 }
 
 // WISHLIST ITEM REQUEST DEFINITION
-type CreateWishlistItemRequest struct {
+type AddToWishlistRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ProductId     string                 `protobuf:"bytes,1,opt,name=productId,proto3" json:"productId,omitempty"`
-	UserId        string                 `protobuf:"bytes,2,opt,name=userId,proto3" json:"userId,omitempty"`
+	ProductId     string                 `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
+	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CreateWishlistItemRequest) Reset() {
-	*x = CreateWishlistItemRequest{}
-	mi := &file_v1_commerce_request_proto_msgTypes[5]
+func (x *AddToWishlistRequest) Reset() {
+	*x = AddToWishlistRequest{}
+	mi := &file_v1_commerce_request_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreateWishlistItemRequest) String() string {
+func (x *AddToWishlistRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateWishlistItemRequest) ProtoMessage() {}
+func (*AddToWishlistRequest) ProtoMessage() {}
 
-func (x *CreateWishlistItemRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_commerce_request_proto_msgTypes[5]
+func (x *AddToWishlistRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_commerce_request_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -356,19 +237,19 @@ func (x *CreateWishlistItemRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateWishlistItemRequest.ProtoReflect.Descriptor instead.
-func (*CreateWishlistItemRequest) Descriptor() ([]byte, []int) {
-	return file_v1_commerce_request_proto_rawDescGZIP(), []int{5}
+// Deprecated: Use AddToWishlistRequest.ProtoReflect.Descriptor instead.
+func (*AddToWishlistRequest) Descriptor() ([]byte, []int) {
+	return file_v1_commerce_request_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *CreateWishlistItemRequest) GetProductId() string {
+func (x *AddToWishlistRequest) GetProductId() string {
 	if x != nil {
 		return x.ProductId
 	}
 	return ""
 }
 
-func (x *CreateWishlistItemRequest) GetUserId() string {
+func (x *AddToWishlistRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
@@ -377,8 +258,8 @@ func (x *CreateWishlistItemRequest) GetUserId() string {
 
 type FindWishlistItemWithPaginationRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        string                 `protobuf:"bytes,1,opt,name=userId,proto3" json:"userId,omitempty"`
-	ProductIds    []string               `protobuf:"bytes,2,rep,name=productIds,proto3" json:"productIds,omitempty"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	ProductIds    []string               `protobuf:"bytes,2,rep,name=product_ids,json=productIds,proto3" json:"product_ids,omitempty"`
 	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
 	Limit         int32                  `protobuf:"varint,4,opt,name=limit,proto3" json:"limit,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -387,7 +268,7 @@ type FindWishlistItemWithPaginationRequest struct {
 
 func (x *FindWishlistItemWithPaginationRequest) Reset() {
 	*x = FindWishlistItemWithPaginationRequest{}
-	mi := &file_v1_commerce_request_proto_msgTypes[6]
+	mi := &file_v1_commerce_request_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -399,7 +280,7 @@ func (x *FindWishlistItemWithPaginationRequest) String() string {
 func (*FindWishlistItemWithPaginationRequest) ProtoMessage() {}
 
 func (x *FindWishlistItemWithPaginationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_commerce_request_proto_msgTypes[6]
+	mi := &file_v1_commerce_request_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -412,7 +293,7 @@ func (x *FindWishlistItemWithPaginationRequest) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use FindWishlistItemWithPaginationRequest.ProtoReflect.Descriptor instead.
 func (*FindWishlistItemWithPaginationRequest) Descriptor() ([]byte, []int) {
-	return file_v1_commerce_request_proto_rawDescGZIP(), []int{6}
+	return file_v1_commerce_request_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *FindWishlistItemWithPaginationRequest) GetUserId() string {
@@ -452,7 +333,7 @@ type DeleteWishlistItemByIdRequest struct {
 
 func (x *DeleteWishlistItemByIdRequest) Reset() {
 	*x = DeleteWishlistItemByIdRequest{}
-	mi := &file_v1_commerce_request_proto_msgTypes[7]
+	mi := &file_v1_commerce_request_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -464,7 +345,7 @@ func (x *DeleteWishlistItemByIdRequest) String() string {
 func (*DeleteWishlistItemByIdRequest) ProtoMessage() {}
 
 func (x *DeleteWishlistItemByIdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_commerce_request_proto_msgTypes[7]
+	mi := &file_v1_commerce_request_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -477,7 +358,7 @@ func (x *DeleteWishlistItemByIdRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteWishlistItemByIdRequest.ProtoReflect.Descriptor instead.
 func (*DeleteWishlistItemByIdRequest) Descriptor() ([]byte, []int) {
-	return file_v1_commerce_request_proto_rawDescGZIP(), []int{7}
+	return file_v1_commerce_request_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *DeleteWishlistItemByIdRequest) GetId() string {
@@ -491,36 +372,32 @@ var File_v1_commerce_request_proto protoreflect.FileDescriptor
 
 const file_v1_commerce_request_proto_rawDesc = "" +
 	"\n" +
-	"\x19v1/commerce/request.proto\x12\bcommerce\"u\n" +
-	"\x15CreateCartItemRequest\x12\x1c\n" +
-	"\tproductId\x18\x01 \x01(\tR\tproductId\x12\x16\n" +
-	"\x06userId\x18\x02 \x01(\tR\x06userId\x12\x10\n" +
-	"\x03qty\x18\x03 \x01(\x05R\x03qty\x12\x14\n" +
-	"\x05price\x18\x04 \x01(\x01R\x05price\"\x89\x01\n" +
-	"\x19UpdateCartItemByIdRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1c\n" +
-	"\tproductId\x18\x02 \x01(\tR\tproductId\x12\x16\n" +
-	"\x06userId\x18\x03 \x01(\tR\x06userId\x12\x10\n" +
-	"\x03qty\x18\x04 \x01(\x05R\x03qty\x12\x14\n" +
-	"\x05price\x18\x05 \x01(\x01R\x05price\"\x86\x01\n" +
-	"\"FindCartItemsWithPaginationRequest\x12\x16\n" +
-	"\x06userId\x18\x01 \x01(\tR\x06userId\x12\x1e\n" +
+	"\x19v1/commerce/request.proto\x12\bcommerce\x1a external/validate/validate.proto\"\xa7\x01\n" +
+	"\x10AddToCartRequest\x12)\n" +
 	"\n" +
-	"productIds\x18\x02 \x03(\tR\n" +
+	"product_id\x18\x01 \x01(\tB\n" +
+	"\xfaB\ar\x05\x10\x01\xd0\x01\x00R\tproductId\x12#\n" +
+	"\auser_id\x18\x02 \x01(\tB\n" +
+	"\xfaB\ar\x05\x10\x01\xd0\x01\x00R\x06userId\x12\x1b\n" +
+	"\x03qty\x18\x03 \x01(\x05B\t\xfaB\x06\x1a\x04 \x00@\x00R\x03qty\x12&\n" +
+	"\x05price\x18\x04 \x01(\x01B\x10\xfaB\r\x12\v!\x00\x00\x00\x00\x00\x00\x00\x00@\x00R\x05price\"\x9d\x01\n" +
+	"\"FindCartItemsWithPaginationRequest\x12#\n" +
+	"\auser_id\x18\x01 \x01(\tB\n" +
+	"\xfaB\ar\x05\x10\x01\xd0\x01\x00R\x06userId\x12(\n" +
+	"\n" +
+	"productIds\x18\x02 \x03(\tB\b\xfaB\x05\x92\x01\x02(\x01R\n" +
 	"productIds\x12\x12\n" +
 	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x14\n" +
-	"\x05limit\x18\x04 \x01(\x05R\x05limit\")\n" +
-	"\x17FindCartItemByIdRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"+\n" +
+	"\x05limit\x18\x04 \x01(\x05R\x05limit\"+\n" +
 	"\x19DeleteCartItemByIdRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"Q\n" +
-	"\x19CreateWishlistItemRequest\x12\x1c\n" +
-	"\tproductId\x18\x01 \x01(\tR\tproductId\x12\x16\n" +
-	"\x06userId\x18\x02 \x01(\tR\x06userId\"\x89\x01\n" +
-	"%FindWishlistItemWithPaginationRequest\x12\x16\n" +
-	"\x06userId\x18\x01 \x01(\tR\x06userId\x12\x1e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"N\n" +
+	"\x14AddToWishlistRequest\x12\x1d\n" +
 	"\n" +
-	"productIds\x18\x02 \x03(\tR\n" +
+	"product_id\x18\x01 \x01(\tR\tproductId\x12\x17\n" +
+	"\auser_id\x18\x02 \x01(\tR\x06userId\"\x8b\x01\n" +
+	"%FindWishlistItemWithPaginationRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1f\n" +
+	"\vproduct_ids\x18\x02 \x03(\tR\n" +
 	"productIds\x12\x12\n" +
 	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x14\n" +
 	"\x05limit\x18\x04 \x01(\x05R\x05limit\"/\n" +
@@ -540,16 +417,14 @@ func file_v1_commerce_request_proto_rawDescGZIP() []byte {
 	return file_v1_commerce_request_proto_rawDescData
 }
 
-var file_v1_commerce_request_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_v1_commerce_request_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_v1_commerce_request_proto_goTypes = []any{
-	(*CreateCartItemRequest)(nil),                 // 0: commerce.CreateCartItemRequest
-	(*UpdateCartItemByIdRequest)(nil),             // 1: commerce.UpdateCartItemByIdRequest
-	(*FindCartItemsWithPaginationRequest)(nil),    // 2: commerce.FindCartItemsWithPaginationRequest
-	(*FindCartItemByIdRequest)(nil),               // 3: commerce.FindCartItemByIdRequest
-	(*DeleteCartItemByIdRequest)(nil),             // 4: commerce.DeleteCartItemByIdRequest
-	(*CreateWishlistItemRequest)(nil),             // 5: commerce.CreateWishlistItemRequest
-	(*FindWishlistItemWithPaginationRequest)(nil), // 6: commerce.FindWishlistItemWithPaginationRequest
-	(*DeleteWishlistItemByIdRequest)(nil),         // 7: commerce.DeleteWishlistItemByIdRequest
+	(*AddToCartRequest)(nil),                      // 0: commerce.AddToCartRequest
+	(*FindCartItemsWithPaginationRequest)(nil),    // 1: commerce.FindCartItemsWithPaginationRequest
+	(*DeleteCartItemByIdRequest)(nil),             // 2: commerce.DeleteCartItemByIdRequest
+	(*AddToWishlistRequest)(nil),                  // 3: commerce.AddToWishlistRequest
+	(*FindWishlistItemWithPaginationRequest)(nil), // 4: commerce.FindWishlistItemWithPaginationRequest
+	(*DeleteWishlistItemByIdRequest)(nil),         // 5: commerce.DeleteWishlistItemByIdRequest
 }
 var file_v1_commerce_request_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -570,7 +445,7 @@ func file_v1_commerce_request_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_commerce_request_proto_rawDesc), len(file_v1_commerce_request_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

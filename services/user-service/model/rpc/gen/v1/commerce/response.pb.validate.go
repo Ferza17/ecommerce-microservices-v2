@@ -35,44 +35,75 @@ var (
 	_ = sort.Sort
 )
 
-// Validate checks the field values on CreateCartItemResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *CreateCartItemResponse) Validate() error {
+// Validate checks the field values on AddToCartResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *AddToCartResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on CreateCartItemResponse with the rules
+// ValidateAll checks the field values on AddToCartResponse with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// CreateCartItemResponseMultiError, or nil if none found.
-func (m *CreateCartItemResponse) ValidateAll() error {
+// AddToCartResponseMultiError, or nil if none found.
+func (m *AddToCartResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *CreateCartItemResponse) validate(all bool) error {
+func (m *AddToCartResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	// no validation rules for Id
+	// no validation rules for Status
+
+	// no validation rules for Message
+
+	if all {
+		switch v := interface{}(m.GetData()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AddToCartResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AddToCartResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AddToCartResponseValidationError{
+				field:  "Data",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if len(errors) > 0 {
-		return CreateCartItemResponseMultiError(errors)
+		return AddToCartResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// CreateCartItemResponseMultiError is an error wrapping multiple validation
-// errors returned by CreateCartItemResponse.ValidateAll() if the designated
-// constraints aren't met.
-type CreateCartItemResponseMultiError []error
+// AddToCartResponseMultiError is an error wrapping multiple validation errors
+// returned by AddToCartResponse.ValidateAll() if the designated constraints
+// aren't met.
+type AddToCartResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m CreateCartItemResponseMultiError) Error() string {
+func (m AddToCartResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -81,11 +112,11 @@ func (m CreateCartItemResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m CreateCartItemResponseMultiError) AllErrors() []error { return m }
+func (m AddToCartResponseMultiError) AllErrors() []error { return m }
 
-// CreateCartItemResponseValidationError is the validation error returned by
-// CreateCartItemResponse.Validate if the designated constraints aren't met.
-type CreateCartItemResponseValidationError struct {
+// AddToCartResponseValidationError is the validation error returned by
+// AddToCartResponse.Validate if the designated constraints aren't met.
+type AddToCartResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -93,24 +124,24 @@ type CreateCartItemResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e CreateCartItemResponseValidationError) Field() string { return e.field }
+func (e AddToCartResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e CreateCartItemResponseValidationError) Reason() string { return e.reason }
+func (e AddToCartResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e CreateCartItemResponseValidationError) Cause() error { return e.cause }
+func (e AddToCartResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e CreateCartItemResponseValidationError) Key() bool { return e.key }
+func (e AddToCartResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e CreateCartItemResponseValidationError) ErrorName() string {
-	return "CreateCartItemResponseValidationError"
+func (e AddToCartResponseValidationError) ErrorName() string {
+	return "AddToCartResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e CreateCartItemResponseValidationError) Error() string {
+func (e AddToCartResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -122,14 +153,14 @@ func (e CreateCartItemResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sCreateCartItemResponse.%s: %s%s",
+		"invalid %sAddToCartResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = CreateCartItemResponseValidationError{}
+var _ error = AddToCartResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -137,111 +168,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = CreateCartItemResponseValidationError{}
-
-// Validate checks the field values on UpdateCartItemByIdResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *UpdateCartItemByIdResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on UpdateCartItemByIdResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// UpdateCartItemByIdResponseMultiError, or nil if none found.
-func (m *UpdateCartItemByIdResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *UpdateCartItemByIdResponse) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Id
-
-	if len(errors) > 0 {
-		return UpdateCartItemByIdResponseMultiError(errors)
-	}
-
-	return nil
-}
-
-// UpdateCartItemByIdResponseMultiError is an error wrapping multiple
-// validation errors returned by UpdateCartItemByIdResponse.ValidateAll() if
-// the designated constraints aren't met.
-type UpdateCartItemByIdResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m UpdateCartItemByIdResponseMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m UpdateCartItemByIdResponseMultiError) AllErrors() []error { return m }
-
-// UpdateCartItemByIdResponseValidationError is the validation error returned
-// by UpdateCartItemByIdResponse.Validate if the designated constraints aren't met.
-type UpdateCartItemByIdResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e UpdateCartItemByIdResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e UpdateCartItemByIdResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e UpdateCartItemByIdResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e UpdateCartItemByIdResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e UpdateCartItemByIdResponseValidationError) ErrorName() string {
-	return "UpdateCartItemByIdResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e UpdateCartItemByIdResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sUpdateCartItemByIdResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = UpdateCartItemByIdResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = UpdateCartItemByIdResponseValidationError{}
+} = AddToCartResponseValidationError{}
 
 // Validate checks the field values on FindCartItemsWithPaginationResponse with
 // the rules defined in the proto definition for this message. If any rules
@@ -266,45 +193,38 @@ func (m *FindCartItemsWithPaginationResponse) validate(all bool) error {
 
 	var errors []error
 
-	for idx, item := range m.GetItems() {
-		_, _ = idx, item
+	// no validation rules for Status
 
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, FindCartItemsWithPaginationResponseValidationError{
-						field:  fmt.Sprintf("Items[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, FindCartItemsWithPaginationResponseValidationError{
-						field:  fmt.Sprintf("Items[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return FindCartItemsWithPaginationResponseValidationError{
-					field:  fmt.Sprintf("Items[%v]", idx),
+	// no validation rules for Message
+
+	if all {
+		switch v := interface{}(m.GetData()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, FindCartItemsWithPaginationResponseValidationError{
+					field:  "Data",
 					reason: "embedded message failed validation",
 					cause:  err,
-				}
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, FindCartItemsWithPaginationResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
 			}
 		}
-
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return FindCartItemsWithPaginationResponseValidationError{
+				field:  "Data",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
 	}
-
-	// no validation rules for Page
-
-	// no validation rules for Limit
-
-	// no validation rules for Total
 
 	if len(errors) > 0 {
 		return FindCartItemsWithPaginationResponseMultiError(errors)
@@ -410,7 +330,38 @@ func (m *DeleteCartItemByIdResponse) validate(all bool) error {
 
 	var errors []error
 
+	// no validation rules for Status
+
 	// no validation rules for Message
+
+	if all {
+		switch v := interface{}(m.GetData()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, DeleteCartItemByIdResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, DeleteCartItemByIdResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return DeleteCartItemByIdResponseValidationError{
+				field:  "Data",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if len(errors) > 0 {
 		return DeleteCartItemByIdResponseMultiError(errors)
@@ -492,44 +443,75 @@ var _ interface {
 	ErrorName() string
 } = DeleteCartItemByIdResponseValidationError{}
 
-// Validate checks the field values on CreateWishlistItemResponse with the
-// rules defined in the proto definition for this message. If any rules are
+// Validate checks the field values on AddToWishlistResponse with the rules
+// defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *CreateWishlistItemResponse) Validate() error {
+func (m *AddToWishlistResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on CreateWishlistItemResponse with the
-// rules defined in the proto definition for this message. If any rules are
+// ValidateAll checks the field values on AddToWishlistResponse with the rules
+// defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// CreateWishlistItemResponseMultiError, or nil if none found.
-func (m *CreateWishlistItemResponse) ValidateAll() error {
+// AddToWishlistResponseMultiError, or nil if none found.
+func (m *AddToWishlistResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *CreateWishlistItemResponse) validate(all bool) error {
+func (m *AddToWishlistResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	// no validation rules for Id
+	// no validation rules for Status
+
+	// no validation rules for Message
+
+	if all {
+		switch v := interface{}(m.GetData()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AddToWishlistResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AddToWishlistResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AddToWishlistResponseValidationError{
+				field:  "Data",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if len(errors) > 0 {
-		return CreateWishlistItemResponseMultiError(errors)
+		return AddToWishlistResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// CreateWishlistItemResponseMultiError is an error wrapping multiple
-// validation errors returned by CreateWishlistItemResponse.ValidateAll() if
-// the designated constraints aren't met.
-type CreateWishlistItemResponseMultiError []error
+// AddToWishlistResponseMultiError is an error wrapping multiple validation
+// errors returned by AddToWishlistResponse.ValidateAll() if the designated
+// constraints aren't met.
+type AddToWishlistResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m CreateWishlistItemResponseMultiError) Error() string {
+func (m AddToWishlistResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -538,11 +520,11 @@ func (m CreateWishlistItemResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m CreateWishlistItemResponseMultiError) AllErrors() []error { return m }
+func (m AddToWishlistResponseMultiError) AllErrors() []error { return m }
 
-// CreateWishlistItemResponseValidationError is the validation error returned
-// by CreateWishlistItemResponse.Validate if the designated constraints aren't met.
-type CreateWishlistItemResponseValidationError struct {
+// AddToWishlistResponseValidationError is the validation error returned by
+// AddToWishlistResponse.Validate if the designated constraints aren't met.
+type AddToWishlistResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -550,24 +532,24 @@ type CreateWishlistItemResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e CreateWishlistItemResponseValidationError) Field() string { return e.field }
+func (e AddToWishlistResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e CreateWishlistItemResponseValidationError) Reason() string { return e.reason }
+func (e AddToWishlistResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e CreateWishlistItemResponseValidationError) Cause() error { return e.cause }
+func (e AddToWishlistResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e CreateWishlistItemResponseValidationError) Key() bool { return e.key }
+func (e AddToWishlistResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e CreateWishlistItemResponseValidationError) ErrorName() string {
-	return "CreateWishlistItemResponseValidationError"
+func (e AddToWishlistResponseValidationError) ErrorName() string {
+	return "AddToWishlistResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e CreateWishlistItemResponseValidationError) Error() string {
+func (e AddToWishlistResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -579,14 +561,14 @@ func (e CreateWishlistItemResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sCreateWishlistItemResponse.%s: %s%s",
+		"invalid %sAddToWishlistResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = CreateWishlistItemResponseValidationError{}
+var _ error = AddToWishlistResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -594,7 +576,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = CreateWishlistItemResponseValidationError{}
+} = AddToWishlistResponseValidationError{}
 
 // Validate checks the field values on FindWishlistItemWithPaginationResponse
 // with the rules defined in the proto definition for this message. If any
@@ -620,43 +602,38 @@ func (m *FindWishlistItemWithPaginationResponse) validate(all bool) error {
 
 	var errors []error
 
-	for idx, item := range m.GetItems() {
-		_, _ = idx, item
+	// no validation rules for Status
 
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, FindWishlistItemWithPaginationResponseValidationError{
-						field:  fmt.Sprintf("Items[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, FindWishlistItemWithPaginationResponseValidationError{
-						field:  fmt.Sprintf("Items[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return FindWishlistItemWithPaginationResponseValidationError{
-					field:  fmt.Sprintf("Items[%v]", idx),
+	// no validation rules for Message
+
+	if all {
+		switch v := interface{}(m.GetData()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, FindWishlistItemWithPaginationResponseValidationError{
+					field:  "Data",
 					reason: "embedded message failed validation",
 					cause:  err,
-				}
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, FindWishlistItemWithPaginationResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
 			}
 		}
-
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return FindWishlistItemWithPaginationResponseValidationError{
+				field:  "Data",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
 	}
-
-	// no validation rules for Page
-
-	// no validation rules for Limit
 
 	if len(errors) > 0 {
 		return FindWishlistItemWithPaginationResponseMultiError(errors)
@@ -762,7 +739,38 @@ func (m *DeleteWishlistItemByIdResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for UserId
+	// no validation rules for Status
+
+	// no validation rules for Message
+
+	if all {
+		switch v := interface{}(m.GetData()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, DeleteWishlistItemByIdResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, DeleteWishlistItemByIdResponseValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return DeleteWishlistItemByIdResponseValidationError{
+				field:  "Data",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if len(errors) > 0 {
 		return DeleteWishlistItemByIdResponseMultiError(errors)
@@ -844,3 +852,780 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = DeleteWishlistItemByIdResponseValidationError{}
+
+// Validate checks the field values on AddToCartResponse_AddToCartResponseData
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *AddToCartResponse_AddToCartResponseData) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// AddToCartResponse_AddToCartResponseData with the rules defined in the proto
+// definition for this message. If any rules are violated, the result is a
+// list of violation errors wrapped in
+// AddToCartResponse_AddToCartResponseDataMultiError, or nil if none found.
+func (m *AddToCartResponse_AddToCartResponseData) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AddToCartResponse_AddToCartResponseData) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return AddToCartResponse_AddToCartResponseDataMultiError(errors)
+	}
+
+	return nil
+}
+
+// AddToCartResponse_AddToCartResponseDataMultiError is an error wrapping
+// multiple validation errors returned by
+// AddToCartResponse_AddToCartResponseData.ValidateAll() if the designated
+// constraints aren't met.
+type AddToCartResponse_AddToCartResponseDataMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AddToCartResponse_AddToCartResponseDataMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AddToCartResponse_AddToCartResponseDataMultiError) AllErrors() []error { return m }
+
+// AddToCartResponse_AddToCartResponseDataValidationError is the validation
+// error returned by AddToCartResponse_AddToCartResponseData.Validate if the
+// designated constraints aren't met.
+type AddToCartResponse_AddToCartResponseDataValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AddToCartResponse_AddToCartResponseDataValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AddToCartResponse_AddToCartResponseDataValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AddToCartResponse_AddToCartResponseDataValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AddToCartResponse_AddToCartResponseDataValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AddToCartResponse_AddToCartResponseDataValidationError) ErrorName() string {
+	return "AddToCartResponse_AddToCartResponseDataValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AddToCartResponse_AddToCartResponseDataValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAddToCartResponse_AddToCartResponseData.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AddToCartResponse_AddToCartResponseDataValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AddToCartResponse_AddToCartResponseDataValidationError{}
+
+// Validate checks the field values on
+// FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseDataMultiError,
+// or nil if none found.
+func (m *FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetItems() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseDataValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseDataValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseDataValidationError{
+					field:  fmt.Sprintf("Items[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	// no validation rules for Page
+
+	// no validation rules for Limit
+
+	// no validation rules for Total
+
+	if len(errors) > 0 {
+		return FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseDataMultiError(errors)
+	}
+
+	return nil
+}
+
+// FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseDataMultiError
+// is an error wrapping multiple validation errors returned by
+// FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData.ValidateAll()
+// if the designated constraints aren't met.
+type FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseDataMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseDataMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseDataMultiError) AllErrors() []error {
+	return m
+}
+
+// FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseDataValidationError
+// is the validation error returned by
+// FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData.Validate
+// if the designated constraints aren't met.
+type FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseDataValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseDataValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseDataValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseDataValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseDataValidationError) Key() bool {
+	return e.key
+}
+
+// ErrorName returns error name.
+func (e FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseDataValidationError) ErrorName() string {
+	return "FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseDataValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseDataValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sFindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseData.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseDataValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = FindCartItemsWithPaginationResponse_FindCartItemsWithPaginationResponseDataValidationError{}
+
+// Validate checks the field values on
+// DeleteCartItemByIdResponse_DeleteCartItemByIdResponseData with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DeleteCartItemByIdResponse_DeleteCartItemByIdResponseData) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// DeleteCartItemByIdResponse_DeleteCartItemByIdResponseData with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DeleteCartItemByIdResponse_DeleteCartItemByIdResponseDataMultiError, or nil
+// if none found.
+func (m *DeleteCartItemByIdResponse_DeleteCartItemByIdResponseData) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteCartItemByIdResponse_DeleteCartItemByIdResponseData) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Message
+
+	if len(errors) > 0 {
+		return DeleteCartItemByIdResponse_DeleteCartItemByIdResponseDataMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeleteCartItemByIdResponse_DeleteCartItemByIdResponseDataMultiError is an
+// error wrapping multiple validation errors returned by
+// DeleteCartItemByIdResponse_DeleteCartItemByIdResponseData.ValidateAll() if
+// the designated constraints aren't met.
+type DeleteCartItemByIdResponse_DeleteCartItemByIdResponseDataMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteCartItemByIdResponse_DeleteCartItemByIdResponseDataMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteCartItemByIdResponse_DeleteCartItemByIdResponseDataMultiError) AllErrors() []error {
+	return m
+}
+
+// DeleteCartItemByIdResponse_DeleteCartItemByIdResponseDataValidationError is
+// the validation error returned by
+// DeleteCartItemByIdResponse_DeleteCartItemByIdResponseData.Validate if the
+// designated constraints aren't met.
+type DeleteCartItemByIdResponse_DeleteCartItemByIdResponseDataValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteCartItemByIdResponse_DeleteCartItemByIdResponseDataValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e DeleteCartItemByIdResponse_DeleteCartItemByIdResponseDataValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e DeleteCartItemByIdResponse_DeleteCartItemByIdResponseDataValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e DeleteCartItemByIdResponse_DeleteCartItemByIdResponseDataValidationError) Key() bool {
+	return e.key
+}
+
+// ErrorName returns error name.
+func (e DeleteCartItemByIdResponse_DeleteCartItemByIdResponseDataValidationError) ErrorName() string {
+	return "DeleteCartItemByIdResponse_DeleteCartItemByIdResponseDataValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteCartItemByIdResponse_DeleteCartItemByIdResponseDataValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteCartItemByIdResponse_DeleteCartItemByIdResponseData.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteCartItemByIdResponse_DeleteCartItemByIdResponseDataValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteCartItemByIdResponse_DeleteCartItemByIdResponseDataValidationError{}
+
+// Validate checks the field values on
+// AddToWishlistResponse_AddToWishlistResponseData with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *AddToWishlistResponse_AddToWishlistResponseData) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// AddToWishlistResponse_AddToWishlistResponseData with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in
+// AddToWishlistResponse_AddToWishlistResponseDataMultiError, or nil if none found.
+func (m *AddToWishlistResponse_AddToWishlistResponseData) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AddToWishlistResponse_AddToWishlistResponseData) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return AddToWishlistResponse_AddToWishlistResponseDataMultiError(errors)
+	}
+
+	return nil
+}
+
+// AddToWishlistResponse_AddToWishlistResponseDataMultiError is an error
+// wrapping multiple validation errors returned by
+// AddToWishlistResponse_AddToWishlistResponseData.ValidateAll() if the
+// designated constraints aren't met.
+type AddToWishlistResponse_AddToWishlistResponseDataMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AddToWishlistResponse_AddToWishlistResponseDataMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AddToWishlistResponse_AddToWishlistResponseDataMultiError) AllErrors() []error { return m }
+
+// AddToWishlistResponse_AddToWishlistResponseDataValidationError is the
+// validation error returned by
+// AddToWishlistResponse_AddToWishlistResponseData.Validate if the designated
+// constraints aren't met.
+type AddToWishlistResponse_AddToWishlistResponseDataValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AddToWishlistResponse_AddToWishlistResponseDataValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e AddToWishlistResponse_AddToWishlistResponseDataValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e AddToWishlistResponse_AddToWishlistResponseDataValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AddToWishlistResponse_AddToWishlistResponseDataValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AddToWishlistResponse_AddToWishlistResponseDataValidationError) ErrorName() string {
+	return "AddToWishlistResponse_AddToWishlistResponseDataValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AddToWishlistResponse_AddToWishlistResponseDataValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAddToWishlistResponse_AddToWishlistResponseData.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AddToWishlistResponse_AddToWishlistResponseDataValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AddToWishlistResponse_AddToWishlistResponseDataValidationError{}
+
+// Validate checks the field values on
+// FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataMultiError,
+// or nil if none found.
+func (m *FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetItems() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataValidationError{
+					field:  fmt.Sprintf("Items[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	// no validation rules for Page
+
+	// no validation rules for Limit
+
+	if len(errors) > 0 {
+		return FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataMultiError(errors)
+	}
+
+	return nil
+}
+
+// FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataMultiError
+// is an error wrapping multiple validation errors returned by
+// FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData.ValidateAll()
+// if the designated constraints aren't met.
+type FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataMultiError) AllErrors() []error {
+	return m
+}
+
+// FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataValidationError
+// is the validation error returned by
+// FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData.Validate
+// if the designated constraints aren't met.
+type FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataValidationError) Key() bool {
+	return e.key
+}
+
+// ErrorName returns error name.
+func (e FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataValidationError) ErrorName() string {
+	return "FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sFindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseData.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = FindWishlistItemWithPaginationResponse_FindWishlistItemWithPaginationResponseDataValidationError{}
+
+// Validate checks the field values on
+// DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseData with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseData) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseData with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseDataMultiError,
+// or nil if none found.
+func (m *DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseData) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseData) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for UserId
+
+	if len(errors) > 0 {
+		return DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseDataMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseDataMultiError
+// is an error wrapping multiple validation errors returned by
+// DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseData.ValidateAll()
+// if the designated constraints aren't met.
+type DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseDataMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseDataMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseDataMultiError) AllErrors() []error {
+	return m
+}
+
+// DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseDataValidationError
+// is the validation error returned by
+// DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseData.Validate
+// if the designated constraints aren't met.
+type DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseDataValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseDataValidationError) Field() string {
+	return e.field
+}
+
+// Reason function returns reason value.
+func (e DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseDataValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseDataValidationError) Cause() error {
+	return e.cause
+}
+
+// Key function returns key value.
+func (e DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseDataValidationError) Key() bool {
+	return e.key
+}
+
+// ErrorName returns error name.
+func (e DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseDataValidationError) ErrorName() string {
+	return "DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseDataValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseDataValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseData.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseDataValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteWishlistItemByIdResponse_DeleteWishlistItemByIdResponseDataValidationError{}

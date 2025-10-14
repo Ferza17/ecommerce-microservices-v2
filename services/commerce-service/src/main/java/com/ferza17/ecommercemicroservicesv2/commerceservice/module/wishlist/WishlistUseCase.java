@@ -8,25 +8,33 @@ public class WishlistUseCase {
 
     public Response.FindWishlistItemWithPaginationResponse findWishlistItemWithPagination(Request.FindWishlistItemWithPaginationRequest request) {
         try {
-            // TODO: Fetch Repo Here
+            // TODO:
+            // 1. Find in DB
             return Response.FindWishlistItemWithPaginationResponse.newBuilder().build();
         } catch (Exception ex) {
             return Response.FindWishlistItemWithPaginationResponse.newBuilder().build();
         }
     }
 
-    public Response.CreateWishlistItemResponse createWishlistItem(Request.CreateWishlistItemRequest request) {
+    public Response.AddToWishlistResponse addToWishlist(Request.AddToWishlistRequest request) {
         try {
-            // TODO: Fetch Repo Here
-            return Response.CreateWishlistItemResponse.newBuilder().build();
+            // TODO:
+            // 1. Validate in DB
+            // 2. Insert Via Sink Connector Event
+            // 3. Insert Via Sink Connector Commerce Carts
+            return Response.AddToWishlistResponse.newBuilder().build();
         } catch (Exception ex) {
-            return Response.CreateWishlistItemResponse.newBuilder().build();
+            return Response.AddToWishlistResponse.newBuilder().build();
         }
     }
+
 
     public Response.DeleteWishlistItemByIdResponse deleteCartItemById(Request.DeleteWishlistItemByIdRequest request) {
         try {
-            // TODO: Fetch Repo Here
+            // TODO:
+            // 1. Validate in DB
+            // 2. Delete In Collection Event Stores
+            // 3. Delete In Collection Cart Item
             return Response.DeleteWishlistItemByIdResponse.newBuilder().build();
         } catch (Exception ex) {
             return Response.DeleteWishlistItemByIdResponse.newBuilder().build();

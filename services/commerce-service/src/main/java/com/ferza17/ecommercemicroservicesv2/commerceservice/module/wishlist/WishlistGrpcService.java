@@ -30,13 +30,13 @@ public class WishlistGrpcService extends WishlistServiceGrpc.WishlistServiceImpl
     }
 
     @Override
-    public void createWishlistItem(Request.CreateWishlistItemRequest request, io.grpc.stub.StreamObserver<Response.CreateWishlistItemResponse> responseObserver) {
+    public void addToWishlist(Request.AddToWishlistRequest request, io.grpc.stub.StreamObserver<Response.AddToWishlistResponse> responseObserver) {
         try {
             // TODO:
             // 1. Trace Span
             // 2. Get RequestIDFilter
             // 3. Validate
-            Response.CreateWishlistItemResponse response = this.useCase.createWishlistItem(request);
+            Response.AddToWishlistResponse response = this.useCase.addToWishlist(request);
             responseObserver.onNext(response);
             responseObserver.onCompleted();
         } catch (Exception e) {

@@ -2,31 +2,21 @@ syntax = "proto3";
 package commerce;
 option java_package = "com.ferza17.ecommercemicroservicesv2.proto.v1.commerce";
 
-// CART ITEM REQUEST DEFINITION
-message CreateCartItemRequest {
-  string productId = 1;
-  string userId = 2;
-  int32 qty = 3;
-  double price = 4;
-}
+import "external/validate/validate.proto";
 
-message UpdateCartItemByIdRequest {
-  string id = 1;
-  string productId = 2;
-  string userId = 3;
-  int32 qty = 4;
-  double price = 5;
+// CART ITEM REQUEST DEFINITION
+message AddToCartRequest {
+  string product_id = 1 [(validate.rules).string = {ignore_empty: false, min_len:1}];
+  string user_id = 2 [(validate.rules).string = {ignore_empty: false, min_len:1}];
+  int32 qty = 3 [(validate.rules).int32 = {ignore_empty: false, gt:0}];
+  double price = 4 [(validate.rules).double = {ignore_empty: false, gt:0}];
 }
 
 message FindCartItemsWithPaginationRequest {
-  string userId = 1;
-  repeated string productIds = 2;
+  string user_id = 1 [(validate.rules).string = {ignore_empty: false, min_len:1}];
+  repeated string productIds = 2 [(validate.rules).repeated = {ignore_empty: true}];
   int32 page = 3;
   int32 limit = 4;
-}
-
-message FindCartItemByIdRequest {
-  string id = 1;
 }
 
 message DeleteCartItemByIdRequest {
@@ -34,14 +24,14 @@ message DeleteCartItemByIdRequest {
 }
 
 // WISHLIST ITEM REQUEST DEFINITION
-message CreateWishlistItemRequest {
-  string productId = 1;
-  string userId = 2;
+message AddToWishlistRequest {
+  string product_id = 1;
+  string user_id = 2;
 }
 
 message FindWishlistItemWithPaginationRequest {
-  string userId = 1;
-  repeated string productIds = 2;
+  string user_id = 1;
+  repeated string product_ids = 2;
   int32 page = 3;
   int32 limit = 4;
 }

@@ -12,26 +12,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/commerce/carts")
 public class CartRestController {
     private final CartUseCase cartUseCase;
-
     public CartRestController(CartUseCase cartUseCase) {
         this.cartUseCase = cartUseCase;
     }
 
 
     @PostMapping("/items")
-    public ResponseEntity<Response.CreateCartItemResponse> createCartItem(@RequestBody Request.CreateCartItemRequest request) {
+    public ResponseEntity<Response.AddToCartResponse> addToCart(@RequestBody Request.AddToCartRequest request) {
         try {
-            Response.CreateCartItemResponse response = this.cartUseCase.createCartItem(request);
-            return ResponseEntity.ok(response);
-        } catch (Exception ex) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
-    @GetMapping("/items/{id}")
-    public ResponseEntity<Model.CartItem> findCartItemById(@PathVariable String id) {
-        try {
-            Model.CartItem response = this.cartUseCase.findCartItemById(Request.FindCartItemByIdRequest.newBuilder().setId(id).build());
+            Response.AddToCartResponse response = this.cartUseCase.addToCart(request);
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
             return ResponseEntity.internalServerError().build();
@@ -45,16 +34,6 @@ public class CartRestController {
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
             return ResponseEntity.internalServerError().build();
-        }
-    }
-
-    @PutMapping("/items/{id}")
-    public ResponseEntity<Response.UpdateCartItemByIdResponse> updateCartItemById(@PathVariable String id, @RequestBody Request.UpdateCartItemByIdRequest request) {
-        try {
-            Response.UpdateCartItemByIdResponse response = this.cartUseCase.updateCartItemById(request.toBuilder().setId(id).build());
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 
