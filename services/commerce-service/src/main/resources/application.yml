@@ -21,10 +21,8 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
-
   cloud:
     consul:
-
       host: localhost
       port: 8500
 
@@ -37,19 +35,58 @@ spring:
         enabled: true
         instance-id: commerce-service
         serviceName: ${spring.application.name}
-        management-port: ${server.grpc.port}
+        management-port: ${spring.grpc.server.port}
         management-tags:
           - service
           - kafka-subscriber
         healthCheckPath: ${management.server.servlet.context-path}/check
         healthCheckInterval: 15s
 
+  grpc:
+    server:
+      enabled: true
+      host: 0.0.0.0
+      port: 50051
+      shutdown-grace-period: 15s
+
+      reflection:
+        enabled: true
+
+      observations:
+        enabled: true
+
+      exception-handling:
+        enabled: true
+
+      security:
+        csrf:
+          enabled: false
+
+      servlet:
+        enabled: true
+
+      health:
+        actuator:
+          enabled: true
+          update-overall-health: true
+          update-initial-delay: 5s
+          update-rate: 5s
+
+      ssl:
+        secure: false
+        client-auth: none
+
+    client:
+      channels:
+        product:
+          address: 127.0.0.1:50055
+          negotiation-type: plaintext
+        user:
+          address: 127.0.0.1:50056
+          negotiation-type: plaintext
+
 server:
   port: 40051
-
-  grpc:
-    port: 50051
-
   metric:
     port: 30051
 

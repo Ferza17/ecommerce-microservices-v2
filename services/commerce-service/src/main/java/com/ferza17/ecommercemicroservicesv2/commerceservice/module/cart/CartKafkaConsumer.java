@@ -1,14 +1,20 @@
 package com.ferza17.ecommercemicroservicesv2.commerceservice.module.cart;
 
+import io.opentelemetry.sdk.OpenTelemetrySdk;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CartKafkaConsumer {
     private final CartUseCase cartUseCase;
-    public CartKafkaConsumer(CartUseCase cartUseCase) {
+    private final OpenTelemetrySdk openTelemetrySdk;
+
+    public CartKafkaConsumer(CartUseCase cartUseCase, OpenTelemetrySdk openTelemetrySdk) {
         this.cartUseCase = cartUseCase;
+        this.openTelemetrySdk = openTelemetrySdk;
     }
+
+    // TODO: Start Span From Kafka Header
 
     @KafkaListener(topics = "snapshot-commerce-cart_created", groupId = "commerce-service")
     public void handleSnapshotCommerceCartCreated(String message) {

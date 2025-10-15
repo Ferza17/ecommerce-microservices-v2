@@ -2,11 +2,14 @@ package com.ferza17.ecommercemicroservicesv2.commerceservice.module.cart;
 
 import com.ferza17.ecommercemicroservicesv2.commerceservice.model.mapper.CartMapper;
 import com.ferza17.ecommercemicroservicesv2.commerceservice.model.mongodb.CartModelMongoDB;
+import com.ferza17.ecommercemicroservicesv2.commerceservice.service.grpc.ProductServiceGrpcClient;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Request;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Response;
+import io.opentelemetry.api.trace.Span;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import io.opentelemetry.api.OpenTelemetry;
 
 import java.time.Instant;
 
@@ -14,12 +17,18 @@ import java.time.Instant;
 @org.springframework.stereotype.Service
 public class CartUseCase {
     private final CartMongoDBRepository cartMongoDBRepository;
+    private final ProductServiceGrpcClient productServiceGrpcClient;
+    private final OpenTelemetry openTelemetry;
 
-    public CartUseCase(CartMongoDBRepository cartMongoDBRepository) {
+    public CartUseCase(CartMongoDBRepository cartMongoDBRepository, ProductServiceGrpcClient productServiceGrpcClient, OpenTelemetry openTelemetry) {
         this.cartMongoDBRepository = cartMongoDBRepository;
+        this.productServiceGrpcClient = productServiceGrpcClient;
+        this.openTelemetry = openTelemetry;
     }
 
     public Response.AddToCartResponse addToCart(Request.AddToCartRequest request) {
+        Span span = this.openTelemetry.getTracer(CartUseCase.class.getSimpleName()).spanBuilder("addToCart").startSpan();
+
         try {
             // TODO:
             // 1. Validate in DB
@@ -49,12 +58,15 @@ public class CartUseCase {
                     .setData(Response.AddToCartResponse.AddToCartResponseData.newBuilder().setId(cart.getId()).build())
                     .build();
         } catch (Exception ex) {
+            span.recordException(ex);
             return Response
                     .AddToCartResponse
                     .newBuilder()
                     .setStatus("failure")
                     .setMessage("addToCart")
                     .build();
+        }finally {
+            span.end();
         }
     }
 

@@ -2,8 +2,10 @@ package com.ferza17.ecommercemicroservicesv2.commerceservice.module.wishlist;
 
 import com.ferza17.ecommercemicroservicesv2.commerceservice.model.mapper.WishlistMapper;
 import com.ferza17.ecommercemicroservicesv2.commerceservice.model.mongodb.WishlistModelMongoDB;
+import com.ferza17.ecommercemicroservicesv2.commerceservice.service.grpc.ProductServiceGrpcClient;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Request;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Response;
+import io.opentelemetry.sdk.OpenTelemetrySdk;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,9 +15,14 @@ import java.time.Instant;
 @org.springframework.stereotype.Service
 public class WishlistUseCase {
     private final WishlistMongoDBRepository wishlistMongoDBRepository;
+    private final ProductServiceGrpcClient productServiceGrpcClient;
+    private final OpenTelemetrySdk openTelemetrySdk;
 
-    public WishlistUseCase(WishlistMongoDBRepository wishlistMongoDBRepository) {
+
+    public WishlistUseCase(WishlistMongoDBRepository wishlistMongoDBRepository, ProductServiceGrpcClient productServiceGrpcClient, OpenTelemetrySdk openTelemetrySdk) {
         this.wishlistMongoDBRepository = wishlistMongoDBRepository;
+        this.productServiceGrpcClient = productServiceGrpcClient;
+        this.openTelemetrySdk = openTelemetrySdk;
     }
 
     public Response.AddToWishlistResponse addToWishlist(Request.AddToWishlistRequest request) {

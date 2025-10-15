@@ -71,22 +71,16 @@
             <artifactId>spring-cloud-starter-consul-discovery</artifactId>
         </dependency>
 
-        <!-- GRPC -->
+        <!-- GRPC SERVER -->
         <dependency>
             <groupId>io.grpc</groupId>
-            <artifactId>grpc-services</artifactId>
+            <artifactId>grpc-all</artifactId>
+            <version>1.76.0</version>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
-            <artifactId>grpc-netty-shaded</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-protobuf</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-stub</artifactId>
+            <artifactId>grpc-census</artifactId>
+            <version>1.76.0</version>
         </dependency>
 
         <dependency>
@@ -97,12 +91,6 @@
             <groupId>org.springframework.grpc</groupId>
             <artifactId>spring-grpc-test</artifactId>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>build.buf.protoc-gen-validate</groupId>
-            <artifactId>pgv-java-stub</artifactId>
-            <version>1.2.1</version>
         </dependency>
 
 
@@ -167,6 +155,14 @@
     </dependencyManagement>
 
     <build>
+        <extensions>
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>1.4.1.Final</version>
+            </extension>
+        </extensions>
+
         <plugins>
             <!-- Java compiler with Lombok -->
             <plugin>
@@ -181,34 +177,6 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
-
-            <!-- Protobuf plugin -->
-            <plugin>
-                <groupId>io.github.ascopes</groupId>
-                <artifactId>protobuf-maven-plugin</artifactId>
-                <version>3.8.0</version>
-                <configuration>
-                    <!-- Version of protoc binary -->
-                    <protocVersion>${protobuf-java.version}</protocVersion>
-                    <binaryMavenPlugins>
-                        <binaryMavenPlugin>
-                            <groupId>io.grpc</groupId>
-                            <artifactId>protoc-gen-grpc-java</artifactId>
-                            <version>${grpc.version}</version>
-                            <options>@generated=omit</options>
-                        </binaryMavenPlugin>
-                    </binaryMavenPlugins>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>generate</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-
-                </executions>
-            </plugin>
             <!-- Spring Boot plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -222,7 +190,34 @@
                     </excludes>
                 </configuration>
             </plugin>
+
+            <!-- Protobuf plugin -->
+            <plugin>
+                <groupId>io.github.ascopes</groupId>
+                <artifactId>protobuf-maven-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <protocVersion>${protobuf-java.version}</protocVersion>
+                    <binaryMavenPlugins>
+                        <binaryMavenPlugin>
+                            <groupId>io.grpc</groupId>
+                            <artifactId>protoc-gen-grpc-java</artifactId>
+                            <version>${grpc.version}</version>
+                            <options>@generated=omit</options>
+                        </binaryMavenPlugin>
+                    </binaryMavenPlugins>
+
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
-
 </project>

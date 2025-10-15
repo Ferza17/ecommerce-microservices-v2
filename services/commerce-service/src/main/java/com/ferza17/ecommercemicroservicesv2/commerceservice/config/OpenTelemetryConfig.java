@@ -18,10 +18,18 @@ public class OpenTelemetryConfig {
     private String serviceName;
 
     @Bean
-    public io.opentelemetry.api.OpenTelemetry setupOpenTelemetry() {
-        JaegerGrpcSpanExporter jaegerExporter = JaegerGrpcSpanExporter.builder().setEndpoint("http://localhost:4317").build();
-        Resource serviceNameResource = Resource.getDefault().merge(Resource.create(io.opentelemetry.api.common.Attributes.of(SERVICE_NAME, this.serviceName)));
-        SdkTracerProvider tracerProvider = SdkTracerProvider.builder().addSpanProcessor(BatchSpanProcessor.builder(jaegerExporter).build()).setResource(serviceNameResource).build();
-        return OpenTelemetrySdk.builder().setTracerProvider(tracerProvider).build();
+    public io.opentelemetry.sdk.OpenTelemetrySdk setupOpenTelemetry() {
+        return OpenTelemetrySdk
+                .builder()
+                .setTracerProvider(SdkTracerProvider
+                        .builder()
+                        .addSpanProcessor(BatchSpanProcessor
+                                .builder(JaegerGrpcSpanExporter.builder().setEndpoint("http://localhost:4317").build())
+                                .build()
+                        )
+                        .setResource(Resource.getDefault().merge(Resource.create(io.opentelemetry.api.common.Attributes.of(SERVICE_NAME, this.serviceName))))
+                        .build()
+                )
+                .build();
     }
 }

@@ -3,14 +3,16 @@ package com.ferza17.ecommercemicroservicesv2.commerceservice.module.wishlist;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.WishlistServiceGrpc;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Request;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Response;
+import io.opentelemetry.sdk.OpenTelemetrySdk;
 
 @org.springframework.grpc.server.service.GrpcService
 public class WishlistGrpcService extends WishlistServiceGrpc.WishlistServiceImplBase {
-
     private final WishlistUseCase useCase;
+    private final OpenTelemetrySdk openTelemetrySdk;
 
-    public WishlistGrpcService(WishlistUseCase useCase) {
+    public WishlistGrpcService(WishlistUseCase useCase, OpenTelemetrySdk openTelemetrySdk) {
         this.useCase = useCase;
+        this.openTelemetrySdk = openTelemetrySdk;
     }
 
 
