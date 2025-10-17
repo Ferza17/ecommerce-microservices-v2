@@ -105,26 +105,33 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- OPENTELEMETRY -->
+        <!--OPENTELEMETRY-->
         <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-api</artifactId>
-            <version>1.54.1</version>
+            <version>1.31.0</version>
         </dependency>
         <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-sdk</artifactId>
-            <version>1.54.1</version>
+            <version>1.39.0</version>
         </dependency>
         <dependency>
             <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-exporter-jaeger</artifactId>
+            <artifactId>opentelemetry-sdk-trace</artifactId>
+            <version>1.39.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-exporter-jaeger-thrift</artifactId>
             <version>1.34.1</version>
         </dependency>
+
         <dependency>
             <groupId>io.opentelemetry.semconv</groupId>
             <artifactId>opentelemetry-semconv</artifactId>
-            <version>1.37.0</version>
+            <version>1.25.0-alpha</version>
         </dependency>
 
         <!-- UTILS -->
@@ -134,9 +141,17 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-logging</artifactId>
+            <version>3.5.6</version>
+        </dependency>
+
     </dependencies>
     <dependencyManagement>
         <dependencies>
+            <!-- SPRING CLOUD-->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -144,6 +159,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!--GRPC-->
             <dependency>
                 <groupId>org.springframework.grpc</groupId>
                 <artifactId>spring-grpc-dependencies</artifactId>
@@ -151,6 +167,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
 

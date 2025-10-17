@@ -26,9 +26,7 @@ const (
 type AddToCartRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ProductId     string                 `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
-	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Qty           int32                  `protobuf:"varint,3,opt,name=qty,proto3" json:"qty,omitempty"`
-	Price         float64                `protobuf:"fixed64,4,opt,name=price,proto3" json:"price,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -70,23 +68,9 @@ func (x *AddToCartRequest) GetProductId() string {
 	return ""
 }
 
-func (x *AddToCartRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
 func (x *AddToCartRequest) GetQty() int32 {
 	if x != nil {
 		return x.Qty
-	}
-	return 0
-}
-
-func (x *AddToCartRequest) GetPrice() float64 {
-	if x != nil {
-		return x.Price
 	}
 	return 0
 }
@@ -207,7 +191,6 @@ func (x *DeleteCartItemByIdRequest) GetId() string {
 type AddToWishlistRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ProductId     string                 `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
-	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -245,13 +228,6 @@ func (*AddToWishlistRequest) Descriptor() ([]byte, []int) {
 func (x *AddToWishlistRequest) GetProductId() string {
 	if x != nil {
 		return x.ProductId
-	}
-	return ""
-}
-
-func (x *AddToWishlistRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
 	}
 	return ""
 }
@@ -372,15 +348,12 @@ var File_v1_commerce_request_proto protoreflect.FileDescriptor
 
 const file_v1_commerce_request_proto_rawDesc = "" +
 	"\n" +
-	"\x19v1/commerce/request.proto\x12\bcommerce\x1a external/validate/validate.proto\"\xa7\x01\n" +
+	"\x19v1/commerce/request.proto\x12\bcommerce\x1a external/validate/validate.proto\"Z\n" +
 	"\x10AddToCartRequest\x12)\n" +
 	"\n" +
 	"product_id\x18\x01 \x01(\tB\n" +
-	"\xfaB\ar\x05\x10\x01\xd0\x01\x00R\tproductId\x12#\n" +
-	"\auser_id\x18\x02 \x01(\tB\n" +
-	"\xfaB\ar\x05\x10\x01\xd0\x01\x00R\x06userId\x12\x1b\n" +
-	"\x03qty\x18\x03 \x01(\x05B\t\xfaB\x06\x1a\x04 \x00@\x00R\x03qty\x12&\n" +
-	"\x05price\x18\x04 \x01(\x01B\x10\xfaB\r\x12\v!\x00\x00\x00\x00\x00\x00\x00\x00@\x00R\x05price\"\x9d\x01\n" +
+	"\xfaB\ar\x05\x10\x01\xd0\x01\x00R\tproductId\x12\x1b\n" +
+	"\x03qty\x18\x03 \x01(\x05B\t\xfaB\x06\x1a\x04 \x00@\x00R\x03qty\"\x9d\x01\n" +
 	"\"FindCartItemsWithPaginationRequest\x12#\n" +
 	"\auser_id\x18\x01 \x01(\tB\n" +
 	"\xfaB\ar\x05\x10\x01\xd0\x01\x00R\x06userId\x12(\n" +
@@ -390,11 +363,10 @@ const file_v1_commerce_request_proto_rawDesc = "" +
 	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x14\n" +
 	"\x05limit\x18\x04 \x01(\x05R\x05limit\"+\n" +
 	"\x19DeleteCartItemByIdRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"N\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"5\n" +
 	"\x14AddToWishlistRequest\x12\x1d\n" +
 	"\n" +
-	"product_id\x18\x01 \x01(\tR\tproductId\x12\x17\n" +
-	"\auser_id\x18\x02 \x01(\tR\x06userId\"\x8b\x01\n" +
+	"product_id\x18\x01 \x01(\tR\tproductId\"\x8b\x01\n" +
 	"%FindWishlistItemWithPaginationRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1f\n" +
 	"\vproduct_ids\x18\x02 \x03(\tR\n" +

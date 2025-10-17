@@ -1,6 +1,7 @@
 spring:
   application:
     name: commerce-service
+    version: 0.0.1
 
   config:
     import: "consul:"
@@ -63,7 +64,7 @@ spring:
           enabled: false
 
       servlet:
-        enabled: true
+        enabled: false
 
       health:
         actuator:
@@ -71,10 +72,13 @@ spring:
           update-overall-health: true
           update-initial-delay: 5s
           update-rate: 5s
-
       ssl:
         secure: false
         client-auth: none
+
+      netty:
+        boss-executor: default
+        worker-executor: default
 
     client:
       channels:
@@ -90,8 +94,23 @@ server:
   metric:
     port: 30051
 
+
+otel:
+  exporter:
+    jaeger:
+      endpoint: http://localhost:6831
+  sdk:
+    trace:
+      batch:
+        schedule_delay_millis: 1000
+        max_queue_size: 2048
+        max_export_batch_size: 512
+        export_timeout_millis: 30000
+
 logging:
   level:
     root: INFO
     com.ferza17.ecommercemicroservicesv2: DEBUG
     io.grpc: DEBUG
+    io.grpc.Context: INFO
+    io.opentelemetry: DEBUG

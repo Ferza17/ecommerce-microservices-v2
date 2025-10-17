@@ -2,11 +2,14 @@ package com.ferza17.ecommercemicroservicesv2.commerceservice.module.wishlist;
 
 import com.ferza17.ecommercemicroservicesv2.commerceservice.model.mapper.WishlistMapper;
 import com.ferza17.ecommercemicroservicesv2.commerceservice.model.mongodb.WishlistModelMongoDB;
-import com.ferza17.ecommercemicroservicesv2.commerceservice.service.grpc.ProductServiceGrpcClient;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Request;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Response;
-import io.opentelemetry.sdk.OpenTelemetrySdk;
+import com.ferza17.ecommercemicroservicesv2.proto.v1.product.ProductServiceGrpc;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Scope;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -14,19 +17,16 @@ import java.time.Instant;
 
 @org.springframework.stereotype.Service
 public class WishlistUseCase {
-    private final WishlistMongoDBRepository wishlistMongoDBRepository;
-    private final ProductServiceGrpcClient productServiceGrpcClient;
-    private final OpenTelemetrySdk openTelemetrySdk;
-
-
-    public WishlistUseCase(WishlistMongoDBRepository wishlistMongoDBRepository, ProductServiceGrpcClient productServiceGrpcClient, OpenTelemetrySdk openTelemetrySdk) {
-        this.wishlistMongoDBRepository = wishlistMongoDBRepository;
-        this.productServiceGrpcClient = productServiceGrpcClient;
-        this.openTelemetrySdk = openTelemetrySdk;
-    }
+    @Autowired
+    private WishlistMongoDBRepository wishlistMongoDBRepository;
+    @Autowired
+    private ProductServiceGrpc.ProductServiceBlockingStub productServiceBlockingStub;
+    @Autowired
+    private Tracer tracer;
 
     public Response.AddToWishlistResponse addToWishlist(Request.AddToWishlistRequest request) {
-        try {
+        Span span = this.tracer.spanBuilder("WishlistUseCase.addToWishlist").startSpan();
+        try (Scope scope = span.makeCurrent()) {
             // TODO:
             // 1. Validate in DB
             // 2. Insert Via Sink Connector Event
@@ -36,7 +36,7 @@ public class WishlistUseCase {
             WishlistModelMongoDB wishlist = WishlistModelMongoDB
                     .builder()
                     .id(ObjectId.get().toHexString())
-                    .user_id(request.getUserId())
+//                    .user_id(request.getUserId()) // FROM TOKEN
                     .product_id(request.getProductId())
                     .created_at(now)
                     .updated_at(now)
@@ -57,17 +57,21 @@ public class WishlistUseCase {
                     )
                     .build();
         } catch (Exception ex) {
+            span.recordException(ex);
             return Response
                     .AddToWishlistResponse
                     .newBuilder()
                     .setStatus("failure")
                     .setMessage("addToWishlist")
                     .build();
+        } finally {
+            span.end();
         }
     }
 
     public Response.FindWishlistItemWithPaginationResponse findWishlistItemWithPagination(Request.FindWishlistItemWithPaginationRequest request) {
-        try {
+        Span span = this.tracer.spanBuilder("WishlistUseCase.findWishlistItemWithPagination").startSpan();
+        try (Scope scope = span.makeCurrent()) {
             int page = Math.max(request.getPage() - 1, 0);
             PageRequest pageRequest = PageRequest
                     .of(page, request.getLimit());
@@ -95,17 +99,21 @@ public class WishlistUseCase {
                     .setData(responseData.build())
                     .build();
         } catch (Exception ex) {
+            span.recordException(ex);
             return Response
                     .FindWishlistItemWithPaginationResponse
                     .newBuilder()
                     .setStatus("failure")
                     .setMessage("findWishlistItemWithPagination")
                     .build();
+        } finally {
+            span.end();
         }
     }
 
     public Response.DeleteWishlistItemByIdResponse deleteCartItemById(Request.DeleteWishlistItemByIdRequest request) {
-        try {
+        Span span = this.tracer.spanBuilder("WishlistUseCase.deleteCartItemById").startSpan();
+        try (Scope scope = span.makeCurrent()) {
             // TODO:
             // 1. Validate in DB
             // 2. Delete In Collection Event Stores
@@ -118,12 +126,15 @@ public class WishlistUseCase {
                     .setMessage("deleteWishlistItemById")
                     .build();
         } catch (Exception ex) {
+            span.recordException(ex);
             return Response
                     .DeleteWishlistItemByIdResponse
                     .newBuilder()
                     .setStatus("failure")
                     .setMessage("deleteWishlistItemById")
                     .build();
+        } finally {
+            span.end();
         }
     }
 }

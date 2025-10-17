@@ -350,16 +350,9 @@
         "productId": {
           "type": "string"
         },
-        "userId": {
-          "type": "string"
-        },
         "qty": {
           "type": "integer",
           "format": "int32"
-        },
-        "price": {
-          "type": "number",
-          "format": "double"
         }
       },
       "title": "CART ITEM REQUEST DEFINITION"
@@ -383,9 +376,6 @@
       "type": "object",
       "properties": {
         "productId": {
-          "type": "string"
-        },
-        "userId": {
           "type": "string"
         }
       },

@@ -1,21 +1,24 @@
 package com.ferza17.ecommercemicroservicesv2.commerceservice.module.event;
 
 import com.ferza17.ecommercemicroservicesv2.proto.v1.event.Model;
-import io.opentelemetry.sdk.OpenTelemetrySdk;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Scope;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @org.springframework.stereotype.Service
 public class EventUseCase {
-    private final OpenTelemetrySdk openTelemetrySdk;
-
-    public EventUseCase(OpenTelemetrySdk openTelemetrySdk) {
-        this.openTelemetrySdk = openTelemetrySdk;
-    }
-
+    @Autowired
+    private Tracer tracer;
 
     public void AppendEvent(Model.Event event){
-        //TODO:
-        // 1. Find Event By aggregate type and aggregate id
-        // 2. If Exists then next version else version 1
-        // 3. Insert via Sink Connector Commerce Event Stores
+        Span span = this.tracer.spanBuilder("EventUseCase.AppendEvent").startSpan();
+        try (Scope scope = span.makeCurrent()) {
+        } catch (Exception e) {
+            span.recordException(e);
+            throw new RuntimeException(e);
+        } finally {
+            span.end();
+        }
     }
 }

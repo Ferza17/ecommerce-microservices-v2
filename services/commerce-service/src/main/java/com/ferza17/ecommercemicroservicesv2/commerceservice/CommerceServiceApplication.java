@@ -1,5 +1,6 @@
 package com.ferza17.ecommercemicroservicesv2.commerceservice;
 
+import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +14,9 @@ import java.util.concurrent.Executors;
 public class CommerceServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(CommerceServiceApplication.class, args);
+        SpringApplication app = new SpringApplication(CommerceServiceApplication.class);
+//        app.setBanner(Banner.Mode.OFF);
+        app.run(args);
     }
 
     @Bean(name = "grpcExecutor")

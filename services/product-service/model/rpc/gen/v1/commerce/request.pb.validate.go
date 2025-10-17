@@ -68,31 +68,9 @@ func (m *AddToCartRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if utf8.RuneCountInString(m.GetUserId()) < 1 {
-		err := AddToCartRequestValidationError{
-			field:  "UserId",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	if m.GetQty() <= 0 {
 		err := AddToCartRequestValidationError{
 			field:  "Qty",
-			reason: "value must be greater than 0",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if m.GetPrice() <= 0 {
-		err := AddToCartRequestValidationError{
-			field:  "Price",
 			reason: "value must be greater than 0",
 		}
 		if !all {
@@ -430,8 +408,6 @@ func (m *AddToWishlistRequest) validate(all bool) error {
 	var errors []error
 
 	// no validation rules for ProductId
-
-	// no validation rules for UserId
 
 	if len(errors) > 0 {
 		return AddToWishlistRequestMultiError(errors)

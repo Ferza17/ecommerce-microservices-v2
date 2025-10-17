@@ -1,4 +1,4 @@
-package com.ferza17.ecommercemicroservicesv2.commerceservice.util;
+package com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.exception;
 
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;

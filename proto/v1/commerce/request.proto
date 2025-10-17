@@ -7,9 +7,7 @@ import "external/validate/validate.proto";
 // CART ITEM REQUEST DEFINITION
 message AddToCartRequest {
   string product_id = 1 [(validate.rules).string = {ignore_empty: false, min_len:1}];
-  string user_id = 2 [(validate.rules).string = {ignore_empty: false, min_len:1}];
   int32 qty = 3 [(validate.rules).int32 = {ignore_empty: false, gt:0}];
-  double price = 4 [(validate.rules).double = {ignore_empty: false, gt:0}];
 }
 
 message FindCartItemsWithPaginationRequest {
@@ -26,7 +24,6 @@ message DeleteCartItemByIdRequest {
 // WISHLIST ITEM REQUEST DEFINITION
 message AddToWishlistRequest {
   string product_id = 1;
-  string user_id = 2;
 }
 
 message FindWishlistItemWithPaginationRequest {

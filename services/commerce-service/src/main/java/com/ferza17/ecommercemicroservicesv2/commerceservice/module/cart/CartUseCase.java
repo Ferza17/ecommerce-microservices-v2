@@ -2,76 +2,94 @@ package com.ferza17.ecommercemicroservicesv2.commerceservice.module.cart;
 
 import com.ferza17.ecommercemicroservicesv2.commerceservice.model.mapper.CartMapper;
 import com.ferza17.ecommercemicroservicesv2.commerceservice.model.mongodb.CartModelMongoDB;
-import com.ferza17.ecommercemicroservicesv2.commerceservice.service.grpc.ProductServiceGrpcClient;
-import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Request;
-import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Response;
+
+import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Response.*;
+import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Request.*;
+
+import com.ferza17.ecommercemicroservicesv2.proto.v1.product.ProductServiceGrpc;
+import com.ferza17.ecommercemicroservicesv2.proto.v1.product.Request.*;
+import com.ferza17.ecommercemicroservicesv2.proto.v1.product.Model.*;
+
+import com.ferza17.ecommercemicroservicesv2.proto.v1.user.AuthServiceGrpc;
+import com.ferza17.ecommercemicroservicesv2.proto.v1.user.Request.*;
+import com.ferza17.ecommercemicroservicesv2.proto.v1.user.Response.*;
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Scope;
 import org.bson.types.ObjectId;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import io.opentelemetry.api.OpenTelemetry;
 
 import java.time.Instant;
+
+import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.BaseContext.AUTHORIZATION_CONTEXT_KEY;
+import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.BaseContext.TRACEPARENT_CONTEXT_KEY;
 
 
 @org.springframework.stereotype.Service
 public class CartUseCase {
-    private final CartMongoDBRepository cartMongoDBRepository;
-    private final ProductServiceGrpcClient productServiceGrpcClient;
-    private final OpenTelemetry openTelemetry;
+    @Autowired
+    private CartMongoDBRepository cartMongoDBRepository;
+    @Autowired
+    private ProductServiceGrpc.ProductServiceBlockingStub productServiceBlockingStub;
+    @Autowired
+    private AuthServiceGrpc.AuthServiceBlockingStub authServiceBlockingStub;
+    @Autowired
+    private Tracer tracer;
 
-    public CartUseCase(CartMongoDBRepository cartMongoDBRepository, ProductServiceGrpcClient productServiceGrpcClient, OpenTelemetry openTelemetry) {
-        this.cartMongoDBRepository = cartMongoDBRepository;
-        this.productServiceGrpcClient = productServiceGrpcClient;
-        this.openTelemetry = openTelemetry;
-    }
-
-    public Response.AddToCartResponse addToCart(Request.AddToCartRequest request) {
-        Span span = this.openTelemetry.getTracer(CartUseCase.class.getSimpleName()).spanBuilder("addToCart").startSpan();
-
-        try {
+    public AddToCartResponse addToCart(AddToCartRequest request) throws Exception {
+        Span span = this.tracer.spanBuilder("CartUseCase.addToCart").startSpan();
+        try (Scope scope = span.makeCurrent()) {
             // TODO:
             // 1. Validate in DB
             // 2. Insert Via Sink Connector Event
             // 3. Insert Via Sink Connector Commerce
+            String traceId = span.getSpanContext().getTraceId();
+            MDC.put(TRACEPARENT_CONTEXT_KEY, traceId);
+            Product product = this.productServiceBlockingStub.findProductById(FindProductByIdRequest.newBuilder().setId(request.getProductId()).build());
+            AuthUserFindUserByTokenResponse authResponse = this.authServiceBlockingStub.authUserFindUserByToken(AuthUserFindUserByTokenRequest.newBuilder().setToken(MDC.get(AUTHORIZATION_CONTEXT_KEY).replaceAll("(?i)^Bearer\\s+", "")).build());
+            CartModelMongoDB existingCart = this.cartMongoDBRepository.findByProductIdAndUserId(product.getId(), authResponse.getData().getUser().getId()).orElse(null);
 
-            Instant now = Instant
-                    .now();
-            CartModelMongoDB cart = CartModelMongoDB
-                    .builder()
-                    .id(ObjectId.get().toHexString())
-                    .userId(request.getUserId())
-                    .productId(request.getProductId())
-                    .userId(request.getUserId())
-                    .qty(request.getQty())
-                    .price(request.getPrice())
-                    .createdAt(now)
-                    .updatedAt(now)
-                    .build();
+            Instant now = Instant.now();
+            if (existingCart == null) {
+                existingCart = new CartModelMongoDB()
+                        .builder()
+                        .id(ObjectId.get().toHexString())
+                        .userId(authResponse.getData().getUser().getId())
+                        .productId(request.getProductId())
+                        .qty(request.getQty())
+                        .price(request.getQty() * product.getPrice())
+                        .createdAt(now)
+                        .build();
+            } else {
+                Integer qty = existingCart.getQty() + request.getQty();
+                existingCart.setQty(qty);
+                existingCart.setPrice(qty * product.getPrice());
+                existingCart.setUpdatedAt(now);
+            }
 
-            this.cartMongoDBRepository.save(cart);
-            return Response
-                    .AddToCartResponse
+            existingCart.setUpdatedAt(now);
+            // TODO: Move This to sink connector
+            this.cartMongoDBRepository.save(existingCart);
+            return AddToCartResponse
                     .newBuilder()
                     .setStatus("success")
                     .setMessage("addToCart")
-                    .setData(Response.AddToCartResponse.AddToCartResponseData.newBuilder().setId(cart.getId()).build())
+                    .setData(AddToCartResponse.AddToCartResponseData.newBuilder().setId(existingCart.getId()).build())
                     .build();
         } catch (Exception ex) {
             span.recordException(ex);
-            return Response
-                    .AddToCartResponse
-                    .newBuilder()
-                    .setStatus("failure")
-                    .setMessage("addToCart")
-                    .build();
-        }finally {
+            throw new Exception(ex);
+        } finally {
             span.end();
         }
     }
 
-    public Response.FindCartItemsWithPaginationResponse findCartItemsWithPagination(Request.FindCartItemsWithPaginationRequest request) {
-        try {
+    public FindCartItemsWithPaginationResponse findCartItemsWithPagination(FindCartItemsWithPaginationRequest request) {
+        Span span = this.tracer.spanBuilder("CartGrpcService.findCartItemsWithPagination").startSpan();
+        try (Scope scope = span.makeCurrent()) {
             int page = Math.max(request.getPage() - 1, 0);
             PageRequest pageRequest = PageRequest
                     .of(page, request.getLimit());
@@ -80,8 +98,7 @@ public class CartUseCase {
                     .cartMongoDBRepository
                     .findAllWithPagination(request.getUserId(), pageRequest);
 
-            Response.FindCartItemsWithPaginationResponse.FindCartItemsWithPaginationResponseData.Builder responseData = Response
-                    .FindCartItemsWithPaginationResponse
+            FindCartItemsWithPaginationResponse.FindCartItemsWithPaginationResponseData.Builder responseData = FindCartItemsWithPaginationResponse
                     .FindCartItemsWithPaginationResponseData
                     .newBuilder()
                     .setLimit(cartPage.getSize())
@@ -92,8 +109,7 @@ public class CartUseCase {
                     .stream()
                     .forEach(c -> responseData.addItems(CartMapper.toProto(c)));
 
-            return Response
-                    .FindCartItemsWithPaginationResponse
+            return FindCartItemsWithPaginationResponse
                     .newBuilder()
                     .setStatus("success")
                     .setMessage("FindCartItemsWithPagination")
@@ -101,38 +117,40 @@ public class CartUseCase {
                     .build();
 
         } catch (Exception ex) {
-
-            return Response
-                    .FindCartItemsWithPaginationResponse
+            span.recordException(ex);
+            return FindCartItemsWithPaginationResponse
                     .newBuilder()
                     .setStatus("failure")
                     .setMessage("FindCartItemsWithPagination")
                     .build();
+        } finally {
+            span.end();
         }
     }
 
-    public Response.DeleteCartItemByIdResponse deleteCartItemById(Request.DeleteCartItemByIdRequest request) {
-        try {
+    public DeleteCartItemByIdResponse deleteCartItemById(DeleteCartItemByIdRequest request) {
+        Span span = this.tracer.spanBuilder("CartGrpcService.deleteCartItemById").startSpan();
+        try (Scope scope = span.makeCurrent()) {
             // TODO:
             // 1. Validate in DB
             // 2. Delete in DB Event
             // 3. Delete in DB Commerce
 
             this.cartMongoDBRepository.deleteById(request.getId());
-            return Response
-                    .DeleteCartItemByIdResponse
+            return DeleteCartItemByIdResponse
                     .newBuilder()
                     .setStatus("success")
                     .setMessage("deleteCartItemById")
                     .build();
         } catch (Exception ex) {
-
-            return Response
-                    .DeleteCartItemByIdResponse
+            span.recordException(ex);
+            return DeleteCartItemByIdResponse
                     .newBuilder()
                     .setStatus("failure")
                     .setMessage("deleteCartItemById")
                     .build();
+        } finally {
+            span.end();
         }
     }
 
