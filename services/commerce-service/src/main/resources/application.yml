@@ -1,5 +1,6 @@
 spring:
   application:
+    env: local
     name: commerce-service
     version: 0.0.1
 
@@ -17,11 +18,6 @@ spring:
     consumer:
       group-id: commerce-service
       auto-offset-reset: earliest
-#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
   cloud:
     consul:
@@ -29,9 +25,12 @@ spring:
       port: 8500
 
       config:
-        prefix: config
+        prefix: local
         default-context: application
         profile-separator: ","
+        format: YAML
+        data-key: data
+        enabled: true
 
       discovery:
         enabled: true
@@ -85,6 +84,14 @@ server:
   metric:
     port: 30051
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
 
 otel:
   exporter.jaeger.endpoint: http://localhost:6831

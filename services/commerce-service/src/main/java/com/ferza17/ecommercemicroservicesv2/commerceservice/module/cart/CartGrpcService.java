@@ -17,6 +17,7 @@ public class CartGrpcService extends CartServiceGrpc.CartServiceImplBase {
     @Autowired
     private Tracer tracer;
 
+
     @Override
     public void addToCart(Request.AddToCartRequest request, io.grpc.stub.StreamObserver<Response.AddToCartResponse> responseObserver) {
         Span span = this.tracer.spanBuilder("CartGrpcService.addToCart").startSpan();

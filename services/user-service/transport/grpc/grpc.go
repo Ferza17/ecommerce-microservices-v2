@@ -3,8 +3,9 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"net"
+
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/enum"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	authInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/auth"
 	loggerInterceptor "github.com/ferza17/ecommerce-microservices-v2/user-service/interceptor/logger"
@@ -24,7 +25,6 @@ import (
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
-	"net"
 )
 
 type (
@@ -107,9 +107,9 @@ func (srv *Transport) Serve(ctx context.Context) error {
 	healthServer.SetServingStatus(config.Get().ConfigServiceUser.ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
 
 	// IMPORTANT: Register reflection AFTER all services are registered
-	if config.Get().Env != enum.CONFIG_ENV_PROD {
-		reflection.Register(srv.grpcServer)
-	}
+	//if config.Get().Env != enum.CONFIG_ENV_PROD {
+	reflection.Register(srv.grpcServer)
+	//}
 
 	if err = srv.grpcServer.Serve(listen); err != nil {
 		srv.logger.Error(fmt.Sprintf("failed to serve : %s", zap.Error(err).String))

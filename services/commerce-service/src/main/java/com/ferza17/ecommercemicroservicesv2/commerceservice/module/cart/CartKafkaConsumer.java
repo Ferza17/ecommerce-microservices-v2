@@ -6,12 +6,8 @@ import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-
-import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.BaseContext.*;
 
 @Component
 public class CartKafkaConsumer {
@@ -23,9 +19,6 @@ public class CartKafkaConsumer {
     // TODO: Start Span From Kafka Header
     @KafkaListener(topics = "snapshot-commerce-cart_added", groupId = "commerce-service", containerFactory = "kafkaListenerContainerAddToCartFactory")
     public void handleSnapshotCommerceCartCreated(
-            @Header(X_REQUEST_ID_CONTEXT_KEY) String requestId,
-            @Header(AUTHORIZATION_CONTEXT_KEY) String token,
-            @Header(TRACEPARENT_CONTEXT_KEY) String traceparent,
             @Payload Request.AddToCartRequest message
     ) {
         Span span = this.tracer.spanBuilder("CartKafkaConsumer.handleSnapshotCommerceCartCreated").startSpan();
@@ -41,9 +34,6 @@ public class CartKafkaConsumer {
 
     @KafkaListener(topics = "snapshot-commerce-cart_deleted", groupId = "commerce-service", containerFactory = "kafkaListenerContainerDeleteCartItemByIdFactory")
     public void handleSnapshotCommerceCartDeleted(
-            @Header(X_REQUEST_ID_CONTEXT_KEY) String requestId,
-            @Header(AUTHORIZATION_CONTEXT_KEY) String token,
-            @Header(TRACEPARENT_CONTEXT_KEY) String traceparent,
             @Payload Request.DeleteCartItemByIdRequest message
     ) {
         Span span = this.tracer.spanBuilder("CartKafkaConsumer.handleSnapshotCommerceCartDeleted").startSpan();

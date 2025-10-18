@@ -1,7 +1,6 @@
 package com.ferza17.ecommercemicroservicesv2.commerceservice.util;
 
 import com.google.protobuf.Timestamp;
-
 import java.time.Instant;
 
 public class ConvertTime {

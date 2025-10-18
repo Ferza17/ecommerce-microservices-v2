@@ -15,10 +15,9 @@ import java.io.IOException;
 import java.util.Map;
 
 import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.BaseContext.*;
-import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.BaseContext.AUTHORIZATION_CONTEXT_KEY;
 
 @Component
-public class OpenTelemetryOutbound<K, V> implements ClientInterceptor, ClientHttpRequestInterceptor, ProducerInterceptor<K, V> {
+public class RequestIDOutbound<K, V> implements ClientInterceptor, ClientHttpRequestInterceptor, ProducerInterceptor<K, V> {
     /*===============================
      *
      *              GRPC
@@ -32,8 +31,7 @@ public class OpenTelemetryOutbound<K, V> implements ClientInterceptor, ClientHtt
 
                 @Override
                 public void start(Listener<RespT> responseListener, Metadata headers) {
-                    String traceId = MDC.get(TRACEPARENT_CONTEXT_KEY);
-                    headers.put(TRACEPARENT_METADATA, traceId);
+                    headers.put(X_REQUEST_ID_METADATA, MDC.get(X_REQUEST_ID_CONTEXT_KEY));
                     super.start(responseListener, headers);
                 }
             };
@@ -49,7 +47,7 @@ public class OpenTelemetryOutbound<K, V> implements ClientInterceptor, ClientHtt
      * ==============================*/
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-        request.getHeaders().add(TRACEPARENT_CONTEXT_KEY, MDC.get(TRACEPARENT_CONTEXT_KEY));
+        request.getHeaders().add(X_REQUEST_ID_CONTEXT_KEY, MDC.get(X_REQUEST_ID_CONTEXT_KEY));
         return execution.execute(request, body);
     }
 
@@ -61,7 +59,7 @@ public class OpenTelemetryOutbound<K, V> implements ClientInterceptor, ClientHtt
 
     @Override
     public ProducerRecord<K, V> onSend(ProducerRecord<K, V> record) {
-        record.headers().add(AUTHORIZATION_CONTEXT_KEY, MDC.get(AUTHORIZATION_CONTEXT_KEY).getBytes());
+        record.headers().add(X_REQUEST_ID_CONTEXT_KEY, MDC.get(X_REQUEST_ID_CONTEXT_KEY).getBytes());
         return record;
     }
 

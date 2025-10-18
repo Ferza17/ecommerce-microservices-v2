@@ -10,3 +10,4 @@
 - [X] Consume / Subscribe from kafka
 - [X] Publish message to Kafka
 - [ ] Build Dockerfile
+- [ ] Global Exception
