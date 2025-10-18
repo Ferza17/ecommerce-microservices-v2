@@ -25,7 +25,8 @@ WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar
 
 # Expose ports
-EXPOSE 8080 9090
+EXPOSE 8080 8080
+EXPOSE 9090 9090
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \

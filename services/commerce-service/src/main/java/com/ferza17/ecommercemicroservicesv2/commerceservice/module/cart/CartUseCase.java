@@ -3,6 +3,7 @@ package com.ferza17.ecommercemicroservicesv2.commerceservice.module.cart;
 import com.ferza17.ecommercemicroservicesv2.commerceservice.model.mapper.CartMapper;
 import com.ferza17.ecommercemicroservicesv2.commerceservice.model.mongodb.CartModelMongoDB;
 
+import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Model;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Response.*;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Request.*;
 
@@ -21,6 +22,7 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import java.time.Instant;
 
@@ -36,6 +38,8 @@ public class CartUseCase {
     private ProductServiceGrpc.ProductServiceBlockingStub productServiceBlockingStub;
     @Autowired
     private AuthServiceGrpc.AuthServiceBlockingStub authServiceBlockingStub;
+    @Autowired
+    private KafkaTemplate<String, Model.CartItem> kafkaTemplateSinkMongoCart;
     @Autowired
     private Tracer tracer;
 
@@ -72,7 +76,10 @@ public class CartUseCase {
 
             existingCart.setUpdatedAt(now);
             // TODO: Move This to sink connector
-            this.cartMongoDBRepository.save(existingCart);
+//            this.cartMongoDBRepository.save(existingCart);
+            Model.CartItem ci = CartMapper.toProto(existingCart);
+
+            this.kafkaTemplateSinkMongoCart.send("sink-mongo-commerce-carts", ci.getId(), ci);
             return AddToCartResponse
                     .newBuilder()
                     .setStatus("success")

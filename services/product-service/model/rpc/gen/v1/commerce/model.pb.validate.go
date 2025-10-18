@@ -57,7 +57,7 @@ func (m *CartItem) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	// no validation rules for XId
 
 	// no validation rules for ProductId
 
@@ -224,7 +224,7 @@ func (m *WishlistItem) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	// no validation rules for XId
 
 	// no validation rules for ProductId
 

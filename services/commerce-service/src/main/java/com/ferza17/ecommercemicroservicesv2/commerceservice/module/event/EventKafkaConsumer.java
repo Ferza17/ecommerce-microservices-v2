@@ -14,16 +14,16 @@ public class EventKafkaConsumer {
     @Autowired
     private Tracer tracer;
 
-    @KafkaListener(topics = "dlq-sink-mongo-events-commerce_event_stores", groupId = "commerce-service")
-    public void handleDlqSinkMongoEventsCommerceEventStores(String message) {
-        Span span = this.tracer.spanBuilder("EventKafkaConsumer.handleDlqSinkMongoEventsCommerceEventStores").startSpan();
-        try (Scope scope = span.makeCurrent()) {
-            System.out.println("📥 Received Kafka message: " + message);
-        } catch (Exception e) {
-            span.recordException(e);
-            throw new RuntimeException(e);
-        } finally {
-            span.end();
-        }
-    }
+//    @KafkaListener(topics = "dlq-sink-mongo-events-commerce_event_stores", groupId = "commerce-service")
+//    public void handleDlqSinkMongoEventsCommerceEventStores(String message) {
+//        Span span = this.tracer.spanBuilder("EventKafkaConsumer.handleDlqSinkMongoEventsCommerceEventStores").startSpan();
+//        try (Scope scope = span.makeCurrent()) {
+//            System.out.println("📥 Received Kafka message: " + message);
+//        } catch (Exception e) {
+//            span.recordException(e);
+//            throw new RuntimeException(e);
+//        } finally {
+//            span.end();
+//        }
+//    }
 }

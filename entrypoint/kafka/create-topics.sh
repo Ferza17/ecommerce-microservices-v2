@@ -44,12 +44,10 @@ SNAPSHOT_TOPICS=(
   "confirm-snapshot-notifications-email_payment_order_created:2:1"
   "compensate-snapshot-notifications-email_payment_order_created:2:1"
 
-  "snapshot-commerce-cart_created:3:1"
-  "snapshot-commerce-cart_updated:3:1"
+  "snapshot-commerce-cart_added:3:1"
   "snapshot-commerce-cart_deleted:3:1"
 
-  "snapshot-commerce-wishlist_created:3:1"
-  "snapshot-commerce-wishlist_updated:3:1"
+  "snapshot-commerce-wishlist_added:3:1"
   "snapshot-commerce-wishlist_deleted:3:1"
 
   "snapshot-payments-payment_order_created:3:1"

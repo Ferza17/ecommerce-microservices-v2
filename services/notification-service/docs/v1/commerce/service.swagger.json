@@ -399,7 +399,7 @@
     "commerceCartItem": {
       "type": "object",
       "properties": {
-        "id": {
+        "Id": {
           "type": "string"
         },
         "productId": {
@@ -485,7 +485,7 @@
     "commerceWishlistItem": {
       "type": "object",
       "properties": {
-        "id": {
+        "Id": {
           "type": "string"
         },
         "productId": {

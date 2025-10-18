@@ -24,7 +24,7 @@ const (
 
 type CartItem struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	XId           string                 `protobuf:"bytes,1,opt,name=_id,json=Id,proto3" json:"_id,omitempty"`
 	ProductId     string                 `protobuf:"bytes,2,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
 	UserId        string                 `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Qty           int32                  `protobuf:"varint,4,opt,name=qty,proto3" json:"qty,omitempty"`
@@ -65,9 +65,9 @@ func (*CartItem) Descriptor() ([]byte, []int) {
 	return file_v1_commerce_model_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *CartItem) GetId() string {
+func (x *CartItem) GetXId() string {
 	if x != nil {
-		return x.Id
+		return x.XId
 	}
 	return ""
 }
@@ -116,7 +116,7 @@ func (x *CartItem) GetUpdatedAt() *timestamppb.Timestamp {
 
 type WishlistItem struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	XId           string                 `protobuf:"bytes,1,opt,name=_id,json=Id,proto3" json:"_id,omitempty"`
 	ProductId     string                 `protobuf:"bytes,2,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
 	UserId        string                 `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	CratedAt      *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=crated_at,json=cratedAt,proto3" json:"crated_at,omitempty"`
@@ -155,9 +155,9 @@ func (*WishlistItem) Descriptor() ([]byte, []int) {
 	return file_v1_commerce_model_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *WishlistItem) GetId() string {
+func (x *WishlistItem) GetXId() string {
 	if x != nil {
-		return x.Id
+		return x.XId
 	}
 	return ""
 }
@@ -194,9 +194,9 @@ var File_v1_commerce_model_proto protoreflect.FileDescriptor
 
 const file_v1_commerce_model_proto_rawDesc = "" +
 	"\n" +
-	"\x17v1/commerce/model.proto\x12\bcommerce\x1a\x1fgoogle/protobuf/timestamp.proto\"\xee\x01\n" +
-	"\bCartItem\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
+	"\x17v1/commerce/model.proto\x12\bcommerce\x1a\x1fgoogle/protobuf/timestamp.proto\"\xef\x01\n" +
+	"\bCartItem\x12\x0f\n" +
+	"\x03_id\x18\x01 \x01(\tR\x02Id\x12\x1d\n" +
 	"\n" +
 	"product_id\x18\x02 \x01(\tR\tproductId\x12\x17\n" +
 	"\auser_id\x18\x03 \x01(\tR\x06userId\x12\x10\n" +
@@ -204,9 +204,9 @@ const file_v1_commerce_model_proto_rawDesc = "" +
 	"\x05price\x18\x05 \x01(\x01R\x05price\x127\n" +
 	"\tcrated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\bcratedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xca\x01\n" +
-	"\fWishlistItem\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
+	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xcb\x01\n" +
+	"\fWishlistItem\x12\x0f\n" +
+	"\x03_id\x18\x01 \x01(\tR\x02Id\x12\x1d\n" +
 	"\n" +
 	"product_id\x18\x02 \x01(\tR\tproductId\x12\x17\n" +
 	"\auser_id\x18\x03 \x01(\tR\x06userId\x127\n" +

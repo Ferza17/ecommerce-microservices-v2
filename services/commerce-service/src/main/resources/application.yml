@@ -3,8 +3,7 @@ spring:
     name: commerce-service
     version: 0.0.1
 
-  config:
-    import: "consul:"
+  config.import: "consul:"
 
   data:
     mongodb:
@@ -13,11 +12,13 @@ spring:
 
   kafka:
     bootstrap-servers: localhost:9092
+    properties:
+      schema.registry.url: http://localhost:8081
     consumer:
       group-id: commerce-service
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -50,21 +51,11 @@ spring:
       port: 50051
       shutdown-grace-period: 15s
 
-      reflection:
-        enabled: true
-
-      observations:
-        enabled: true
-
-      exception-handling:
-        enabled: true
-
-      security:
-        csrf:
-          enabled: false
-
-      servlet:
-        enabled: false
+      reflection.enabled: true
+      observations.enabled: true
+      exception-handling.enabled: true
+      security.csrf.enabled: false
+      servlet.enabled: false
 
       health:
         actuator:
@@ -96,9 +87,7 @@ server:
 
 
 otel:
-  exporter:
-    jaeger:
-      endpoint: http://localhost:6831
+  exporter.jaeger.endpoint: http://localhost:6831
   sdk:
     trace:
       batch:

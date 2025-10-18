@@ -567,33 +567,33 @@ services:
 
   # USER-SERVICE
 
-#  user-service:
-#    container_name: user-service
-#    build:
-#      context: ./services/user-service
-#      dockerfile: Dockerfile
-#    ports:
-#      - "50056:50056" # GRPC
-#      - "40056:40056" # HTTP
-#      - "30056:30056" # HTTP METRIC COLLECTOR
-#    restart: always
-#    depends_on:
-#      consul-local:
-#        condition: service_healthy
-#      postgres-local:
-#        condition: service_healthy
-#      kafka-local-broker-1:
-#        condition: service_healthy
-#      schema-registry-local:
-#        condition: service_healthy
-#    healthcheck:
-#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://user-service:40056/v1/user/check | grep -q '^200$'" ]
-#      interval: 45s
-#      timeout: 40s
-#      retries: 10
-#      start_period: 60s
-#    networks:
-#      - local
+  user-service:
+    container_name: user-service
+    build:
+      context: ./services/user-service
+      dockerfile: Dockerfile
+    ports:
+      - "50056:50056" # GRPC
+      - "40056:40056" # HTTP
+      - "30056:30056" # HTTP METRIC COLLECTOR
+    restart: always
+    depends_on:
+      consul-local:
+        condition: service_healthy
+      postgres-local:
+        condition: service_healthy
+      kafka-local-broker-1:
+        condition: service_healthy
+      schema-registry-local:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://user-service:40056/v1/user/check | grep -q '^200$'" ]
+      interval: 45s
+      timeout: 40s
+      retries: 10
+      start_period: 60s
+    networks:
+      - local
 
   # PRODUCT-SERVICE
 
@@ -627,31 +627,31 @@ services:
 
   # NOTIFICATION-SERVICE
 
-#  notification-service:
-#    container_name: notification-service
-#    build:
-#      context: ./services/notification-service
-#      dockerfile: Dockerfile
-#    ports:
-#      - "50053:50053" # GRPC
-#      - "40053:40053" # HTTP
-#      - "30053:30053" # HTTP METRIC COLLECTOR
-#    restart: always
-#    depends_on:
-#      consul-local:
-#        condition: service_healthy
-#      mongo-local:
-#        condition: service_healthy
-#      kafka-local-broker-1:
-#        condition: service_healthy
-#    healthcheck:
-#      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://notification-service:40053/v1/notification/check | grep -q '^200$'" ]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 10
-#      start_period: 60s
-#    networks:
-#      - local
+  notification-service:
+    container_name: notification-service
+    build:
+      context: ./services/notification-service
+      dockerfile: Dockerfile
+    ports:
+      - "50053:50053" # GRPC
+      - "40053:40053" # HTTP
+      - "30053:30053" # HTTP METRIC COLLECTOR
+    restart: always
+    depends_on:
+      consul-local:
+        condition: service_healthy
+      mongo-local:
+        condition: service_healthy
+      kafka-local-broker-1:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://notification-service:40053/v1/notification/check | grep -q '^200$'" ]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    networks:
+      - local
 
   # PAYMENT-SERVICE
 

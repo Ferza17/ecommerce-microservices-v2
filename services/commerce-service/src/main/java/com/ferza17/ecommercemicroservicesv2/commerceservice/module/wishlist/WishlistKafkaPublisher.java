@@ -10,24 +10,24 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class WishlistKafkaPublisher {
-    private final KafkaTemplate<String, String> kafkaTemplate;
-    @Autowired
-    private Tracer tracer;
-
-
-    public WishlistKafkaPublisher(KafkaTemplate<String, String> kafkaTemplate) {
-        this.kafkaTemplate = kafkaTemplate;
-    }
-
-    public void publishSinkMongoCommerceWishlistItem(Model.WishlistItem wishlistItem) {
-        Span span = this.tracer.spanBuilder("WishlistKafkaPublisher.publishSinkMongoCommerceWishlistItem").startSpan();
-        try (Scope scope = span.makeCurrent()) {
-            // TODO: Implement Me
-        } catch (Exception e) {
-            span.recordException(e);
-            throw new RuntimeException(e);
-        } finally {
-            span.end();
-        }
-    }
+//    private final KafkaTemplate<String, String> kafkaTemplate;
+//    @Autowired
+//    private Tracer tracer;
+//
+//
+//    public WishlistKafkaPublisher(KafkaTemplate<String, String> kafkaTemplate) {
+//        this.kafkaTemplate = kafkaTemplate;
+//    }
+//
+//    public void publishSinkMongoCommerceWishlistItem(Model.WishlistItem wishlistItem) {
+//        Span span = this.tracer.spanBuilder("WishlistKafkaPublisher.publishSinkMongoCommerceWishlistItem").startSpan();
+//        try (Scope scope = span.makeCurrent()) {
+//            // TODO: Implement Me
+//        } catch (Exception e) {
+//            span.recordException(e);
+//            throw new RuntimeException(e);
+//        } finally {
+//            span.end();
+//        }
+//    }
 }
