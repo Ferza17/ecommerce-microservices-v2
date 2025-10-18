@@ -46,10 +46,6 @@ public class CartUseCase {
     public AddToCartResponse addToCart(AddToCartRequest request) throws Exception {
         Span span = this.tracer.spanBuilder("CartUseCase.addToCart").startSpan();
         try (Scope scope = span.makeCurrent()) {
-            // TODO:
-            // 1. Validate in DB
-            // 2. Insert Via Sink Connector Event
-            // 3. Insert Via Sink Connector Commerce
             String traceId = span.getSpanContext().getTraceId();
             MDC.put(TRACEPARENT_CONTEXT_KEY, traceId);
             Product product = this.productServiceBlockingStub.findProductById(FindProductByIdRequest.newBuilder().setId(request.getProductId()).build());
@@ -75,10 +71,7 @@ public class CartUseCase {
             }
 
             existingCart.setUpdatedAt(now);
-            // TODO: Move This to sink connector
-//            this.cartMongoDBRepository.save(existingCart);
             Model.CartItem ci = CartMapper.toProto(existingCart);
-
             this.kafkaTemplateSinkMongoCart.send("sink-mongo-commerce-carts", ci.getId(), ci);
             return AddToCartResponse
                     .newBuilder()
@@ -138,11 +131,6 @@ public class CartUseCase {
     public DeleteCartItemByIdResponse deleteCartItemById(DeleteCartItemByIdRequest request) {
         Span span = this.tracer.spanBuilder("CartGrpcService.deleteCartItemById").startSpan();
         try (Scope scope = span.makeCurrent()) {
-            // TODO:
-            // 1. Validate in DB
-            // 2. Delete in DB Event
-            // 3. Delete in DB Commerce
-
             this.cartMongoDBRepository.deleteById(request.getId());
             return DeleteCartItemByIdResponse
                     .newBuilder()
@@ -160,6 +148,4 @@ public class CartUseCase {
             span.end();
         }
     }
-
-
 }

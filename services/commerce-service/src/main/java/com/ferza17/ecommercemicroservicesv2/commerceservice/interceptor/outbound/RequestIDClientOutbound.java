@@ -1,4 +1,4 @@
-package com.ferza17.ecommercemicroservicesv2.commerceservice.middleware.client;
+package com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.outbound;
 
 import io.grpc.*;
 import org.slf4j.MDC;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.BaseContext.*;
 
 @Component
-public class RequestIDClientMiddleware implements ClientInterceptor {
+public class RequestIDClientOutbound implements ClientInterceptor {
     @Override
     public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(MethodDescriptor<ReqT, RespT> method, CallOptions callOptions, Channel next) {
         try {

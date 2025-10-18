@@ -11,7 +11,8 @@ public class EventUseCase {
     @Autowired
     private Tracer tracer;
 
-    public void AppendEvent(Model.Event event){
+    public void AppendEvent(
+            Model.Event event){
         Span span = this.tracer.spanBuilder("EventUseCase.AppendEvent").startSpan();
         try (Scope scope = span.makeCurrent()) {
         } catch (Exception e) {

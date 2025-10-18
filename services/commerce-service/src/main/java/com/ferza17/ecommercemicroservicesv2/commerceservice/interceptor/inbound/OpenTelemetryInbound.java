@@ -1,7 +1,8 @@
-package com.ferza17.ecommercemicroservicesv2.commerceservice.middleware.server;
+package com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.inbound;
 
 import io.grpc.*;
-import jakarta.servlet.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.MDC;
@@ -12,17 +13,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.UUID;
 
-import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.BaseContext.X_REQUEST_ID_CONTEXT_KEY;
-import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.BaseContext.X_REQUEST_ID_METADATA;
+import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.BaseContext.*;
 
 @GlobalServerInterceptor
-@Order(Ordered.HIGHEST_PRECEDENCE + 1)
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @Component
-public class RequestIDServerMiddleware extends OncePerRequestFilter implements ServerInterceptor {
-
-
+public class OpenTelemetryInbound extends OncePerRequestFilter implements ServerInterceptor {
     // GRPC
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
@@ -31,24 +28,23 @@ public class RequestIDServerMiddleware extends OncePerRequestFilter implements S
             ServerCallHandler<ReqT, RespT> next
     ) {
         try {
-            String requestId = metadata.get(X_REQUEST_ID_METADATA);
-            if (requestId == null || requestId.isBlank()) {
-                requestId = UUID.randomUUID().toString();
+            String traceparent = metadata.get(TRACEPARENT_METADATA);
+            if (traceparent == null || traceparent.isBlank()) {
+                traceparent = "";
             }
-            MDC.put(X_REQUEST_ID_CONTEXT_KEY, requestId);
+            MDC.put(TRACEPARENT_CONTEXT_KEY, traceparent);
             ServerCall<ReqT, RespT> wrappedCall = new ForwardingServerCall.SimpleForwardingServerCall<>(call) {
                 @Override
                 public void sendHeaders(Metadata responseHeaders) {
-                    responseHeaders.put(X_REQUEST_ID_METADATA, MDC.get(X_REQUEST_ID_CONTEXT_KEY));
+                    responseHeaders.put(TRACEPARENT_METADATA, MDC.get(TRACEPARENT_CONTEXT_KEY));
                     super.sendHeaders(responseHeaders);
                 }
             };
 
-
-            return Contexts.interceptCall(Context.current().withValue(Context.key(X_REQUEST_ID_CONTEXT_KEY), requestId),
+            return Contexts.interceptCall(Context.current().withValue(Context.key(TRACEPARENT_CONTEXT_KEY), traceparent),
                     wrappedCall, metadata, next);
         } catch (Exception e) {
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 
@@ -56,12 +52,12 @@ public class RequestIDServerMiddleware extends OncePerRequestFilter implements S
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
-            String requestId = request.getHeader(X_REQUEST_ID_CONTEXT_KEY);
-            if (requestId == null || requestId.isBlank()) {
-                requestId = UUID.randomUUID().toString();
+            String traceparent = request.getHeader(TRACEPARENT_CONTEXT_KEY);
+            if (traceparent == null || traceparent.isBlank()) {
+                traceparent = "";
             }
-            MDC.put(X_REQUEST_ID_CONTEXT_KEY, requestId);
-            response.setHeader(X_REQUEST_ID_CONTEXT_KEY, requestId);
+            MDC.put(TRACEPARENT_CONTEXT_KEY, traceparent);
+            response.setHeader(TRACEPARENT_CONTEXT_KEY, traceparent);
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             throw new RuntimeException(e);

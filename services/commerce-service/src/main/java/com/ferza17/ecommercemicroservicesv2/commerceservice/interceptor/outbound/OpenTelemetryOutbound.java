@@ -1,4 +1,4 @@
-package com.ferza17.ecommercemicroservicesv2.commerceservice.middleware.client;
+package com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.outbound;
 
 import io.grpc.*;
 import org.slf4j.MDC;
@@ -8,7 +8,7 @@ import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.B
 import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.BaseContext.TRACEPARENT_CONTEXT_KEY;
 
 @Component
-public class OpenTelemetryClientMiddleware implements ClientInterceptor {
+public class OpenTelemetryOutbound implements ClientInterceptor {
     @Override
     public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(MethodDescriptor<ReqT, RespT> method, CallOptions callOptions, Channel next) {
         try {

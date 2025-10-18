@@ -1,4 +1,4 @@
-package com.ferza17.ecommercemicroservicesv2.commerceservice.middleware.server;
+package com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.inbound;
 
 import io.grpc.*;
 import jakarta.servlet.FilterChain;
@@ -19,7 +19,7 @@ import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.B
 @GlobalServerInterceptor
 @Order(Ordered.HIGHEST_PRECEDENCE + 2)
 @Component
-public class AuthorizationServerMiddleware extends OncePerRequestFilter implements ServerInterceptor {
+public class AuthorizationInbound extends OncePerRequestFilter implements ServerInterceptor {
     // GRPC
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata metadata, ServerCallHandler<ReqT, RespT> next) {

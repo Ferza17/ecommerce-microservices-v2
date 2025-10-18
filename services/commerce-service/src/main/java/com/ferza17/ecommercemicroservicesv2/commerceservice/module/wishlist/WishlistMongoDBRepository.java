@@ -6,7 +6,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
+import java.util.Optional;
+
 public interface WishlistMongoDBRepository extends MongoRepository<WishlistModelMongoDB, String> {
+    @Query("{ 'product_id': ?0, 'user_id': ?1 }")
+    Optional<WishlistModelMongoDB> findByProductIdAndUserId(String productId, String userId);
+
     @Query("{'user_id': ?0}")
     Page<WishlistModelMongoDB> findAllWithPagination(String query, Pageable pageable);
 }

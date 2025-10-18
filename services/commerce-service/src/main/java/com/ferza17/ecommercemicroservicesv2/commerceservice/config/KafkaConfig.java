@@ -12,7 +12,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.*;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-
+import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.outbound.AuthorizationOutboundKafka;
+import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.outbound.RequestIDOutboundKafka;
+import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.outbound.OpenTelemetryOutboundKafka;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +27,6 @@ public class KafkaConfig {
     @Value("${spring.application.name}")
     private String applicationName;
 
-
     @Bean
     public KafkaAdmin.NewTopics setupKafkaTopics() {
         return new KafkaAdmin.NewTopics(
@@ -36,7 +37,6 @@ public class KafkaConfig {
                 TopicBuilder.name("compensate-snapshot-commerce-wishlist_deleted").partitions(3).replicas(1).build()
         );
     }
-
     /* ============================================================
     *
     *       PUBLISH CONFIG WITH PROTOBUF SERIALIZER
@@ -50,6 +50,7 @@ public class KafkaConfig {
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer");
         properties.put("schema.registry.url", this.schemaRegistryUrl);
         properties.put("specific.protobuf.value.type", Model.CartItem.class);
+        properties.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, String.format("%s,%s,%s", AuthorizationOutboundKafka.class,RequestIDOutboundKafka.class,OpenTelemetryOutboundKafka.class));
         return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(properties));
     }
 
@@ -61,9 +62,9 @@ public class KafkaConfig {
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer");
         properties.put("schema.registry.url", this.schemaRegistryUrl);
         properties.put("specific.protobuf.value.type", Model.WishlistItem.class);
+        properties.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, String.format("%s,%s,%s", AuthorizationOutboundKafka.class,RequestIDOutboundKafka.class,OpenTelemetryOutboundKafka.class));
         return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(properties));
     }
-
 
     /* ============================================================
     *

@@ -2,18 +2,33 @@ package com.ferza17.ecommercemicroservicesv2.commerceservice.module.wishlist;
 
 import com.ferza17.ecommercemicroservicesv2.commerceservice.model.mapper.WishlistMapper;
 import com.ferza17.ecommercemicroservicesv2.commerceservice.model.mongodb.WishlistModelMongoDB;
-import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Request;
-import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Response;
+import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Model.WishlistItem;
+import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Response.AddToWishlistResponse;
+import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Response.FindWishlistItemWithPaginationResponse;
+import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Response.DeleteWishlistItemByIdResponse;
+import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Request.AddToWishlistRequest;
+import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Request.FindWishlistItemWithPaginationRequest;
+import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Request.DeleteWishlistItemByIdRequest;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.product.ProductServiceGrpc;
+import com.ferza17.ecommercemicroservicesv2.proto.v1.product.Model.Product;
+import com.ferza17.ecommercemicroservicesv2.proto.v1.product.Request.FindProductByIdRequest;
+import com.ferza17.ecommercemicroservicesv2.proto.v1.user.AuthServiceGrpc;
+import com.ferza17.ecommercemicroservicesv2.proto.v1.user.Request;
+import com.ferza17.ecommercemicroservicesv2.proto.v1.user.Response;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
 import org.bson.types.ObjectId;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import java.time.Instant;
+
+import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.BaseContext.AUTHORIZATION_CONTEXT_KEY;
+import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.BaseContext.TRACEPARENT_CONTEXT_KEY;
 
 @org.springframework.stereotype.Service
 public class WishlistUseCase {
@@ -22,34 +37,40 @@ public class WishlistUseCase {
     @Autowired
     private ProductServiceGrpc.ProductServiceBlockingStub productServiceBlockingStub;
     @Autowired
+    private AuthServiceGrpc.AuthServiceBlockingStub authServiceBlockingStub;
+    @Autowired
     private Tracer tracer;
+    @Autowired
+    private KafkaTemplate<String, WishlistItem> kafkaTemplateSinkMongoWishlist;
 
-    public Response.AddToWishlistResponse addToWishlist(Request.AddToWishlistRequest request) {
+    public AddToWishlistResponse addToWishlist(AddToWishlistRequest request) {
         Span span = this.tracer.spanBuilder("WishlistUseCase.addToWishlist").startSpan();
         try (Scope scope = span.makeCurrent()) {
-            // TODO:
-            // 1. Validate in DB
-            // 2. Insert Via Sink Connector Event
-            // 3. Insert Via Sink Connector Commerce Carts
+            String traceId = span.getSpanContext().getTraceId();
+            MDC.put(TRACEPARENT_CONTEXT_KEY, traceId);
+            Product product = this.productServiceBlockingStub.findProductById(FindProductByIdRequest.newBuilder().setId(request.getProductId()).build());
+            Response.AuthUserFindUserByTokenResponse authResponse = this.authServiceBlockingStub.authUserFindUserByToken(Request.AuthUserFindUserByTokenRequest.newBuilder().setToken(MDC.get(AUTHORIZATION_CONTEXT_KEY).replaceAll("(?i)^Bearer\\s+", "")).build());
+            WishlistModelMongoDB existingWishlist = this.wishlistMongoDBRepository.findByProductIdAndUserId(product.getId(), authResponse.getData().getUser().getId()).orElse(null);
+            if (existingWishlist != null) {
+                throw new Exception("Product already in wishlist");
+            }
 
             Instant now = Instant.now();
-            WishlistModelMongoDB wishlist = WishlistModelMongoDB
+            WishlistItem wishlist = WishlistMapper.toProto(WishlistModelMongoDB
                     .builder()
                     .id(ObjectId.get().toHexString())
-//                    .user_id(request.getUserId()) // FROM TOKEN
+                    .user_id(authResponse.getData().getUser().getId())
                     .product_id(request.getProductId())
                     .created_at(now)
                     .updated_at(now)
-                    .build();
+                    .build());
 
-            this.wishlistMongoDBRepository.save(wishlist);
-            return Response
-                    .AddToWishlistResponse
+            this.kafkaTemplateSinkMongoWishlist.send("sink-mongo-commerce-wishlists", wishlist.getId(), wishlist);
+            return AddToWishlistResponse
                     .newBuilder()
                     .setStatus("success")
                     .setMessage("addToWishlist")
-                    .setData(Response
-                            .AddToWishlistResponse
+                    .setData(AddToWishlistResponse
                             .AddToWishlistResponseData
                             .newBuilder()
                             .setId(wishlist.getId())
@@ -58,8 +79,7 @@ public class WishlistUseCase {
                     .build();
         } catch (Exception ex) {
             span.recordException(ex);
-            return Response
-                    .AddToWishlistResponse
+            return AddToWishlistResponse
                     .newBuilder()
                     .setStatus("failure")
                     .setMessage("addToWishlist")
@@ -69,7 +89,7 @@ public class WishlistUseCase {
         }
     }
 
-    public Response.FindWishlistItemWithPaginationResponse findWishlistItemWithPagination(Request.FindWishlistItemWithPaginationRequest request) {
+    public FindWishlistItemWithPaginationResponse findWishlistItemWithPagination(FindWishlistItemWithPaginationRequest request) {
         Span span = this.tracer.spanBuilder("WishlistUseCase.findWishlistItemWithPagination").startSpan();
         try (Scope scope = span.makeCurrent()) {
             int page = Math.max(request.getPage() - 1, 0);
@@ -80,8 +100,7 @@ public class WishlistUseCase {
                     .wishlistMongoDBRepository
                     .findAllWithPagination(request.getUserId(), pageRequest);
 
-            Response.FindWishlistItemWithPaginationResponse.FindWishlistItemWithPaginationResponseData.Builder responseData = Response
-                    .FindWishlistItemWithPaginationResponse
+            FindWishlistItemWithPaginationResponse.FindWishlistItemWithPaginationResponseData.Builder responseData = FindWishlistItemWithPaginationResponse
                     .FindWishlistItemWithPaginationResponseData
                     .newBuilder()
                     .setLimit(wishlistPage.getSize())
@@ -91,8 +110,7 @@ public class WishlistUseCase {
                     .stream()
                     .forEach(w -> responseData.addItems(WishlistMapper.toProto(w)));
 
-            return Response
-                    .FindWishlistItemWithPaginationResponse
+            return FindWishlistItemWithPaginationResponse
                     .newBuilder()
                     .setStatus("success")
                     .setMessage("findWishlistItemWithPagination")
@@ -100,8 +118,7 @@ public class WishlistUseCase {
                     .build();
         } catch (Exception ex) {
             span.recordException(ex);
-            return Response
-                    .FindWishlistItemWithPaginationResponse
+            return FindWishlistItemWithPaginationResponse
                     .newBuilder()
                     .setStatus("failure")
                     .setMessage("findWishlistItemWithPagination")
@@ -111,24 +128,18 @@ public class WishlistUseCase {
         }
     }
 
-    public Response.DeleteWishlistItemByIdResponse deleteCartItemById(Request.DeleteWishlistItemByIdRequest request) {
+    public DeleteWishlistItemByIdResponse deleteCartItemById(DeleteWishlistItemByIdRequest request) {
         Span span = this.tracer.spanBuilder("WishlistUseCase.deleteCartItemById").startSpan();
         try (Scope scope = span.makeCurrent()) {
-            // TODO:
-            // 1. Validate in DB
-            // 2. Delete In Collection Event Stores
-            // 3. Delete In Collection Cart Item
             this.wishlistMongoDBRepository.deleteById(request.getId());
-            return Response
-                    .DeleteWishlistItemByIdResponse
+            return DeleteWishlistItemByIdResponse
                     .newBuilder()
                     .setStatus("success")
                     .setMessage("deleteWishlistItemById")
                     .build();
         } catch (Exception ex) {
             span.recordException(ex);
-            return Response
-                    .DeleteWishlistItemByIdResponse
+            return DeleteWishlistItemByIdResponse
                     .newBuilder()
                     .setStatus("failure")
                     .setMessage("deleteWishlistItemById")
