@@ -29,7 +29,8 @@ public class CartGrpcService extends CartServiceGrpc.CartServiceImplBase {
             Response.AddToCartResponse createCartItemResponse = this.useCase.addToCart(request);
             responseObserver.onNext(createCartItemResponse);
             responseObserver.onCompleted();
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             span.recordException(ex);
             responseObserver.onError(ex);
         } finally {

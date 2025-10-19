@@ -16,7 +16,12 @@ public class WishlistKafkaConsumer {
     @Autowired
     private Tracer tracer;
 
-    @KafkaListener(topics = "snapshot-commerce-wishlist_added", groupId = "commerce-service", containerFactory = "kafkaListenerContainerAddToWishlistFactory")
+    @KafkaListener(
+            topics = "snapshot-commerce-wishlist_added",
+            groupId = "commerce-service",
+            containerFactory = "kafkaListenerContainerAddToWishlistFactory",
+            errorHandler = "KafkaGlobalException"
+    )
     public void handleSnapshotCommerceWishlistCreated(
             @Payload Request.AddToWishlistRequest message
     ) {
@@ -31,7 +36,12 @@ public class WishlistKafkaConsumer {
         }
     }
 
-    @KafkaListener(topics = "snapshot-commerce-wishlist_deleted", groupId = "commerce-service", containerFactory = "kafkaListenerContainerDeleteWishlistItemByIdFactory")
+    @KafkaListener(
+            topics = "snapshot-commerce-wishlist_deleted",
+            groupId = "commerce-service",
+            containerFactory = "kafkaListenerContainerDeleteWishlistItemByIdFactory",
+            errorHandler = "KafkaGlobalException"
+    )
     public void handleSnapshotCommerceWishlistDeleted(
             @Payload Request.DeleteWishlistItemByIdRequest message
     ) {

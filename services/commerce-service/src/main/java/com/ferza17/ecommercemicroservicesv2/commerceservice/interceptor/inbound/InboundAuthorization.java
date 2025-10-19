@@ -1,5 +1,7 @@
 package com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.inbound;
 
+import com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.exception.BaseErrorCode;
+import com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.exception.BaseException;
 import io.grpc.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,8 +17,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-
-import javax.security.sasl.AuthenticationException;
 import java.util.Map;
 
 import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.BaseContext.*;
@@ -24,7 +24,7 @@ import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.B
 @GlobalServerInterceptor
 @Order(Ordered.HIGHEST_PRECEDENCE + 2)
 @Component
-public class AuthorizationInbound<K, V> implements ServerInterceptor, HandlerInterceptor, ConsumerInterceptor<K, V> {
+public class InboundAuthorization<K, V> implements ServerInterceptor, HandlerInterceptor, ConsumerInterceptor<K, V> {
     /*===============================
      *
      *              GRPC
@@ -36,12 +36,12 @@ public class AuthorizationInbound<K, V> implements ServerInterceptor, HandlerInt
             String tokenFromHeader = metadata.get(AUTHORIZATION_METADATA);
 
             if (tokenFromHeader == null || tokenFromHeader.isBlank()) {
-                throw new AuthenticationException("Authorization header missing");
+                throw new BaseException(BaseErrorCode.UNAUTHENTICATED, String.format("%s header missing", AUTHORIZATION_CONTEXT_KEY));
             }
 
             String sanitizedToken = tokenFromHeader.replaceAll("(?i)^Bearer\\s+", "");
             if (sanitizedToken.isBlank()) {
-                throw new AuthenticationException("Invalid Token");
+                throw new BaseException(BaseErrorCode.UNAUTHENTICATED, "Invalid Token");
             }
             MDC.put(AUTHORIZATION_CONTEXT_KEY, tokenFromHeader);
             ServerCall<ReqT, RespT> wrappedCall = new ForwardingServerCall.SimpleForwardingServerCall<>(call) {
@@ -55,12 +55,12 @@ public class AuthorizationInbound<K, V> implements ServerInterceptor, HandlerInt
             return Contexts.interceptCall(Context.current().withValue(Context.key(AUTHORIZATION_CONTEXT_KEY), tokenFromHeader),
                     wrappedCall, metadata, next);
 
-        } catch (AuthenticationException e) {
-            call.close(Status.UNAUTHENTICATED.withDescription(e.getMessage()), new Metadata());
+        } catch (BaseException e) {
+            call.close(Status.fromCode(e.getBaseErrorCode().getCode()).withDescription(e.getMessage()), new Metadata());
             return new ServerCall.Listener<>() {
             }; // return empty listener to stop call
         } catch (Exception e) {
-            call.close(Status.INTERNAL.withDescription(e.getMessage()), new Metadata());
+            call.close(Status.fromCode(BaseErrorCode.INTERNAL_ERROR.getCode()).withDescription(BaseErrorCode.INTERNAL_ERROR.getMessage()), new Metadata());
             return new ServerCall.Listener<>() {
             };
         }
@@ -76,13 +76,15 @@ public class AuthorizationInbound<K, V> implements ServerInterceptor, HandlerInt
         try {
             String tokenFromHeader = request.getHeader(AUTHORIZATION_CONTEXT_KEY);
             if (tokenFromHeader == null || tokenFromHeader.isBlank()) {
-                throw new AuthenticationException("Authorization header missing");
+                throw new BaseException(BaseErrorCode.UNAUTHENTICATED, String.format("%s header missing", AUTHORIZATION_CONTEXT_KEY));
             }
             String sanitizedToken = tokenFromHeader.replaceAll("(?i)^Bearer\\s+", "");
             if (sanitizedToken.isBlank()) {
-                throw new AuthenticationException("Invalid Token");
+                throw new BaseException(BaseErrorCode.UNAUTHENTICATED, "Invalid Token");
             }
             MDC.put(AUTHORIZATION_CONTEXT_KEY, tokenFromHeader);
+        } catch (BaseException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

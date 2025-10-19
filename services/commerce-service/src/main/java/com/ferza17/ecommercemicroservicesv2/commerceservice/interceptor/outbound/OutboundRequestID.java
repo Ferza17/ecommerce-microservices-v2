@@ -17,7 +17,7 @@ import java.util.Map;
 import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.BaseContext.*;
 
 @Component
-public class RequestIDOutbound<K, V> implements ClientInterceptor, ClientHttpRequestInterceptor, ProducerInterceptor<K, V> {
+public class OutboundRequestID<K, V> implements ClientInterceptor, ClientHttpRequestInterceptor, ProducerInterceptor<K, V> {
     /*===============================
      *
      *              GRPC

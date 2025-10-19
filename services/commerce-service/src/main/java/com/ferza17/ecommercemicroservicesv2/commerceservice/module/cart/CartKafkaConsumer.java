@@ -17,7 +17,12 @@ public class CartKafkaConsumer {
     private Tracer tracer;
 
     // TODO: Start Span From Kafka Header
-    @KafkaListener(topics = "snapshot-commerce-cart_added", groupId = "commerce-service", containerFactory = "kafkaListenerContainerAddToCartFactory")
+    @KafkaListener(
+            topics = "snapshot-commerce-cart_added",
+            groupId = "commerce-service",
+            containerFactory = "kafkaListenerContainerAddToCartFactory",
+            errorHandler = "KafkaGlobalException"
+    )
     public void handleSnapshotCommerceCartCreated(
             @Payload Request.AddToCartRequest message
     ) {
@@ -32,7 +37,12 @@ public class CartKafkaConsumer {
         }
     }
 
-    @KafkaListener(topics = "snapshot-commerce-cart_deleted", groupId = "commerce-service", containerFactory = "kafkaListenerContainerDeleteCartItemByIdFactory")
+    @KafkaListener(
+            topics = "snapshot-commerce-cart_deleted",
+            groupId = "commerce-service",
+            containerFactory = "kafkaListenerContainerDeleteCartItemByIdFactory",
+            errorHandler = "KafkaGlobalException"
+    )
     public void handleSnapshotCommerceCartDeleted(
             @Payload Request.DeleteCartItemByIdRequest message
     ) {

@@ -84,7 +84,7 @@ func (srv *Transport) Serve(ctx context.Context) error {
 			metricInterceptor.MetricUnaryInterceptor(),
 			telemetryInterceptor.TelemetryRPCInterceptor(srv.telemetryInfrastructure),
 			loggerInterceptor.LoggerRPCInterceptor(srv.logger),
-			authInterceptor.AuthRPCUnaryInterceptor(srv.logger, srv.accessControlUseCase, srv.authUseCase),
+			authInterceptor.AuthRPCUnaryInterceptor(srv.logger),
 		),
 	}
 

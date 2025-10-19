@@ -3,6 +3,8 @@ package com.ferza17.ecommercemicroservicesv2.commerceservice.module.cart;
 import com.ferza17.ecommercemicroservicesv2.commerceservice.model.mapper.CartMapper;
 import com.ferza17.ecommercemicroservicesv2.commerceservice.model.mongodb.CartModelMongoDB;
 
+import com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.exception.BaseErrorCode;
+import com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.exception.BaseException;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Model;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Response.*;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Request.*;
@@ -29,7 +31,6 @@ import java.time.Instant;
 import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.BaseContext.AUTHORIZATION_CONTEXT_KEY;
 import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.BaseContext.TRACEPARENT_CONTEXT_KEY;
 
-
 @org.springframework.stereotype.Service
 public class CartUseCase {
     @Autowired
@@ -43,14 +44,21 @@ public class CartUseCase {
     @Autowired
     private Tracer tracer;
 
-    public AddToCartResponse addToCart(AddToCartRequest request) throws Exception {
+    public AddToCartResponse addToCart(AddToCartRequest request) throws BaseException {
         Span span = this.tracer.spanBuilder("CartUseCase.addToCart").startSpan();
         try (Scope scope = span.makeCurrent()) {
             String traceId = span.getSpanContext().getTraceId();
             MDC.put(TRACEPARENT_CONTEXT_KEY, traceId);
-            Product product = this.productServiceBlockingStub.findProductById(FindProductByIdRequest.newBuilder().setId(request.getProductId()).build());
-            AuthUserFindUserByTokenResponse authResponse = this.authServiceBlockingStub.authUserFindUserByToken(AuthUserFindUserByTokenRequest.newBuilder().setToken(MDC.get(AUTHORIZATION_CONTEXT_KEY).replaceAll("(?i)^Bearer\\s+", "")).build());
-            CartModelMongoDB existingCart = this.cartMongoDBRepository.findByProductIdAndUserId(product.getId(), authResponse.getData().getUser().getId()).orElse(null);
+            Product product = this
+                    .productServiceBlockingStub
+                    .findProductById(FindProductByIdRequest.newBuilder().setId(request.getProductId()).build());
+            AuthUserFindUserByTokenResponse authResponse = this
+                    .authServiceBlockingStub
+                    .authUserFindUserByToken(AuthUserFindUserByTokenRequest.newBuilder().setToken(MDC.get(AUTHORIZATION_CONTEXT_KEY).replaceAll("(?i)^Bearer\\s+", "")).build());
+            CartModelMongoDB existingCart = this
+                    .cartMongoDBRepository
+                    .findByProductIdAndUserId(product.getId(), authResponse.getData().getUser().getId())
+                    .orElse(null);
 
             Instant now = Instant.now();
             if (existingCart == null) {
@@ -81,7 +89,7 @@ public class CartUseCase {
                     .build();
         } catch (Exception ex) {
             span.recordException(ex);
-            throw new Exception(ex);
+            throw new BaseException(BaseErrorCode.INTERNAL_ERROR, ex.getMessage());
         } finally {
             span.end();
         }

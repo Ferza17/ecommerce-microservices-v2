@@ -1,7 +1,6 @@
 package com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.inbound;
 
 import io.grpc.*;
-import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.kafka.clients.consumer.ConsumerInterceptor;
@@ -26,7 +25,7 @@ import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.B
 @GlobalServerInterceptor
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
 @Component
-public class RequestIDInbound<K, V> implements ServerInterceptor, HandlerInterceptor, ConsumerInterceptor<K, V> {
+public class InboundRequestID<K, V> implements ServerInterceptor, HandlerInterceptor, ConsumerInterceptor<K, V> {
     /*===============================
      *
      *              GRPC

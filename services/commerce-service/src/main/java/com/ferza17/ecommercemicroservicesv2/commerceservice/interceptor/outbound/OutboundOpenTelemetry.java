@@ -18,7 +18,7 @@ import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.B
 import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.BaseContext.AUTHORIZATION_CONTEXT_KEY;
 
 @Component
-public class OpenTelemetryOutbound<K, V> implements ClientInterceptor, ClientHttpRequestInterceptor, ProducerInterceptor<K, V> {
+public class OutboundOpenTelemetry<K, V> implements ClientInterceptor, ClientHttpRequestInterceptor, ProducerInterceptor<K, V> {
     /*===============================
      *
      *              GRPC

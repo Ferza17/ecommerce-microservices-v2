@@ -22,7 +22,7 @@ import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.B
 @GlobalServerInterceptor
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Component
-public class OpenTelemetryInbound<K, V> implements ServerInterceptor, HandlerInterceptor, ConsumerInterceptor<K, V> {
+public class InboundOpenTelemetry<K, V> implements ServerInterceptor, HandlerInterceptor, ConsumerInterceptor<K, V> {
     /*===============================
      *
      *              GRPC

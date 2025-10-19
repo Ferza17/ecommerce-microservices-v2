@@ -1,11 +1,14 @@
 package token
 
 import (
+	"time"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	"github.com/pkg/errors"
-	"time"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type (
@@ -89,4 +92,20 @@ func ValidateJWTToken(tokenString string, config *JWTConfig) (*Claim, error) {
 	}
 
 	return claim, nil
+}
+
+func MapErrorToGrpcStatus(err error) error {
+	if ve, ok := err.(*jwt.ValidationError); ok {
+		switch {
+		case ve.Errors&jwt.ValidationErrorExpired != 0:
+			return status.Error(codes.Unauthenticated, err.Error())
+		case ve.Errors&jwt.ValidationErrorMalformed != 0:
+			return status.Error(codes.Unauthenticated, "malformed token")
+		case ve.Errors&jwt.ValidationErrorClaimsInvalid != 0:
+			return status.Error(codes.Unauthenticated, "invalid claims")
+		default:
+			return status.Error(codes.Unauthenticated, "invalid token")
+		}
+	}
+	return err
 }

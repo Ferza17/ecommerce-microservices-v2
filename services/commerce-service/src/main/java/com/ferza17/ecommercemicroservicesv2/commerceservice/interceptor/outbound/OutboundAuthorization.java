@@ -18,7 +18,7 @@ import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.B
 import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.BaseContext.AUTHORIZATION_METADATA;
 
 @Component
-public class AuthorizationOutbound<K, V> implements ClientInterceptor, ClientHttpRequestInterceptor, ProducerInterceptor<K, V> {
+public class OutboundAuthorization<K, V> implements ClientInterceptor, ClientHttpRequestInterceptor, ProducerInterceptor<K, V> {
     /*===============================
      *
      *              GRPC

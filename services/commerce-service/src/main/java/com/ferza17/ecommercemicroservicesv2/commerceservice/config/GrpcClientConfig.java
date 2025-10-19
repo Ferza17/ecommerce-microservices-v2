@@ -1,8 +1,8 @@
 package com.ferza17.ecommercemicroservicesv2.commerceservice.config;
 
-import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.outbound.AuthorizationOutbound;
-import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.outbound.OpenTelemetryOutbound;
-import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.outbound.RequestIDOutbound;
+import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.outbound.OutboundAuthorization;
+import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.outbound.OutboundOpenTelemetry;
+import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.outbound.OutboundRequestID;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.product.ProductServiceGrpc;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.user.UserServiceGrpc;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.user.AuthServiceGrpc;
@@ -18,11 +18,11 @@ public class GrpcClientConfig {
     private GrpcChannelFactory grpcChannelFactory;
     // ClientMiddleware
     @Autowired
-    RequestIDOutbound requestIDClientMiddleware;
+    OutboundRequestID requestIDClientMiddleware;
     @Autowired
-    OpenTelemetryOutbound openTelemetryClientMiddleware;
+    OutboundOpenTelemetry openTelemetryClientMiddleware;
     @Autowired
-    AuthorizationOutbound authorizationClientMiddleware;
+    OutboundAuthorization authorizationClientMiddleware;
 
 
 

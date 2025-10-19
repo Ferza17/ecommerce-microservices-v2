@@ -1,11 +1,11 @@
 package com.ferza17.ecommercemicroservicesv2.commerceservice.config;
 
-import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.inbound.AuthorizationInbound;
-import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.inbound.OpenTelemetryInbound;
-import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.inbound.RequestIDInbound;
-import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.outbound.AuthorizationOutbound;
-import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.outbound.OpenTelemetryOutbound;
-import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.outbound.RequestIDOutbound;
+import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.inbound.InboundAuthorization;
+import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.inbound.InboundOpenTelemetry;
+import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.inbound.InboundRequestID;
+import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.outbound.OutboundAuthorization;
+import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.outbound.OutboundOpenTelemetry;
+import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.outbound.OutboundRequestID;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Model;
 import com.ferza17.ecommercemicroservicesv2.proto.v1.commerce.Request;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -56,7 +56,7 @@ public class KafkaConfig {
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer");
         properties.put("schema.registry.url", this.schemaRegistryUrl);
         properties.put("specific.protobuf.value.type", Model.CartItem.class);
-        properties.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, String.format("%s,%s,%s", AuthorizationOutbound.class.getName(), RequestIDOutbound.class.getName(), OpenTelemetryOutbound.class.getName()));
+        properties.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, String.format("%s,%s,%s", OutboundAuthorization.class.getName(), OutboundRequestID.class.getName(), OutboundOpenTelemetry.class.getName()));
         return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(properties));
     }
 
@@ -68,7 +68,7 @@ public class KafkaConfig {
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer");
         properties.put("schema.registry.url", this.schemaRegistryUrl);
         properties.put("specific.protobuf.value.type", Model.WishlistItem.class);
-        properties.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, String.format("%s,%s,%s", AuthorizationOutbound.class.getName(), RequestIDOutbound.class.getName(), OpenTelemetryOutbound.class.getName()));
+        properties.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, String.format("%s,%s,%s", OutboundAuthorization.class.getName(), OutboundRequestID.class.getName(), OutboundOpenTelemetry.class.getName()));
         return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(properties));
     }
 
@@ -88,7 +88,7 @@ public class KafkaConfig {
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         properties.put("schema.registry.url", this.schemaRegistryUrl);
         properties.put("specific.protobuf.value.type", Request.AddToCartRequest.class);
-        properties.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, String.format("%s,%s,%s", AuthorizationInbound.class.getName(), RequestIDInbound.class.getName(), OpenTelemetryInbound.class.getName()));
+        properties.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, String.format("%s,%s,%s", InboundAuthorization.class.getName(), InboundRequestID.class.getName(), InboundOpenTelemetry.class.getName()));
         ConcurrentKafkaListenerContainerFactory<String, Request.AddToCartRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(new DefaultKafkaConsumerFactory<>(properties));
         return factory;
@@ -104,7 +104,7 @@ public class KafkaConfig {
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         properties.put("schema.registry.url", this.schemaRegistryUrl);
         properties.put("specific.protobuf.value.type", Request.DeleteCartItemByIdRequest.class);
-        properties.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, String.format("%s,%s,%s", AuthorizationInbound.class.getName(), RequestIDInbound.class.getName(), OpenTelemetryInbound.class.getName()));
+        properties.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, String.format("%s,%s,%s", InboundAuthorization.class.getName(), InboundRequestID.class.getName(), InboundOpenTelemetry.class.getName()));
         ConcurrentKafkaListenerContainerFactory<String, Request.DeleteCartItemByIdRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(new DefaultKafkaConsumerFactory<>(properties));
         return factory;
@@ -120,7 +120,7 @@ public class KafkaConfig {
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         properties.put("schema.registry.url", this.schemaRegistryUrl);
         properties.put("specific.protobuf.value.type", Request.AddToWishlistRequest.class);
-        properties.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, String.format("%s,%s,%s", AuthorizationInbound.class.getName(), RequestIDInbound.class.getName(), OpenTelemetryInbound.class.getName()));
+        properties.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, String.format("%s,%s,%s", InboundAuthorization.class.getName(), InboundRequestID.class.getName(), InboundOpenTelemetry.class.getName()));
         ConcurrentKafkaListenerContainerFactory<String, Request.AddToWishlistRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(new DefaultKafkaConsumerFactory<>(properties));
         return factory;
@@ -136,7 +136,7 @@ public class KafkaConfig {
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         properties.put("schema.registry.url", this.schemaRegistryUrl);
         properties.put("specific.protobuf.value.type", Request.DeleteWishlistItemByIdRequest.class);
-        properties.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, String.format("%s,%s,%s", AuthorizationInbound.class.getName(), RequestIDInbound.class.getName(), OpenTelemetryInbound.class.getName()));
+        properties.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, String.format("%s,%s,%s", InboundAuthorization.class.getName(), InboundRequestID.class.getName(), InboundOpenTelemetry.class.getName()));
         ConcurrentKafkaListenerContainerFactory<String, Request.DeleteWishlistItemByIdRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(new DefaultKafkaConsumerFactory<>(properties));
         return factory;

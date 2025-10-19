@@ -1,8 +1,8 @@
 package com.ferza17.ecommercemicroservicesv2.commerceservice.config;
 
-import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.inbound.AuthorizationInbound;
-import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.inbound.OpenTelemetryInbound;
-import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.inbound.RequestIDInbound;
+import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.inbound.InboundAuthorization;
+import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.inbound.InboundOpenTelemetry;
+import com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.inbound.InboundRequestID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -12,11 +12,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class RestConfig implements WebMvcConfigurer {
     @Autowired
-    private AuthorizationInbound authorizationInbound;
+    private InboundAuthorization authorizationInbound;
     @Autowired
-    private OpenTelemetryInbound openTelemetryInbound;
+    private InboundOpenTelemetry openTelemetryInbound;
     @Autowired
-    private RequestIDInbound requestIDInbound;
+    private InboundRequestID requestIDInbound;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {

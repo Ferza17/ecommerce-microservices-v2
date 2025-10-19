@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/token"
 	"go.uber.org/zap"
@@ -21,7 +22,7 @@ func (u *authUseCase) AuthUserFindUserByToken(ctx context.Context, requestId str
 	if err != nil {
 		tx.Rollback()
 		u.logger.Error("AuthUseCase.FindUserByToken", zap.String("requestId", requestId), zap.Error(errors.New("error parsing token")))
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, token.MapErrorToGrpcStatus(err)
 	}
 
 	user, err := u.userPostgresqlRepository.FindUserById(ctx, requestId, claimedToken.UserId, tx)
