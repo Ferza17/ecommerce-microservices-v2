@@ -20,8 +20,7 @@ public class CartKafkaConsumer {
     @KafkaListener(
             topics = "snapshot-commerce-cart_added",
             groupId = "commerce-service",
-            containerFactory = "kafkaListenerContainerAddToCartFactory",
-            errorHandler = "KafkaGlobalException"
+            containerFactory = "kafkaListenerContainerAddToCartFactory"
     )
     public void handleSnapshotCommerceCartCreated(
             @Payload Request.AddToCartRequest message
@@ -40,8 +39,7 @@ public class CartKafkaConsumer {
     @KafkaListener(
             topics = "snapshot-commerce-cart_deleted",
             groupId = "commerce-service",
-            containerFactory = "kafkaListenerContainerDeleteCartItemByIdFactory",
-            errorHandler = "KafkaGlobalException"
+            containerFactory = "kafkaListenerContainerDeleteCartItemByIdFactory"
     )
     public void handleSnapshotCommerceCartDeleted(
             @Payload Request.DeleteCartItemByIdRequest message
