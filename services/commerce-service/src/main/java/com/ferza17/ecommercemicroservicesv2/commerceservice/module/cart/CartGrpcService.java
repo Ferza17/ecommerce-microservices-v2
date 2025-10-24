@@ -20,7 +20,9 @@ public class CartGrpcService extends CartServiceGrpc.CartServiceImplBase {
 
     @Override
     public void addToCart(Request.AddToCartRequest request, io.grpc.stub.StreamObserver<Response.AddToCartResponse> responseObserver) {
-        Span span = this.tracer.spanBuilder("CartGrpcService.addToCart").startSpan();
+        Span span = this.tracer
+                .spanBuilder("CartGrpcService.addToCart")
+                .startSpan();
         try (Scope scope = span.makeCurrent()) {
             // TODO:
             // 1. Trace Span
@@ -29,8 +31,7 @@ public class CartGrpcService extends CartServiceGrpc.CartServiceImplBase {
             Response.AddToCartResponse createCartItemResponse = this.useCase.addToCart(request);
             responseObserver.onNext(createCartItemResponse);
             responseObserver.onCompleted();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             span.recordException(ex);
             responseObserver.onError(ex);
         } finally {

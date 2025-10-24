@@ -10,6 +10,7 @@ import static com.google.common.net.HttpHeaders.X_REQUEST_ID;
 // USING LIBRARY import org.slf4j.MDC;
 public class BaseContext {
     public static final String TRACEPARENT_CONTEXT_KEY = "traceparent";
+    public static final String SPAN_ID_CONTEXT_KEY = "span_id";
     public static final String X_REQUEST_ID_CONTEXT_KEY = X_REQUEST_ID;
     public static final String AUTHORIZATION_CONTEXT_KEY = AUTHORIZATION;
 

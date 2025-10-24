@@ -1,6 +1,9 @@
 package com.ferza17.ecommercemicroservicesv2.commerceservice.interceptor.inbound;
 
+import com.ferza17.ecommercemicroservicesv2.commerceservice.util.OpenTelemetryPropagator;
 import io.grpc.*;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.kafka.clients.consumer.ConsumerInterceptor;
@@ -8,6 +11,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.grpc.server.GlobalServerInterceptor;
@@ -15,6 +19,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+
 import java.util.Map;
 
 import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.BaseContext.*;
@@ -23,23 +28,30 @@ import static com.ferza17.ecommercemicroservicesv2.commerceservice.pkg.context.B
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Component
 public class InboundOpenTelemetry<K, V> implements ServerInterceptor, HandlerInterceptor, ConsumerInterceptor<K, V> {
+    @Autowired
+    private Tracer tracer;
+    @Autowired
+    private OpenTelemetryPropagator openTelemetryPropagator;
+
     /*===============================
      *
      *              GRPC
      *
      * ==============================*/
     @Override
-    public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
-            ServerCall<ReqT, RespT> call,
-            Metadata metadata,
-            ServerCallHandler<ReqT, RespT> next
-    ) {
-        try {
-            String traceparent = metadata.get(TRACEPARENT_METADATA);
-            if (traceparent == null || traceparent.isBlank()) {
-                traceparent = "";
-            }
-            MDC.put(TRACEPARENT_CONTEXT_KEY, traceparent);
+    public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata metadata, ServerCallHandler<ReqT, RespT> next) {
+        Span span;
+        String traceparent = metadata.get(TRACEPARENT_METADATA);
+        if (traceparent != null) {
+            span = this.tracer.spanBuilder(String.format("InboundOpenTelemetry - %s", call.getMethodDescriptor().getFullMethodName())).setParent(io.opentelemetry.context.Context.current()).startSpan();
+        } else {
+            span = this.tracer.spanBuilder(String.format("InboundOpenTelemetry - %s", call.getMethodDescriptor().getFullMethodName())).startSpan();
+        }
+        span.makeCurrent();
+        try  {
+            MDC.put(TRACEPARENT_CONTEXT_KEY, span.getSpanContext().getTraceId());
+            MDC.put(SPAN_ID_CONTEXT_KEY, span.getSpanContext().getTraceId());
+
             ServerCall<ReqT, RespT> wrappedCall = new ForwardingServerCall.SimpleForwardingServerCall<>(call) {
                 @Override
                 public void sendHeaders(Metadata responseHeaders) {
@@ -47,11 +59,12 @@ public class InboundOpenTelemetry<K, V> implements ServerInterceptor, HandlerInt
                     super.sendHeaders(responseHeaders);
                 }
             };
-
-            return Contexts.interceptCall(Context.current().withValue(Context.key(TRACEPARENT_CONTEXT_KEY), traceparent),
-                    wrappedCall, metadata, next);
+            return Contexts.interceptCall(io.grpc.Context.current().withValue(io.grpc.Context.key(TRACEPARENT_CONTEXT_KEY), traceparent), wrappedCall, metadata, next);
         } catch (Exception e) {
+            span.recordException(e);
             throw new RuntimeException(e);
+        } finally {
+            span.end();
         }
     }
 
