@@ -3,7 +3,12 @@ package http
 import (
 	"context"
 	"fmt"
+
+	"github.com/alitto/pond/v2"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"go.uber.org/zap"
+
+	"log"
 	"net/http"
 
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
@@ -21,7 +26,6 @@ import (
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/response"
-	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/worker"
 	"github.com/google/wire"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -34,7 +38,6 @@ type (
 	Transport struct {
 		address                 string
 		port                    string
-		workerPool              *pkgWorker.WorkerPool
 		server                  *http.Server
 		logger                  logger.IZapLogger
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
@@ -58,12 +61,8 @@ func NewTransport(
 	authUseCase authUseCase.IAuthUseCase,
 ) *Transport {
 	return &Transport{
-		address: config.Get().ConfigServiceUser.HttpHost,
-		port:    config.Get().ConfigServiceUser.HttpPort,
-		workerPool: pkgWorker.NewWorkerPool(
-			fmt.Sprintf("HTTP SERVER ON %s:%s", config.Get().ConfigServiceUser.HttpHost, config.Get().ConfigServiceUser.HttpPort),
-			2,
-		),
+		address:                 config.Get().ConfigServiceUser.HttpHost,
+		port:                    config.Get().ConfigServiceUser.HttpPort,
 		logger:                  logger,
 		telemetryInfrastructure: telemetryInfrastructure,
 		authPresenter:           authPresenter,
@@ -74,7 +73,7 @@ func NewTransport(
 }
 
 func (s *Transport) Serve(ctx context.Context) error {
-	s.workerPool.Start()
+	pool := pond.NewPool(10, pond.WithContext(ctx), pond.WithQueueSize(1000), pond.WithNonBlocking(true))
 	// Create Gorilla mux router
 	router := mux.NewRouter()
 
@@ -158,12 +157,19 @@ func (s *Transport) Serve(ctx context.Context) error {
 	}
 
 	// ListenAndServe returns http.ErrServerClosed when gracefully shutdown
-	if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		return fmt.Errorf("HTTP server failed to start: %w", err)
+	task := pool.SubmitErr(func() error {
+		log.Println(fmt.Sprintf("starting HTTP server %s:%s", s.address, s.port))
+		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			return fmt.Errorf("HTTP server failed to start: %w", err)
+		}
+		return nil
+	})
+
+	if err := task.Wait(); err != nil {
+		s.logger.Error(fmt.Sprintf("failed to serve : %s", zap.Error(err).String))
+		return err
 	}
 
-	<-ctx.Done()
-	s.workerPool.Stop()
 	return nil
 }
 
