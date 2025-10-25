@@ -3,6 +3,10 @@ package http
 import (
 	"context"
 	"fmt"
+	"log"
+	"net/http"
+
+	"github.com/alitto/pond/v2"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	userService "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/service/user"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
@@ -15,23 +19,20 @@ import (
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/logger"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/response"
-	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/worker"
 	"github.com/google/wire"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	httpSwagger "github.com/swaggo/http-swagger"
+	"go.uber.org/zap"
 	"google.golang.org/protobuf/encoding/protojson"
-	"log"
-	"net/http"
 )
 
 type (
 	Transport struct {
-		address    string
-		port       string
-		server     *http.Server
-		workerPool *pkgWorker.WorkerPool
+		address string
+		port    string
+		server  *http.Server
 
 		logger                  logger.IZapLogger
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
@@ -51,10 +52,6 @@ func NewTransport(
 	userService userService.IUserService,
 ) *Transport {
 	return &Transport{
-		workerPool: pkgWorker.NewWorkerPool(
-			fmt.Sprintf("HTTP SERVER ON %s:%s", config.Get().ConfigServiceProduct.HttpHost, config.Get().ConfigServiceProduct.HttpPort),
-			1,
-		),
 		address:                 config.Get().ConfigServiceProduct.HttpHost,
 		port:                    config.Get().ConfigServiceProduct.HttpPort,
 		productPresenter:        productPresenter,
@@ -65,8 +62,7 @@ func NewTransport(
 }
 
 func (s *Transport) Serve(ctx context.Context) error {
-	s.workerPool.Start()
-
+	pool := pond.NewPool(10, pond.WithContext(ctx), pond.WithQueueSize(1000), pond.WithNonBlocking(true))
 	// Create Gorilla mux router
 	router := mux.NewRouter()
 
@@ -136,14 +132,17 @@ func (s *Transport) Serve(ctx context.Context) error {
 	}
 
 	log.Printf("Starting HTTP server on %s:%s", s.address, s.port)
-
-	// ListenAndServe returns http.ErrServerClosed when gracefully shutdown
-	if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		return fmt.Errorf("HTTP server failed to start: %w", err)
+	task := pool.SubmitErr(func() error {
+		// ListenAndServe returns http.ErrServerClosed when gracefully shutdown
+		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			return fmt.Errorf("HTTP server failed to start: %w", err)
+		}
+		return nil
+	})
+	if err := task.Wait(); err != nil {
+		s.logger.Error(fmt.Sprintf("failed to serve : %s", zap.Error(err).String))
+		return err
 	}
-
-	<-ctx.Done()
-	s.workerPool.Stop()
 	return nil
 }
 

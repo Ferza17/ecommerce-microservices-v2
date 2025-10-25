@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/alitto/pond/v2"
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/kafka"
@@ -13,14 +14,12 @@ import (
 	productConsumer "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/consumer"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/logger"
-	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/worker"
 	"github.com/google/wire"
 	"go.opentelemetry.io/otel/attribute"
 )
 
 type (
 	Transport struct {
-		workerPool              *pkgWorker.WorkerPool
 		kafkaInfrastructure     kafkaInfrastructure.IKafkaInfrastructure
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
 		productConsumer         productConsumer.IProductConsumer
@@ -42,7 +41,6 @@ func NewTransport(
 	logger logger.IZapLogger,
 ) *Transport {
 	return &Transport{
-		workerPool:              pkgWorker.NewWorkerPoolKafkaTaskQueue("kafka-consumer", 9, 1000),
 		productConsumer:         productConsumer,
 		kafkaInfrastructure:     kafkaInfrastructure,
 		telemetryInfrastructure: telemetryInfrastructure,
@@ -56,8 +54,8 @@ func NewTransport(
 }
 
 func (srv *Transport) Serve(mainCtx context.Context) error {
-	srv.workerPool.Start()
 	var (
+		pool          = pond.NewPool(10, pond.WithContext(mainCtx), pond.WithQueueSize(1000), pond.WithNonBlocking(true))
 		topics        []string
 		kafkaHandlers = srv.RegisterKafkaHandlers()
 	)
@@ -75,7 +73,8 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 	for run {
 		select {
 		case <-mainCtx.Done():
-			srv.workerPool.Stop()
+			pool.StopAndWait()
+			srv.Close()
 			run = false
 		default:
 			msg, err := srv.kafkaInfrastructure.ReadMessage(time.Second * 2)
@@ -104,26 +103,20 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 				}
 			}
 			childCtx, span := srv.telemetryInfrastructure.StartSpanFromKafkaHeader(childCtx, msg.Headers, "KafkaTransport")
-
-			task := pkgWorker.KafkaTaskQueue{
-				Message: msg,
-				Ctx:     childCtx,
-			}
-
 			if msg.TopicPartition.Topic != nil {
 				span.SetAttributes(attribute.String("messaging.destination", *msg.TopicPartition.Topic))
 				span.SetAttributes(attribute.String(pkgContext.CtxKeyRequestID, requestId))
 
-				h, ok := kafkaHandlers[*msg.TopicPartition.Topic]
+				handler, ok := kafkaHandlers[*msg.TopicPartition.Topic]
 				if !ok {
 					srv.logger.Error(fmt.Sprintf("invalid topic %s", *msg.TopicPartition.Topic))
 					span.End()
 					continue
 				}
-				task.Handler = h
+				pool.SubmitErr(func() error {
+					return handler(childCtx, msg)
+				})
 			}
-
-			srv.workerPool.AddKafkaTaskQueue(task)
 			span.End()
 		}
 	}
@@ -147,4 +140,10 @@ func (srv *Transport) RegisterKafkaHandlers() map[string]handler {
 	handlers[config.Get().BrokerKafkaTopicProducts.CompensateProductDeleted] = srv.productConsumer.CompensateSnapshotProductsProductDeleted
 
 	return handlers
+}
+
+func (srv *Transport) Close() {
+	if err := srv.kafkaInfrastructure.Close(); err != nil {
+		srv.logger.Error(fmt.Sprintf("failed to close kafka infrastructure: %v", err))
+	}
 }

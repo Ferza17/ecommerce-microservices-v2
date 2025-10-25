@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/alitto/pond/v2"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	userService "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/service/user"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
@@ -20,7 +21,6 @@ import (
 	"net"
 
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/presenter"
-	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/worker"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -31,7 +31,6 @@ type (
 		address    string
 		port       string
 		grpcServer *grpc.Server
-		workerPool *pkgWorker.WorkerPool
 
 		logger                  logger.IZapLogger
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
@@ -51,10 +50,6 @@ func NewTransport(
 	userService userService.IUserService,
 ) *Transport {
 	return &Transport{
-		workerPool: pkgWorker.NewWorkerPool(
-			fmt.Sprintf("GRPC SERVER ON %s:%s", config.Get().ConfigServiceProduct.RpcHost, config.Get().ConfigServiceProduct.RpcPort),
-			1,
-		),
 		address:                 config.Get().ConfigServiceProduct.RpcHost,
 		port:                    config.Get().ConfigServiceProduct.RpcPort,
 		productPresenter:        productPresenter,
@@ -65,8 +60,7 @@ func NewTransport(
 }
 
 func (srv *Transport) Serve(ctx context.Context) error {
-	srv.workerPool.Start()
-
+	pool := pond.NewPool(10, pond.WithContext(ctx), pond.WithQueueSize(1000), pond.WithNonBlocking(true))
 	listen, err := net.Listen("tcp", fmt.Sprintf("%s:%s", srv.address, srv.port))
 	if err != nil {
 		log.Fatalln(err)
@@ -94,14 +88,18 @@ func (srv *Transport) Serve(ctx context.Context) error {
 
 	// Enable Reflection to Evans grpc client
 	reflection.Register(srv.grpcServer)
-	if err = srv.grpcServer.Serve(listen); err != nil {
+	task := pool.SubmitErr(func() error {
+		if err = srv.grpcServer.Serve(listen); err != nil {
+			srv.logger.Error(fmt.Sprintf("failed to serve : %s", zap.Error(err).String))
+			return err
+		}
+		return nil
+	})
+	if err = task.Wait(); err != nil {
 		srv.logger.Error(fmt.Sprintf("failed to serve : %s", zap.Error(err).String))
 		return err
 	}
-
-	<-ctx.Done()
 	srv.grpcServer.GracefulStop()
-	srv.workerPool.Stop()
 	return nil
 }
 
