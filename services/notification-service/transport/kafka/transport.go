@@ -6,14 +6,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
+	"github.com/alitto/pond/v2"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/kafka"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
 	notificationEmailConsumer "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/consumer"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
-	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/worker"
 	"github.com/google/wire"
 	"go.opentelemetry.io/otel/attribute"
 )
@@ -21,7 +20,6 @@ import (
 type (
 	Transport struct {
 		kafkaInfrastructure       kafkaInfrastructure.IKafkaInfrastructure
-		workerPool                *pkgWorker.WorkerPool
 		telemetryInfrastructure   telemetryInfrastructure.ITelemetryInfrastructure
 		logger                    logger.IZapLogger
 		notificationEmailConsumer notificationEmailConsumer.INotificationEmailConsumer
@@ -38,7 +36,6 @@ func NewTransport(
 ) *Transport {
 	return &Transport{
 		kafkaInfrastructure:       kafkaInfrastructure,
-		workerPool:                pkgWorker.NewWorkerPoolKafkaTaskQueue("kafka-consumer", 10, 1000),
 		telemetryInfrastructure:   telemetryInfrastructure,
 		logger:                    logger,
 		notificationEmailConsumer: notificationEmailConsumer,
@@ -46,8 +43,7 @@ func NewTransport(
 }
 
 func (srv *Transport) Serve(mainCtx context.Context) error {
-	srv.workerPool.Start()
-
+	pool := pond.NewPool(10, pond.WithContext(mainCtx), pond.WithQueueSize(1000), pond.WithNonBlocking(true))
 	topics := []string{
 		config.Get().BrokerKafkaTopicNotifications.EmailPaymentOrderCreated,
 		config.Get().BrokerKafkaTopicNotifications.EmailOtpUserLogin,
@@ -62,7 +58,8 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 	for run {
 		select {
 		case <-mainCtx.Done():
-			srv.workerPool.Stop()
+			pool.StopAndWait()
+			srv.Close()
 			run = false
 		default:
 			msg, err := srv.kafkaInfrastructure.ReadMessage(time.Second * 2)
@@ -91,36 +88,29 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 				}
 			}
 			childCtx, span := srv.telemetryInfrastructure.StartSpanFromKafkaHeader(childCtx, msg.Headers, "KafkaTransport")
-			task := pkgWorker.KafkaTaskQueue{
-				Message: msg,
-				Ctx:     childCtx,
-			}
-
 			if msg.TopicPartition.Topic != nil {
 				span.SetAttributes(attribute.String("messaging.destination", *msg.TopicPartition.Topic))
 				span.SetAttributes(attribute.String(pkgContext.CtxKeyRequestID, requestId))
 
 				switch *msg.TopicPartition.Topic {
 				case config.Get().BrokerKafkaTopicNotifications.EmailOtpUserLogin:
-					task.Handler = func(ctx context.Context, message *kafka.Message) error {
-						return srv.notificationEmailConsumer.SnapshotNotificationsEmailOtpUserLogin(childCtx, message)
-					}
+					pool.SubmitErr(func() error {
+						return srv.notificationEmailConsumer.SnapshotNotificationsEmailOtpUserLogin(childCtx, msg)
+					})
 				case config.Get().BrokerKafkaTopicNotifications.EmailOtpUserRegister:
-					task.Handler = func(ctx context.Context, message *kafka.Message) error {
-						return srv.notificationEmailConsumer.SnapshotNotificationsEmailOtpUserRegister(childCtx, message)
-					}
+					pool.SubmitErr(func() error {
+						return srv.notificationEmailConsumer.SnapshotNotificationsEmailOtpUserRegister(childCtx, msg)
+					})
 				case config.Get().BrokerKafkaTopicNotifications.EmailPaymentOrderCreated:
-					task.Handler = func(ctx context.Context, message *kafka.Message) error {
-						return srv.notificationEmailConsumer.SnapshotNotificationsEmailPaymentOrderCreated(childCtx, message)
-					}
+					pool.SubmitErr(func() error {
+						return srv.notificationEmailConsumer.SnapshotNotificationsEmailPaymentOrderCreated(childCtx, msg)
+					})
 				default:
 					srv.logger.Error(fmt.Sprintf("invalid topic %s", *msg.TopicPartition.Topic))
 					continue
 				}
 
 			}
-
-			srv.workerPool.AddKafkaTaskQueue(task)
 			span.End()
 		}
 	}

@@ -6,9 +6,9 @@ import (
 	"log"
 	"net"
 
+	"github.com/alitto/pond/v2"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
-	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/worker"
 	"github.com/google/wire"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -21,7 +21,6 @@ type (
 	Transport struct {
 		address    string
 		port       string
-		workerPool *pkgWorker.WorkerPool
 		grpcServer *grpc.Server
 		logger     logger.IZapLogger
 	}
@@ -32,10 +31,6 @@ var Set = wire.NewSet(NewTransport)
 func NewTransport(
 	logger logger.IZapLogger) *Transport {
 	return &Transport{
-		workerPool: pkgWorker.NewWorkerPool(
-			fmt.Sprintf("GRPC SERVER ON %s:%s", config.Get().ConfigServiceNotification.RpcHost, config.Get().ConfigServiceNotification.RpcPort),
-			1,
-		),
 		address:    config.Get().ConfigServiceNotification.RpcHost,
 		port:       config.Get().ConfigServiceNotification.RpcPort,
 		grpcServer: grpc.NewServer(),
@@ -44,8 +39,7 @@ func NewTransport(
 }
 
 func (s *Transport) Serve(ctx context.Context) error {
-	s.workerPool.Start()
-
+	pool := pond.NewPool(10, pond.WithContext(ctx), pond.WithQueueSize(1000), pond.WithNonBlocking(true))
 	listen, err := net.Listen("tcp", fmt.Sprintf(":%s", s.port))
 	if err != nil {
 		s.logger.Error(fmt.Sprintf("Err Listen : %v", err))
@@ -58,13 +52,17 @@ func (s *Transport) Serve(ctx context.Context) error {
 	log.Printf("Starting gRPC server on %s:%s", s.address, s.port)
 	// Enable Reflection to Evans grpc client
 	reflection.Register(s.grpcServer)
-	if err = s.grpcServer.Serve(listen); err != nil {
+	task := pool.SubmitErr(func() error {
+		if err = s.grpcServer.Serve(listen); err != nil {
+			s.logger.Error(fmt.Sprintf("failed to serve : %s", zap.Error(err).String))
+			return err
+		}
+		return nil
+	})
+	if err = task.Wait(); err != nil {
 		s.logger.Error(fmt.Sprintf("failed to serve : %s", zap.Error(err).String))
+		return err
 	}
-
-	<-ctx.Done()
-	s.grpcServer.GracefulStop()
-	s.workerPool.Stop()
 	return nil
 }
 

@@ -26,6 +26,7 @@ require (
 )
 
 require (
+	github.com/alitto/pond/v2 v2.5.0 // indirect
 	github.com/armon/go-metrics v0.4.1 // indirect
 	github.com/bahlo/generic-list-go v0.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
