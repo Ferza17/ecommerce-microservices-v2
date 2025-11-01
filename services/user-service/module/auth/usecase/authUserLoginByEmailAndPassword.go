@@ -24,7 +24,7 @@ func (u *authUseCase) AuthUserLoginByEmailAndPassword(ctx context.Context, reque
 
 	user, err := u.userPostgresqlRepository.FindUserByEmail(ctx, requestId, req.Email, nil)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if err == gorm.ErrRecordNotFound {
 			u.logger.Error("AuthUseCase.AuthUserLoginByEmailAndPassword", zap.String("requestId", requestId), zap.Error(errors.New("user not found")))
 			return nil, status.Error(codes.NotFound, err.Error())
 		}

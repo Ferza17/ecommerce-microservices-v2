@@ -8,7 +8,6 @@ package kafka
 
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/kafka"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/mongodb"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/postgres"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/redis"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
@@ -19,7 +18,6 @@ import (
 	redis2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
 	usecase3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/consumer"
-	mongodb2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/repository/mongodb"
 	usecase2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/usecase"
 	kafka4 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/consumer/kafka"
 	postgres3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/repository/postgres"
@@ -44,12 +42,10 @@ func Provide() *Transport {
 	iAccessControlPostgresqlRepository := postgres4.NewAccessControlPostgresqlRepository(iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
 	iAccessControlRedisRepository := redis3.NewAccessControlRedisRepository(iRedisInfrastructure, iTelemetryInfrastructure, iZapLogger)
 	iAccessControlUseCase := usecase.NewAccessControlUseCase(iAccessControlPostgresqlRepository, iAccessControlRedisRepository, iTelemetryInfrastructure, iPostgresSQL, iZapLogger)
-	iMongoDBInfrastructure := mongodb.NewMongoDBInfrastructure(iZapLogger)
-	iEventMongoRepository := mongodb2.NewEventMongoDBRepository(iMongoDBInfrastructure, iTelemetryInfrastructure, iZapLogger)
-	iEventUseCase := usecase2.NewEventUseCase(iEventMongoRepository, iKafkaInfrastructure, iTelemetryInfrastructure)
+	iEventUseCase := usecase2.NewEventUseCase(iKafkaInfrastructure, iTelemetryInfrastructure)
 	iAuthUseCase := usecase3.NewAuthUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iKafkaInfrastructure, iAuthRedisRepository, iAccessControlUseCase, iTelemetryInfrastructure, iPostgresSQL, iZapLogger, iEventUseCase)
 	iAuthConsumer := kafka2.NewAuthConsumer(iKafkaInfrastructure, iZapLogger, iAuthUseCase)
-	iUserUseCase := usecase4.NewUserUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iKafkaInfrastructure, iAuthRedisRepository, iPostgresSQL, iTelemetryInfrastructure, iEventUseCase, iEventMongoRepository, iZapLogger)
+	iUserUseCase := usecase4.NewUserUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iKafkaInfrastructure, iAuthRedisRepository, iPostgresSQL, iTelemetryInfrastructure, iEventUseCase, iZapLogger)
 	iUserConsumer := kafka3.NewUserConsumer(iKafkaInfrastructure, iTelemetryInfrastructure, iZapLogger, iUserUseCase)
 	iRoleUseCase := usecase5.NewRoleUseCase(iRolePostgresqlRepository, iKafkaInfrastructure, iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
 	iRoleConsumer := kafka4.NewRoleConsumer(iKafkaInfrastructure, iZapLogger, iRoleUseCase)

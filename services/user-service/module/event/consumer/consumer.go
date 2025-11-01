@@ -2,6 +2,7 @@ package consumer
 
 import (
 	"context"
+
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/kafka"
 	eventUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/usecase"
@@ -11,7 +12,7 @@ import (
 
 type (
 	IEventConsumer interface {
-		DlqSinkMongoEventsUserEventStores(ctx context.Context, message *kafka.Message) error
+		InboundOutboxEventEnvelope(ctx context.Context, message *kafka.Message) error
 	}
 
 	eventConsumer struct {

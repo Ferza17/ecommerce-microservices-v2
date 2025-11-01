@@ -29,7 +29,7 @@ type (
 		authKafkaConsumer       authKafkaConsumer.IAuthConsumer
 		userKafkaConsumer       userKafkaConsumer.IUserConsumer
 		roleKafkaConsumer       roleKafkaConsumer.IRoleConsumer
-		eventConsumer           eventKafkaConsumer.IEventConsumer
+		eventKafkaConsumer      eventKafkaConsumer.IEventConsumer
 	}
 
 	handler func(ctx context.Context, message *kafka.Message) error
@@ -43,7 +43,7 @@ func NewTransport(
 	authKafkaConsumer authKafkaConsumer.IAuthConsumer,
 	userKafkaConsumer userKafkaConsumer.IUserConsumer,
 	roleKafkaConsumer roleKafkaConsumer.IRoleConsumer,
-	eventConsumer eventKafkaConsumer.IEventConsumer,
+	eventKafkaConsumer eventKafkaConsumer.IEventConsumer,
 	logger logger.IZapLogger,
 ) *Transport {
 	return &Transport{
@@ -52,7 +52,7 @@ func NewTransport(
 		authKafkaConsumer:       authKafkaConsumer,
 		userKafkaConsumer:       userKafkaConsumer,
 		roleKafkaConsumer:       roleKafkaConsumer,
-		eventConsumer:           eventConsumer,
+		eventKafkaConsumer:      eventKafkaConsumer,
 		logger:                  logger,
 	}
 }
@@ -145,11 +145,12 @@ func (srv *Transport) RegisterKafkaHandlers() map[string]handler {
 
 	handlers[config.Get().BrokerKafkaTopicUsers.UserUserUpdated] = srv.userKafkaConsumer.SnapshotUsersUserUpdated
 
+	// EVENT
+	handlers["source.mongo.events"] = srv.eventKafkaConsumer.InboundOutboxEventEnvelope
+
 	// DLQ
 	handlers[config.Get().BrokerKafkaTopicConnectorSinkPgUser.DlqUsers] = srv.userKafkaConsumer.DlqSinkPgUsersUsers
 	handlers[config.Get().BrokerKafkaTopicConnectorSinkPgUser.DlqRoles] = srv.roleKafkaConsumer.DlqSinkPgUsersRoles
-
-	handlers[config.Get().BrokerKafkaTopicConnectorSinkMongoEvent.DlqUser] = srv.eventConsumer.DlqSinkMongoEventsUserEventStores
 
 	return handlers
 }

@@ -2,9 +2,7 @@ package presenter
 
 import (
 	"context"
-	"time"
 
-	pbEvent "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event"
 	pb "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"go.uber.org/zap"
@@ -29,19 +27,20 @@ func (p *AuthPresenter) AuthUserRegister(ctx context.Context, req *pb.AuthUserRe
 	}
 
 	// Fire Forget
-	go func() {
-		select {
-		case <-time.After(1000 * time.Millisecond):
-			if err = p.userUseCase.ConfirmCreateUser(context.WithoutCancel(ctx), requestID, &pbEvent.ReserveEvent{
-				SagaId:        requestID,
-				AggregateType: "users",
-			}); err != nil {
-				p.logger.Error("AuthPresenter.AuthUserRegister", zap.String("requestID", requestID), zap.Error(err))
-				return
-			}
-			return
-		}
-	}()
+	//TODO: Change This Into Outbox Pattern
+	//go func() {
+	//	select {
+	//	case <-time.After(1000 * time.Millisecond):
+	//		if err = p.userUseCase.ConfirmCreateUser(context.WithoutCancel(ctx), requestID, &pbEvent.ReserveEvent{
+	//			SagaId:        requestID,
+	//			AggregateType: "users",
+	//		}); err != nil {
+	//			p.logger.Error("AuthPresenter.AuthUserRegister", zap.String("requestID", requestID), zap.Error(err))
+	//			return
+	//		}
+	//		return
+	//	}
+	//}()
 
 	return resp, nil
 }

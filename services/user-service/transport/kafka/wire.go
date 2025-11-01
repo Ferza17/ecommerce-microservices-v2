@@ -5,7 +5,6 @@ package kafka
 
 import (
 	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/kafka"
-	mongoDBInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/mongodb"
 	postgresInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/postgres"
 	redisInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/redis"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
@@ -16,7 +15,6 @@ import (
 	authRedisRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
 	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
 	eventKafkaConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/consumer"
-	eventMongoRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/repository/mongodb"
 	eventUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/usecase"
 	rolesKafkaConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/consumer/kafka"
 	rolePostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/repository/postgres"
@@ -37,7 +35,6 @@ func Provide() *Transport {
 		telemetryInfrastructure.Set,
 		postgresInfrastructure.Set,
 		redisInfrastructure.Set,
-		mongoDBInfrastructure.Set,
 
 		authKafkaConsumer.Set,
 		userKafkaConsumer.Set,
@@ -49,7 +46,6 @@ func Provide() *Transport {
 		accessControlPostgresqlRepository.Set,
 		accessControlRedisRepository.Set,
 		authRedisRepository.Set,
-		eventMongoRepository.Set,
 
 		authUseCase.Set,
 		userUseCase.Set,

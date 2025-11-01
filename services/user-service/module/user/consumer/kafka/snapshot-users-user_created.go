@@ -42,7 +42,7 @@ func (c *userConsumer) SnapshotUsersUserCreated(ctx context.Context, message *ka
 
 func (c *userConsumer) ConfirmSnapshotUsersUserCreated(ctx context.Context, message *kafka.Message) error {
 	var (
-		request pbEvent.ReserveEvent
+		request pbEvent.EventEnvelope
 		err     error
 	)
 
@@ -59,17 +59,17 @@ func (c *userConsumer) ConfirmSnapshotUsersUserCreated(ctx context.Context, mess
 		return err
 	}
 
-	if err = c.userUseCase.ConfirmCreateUser(ctx, pkgContext.GetRequestIDFromContext(ctx), &request); err != nil {
-		c.logger.Info(fmt.Sprintf("userConsumer.ConfirmSnapshotUsersUserCreated: %v", err))
-		return err
-	}
+	//if err = c.userUseCase.ConfirmCreateUser(ctx, pkgContext.GetRequestIDFromContext(ctx), &request); err != nil {
+	//	c.logger.Info(fmt.Sprintf("userConsumer.ConfirmSnapshotUsersUserCreated: %v", err))
+	//	return err
+	//}
 
 	return nil
 }
 
 func (c *userConsumer) CompensateSnapshotUsersUserCreated(ctx context.Context, message *kafka.Message) error {
 	var (
-		request pbEvent.ReserveEvent
+		request pbEvent.EventEnvelope
 		err     error
 	)
 

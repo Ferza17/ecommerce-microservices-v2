@@ -81,27 +81,6 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 		UpdatedAt:  timestamppb.New(now),
 	})
 
-	payload, err := proto.Marshal(user.ToProto())
-	if err != nil {
-		u.logger.Error("UserUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
-		return nil, status.Error(codes.Internal, "internal server error")
-	}
-
-	// SENT TO EVENT STORE
-	if err = u.eventUseCase.AppendEvent(ctx, &pbEvent.Event{
-		XId:           primitive.NewObjectID().Hex(),
-		AggregateId:   user.ID,
-		AggregateType: "users", // TODO: Move To Enum
-		EventType:     config.Get().BrokerKafkaTopicUsers.UserUserCreated,
-		Version:       1,
-		Timestamp:     timestamppb.New(now),
-		SagaId:        requestId,
-		Payload:       payload,
-	}); err != nil {
-		u.logger.Error("UserUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
-		return nil, status.Error(codes.Internal, "internal server error")
-	}
-
 	// Sent OTP
 	otp := util.GenerateOTP()
 	if err = u.authRedisRepository.SetOtp(ctx, requestId, otp, user.ID); err != nil {
@@ -109,10 +88,33 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicNotifications.EmailOtpUserRegister, requestId, kafka.PROTOBUF_SCHEMA, &notificationRpc.SendOtpEmailNotificationRequest{
+	// SEND TO SINK CONNECTOR PG USER
+	if err = u.kafkaInfrastructure.PublishWithSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkPgUser.Users, user.ID, kafka.JSON_SCHEMA, user); err != nil {
+		u.logger.Error("UserUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
+		return nil, err
+	}
+
+	// SEND TO OUTBOX
+	payload, err := proto.Marshal(&notificationRpc.SendOtpEmailNotificationRequest{
 		Email:            user.Email,
 		Otp:              otp,
 		NotificationType: notificationRpc.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_REGISTER_OTP,
+	})
+	if err != nil {
+		u.logger.Error("UserUseCase.SentOTP", zap.String("requestId", requestId), zap.Error(err))
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	if err = u.eventUseCase.AppendEventEnvelope(ctx, &pbEvent.EventEnvelope{
+		XId:           primitive.NewObjectID().Hex(),
+		EventType:     config.Get().BrokerKafkaTopicNotifications.EmailOtpUserRegister,
+		AggregateType: pbEvent.AggregateType_NOTIFICATION,
+		AggregateId:   primitive.NewObjectID().Hex(), // Because Notification Service use mongodb
+		Version:       0,
+		OccurredAt:    timestamppb.New(now),
+		CorrelationId: requestId,
+		CausationId:   &requestId,
+		Payload:       payload,
 	}); err != nil {
 		u.logger.Error("UserUseCase.SentOTP", zap.String("requestId", requestId), zap.Error(err))
 		return nil, status.Error(codes.Internal, err.Error())
@@ -124,39 +126,8 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 	}, nil
 }
 
-func (u *userUseCase) ConfirmCreateUser(ctx context.Context, requestId string, req *pbEvent.ReserveEvent) error {
-	var (
-		err error
-	)
-	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "UserUseCase.ConfirmCreateUser")
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-		}
-		span.End()
-	}()
-
-	savedEvent, err := u.eventMongoDBRepository.FindEventBySagaIDAndAggregateType(ctx, req.SagaId, "users")
-	if err != nil {
-		u.logger.Error("UserUseCase.SentOTP", zap.String("requestId", requestId), zap.Error(err))
-		return err
-	}
-
-	var user pb.User
-	if err = proto.Unmarshal(savedEvent.Payload, &user); err != nil {
-		u.logger.Error("UserUseCase.Unmarshal", zap.String("requestId", requestId), zap.Error(err))
-		return err
-	}
-
-	if err = u.kafkaInfrastructure.PublishWithSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkPgUser.Users, user.Id, kafka.JSON_SCHEMA, orm.UserFromProto(&user)); err != nil {
-		u.logger.Error("UserUseCase.AuthUserRegister", zap.String("requestId", requestId), zap.Error(err))
-		return err
-	}
-
-	return nil
-}
-
-func (u *userUseCase) CompensateCreateUser(ctx context.Context, requestId string, req *pbEvent.ReserveEvent) error {
+// TODO: Change This Into Outbox Pattern
+func (u *userUseCase) CompensateCreateUser(ctx context.Context, requestId string, req *pbEvent.EventEnvelope) error {
 	var (
 		err error
 	)
@@ -168,11 +139,6 @@ func (u *userUseCase) CompensateCreateUser(ctx context.Context, requestId string
 		}
 		span.End()
 	}()
-
-	if err = u.eventMongoDBRepository.DeleteEventBySagaId(ctx, req.SagaId); err != nil {
-		u.logger.Error("UserUseCase.SentOTP", zap.String("requestId", requestId), zap.Error(err))
-		return err
-	}
 
 	return nil
 }
