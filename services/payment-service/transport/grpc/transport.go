@@ -90,8 +90,11 @@ func (s *Transport) Serve(ctx context.Context) error {
 	grpc_health_v1.RegisterHealthServer(s.grpcServer, healthServer)
 	healthServer.SetServingStatus(config.Get().ConfigServicePayment.ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
 
-	// Enable Reflection to Evans grpc client
+	// IMPORTANT: Register reflection AFTER all services are registered
+	//if config.Get().Env != enum.CONFIG_ENV_PROD {
 	reflection.Register(s.grpcServer)
+	//}
+
 	if err = s.grpcServer.Serve(listen); err != nil {
 		s.logger.Error(fmt.Sprintf("failed to serve : %s", zap.Error(err).String))
 	}

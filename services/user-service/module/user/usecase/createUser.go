@@ -95,7 +95,7 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 	}
 
 	// SEND TO OUTBOX
-	payload, err := util.ProtobufToBase64(&notificationRpc.SendOtpEmailNotificationRequest{
+	payload, err := util.ProtobufToBase64URL(&notificationRpc.SendOtpEmailNotificationRequest{
 		Email:            user.Email,
 		Otp:              otp,
 		NotificationType: notificationRpc.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_REGISTER_OTP,

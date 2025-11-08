@@ -9,9 +9,7 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/shipping"
 	userService "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/user"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
-	pbEvent "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event"
 	paymentRpc "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
-	eventMongoDBRepository "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/event/repository/mongodb"
 	eventUseCase "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/event/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/repository"
 	paymentProviderRepository "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/provider/repository"
@@ -22,9 +20,6 @@ import (
 type (
 	IPaymentUseCase interface {
 		CreatePayment(ctx context.Context, requestId string, request *paymentRpc.CreatePaymentRequest) (*paymentRpc.CreatePaymentResponse, error)
-		ConfirmCreatePayment(ctx context.Context, requestId string, req *pbEvent.ReserveEvent) error
-		CompensateCreatePayment(ctx context.Context, requestId string, req *pbEvent.ReserveEvent) error
-
 		PaymentOrderDelayedCancelled(ctx context.Context, requestId string, request *paymentRpc.PaymentOrderDelayedCancelledRequest) error
 
 		FindPaymentById(ctx context.Context, requestId string, request *paymentRpc.FindPaymentByIdRequest) (*paymentRpc.FindPaymentByIdResponse, error)
@@ -41,7 +36,6 @@ type (
 		shippingService           shipping.IShippingService
 		userService               userService.IUserService
 		productService            productService.IProductService
-		eventMongoDBRepository    eventMongoDBRepository.IEventMongoRepository
 		eventUseCase              eventUseCase.IEventUseCase
 	}
 )
@@ -61,7 +55,6 @@ func NewPaymentUseCase(
 	shippingService shipping.IShippingService,
 	userService userService.IUserService,
 	productService productService.IProductService,
-	eventMongoDBRepository eventMongoDBRepository.IEventMongoRepository,
 	eventUseCase eventUseCase.IEventUseCase,
 ) IPaymentUseCase {
 	return &paymentUseCase{
@@ -74,7 +67,6 @@ func NewPaymentUseCase(
 		shippingService:           shippingService,
 		userService:               userService,
 		productService:            productService,
-		eventMongoDBRepository:    eventMongoDBRepository,
 		eventUseCase:              eventUseCase,
 	}
 }

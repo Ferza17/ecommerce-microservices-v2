@@ -2,20 +2,22 @@ package kafka
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/alitto/pond/v2"
-	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
 	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/kafka"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
+	pbEvent "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event"
 	paymentConsumer "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/consumer"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
+	"github.com/google/uuid"
 	"github.com/google/wire"
 	"go.opentelemetry.io/otel/attribute"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 type (
@@ -27,7 +29,7 @@ type (
 		topics                  []string
 	}
 
-	handler func(ctx context.Context, message *kafka.Message) error
+	handler func(ctx context.Context, message *pbEvent.EventEnvelope) error
 )
 
 var Set = wire.NewSet(
@@ -55,15 +57,10 @@ func NewTransport(
 func (srv *Transport) Serve(mainCtx context.Context) error {
 	var (
 		pool          = pond.NewPool(10, pond.WithContext(mainCtx), pond.WithQueueSize(1000), pond.WithNonBlocking(true))
-		topics        []string
 		kafkaHandlers = srv.RegisterKafkaHandlers()
 	)
 
-	for s, _ := range kafkaHandlers {
-		topics = append(topics, s)
-	}
-
-	if err := srv.kafkaInfrastructure.SetupTopics(topics); err != nil {
+	if err := srv.kafkaInfrastructure.SetupTopics([]string{"source.mongo.outbox.event_envelopes"}); err != nil {
 		srv.logger.Error(fmt.Sprintf("failed to setup kafka topics: %v", err))
 		return err
 	}
@@ -86,37 +83,70 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 				continue
 			}
 
-			var (
-				requestId string
-				childCtx  = context.WithoutCancel(mainCtx)
-			)
+			if msg.TopicPartition.Topic != nil {
+				var (
+					childCtx = context.WithoutCancel(mainCtx)
+					request  pbEvent.EventEnvelope
+					// First, check if the message is double-encoded (string containing JSON)
+					jsonString string
+					requestId  = uuid.NewString()
+					token      string
+					ok         bool
+				)
+				if err = json.Unmarshal(msg.Value, &jsonString); err == nil {
+					// It was double-encoded, use the unescaped string
+					if err = protojson.Unmarshal([]byte(jsonString), &request); err != nil {
+						srv.logger.Error(fmt.Sprintf("Failed to deserialize after unescape: %v", err))
+						return err
+					}
+				} else {
+					// It's normal JSON, unmarshal directly
+					if err = protojson.Unmarshal(msg.Value, &request); err != nil {
+						srv.logger.Error(fmt.Sprintf("Failed to deserialize: %v", err))
+						return err
+					}
+				}
 
-			for _, header := range msg.Headers {
-				if strings.ToLower(header.Key) == strings.ToLower(pkgContext.CtxKeyRequestID) {
-					requestId = string(header.Value)
+				childCtx = pkgContext.SetCausationIdToContext(childCtx, request.XId)
+
+				if requestId, ok = request.Metadata[pkgContext.CtxKeyRequestID]; ok {
 					childCtx = pkgContext.SetRequestIDToContext(childCtx, requestId)
 				}
 
-				if strings.ToLower(header.Key) == strings.ToLower(pkgContext.CtxKeyAuthorization) {
-					childCtx = pkgContext.SetTokenAuthorizationToContext(childCtx, string(header.Value))
+				if token, ok = request.Metadata[pkgContext.CtxKeyAuthorization]; ok {
+					childCtx = pkgContext.SetTokenAuthorizationToContext(childCtx, token)
 				}
-			}
-			childCtx, span := srv.telemetryInfrastructure.StartSpanFromKafkaHeader(childCtx, msg.Headers, "KafkaTransport")
-			if msg.TopicPartition.Topic != nil {
+
+				// TODO: Add tracing headers
+
+				childCtx, span := srv.telemetryInfrastructure.StartSpanFromKafkaHeader(childCtx, msg.Headers, "KafkaTransport")
 				span.SetAttributes(attribute.String("messaging.destination", *msg.TopicPartition.Topic))
 				span.SetAttributes(attribute.String(pkgContext.CtxKeyRequestID, requestId))
 
-				handler, ok := kafkaHandlers[*msg.TopicPartition.Topic]
+				handler, ok := kafkaHandlers[request.EventType]
 				if !ok {
-					srv.logger.Error(fmt.Sprintf("invalid topic %s", *msg.TopicPartition.Topic))
+					srv.logger.Error(fmt.Sprintf("unregistered event type  %s", request.EventType))
 					span.End()
 					continue
 				}
+
 				pool.SubmitErr(func() error {
-					return handler(childCtx, msg)
+					if err = handler(childCtx, &request); err != nil {
+						srv.logger.Error(fmt.Sprintf("failed to handle message: %v", err))
+						span.RecordError(err)
+						span.End()
+						return err
+					}
+					if err = srv.kafkaInfrastructure.CommitMessage(msg); err != nil {
+						srv.logger.Error(fmt.Sprintf("failed to commit message: %v", err))
+						span.RecordError(err)
+						span.End()
+						return err
+					}
+					span.End()
+					return nil
 				})
 			}
-			span.End()
 		}
 	}
 

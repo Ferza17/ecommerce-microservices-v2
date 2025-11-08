@@ -3,8 +3,8 @@ package consumer
 import (
 	"context"
 
-	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
+	pbEvent "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
 	"github.com/google/wire"
@@ -12,11 +12,8 @@ import (
 
 type (
 	IPaymentConsumer interface {
-		SnapshotPaymentsPaymentOrderCreated(ctx context.Context, message *kafka.Message) error
-		CompensateSnapshotPaymentsPaymentOrderCreated(ctx context.Context, message *kafka.Message) error
-		ConfirmSnapshotPaymentsPaymentOrderCreated(ctx context.Context, message *kafka.Message) error
-
-		SnapshotPaymentsPaymentOrderCancelledDelayed(ctx context.Context, message *kafka.Message) error
+		SnapshotPaymentsPaymentOrderCreated(ctx context.Context, message *pbEvent.EventEnvelope) error
+		SnapshotPaymentsPaymentOrderCancelledDelayed(ctx context.Context, message *pbEvent.EventEnvelope) error
 	}
 
 	paymentConsumer struct {

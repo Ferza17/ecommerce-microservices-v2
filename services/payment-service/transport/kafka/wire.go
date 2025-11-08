@@ -5,13 +5,11 @@ package kafka
 
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/kafka"
-	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/mongodb"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/postgresql"
 	productService "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/product"
 	shippingService "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/shipping"
 	userService "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/user"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
-	eventMongodbRepository "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/event/repository/mongodb"
 	eventUseCase "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/event/usecase"
 	paymentConsumer "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/consumer"
 	paymentRepository "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/repository"
@@ -28,7 +26,6 @@ func Provide() *Transport {
 		postgresql.Set,
 		telemetry.Set,
 		kafka.Set,
-		mongodb.Set,
 		userService.Set,
 		shippingService.Set,
 		productService.Set,
@@ -36,7 +33,6 @@ func Provide() *Transport {
 		// Repository layer
 		paymentRepository.Set,
 		paymentProviderRepository.Set,
-		eventMongodbRepository.Set,
 
 		// Use case layer
 		paymentUseCase.Set,

@@ -23,6 +23,8 @@ type (
 		PublishWithSchema(ctx context.Context, topic string, key string, schemaType SchemaType, value interface{}) error
 		Publish(ctx context.Context, topic string, key string, schemaType SchemaType, value interface{}) error
 
+		CommitMessage(msg *kafka.Message) error
+
 		SetupTopics(topics []string) error
 		ReadMessage(duration time.Duration) (*kafka.Message, error)
 		Close() error
@@ -66,13 +68,14 @@ func NewKafkaInfrastructure(
 
 	configMap := &kafka.ConfigMap{
 		"bootstrap.servers": config.Get().BrokerKafka.Broker1,
-		"client.id":         config.Get().ConfigServiceUser.ServiceName,
+		"client.id":         config.Get().ConfigServicePayment.ServiceName,
 
 		// Consumer config
 		"auto.offset.reset":     "earliest",
-		"group.id":              config.Get().ConfigServiceUser.ServiceName,
+		"group.id":              config.Get().ConfigServicePayment.ServiceName,
 		"session.timeout.ms":    10000,
 		"heartbeat.interval.ms": 3000,
+		"enable.auto.commit":    false,
 	}
 
 	producer, err := kafka.NewProducer(configMap)
