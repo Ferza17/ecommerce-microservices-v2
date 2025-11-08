@@ -6,18 +6,14 @@ import (
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/model/orm"
-	pbEvent "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event"
 	pbProduct "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/util"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/uuid"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (u *productUseCase) CreateProduct(ctx context.Context, requestId string, req *pbProduct.CreateProductRequest) (*empty.Empty, error) {
@@ -51,87 +47,15 @@ func (u *productUseCase) CreateProduct(ctx context.Context, requestId string, re
 		UpdatedAt:   &now,
 	}
 
-	// SENT TO EVENT STORE
-	payload, err := proto.Marshal(product.ToProto())
-	if err != nil {
+	if err = u.kafkaInfrastructure.PublishWithSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkProduct.PgProducts, product.ID, kafka.JSON_SCHEMA, product); err != nil {
 		u.logger.Error("ProductUseCase.CreateProduct", zap.String("requestId", requestId), zap.Error(err))
-		return nil, status.Error(codes.Internal, "internal server error")
+		return nil, err
 	}
 
-	if err = u.eventUseCase.AppendEvent(ctx, &pbEvent.Event{
-		XId:           primitive.NewObjectID().Hex(),
-		AggregateId:   product.ID,
-		AggregateType: "products", // TODO: Move To Enum
-		EventType:     config.Get().BrokerKafkaTopicProducts.ProductCreated,
-		Version:       1,
-		Timestamp:     timestamppb.New(now),
-		SagaId:        requestId,
-		Payload:       payload,
-	}); err != nil {
+	if err = u.kafkaInfrastructure.PublishWithSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkProduct.EsProducts, product.ID, kafka.JSON_SCHEMA, product); err != nil {
 		u.logger.Error("ProductUseCase.CreateProduct", zap.String("requestId", requestId), zap.Error(err))
-		return nil, status.Error(codes.Internal, "internal server error")
+		return nil, err
 	}
 
 	return &empty.Empty{}, nil
-}
-
-func (u *productUseCase) ConfirmCreateProduct(ctx context.Context, requestId string, req *pbEvent.ReserveEvent) error {
-	var (
-		err error
-	)
-	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "ProductUseCase.ConfirmCreateProduct")
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-		}
-		span.End()
-	}()
-
-	savedEvents, err := u.eventMongoDBRepository.FindEventsBySagaID(ctx, req.SagaId)
-	if err != nil {
-		u.logger.Error("ProductUseCase.ConfirmCreateProduct", zap.String("requestId", requestId), zap.Error(err))
-		return err
-	}
-
-	for _, event := range savedEvents {
-		var product pbProduct.Product
-		if err = proto.Unmarshal(event.Payload, &product); err != nil {
-			u.logger.Error("ProductUseCase.ConfirmCreateProduct", zap.String("requestId", requestId), zap.Error(err))
-			return err
-		}
-
-		if err = u.kafkaInfrastructure.PublishWithSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkProduct.PgProducts, product.Id, kafka.JSON_SCHEMA, orm.ProductFromProto(&product)); err != nil {
-			u.logger.Error("ProductUseCase.ConfirmCreateProduct", zap.String("requestId", requestId), zap.Error(err))
-			return err
-		}
-
-		if err = u.kafkaInfrastructure.PublishWithSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkProduct.EsProducts, product.Id, kafka.JSON_SCHEMA, orm.ProductFromProto(&product)); err != nil {
-			u.logger.Error("ProductUseCase.ConfirmCreateProduct", zap.String("requestId", requestId), zap.Error(err))
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (u *productUseCase) CompensateCreateProduct(ctx context.Context, requestId string, req *pbEvent.ReserveEvent) error {
-	var (
-		err error
-	)
-	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "ProductUseCase.CompensateCreateProduct")
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-		}
-		span.End()
-	}()
-
-	if err = u.eventMongoDBRepository.DeleteEventBySagaId(ctx, req.SagaId); err != nil {
-		u.logger.Error("ProductUseCase.CompensateCreateProduct", zap.String("requestId", requestId), zap.Error(err))
-		return err
-	}
-
-	//TODO: PUBLISH TO COMPENSATE EVENT THAT PUBLISH to TOPIC snapshot-product-product_created
-
-	return nil
 }

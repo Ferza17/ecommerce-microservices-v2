@@ -29,7 +29,6 @@ type Config struct {
 
 	DatabasePostgres      *DatabasePostgres
 	DatabaseElasticsearch *DatabaseElasticsearch
-	DatabaseMongo         *DatabaseMongo
 
 	// USER SERVICE
 	ConfigServiceUser *ConfigServiceUser
@@ -83,7 +82,6 @@ func SetConfig(path string) {
 	c.withServiceUser(consulClient.KV())
 	c.withDatabaseElasticsearch(consulClient.KV())
 	c.withDatabasePostgres(consulClient.KV())
-	c.withConfigDatabaseMongo(consulClient.KV())
 	c.withConfigTelemetry(consulClient.KV())
 	c.withBrokerKafka(consulClient.KV())
 	c.withBrokerKafkaTopicConnectorSinkProduct(consulClient.KV())

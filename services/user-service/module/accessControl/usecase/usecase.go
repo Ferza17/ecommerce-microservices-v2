@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/postgres"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
 	accessControlPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/accessControl/repository/postgres"

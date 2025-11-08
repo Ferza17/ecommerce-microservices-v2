@@ -77,12 +77,10 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 				continue
 			}
 
-			var (
-				childCtx = context.WithoutCancel(mainCtx)
-			)
 			if msg.TopicPartition.Topic != nil {
 				var (
-					request pbEvent.EventEnvelope
+					childCtx = context.WithoutCancel(mainCtx)
+					request  pbEvent.EventEnvelope
 					// First, check if the message is double-encoded (string containing JSON)
 					jsonString string
 					requestId  = uuid.NewString()
@@ -103,6 +101,8 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 					}
 				}
 
+				childCtx = pkgContext.SetCausationIdToContext(childCtx, request.XId)
+
 				if requestId, ok = request.Metadata[pkgContext.CtxKeyRequestID]; ok {
 					childCtx = pkgContext.SetRequestIDToContext(childCtx, requestId)
 				}
@@ -119,7 +119,7 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 
 				handler, ok := kafkaHandlers[request.EventType]
 				if !ok {
-					srv.logger.Error(fmt.Sprintf("invalid topic %s", *msg.TopicPartition.Topic))
+					srv.logger.Error(fmt.Sprintf("unregistered event type  %s", request.EventType))
 					span.End()
 					continue
 				}

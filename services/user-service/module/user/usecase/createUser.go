@@ -24,7 +24,8 @@ import (
 
 func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.AuthUserRegisterRequest) (*pb.AuthUserRegisterResponse, error) {
 	var (
-		err error
+		err         error
+		causationId = pkgContext.GetCausationIdFromContext(ctx)
 	)
 
 	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "UserUseCase.CreateUser")
@@ -94,16 +95,6 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 	}
 
 	// SEND TO OUTBOX
-	//payload, err := proto.Marshal(&notificationRpc.SendOtpEmailNotificationRequest{
-	//	Email:            user.Email,
-	//	Otp:              otp,
-	//	NotificationType: notificationRpc.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_REGISTER_OTP,
-	//})
-	//if err != nil {
-	//	u.logger.Error("UserUseCase.SentOTP", zap.String("requestId", requestId), zap.Error(err))
-	//	return nil, status.Error(codes.Internal, err.Error())
-	//}
-
 	payload, err := util.ProtobufToBase64(&notificationRpc.SendOtpEmailNotificationRequest{
 		Email:            user.Email,
 		Otp:              otp,
@@ -122,7 +113,7 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 		Version:       0,
 		OccurredAt:    timestamppb.New(now),
 		CorrelationId: requestId,
-		CausationId:   &requestId,
+		CausationId:   &causationId,
 		Payload:       payload,
 	}); err != nil {
 		u.logger.Error("UserUseCase.SentOTP", zap.String("requestId", requestId), zap.Error(err))
@@ -133,21 +124,4 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 		Status:  "success",
 		Message: "AuthUserRegister",
 	}, nil
-}
-
-// TODO: Change This Into Outbox Pattern
-func (u *userUseCase) CompensateCreateUser(ctx context.Context, requestId string, req *pbEvent.EventEnvelope) error {
-	var (
-		err error
-	)
-
-	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "UserUseCase.CompensateCreateUser")
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-		}
-		span.End()
-	}()
-
-	return nil
 }

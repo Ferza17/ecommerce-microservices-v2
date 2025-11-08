@@ -3,9 +3,9 @@ package consumer
 import (
 	"context"
 
-	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/kafka"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
+	pbEvent "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event"
 	productUseCase "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/logger"
 	"github.com/google/wire"
@@ -13,17 +13,9 @@ import (
 
 type (
 	IProductConsumer interface {
-		SnapshotProductsProductCreated(ctx context.Context, message *kafka.Message) error
-		ConfirmSnapshotProductsProductCreated(ctx context.Context, message *kafka.Message) error
-		CompensateSnapshotProductsProductCreated(ctx context.Context, message *kafka.Message) error
-
-		SnapshotProductsProductUpdated(ctx context.Context, message *kafka.Message) error
-		ConfirmSnapshotProductsProductUpdated(ctx context.Context, message *kafka.Message) error
-		CompensateSnapshotProductsProductUpdated(ctx context.Context, message *kafka.Message) error
-
-		SnapshotProductsProductDeleted(ctx context.Context, message *kafka.Message) error
-		ConfirmSnapshotProductsProductDeleted(ctx context.Context, message *kafka.Message) error
-		CompensateSnapshotProductsProductDeleted(ctx context.Context, message *kafka.Message) error
+		SnapshotProductsProductCreated(ctx context.Context, message *pbEvent.EventEnvelope) error
+		SnapshotProductsProductUpdated(ctx context.Context, message *pbEvent.EventEnvelope) error
+		SnapshotProductsProductDeleted(ctx context.Context, message *pbEvent.EventEnvelope) error
 	}
 
 	productConsumer struct {
