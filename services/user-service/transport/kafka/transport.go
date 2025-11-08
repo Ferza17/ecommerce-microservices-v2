@@ -2,23 +2,23 @@ package kafka
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/alitto/pond/v2"
-	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/config"
 	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/kafka"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
+	pbEvent "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event"
 	authKafkaConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/consumer/kafka"
-	eventKafkaConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/consumer"
-	roleKafkaConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/consumer/kafka"
 	userKafkaConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/consumer/kafka"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
+	"github.com/google/uuid"
 	"github.com/google/wire"
 	"go.opentelemetry.io/otel/attribute"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 type (
@@ -28,11 +28,9 @@ type (
 		logger                  logger.IZapLogger
 		authKafkaConsumer       authKafkaConsumer.IAuthConsumer
 		userKafkaConsumer       userKafkaConsumer.IUserConsumer
-		roleKafkaConsumer       roleKafkaConsumer.IRoleConsumer
-		eventKafkaConsumer      eventKafkaConsumer.IEventConsumer
 	}
 
-	handler func(ctx context.Context, message *kafka.Message) error
+	handler func(ctx context.Context, message *pbEvent.EventEnvelope) error
 )
 
 var Set = wire.NewSet(NewTransport)
@@ -42,8 +40,6 @@ func NewTransport(
 	telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure,
 	authKafkaConsumer authKafkaConsumer.IAuthConsumer,
 	userKafkaConsumer userKafkaConsumer.IUserConsumer,
-	roleKafkaConsumer roleKafkaConsumer.IRoleConsumer,
-	eventKafkaConsumer eventKafkaConsumer.IEventConsumer,
 	logger logger.IZapLogger,
 ) *Transport {
 	return &Transport{
@@ -51,8 +47,6 @@ func NewTransport(
 		telemetryInfrastructure: telemetryInfrastructure,
 		authKafkaConsumer:       authKafkaConsumer,
 		userKafkaConsumer:       userKafkaConsumer,
-		roleKafkaConsumer:       roleKafkaConsumer,
-		eventKafkaConsumer:      eventKafkaConsumer,
 		logger:                  logger,
 	}
 }
@@ -60,14 +54,10 @@ func NewTransport(
 func (srv *Transport) Serve(mainCtx context.Context) error {
 	var (
 		pool          = pond.NewPool(10, pond.WithContext(mainCtx), pond.WithQueueSize(1000), pond.WithNonBlocking(true))
-		topics        []string
 		kafkaHandlers = srv.RegisterKafkaHandlers()
 	)
-	for s, _ := range kafkaHandlers {
-		topics = append(topics, s)
-	}
 
-	if err := srv.kafkaInfrastructure.SetupTopics(topics); err != nil {
+	if err := srv.kafkaInfrastructure.SetupTopics([]string{"source.mongo.outbox.event_envelopes"}); err != nil {
 		srv.logger.Error(fmt.Sprintf("failed to setup kafka topics: %v", err))
 		return err
 	}
@@ -91,36 +81,69 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 			}
 
 			var (
-				requestId string
-				childCtx  = context.WithoutCancel(mainCtx)
+				childCtx = context.WithoutCancel(mainCtx)
 			)
+			if msg.TopicPartition.Topic != nil {
+				var (
+					request pbEvent.EventEnvelope
+					// First, check if the message is double-encoded (string containing JSON)
+					jsonString string
+					requestId  = uuid.NewString()
+					token      string
+					ok         bool
+				)
+				if err = json.Unmarshal(msg.Value, &jsonString); err == nil {
+					// It was double-encoded, use the unescaped string
+					if err = protojson.Unmarshal([]byte(jsonString), &request); err != nil {
+						srv.logger.Error(fmt.Sprintf("Failed to deserialize after unescape: %v", err))
+						return err
+					}
+				} else {
+					// It's normal JSON, unmarshal directly
+					if err = protojson.Unmarshal(msg.Value, &request); err != nil {
+						srv.logger.Error(fmt.Sprintf("Failed to deserialize: %v", err))
+						return err
+					}
+				}
 
-			for _, header := range msg.Headers {
-				if strings.ToLower(header.Key) == strings.ToLower(pkgContext.CtxKeyRequestID) {
-					requestId = string(header.Value)
+				if requestId, ok = request.Metadata[pkgContext.CtxKeyRequestID]; ok {
 					childCtx = pkgContext.SetRequestIDToContext(childCtx, requestId)
 				}
 
-				if strings.ToLower(header.Key) == strings.ToLower(pkgContext.CtxKeyAuthorization) {
-					childCtx = pkgContext.SetTokenAuthorizationToContext(childCtx, string(header.Value))
+				if token, ok = request.Metadata[pkgContext.CtxKeyAuthorization]; ok {
+					childCtx = pkgContext.SetTokenAuthorizationToContext(childCtx, token)
 				}
-			}
-			childCtx, span := srv.telemetryInfrastructure.StartSpanFromKafkaHeader(childCtx, msg.Headers, "KafkaTransport")
-			if msg.TopicPartition.Topic != nil {
+
+				// TODO: Add tracing headers
+
+				childCtx, span := srv.telemetryInfrastructure.StartSpanFromKafkaHeader(childCtx, msg.Headers, "KafkaTransport")
 				span.SetAttributes(attribute.String("messaging.destination", *msg.TopicPartition.Topic))
 				span.SetAttributes(attribute.String(pkgContext.CtxKeyRequestID, requestId))
 
-				handler, ok := kafkaHandlers[*msg.TopicPartition.Topic]
+				handler, ok := kafkaHandlers[request.EventType]
 				if !ok {
 					srv.logger.Error(fmt.Sprintf("invalid topic %s", *msg.TopicPartition.Topic))
 					span.End()
 					continue
 				}
+
 				pool.SubmitErr(func() error {
-					return handler(childCtx, msg)
+					if err = handler(childCtx, &request); err != nil {
+						srv.logger.Error(fmt.Sprintf("failed to handle message: %v", err))
+						span.RecordError(err)
+						span.End()
+						return err
+					}
+					if err = srv.kafkaInfrastructure.CommitMessage(msg); err != nil {
+						srv.logger.Error(fmt.Sprintf("failed to commit message: %v", err))
+						span.RecordError(err)
+						span.End()
+						return err
+					}
+					span.End()
+					return nil
 				})
 			}
-			span.End()
 		}
 	}
 
@@ -132,25 +155,11 @@ func (srv *Transport) RegisterKafkaHandlers() map[string]handler {
 
 	// SNAPSHOT
 	handlers[config.Get().BrokerKafkaTopicUsers.UserUserLogin] = srv.authKafkaConsumer.SnapshotUsersUserLogin
-	handlers[config.Get().BrokerKafkaTopicUsers.ConfirmUserUserLogin] = srv.authKafkaConsumer.ConfirmSnapshotUsersUserLogin
-	handlers[config.Get().BrokerKafkaTopicUsers.CompensateUserUserLogin] = srv.authKafkaConsumer.CompensateSnapshotUsersUserLogin
-
 	handlers[config.Get().BrokerKafkaTopicUsers.UserUserLogout] = srv.authKafkaConsumer.SnapshotUsersUserLogout
-	handlers[config.Get().BrokerKafkaTopicUsers.ConfirmUserUserLogout] = srv.authKafkaConsumer.ConfirmSnapshotUsersUserLogout
-	handlers[config.Get().BrokerKafkaTopicUsers.CompensateUserUserLogout] = srv.authKafkaConsumer.CompensateSnapshotUsersUserLogout
 
 	handlers[config.Get().BrokerKafkaTopicUsers.UserUserCreated] = srv.userKafkaConsumer.SnapshotUsersUserCreated
-	handlers[config.Get().BrokerKafkaTopicUsers.ConfirmUserUserCreated] = srv.userKafkaConsumer.ConfirmSnapshotUsersUserCreated
-	handlers[config.Get().BrokerKafkaTopicUsers.CompensateUserUserCreated] = srv.userKafkaConsumer.CompensateSnapshotUsersUserCreated
 
-	handlers[config.Get().BrokerKafkaTopicUsers.UserUserUpdated] = srv.userKafkaConsumer.SnapshotUsersUserUpdated
-
-	// EVENT
-	handlers["source.mongo.events"] = srv.eventKafkaConsumer.InboundOutboxEventEnvelope
-
-	// DLQ
-	handlers[config.Get().BrokerKafkaTopicConnectorSinkPgUser.DlqUsers] = srv.userKafkaConsumer.DlqSinkPgUsersUsers
-	handlers[config.Get().BrokerKafkaTopicConnectorSinkPgUser.DlqRoles] = srv.roleKafkaConsumer.DlqSinkPgUsersRoles
+	//handlers[config.Get().BrokerKafkaTopicUsers.UserUserUpdated] = srv.userKafkaConsumer.SnapshotUsersUserUpdated
 
 	return handlers
 }

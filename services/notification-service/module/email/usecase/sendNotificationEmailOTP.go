@@ -5,13 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
-	"github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/kafka"
 	mailHogInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/mailhog"
-	pbEvent "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event"
 	pbNotification "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/notification"
-	pkgContext "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/context"
-	"google.golang.org/protobuf/proto"
 )
 
 func (u *notificationEmailUseCase) SendNotificationEmailOTP(ctx context.Context, requestId string, req *pbNotification.SendOtpEmailNotificationRequest) error {
@@ -20,30 +15,7 @@ func (u *notificationEmailUseCase) SendNotificationEmailOTP(ctx context.Context,
 	)
 
 	ctx, span := u.telemetryInfrastructure.StartSpanFromContext(ctx, "NotificationUseCase.SendUserOtpEmailNotification")
-
-	defer func(err error) {
-		reserveEvent, err := proto.Marshal(&pbEvent.ReserveEvent{
-			SagaId:        pkgContext.GetRequestIDFromContext(ctx),
-			AggregateType: "users",
-		})
-
-		if req.NotificationType == pbNotification.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_REGISTER_OTP && err == nil {
-			if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicUsers.ConfirmUserUserCreated, pkgContext.GetRequestIDFromContext(ctx), kafka.PROTOBUF_SCHEMA, reserveEvent); err != nil {
-				u.logger.Error(fmt.Sprintf("failed to publish message to topic %s: %v", config.Get().BrokerKafkaTopicUsers.ConfirmUserUserCreated, err))
-			}
-		}
-
-		if req.NotificationType == pbNotification.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_REGISTER_OTP && err != nil {
-			if err = u.kafkaInfrastructure.Publish(ctx, config.Get().BrokerKafkaTopicUsers.CompensateUserUserCreated, pkgContext.GetRequestIDFromContext(ctx), kafka.PROTOBUF_SCHEMA, reserveEvent); err != nil {
-				u.logger.Error(fmt.Sprintf("failed to publish message to topic confirm-snapshot-users-user_created: %v", err))
-			}
-		}
-
-		if err != nil {
-			span.RecordError(err)
-		}
-		span.End()
-	}(err)
+	defer span.End()
 
 	fetchTemplate, err := u.notificationRepository.FindNotificationTemplateByNotificationType(ctx, requestId, req.NotificationType)
 	if err != nil {

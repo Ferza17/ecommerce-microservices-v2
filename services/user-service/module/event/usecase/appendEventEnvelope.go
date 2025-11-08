@@ -28,7 +28,7 @@ func (u *eventUseCase) AppendEventEnvelope(ctx context.Context, request *pbEvent
 		metadata[k] = v
 	}
 	request.Metadata = metadata
-
+	
 	// Send to an Event Store
 	if err := u.kafkaInfrastructure.PublishWithSchema(ctx, config.Get().BrokerKafkaTopicConnectorSinkMongoEvent.EventEnvelopes, request.XId, kafka.PROTOBUF_SCHEMA, request); err != nil {
 		u.logger.Error("eventUseCase.AppendEvent", zap.String("requestId", request.CorrelationId), zap.Error(err))

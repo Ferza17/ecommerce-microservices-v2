@@ -14,15 +14,11 @@ import (
 	authKafkaConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/consumer/kafka"
 	authRedisRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
 	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
-	eventKafkaConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/consumer"
 	eventUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/usecase"
-	rolesKafkaConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/consumer/kafka"
 	rolePostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/repository/postgres"
-	roleUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/usecase"
 	userKafkaConsumer "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/consumer/kafka"
 	userPostgresqlRepository "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/postgres"
 	userUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/usecase"
-
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/google/wire"
 )
@@ -38,19 +34,16 @@ func Provide() *Transport {
 
 		authKafkaConsumer.Set,
 		userKafkaConsumer.Set,
-		rolesKafkaConsumer.Set,
-		eventKafkaConsumer.Set,
 
 		userPostgresqlRepository.Set,
 		rolePostgresqlRepository.Set,
+		authRedisRepository.Set,
 		accessControlPostgresqlRepository.Set,
 		accessControlRedisRepository.Set,
-		authRedisRepository.Set,
 
 		authUseCase.Set,
 		userUseCase.Set,
 		accessControlUseCase.Set,
-		roleUseCase.Set,
 		eventUseCase.Set,
 
 		Set,

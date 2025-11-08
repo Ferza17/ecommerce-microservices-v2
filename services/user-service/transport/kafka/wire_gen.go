@@ -17,11 +17,8 @@ import (
 	kafka2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/consumer/kafka"
 	redis2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/repository/redis"
 	usecase3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
-	"github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/consumer"
 	usecase2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/event/usecase"
-	kafka4 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/consumer/kafka"
 	postgres3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/repository/postgres"
-	usecase5 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/role/usecase"
 	kafka3 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/consumer/kafka"
 	postgres2 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/repository/postgres"
 	usecase4 "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/usecase"
@@ -47,9 +44,6 @@ func Provide() *Transport {
 	iAuthConsumer := kafka2.NewAuthConsumer(iKafkaInfrastructure, iZapLogger, iAuthUseCase)
 	iUserUseCase := usecase4.NewUserUseCase(iUserPostgresqlRepository, iRolePostgresqlRepository, iKafkaInfrastructure, iAuthRedisRepository, iPostgresSQL, iTelemetryInfrastructure, iEventUseCase, iZapLogger)
 	iUserConsumer := kafka3.NewUserConsumer(iKafkaInfrastructure, iTelemetryInfrastructure, iZapLogger, iUserUseCase)
-	iRoleUseCase := usecase5.NewRoleUseCase(iRolePostgresqlRepository, iKafkaInfrastructure, iPostgresSQL, iTelemetryInfrastructure, iZapLogger)
-	iRoleConsumer := kafka4.NewRoleConsumer(iKafkaInfrastructure, iZapLogger, iRoleUseCase)
-	iEventConsumer := consumer.NewEventConsumer(iKafkaInfrastructure, iZapLogger, iEventUseCase)
-	transport := NewTransport(iKafkaInfrastructure, iTelemetryInfrastructure, iAuthConsumer, iUserConsumer, iRoleConsumer, iEventConsumer, iZapLogger)
+	transport := NewTransport(iKafkaInfrastructure, iTelemetryInfrastructure, iAuthConsumer, iUserConsumer, iZapLogger)
 	return transport
 }

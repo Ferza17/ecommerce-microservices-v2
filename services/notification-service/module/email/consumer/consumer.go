@@ -3,9 +3,9 @@ package consumer
 import (
 	"context"
 
-	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/kafka"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
+	pbEvent "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event"
 	notificationUseCase "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 	"github.com/google/wire"
@@ -13,10 +13,10 @@ import (
 
 type (
 	INotificationEmailConsumer interface {
-		SnapshotNotificationsEmailOtpUserLogin(ctx context.Context, message *kafka.Message) error
-		SnapshotNotificationsEmailOtpUserRegister(ctx context.Context, message *kafka.Message) error
+		SnapshotNotificationsEmailOtpUserLogin(ctx context.Context, message *pbEvent.EventEnvelope) error
+		SnapshotNotificationsEmailOtpUserRegister(ctx context.Context, message *pbEvent.EventEnvelope) error
 
-		SnapshotNotificationsEmailPaymentOrderCreated(ctx context.Context, message *kafka.Message) error
+		SnapshotNotificationsEmailPaymentOrderCreated(ctx context.Context, message *pbEvent.EventEnvelope) error
 	}
 
 	notificationEmailConsumer struct {

@@ -2,23 +2,19 @@ package kafka
 
 import (
 	"context"
+	"fmt"
 
-	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
+	pbEvent "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event"
 	pbUser "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
+	"github.com/ferza17/ecommerce-microservices-v2/user-service/util"
 	"go.uber.org/zap"
-	"google.golang.org/protobuf/proto"
 )
 
-//TODO
-// 1. Handle Snapshot
-// 2. Handle Confirm
-// 3. Handle Compensate
-
-func (c *userConsumer) SnapshotUsersUserUpdated(ctx context.Context, message *kafka.Message) error {
+func (c *userConsumer) SnapshotUsersUserUpdated(ctx context.Context, message *pbEvent.EventEnvelope) error {
 	var (
-		req pbUser.UpdateUserByIdRequest
-		err error
+		request pbUser.UpdateUserByIdRequest
+		err     error
 	)
 	ctx, span := c.telemetryInfrastructure.StartSpanFromContext(ctx, "UserConsumer.FindUserByEmail")
 	defer func() {
@@ -28,12 +24,12 @@ func (c *userConsumer) SnapshotUsersUserUpdated(ctx context.Context, message *ka
 		span.End()
 	}()
 
-	if err = proto.Unmarshal(message.Value, &req); err != nil {
-		c.logger.Error("SnapshotUsersUserUpdated", zap.Error(err))
+	if err = util.Base64URLToProtobuf(message.Payload, &request); err != nil {
+		c.logger.Info(fmt.Sprintf("util.Base64URLToProtobuf: %v", err))
 		return err
 	}
 
-	if _, err = c.userUseCase.UpdateUserById(ctx, pkgContext.GetRequestIDFromContext(ctx), &req); err != nil {
+	if _, err = c.userUseCase.UpdateUserById(ctx, pkgContext.GetRequestIDFromContext(ctx), &request); err != nil {
 		c.logger.Error("SnapshotUsersUserUpdated", zap.Error(err))
 		return err
 	}

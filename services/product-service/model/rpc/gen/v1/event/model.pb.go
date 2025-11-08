@@ -32,7 +32,7 @@ type EventEnvelope struct {
 	OccurredAt    *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=occurred_at,json=occurredAt,proto3" json:"occurred_at,omitempty"`
 	CorrelationId string                 `protobuf:"bytes,7,opt,name=correlation_id,json=correlationId,proto3" json:"correlation_id,omitempty"`                                             // For tracing across services
 	CausationId   *string                `protobuf:"bytes,8,opt,name=causation_id,json=causationId,proto3,oneof" json:"causation_id,omitempty"`                                             // ID of the event that caused this one
-	Payload       []byte                 `protobuf:"bytes,9,opt,name=payload,proto3" json:"payload,omitempty"`                                                                              // Serialized event payload
+	Payload       string                 `protobuf:"bytes,9,opt,name=payload,proto3" json:"payload,omitempty"`                                                                              // base64 serialize payload
 	Metadata      map[string]string      `protobuf:"bytes,10,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // Additional metadata
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -124,11 +124,11 @@ func (x *EventEnvelope) GetCausationId() string {
 	return ""
 }
 
-func (x *EventEnvelope) GetPayload() []byte {
+func (x *EventEnvelope) GetPayload() string {
 	if x != nil {
 		return x.Payload
 	}
-	return nil
+	return ""
 }
 
 func (x *EventEnvelope) GetMetadata() map[string]string {
@@ -154,7 +154,7 @@ const file_v1_event_model_proto_rawDesc = "" +
 	"occurredAt\x12%\n" +
 	"\x0ecorrelation_id\x18\a \x01(\tR\rcorrelationId\x12&\n" +
 	"\fcausation_id\x18\b \x01(\tH\x00R\vcausationId\x88\x01\x01\x12\x18\n" +
-	"\apayload\x18\t \x01(\fR\apayload\x12>\n" +
+	"\apayload\x18\t \x01(\tR\apayload\x12>\n" +
 	"\bmetadata\x18\n" +
 	" \x03(\v2\".event.EventEnvelope.MetadataEntryR\bmetadata\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +

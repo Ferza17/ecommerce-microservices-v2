@@ -18,7 +18,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 )
@@ -95,7 +94,17 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 	}
 
 	// SEND TO OUTBOX
-	payload, err := proto.Marshal(&notificationRpc.SendOtpEmailNotificationRequest{
+	//payload, err := proto.Marshal(&notificationRpc.SendOtpEmailNotificationRequest{
+	//	Email:            user.Email,
+	//	Otp:              otp,
+	//	NotificationType: notificationRpc.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_REGISTER_OTP,
+	//})
+	//if err != nil {
+	//	u.logger.Error("UserUseCase.SentOTP", zap.String("requestId", requestId), zap.Error(err))
+	//	return nil, status.Error(codes.Internal, err.Error())
+	//}
+
+	payload, err := util.ProtobufToBase64(&notificationRpc.SendOtpEmailNotificationRequest{
 		Email:            user.Email,
 		Otp:              otp,
 		NotificationType: notificationRpc.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_REGISTER_OTP,
