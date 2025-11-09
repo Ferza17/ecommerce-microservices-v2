@@ -1,13 +1,13 @@
 use crate::infrastructure::database::async_postgres::AsyncPgDeadPool;
 use crate::model::diesel::schema::shippings::dsl::{discarded_at, id, shippings as shippingSchema};
 use crate::model::diesel::shippings::{
-    CreateShippings, Shippings as shippingModel, Shippings, UpdateShippings,
+    Shippings as shippingModel, Shippings, UpdateShippings,
 };
 use anyhow::Context;
 use anyhow::{Error, Result};
 use diesel::QueryDsl;
 use diesel::SelectableHelper;
-use diesel::{ExpressionMethods, QueryResult};
+use diesel::{ExpressionMethods};
 use diesel_async::RunQueryDsl;
 use std::fmt;
 use tracing::{Level, event, instrument};

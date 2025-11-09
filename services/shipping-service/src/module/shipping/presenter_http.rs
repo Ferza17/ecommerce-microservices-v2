@@ -18,7 +18,7 @@ use axum::routing::{delete, get, post, put};
 use prost_validate::NoopValidator;
 use std::sync::Arc;
 use tonic::Code;
-use tower::{Layer, ServiceBuilder};
+use tower::ServiceBuilder;
 use tracing::{error, instrument};
 
 #[derive(Debug, Clone)]

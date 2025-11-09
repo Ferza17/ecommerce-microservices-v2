@@ -3,9 +3,8 @@ use crate::infrastructure::message_broker::kafka::KafkaInfrastructure;
 use crate::infrastructure::services::payment::PaymentServiceGrpcClient;
 use crate::infrastructure::services::user::UserServiceGrpcClient;
 use crate::model::diesel::shipping_providers::to_proto::shipping_provider_to_proto;
+use crate::model::diesel::shippings::CreateShippings;
 use crate::model::diesel::shippings::to_proto::shippings_to_proto;
-use crate::model::diesel::shippings::{CreateShippings};
-use crate::model::rpc::event::ReserveEvent;
 use crate::model::rpc::payment::FindPaymentByIdRequest;
 use crate::model::rpc::shipping::create_shipping_response::CreateShippingResponseData;
 use crate::model::rpc::shipping::delete_shipping_response::DeleteShippingResponseData;
@@ -38,19 +37,6 @@ pub trait ShippingUseCase {
         token: String,
         request: Request<CreateShippingRequest>,
     ) -> Result<Response<CreateShippingResponse>, Status>;
-
-    async fn confirm_create_shipping(
-        &self,
-        request_id: String,
-        token: String,
-        request: Request<ReserveEvent>,
-    ) -> Result<(), Status>;
-    async fn compensate_create_shipping(
-        &self,
-        request_id: String,
-        token: String,
-        request: Request<ReserveEvent>,
-    ) -> Result<(), Status>;
 
     async fn get_shipping_by_id(
         &self,
@@ -148,13 +134,6 @@ impl ShippingUseCase for ShippingUseCaseImpl {
         let now = chrono::Utc::now();
         let id = uuid::Uuid::new_v4().to_string();
 
-        // TODO:
-        // 1. Move to Kafaka Sink Mongodb Shipping Event Stores
-        // 2. Add Confirm function
-        // 3. Add Compensate Function
-
-
-
         match self
             .kafka_infrastructure
             .publish_with_json_schema(
@@ -207,26 +186,6 @@ impl ShippingUseCase for ShippingUseCaseImpl {
                 )))
             }
         }
-    }
-
-    #[instrument("ShippingUseCase.confirm_create_shipping")]
-    async fn confirm_create_shipping(
-        &self,
-        request_id: String,
-        token: String,
-        request: Request<ReserveEvent>,
-    ) -> Result<(), Status>{
-        Ok(())
-    }
-
-    #[instrument("ShippingUseCase.compensate_create_shipping")]
-    async fn compensate_create_shipping(
-        &self,
-        request_id: String,
-        token: String,
-        request: Request<ReserveEvent>,
-    ) -> Result<(), Status>{
-        Ok(())
     }
 
     #[instrument("ShippingUseCase.get_shipping_by_id")]

@@ -38,7 +38,6 @@ pub async fn handle_run_command(args: RunArgs) {
 
     cfg = cfg
         .with_database_postgres_from_consul(&client)
-        .with_database_mongodb_from_consul(&client)
         .with_service_payment_from_consul(&client)
         .with_service_shipping_from_consul(&client)
         .with_service_user_from_consul(&client)
@@ -46,12 +45,13 @@ pub async fn handle_run_command(args: RunArgs) {
         .with_message_broker_kafka_from_consul(&client)
         .with_message_broker_kafka_topic_sink_shipping_from_consul(&client)
         .with_message_broker_kafka_topic_shipping_from_consul(&client)
+        .with_message_broker_kafka_topic_connector_mongo_event_from_consul(&client)
         .with_register_consul_service(&client);
 
-    // match init_tracing(cfg.clone()) {
-    //     Ok(_) => {}
-    //     Err(_) => panic!("Failed to init tracing"),
-    // }
+    match init_tracing(cfg.clone()) {
+        Ok(_) => {}
+        Err(_) => panic!("Failed to init tracing"),
+    }
     // ======= WORKER POOLS ===========
     // Create specialized worker pools
     let pools = Arc::new(TypedWorkerPool::new(5, 5, 1000, 1));
@@ -59,7 +59,7 @@ pub async fn handle_run_command(args: RunArgs) {
         String,
         Result<JoinHandle<Result<(), anyhow::Error>>, WorkerPoolError>,
     )> = Vec::new();
-    // HTTP Transport with dedicated pool
+    // HTTP Transport with a dedicated pool
     {
         let pool = Arc::clone(&pools);
         let cfg_clone = cfg.clone();
@@ -81,7 +81,7 @@ pub async fn handle_run_command(args: RunArgs) {
 
         handles.push((format!("{:?}", pool.http_pool.worker_type()), handle));
     }
-    // GRPC Transport with dedicated pool
+    // GRPC Transport with a dedicated pool
     {
         let pool = Arc::clone(&pools);
         let cfg_clone = cfg.clone();
@@ -102,7 +102,7 @@ pub async fn handle_run_command(args: RunArgs) {
             .await;
         handles.push((format!("{:?}", pool.grpc_pool.worker_type()), handle));
     }
-    // METRIC HTTP Transport with dedicated pool
+    // METRIC HTTP Transport with a dedicated pool
     {
         let pool = Arc::clone(&pools);
         let cfg_clone = cfg.clone();

@@ -5,7 +5,6 @@ use crate::model::rpc::shipping::{
     GetShippingByIdRequest, GetShippingByIdResponse, ListShippingRequest, ListShippingResponse,
     UpdateShippingRequest, UpdateShippingResponse,
 };
-use crate::model::rpc::user::AuthUserVerifyAccessControlRequest;
 use crate::module::shipping::usecase::{ShippingUseCase, ShippingUseCaseImpl};
 use crate::package::context::auth::get_request_authorization_token_from_metadata;
 use crate::package::context::request_id::get_request_id_from_metadata;

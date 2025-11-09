@@ -68,6 +68,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "timestamp",
             "#[schema(value_type = String, format = \"date-time\")]",
         )
+        .field_attribute(
+            "occurred_at",
+            "#[schema(value_type = String, format = \"date-time\")]",
+        )
         .field_attribute("Response.data", "#[schema(value_type = serde_json::Value)]")
         .out_dir(&out_dir)
         .service_generator(tonic_builder)

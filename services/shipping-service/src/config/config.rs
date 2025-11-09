@@ -1,21 +1,21 @@
 use config::{Config, ConfigError, Environment, File};
-use consulrs::client::{ConsulClient, ConsulClientSettingsBuilder};
+use consulrs::client::{ConsulClient};
 use consulrs::{kv, service};
 use serde::Deserialize;
-
-use crate::config::database_mongodb::DatabaseMongoDB;
-use crate::config::database_postgres::DatabasePostgres;
-use crate::config::message_broker_kafka::MessageBrokerKafka;
-use crate::config::message_broker_kafka_topic_shipping::MessageBrokerKafkaTopicShipping;
-use crate::config::message_broker_kafka_topic_sink_shipping::MessageBrokerKafkaTopicSinkShipping;
-use crate::config::service_payment::ServicePayment;
-use crate::config::service_shipping::ServiceShipping;
-use crate::config::service_user::ServiceUser;
-use crate::config::telemetry_jaeger::TelemetryJaeger;
 use consulrs::api::check::common::AgentServiceCheckBuilder;
 use consulrs::api::service::common::AgentServiceConnect;
 use consulrs::api::service::requests::RegisterServiceRequest;
 use std::env;
+
+use crate::config::database_postgres::DatabasePostgres;
+use crate::config::message_broker_kafka::MessageBrokerKafka;
+use crate::config::message_broker_kafka_topic_shipping::MessageBrokerKafkaTopicShipping;
+use crate::config::message_broker_kafka_topic_sink_shipping::MessageBrokerKafkaTopicSinkShipping;
+use crate::config::message_broker_kafka_topic_connector_mongo_event::MessageBrokerKafkaTopicConnectorMongoEvent;
+use crate::config::service_payment::ServicePayment;
+use crate::config::service_shipping::ServiceShipping;
+use crate::config::service_user::ServiceUser;
+use crate::config::telemetry_jaeger::TelemetryJaeger;
 
 #[derive(Clone, Debug)]
 pub struct AppConfig {
@@ -23,7 +23,6 @@ pub struct AppConfig {
     pub config_env: ConfigEnv,
     // FROM CONSUL DATABASE POSTGRES
     pub database_postgres: DatabasePostgres,
-    pub database_mongodb: DatabaseMongoDB,
 
     // FROM CONSUL KV SERVICES/SHIPPING
     pub service_shipping: ServiceShipping,
@@ -37,6 +36,7 @@ pub struct AppConfig {
     pub message_broker_kafka: MessageBrokerKafka,
     pub message_broker_kafka_topic_sink_shipping: MessageBrokerKafkaTopicSinkShipping,
     pub message_broker_kafka_topic_shipping: MessageBrokerKafkaTopicShipping,
+    pub message_broker_kafka_topic_connector_mongo_event: MessageBrokerKafkaTopicConnectorMongoEvent,
 }
 
 impl Default for AppConfig {
@@ -44,7 +44,6 @@ impl Default for AppConfig {
         Self {
             config_env: ConfigEnv::default(),
             database_postgres: DatabasePostgres::default(),
-            database_mongodb: Default::default(),
             service_shipping: ServiceShipping::default(),
             service_user: ServiceUser::default(),
             service_payment: ServicePayment::default(),
@@ -53,6 +52,7 @@ impl Default for AppConfig {
             message_broker_kafka_topic_sink_shipping: MessageBrokerKafkaTopicSinkShipping::default(
             ),
             message_broker_kafka_topic_shipping: MessageBrokerKafkaTopicShipping::default(),
+            message_broker_kafka_topic_connector_mongo_event: Default::default(),
         }
     }
 }
@@ -85,20 +85,6 @@ impl AppConfig {
             .set_override("env", run_env.clone())?;
 
         let cfg_env = builder.build()?.get::<ConfigEnv>(&run_env)?;
-
-        // Create a Consul Client
-        let client = ConsulClient::new(
-            ConsulClientSettingsBuilder::default()
-                .address(format!(
-                    "http://{}:{}",
-                    cfg_env.consul_host, cfg_env.consul_port
-                ))
-                .build()
-                .map_err(|e| eprintln!(" Error Consul :  {:?}", e))
-                .unwrap(),
-        )
-        .unwrap();
-
         Ok(AppConfig::default().with_config_env(cfg_env))
     }
 
@@ -115,20 +101,6 @@ impl AppConfig {
                     .await
                     .unwrap_or_else(|e| {
                         panic!("Error with_database_postgres_from_consul :  {:?}", e);
-                    });
-            });
-        });
-        self
-    }
-
-    pub fn with_database_mongodb_from_consul(mut self, client: &ConsulClient) -> Self {
-        tokio::task::block_in_place(|| {
-            tokio::runtime::Handle::current().block_on(async {
-                self.database_mongodb = DatabaseMongoDB::default()
-                    .with_consul_client(self.config_env.env.clone(), client)
-                    .await
-                    .unwrap_or_else(|e| {
-                        panic!("Error with_database_mongodb_from_consul :  {:?}", e);
                     });
             });
         });
@@ -288,6 +260,27 @@ impl AppConfig {
             tokio::runtime::Handle::current().block_on(async {
                 self.message_broker_kafka_topic_shipping =
                     MessageBrokerKafkaTopicShipping::default()
+                        .with_consul_client(self.config_env.env.clone(), client)
+                        .await
+                        .unwrap_or_else(|e| {
+                            panic!(
+                                "Error with_message_broker_kafka_topic_shipping_from_consul :  {:?}",
+                                e
+                            );
+                        });
+            });
+        });
+        self
+    }
+
+    pub fn with_message_broker_kafka_topic_connector_mongo_event_from_consul(
+        mut self,
+        client: &ConsulClient,
+    ) -> Self {
+        tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                self.message_broker_kafka_topic_connector_mongo_event =
+                    MessageBrokerKafkaTopicConnectorMongoEvent::default()
                         .with_consul_client(self.config_env.env.clone(), client)
                         .await
                         .unwrap_or_else(|e| {

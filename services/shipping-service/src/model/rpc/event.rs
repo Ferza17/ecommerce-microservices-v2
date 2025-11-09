@@ -65,6 +65,7 @@ pub struct EventEnvelope {
     pub version: i32,
     #[prost(message, optional, tag = "6")]
     #[validate(name = "event.EventEnvelope.occurred_at")]
+    #[schema(value_type = String, format = "date-time")]
     pub occurred_at: ::core::option::Option<::prost_wkt_types::Timestamp>,
     /// For tracing across services
     #[prost(string, tag = "7")]
