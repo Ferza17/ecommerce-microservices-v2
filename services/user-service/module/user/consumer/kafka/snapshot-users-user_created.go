@@ -5,10 +5,9 @@ import (
 	"fmt"
 
 	pbEvent "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event"
+	pbUser "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/util"
-
-	pbUser "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/user"
 )
 
 func (c *userConsumer) SnapshotUsersUserCreated(ctx context.Context, message *pbEvent.EventEnvelope) error {
@@ -25,8 +24,8 @@ func (c *userConsumer) SnapshotUsersUserCreated(ctx context.Context, message *pb
 		span.End()
 	}()
 
-	if err = util.Base64URLToProtobuf(message.Payload, &request); err != nil {
-		c.logger.Info(fmt.Sprintf("util.Base64URLToProtobuf: %v", err))
+	if err = util.JSONToProto(message.Payload, &request); err != nil {
+		c.logger.Info(fmt.Sprintf("util.JSONToProto: %v", err))
 		return err
 	}
 

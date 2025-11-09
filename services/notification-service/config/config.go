@@ -89,6 +89,7 @@ func SetConfig(path string) {
 		withConfigServiceShipping(consulClient.KV()).
 		withConfigServiceUser(consulClient.KV()).
 		withConfigSmtp(consulClient.KV()).
+		withBrokerKafkaTopicConnectorSinkMongoEvent(consulClient.KV()).
 		RegisterConsulService(); err != nil {
 		log.Fatalf("SetConfig | could not register service: %v", err)
 		return

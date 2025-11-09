@@ -94,17 +94,6 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 		return nil, err
 	}
 
-	// SEND TO OUTBOX
-	payload, err := util.ProtobufToBase64URL(&notificationRpc.SendOtpEmailNotificationRequest{
-		Email:            user.Email,
-		Otp:              otp,
-		NotificationType: notificationRpc.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_REGISTER_OTP,
-	})
-	if err != nil {
-		u.logger.Error("UserUseCase.SentOTP", zap.String("requestId", requestId), zap.Error(err))
-		return nil, status.Error(codes.Internal, err.Error())
-	}
-
 	if err = u.eventUseCase.AppendEventEnvelope(ctx, &pbEvent.EventEnvelope{
 		XId:           primitive.NewObjectID().Hex(),
 		EventType:     config.Get().BrokerKafkaTopicNotifications.EmailOtpUserRegister,
@@ -114,7 +103,10 @@ func (u *userUseCase) CreateUser(ctx context.Context, requestId string, req *pb.
 		OccurredAt:    timestamppb.New(now),
 		CorrelationId: requestId,
 		CausationId:   &causationId,
-		Payload:       payload,
+	}, &notificationRpc.SendOtpEmailNotificationRequest{
+		Email:            user.Email,
+		Otp:              otp,
+		NotificationType: notificationRpc.NotificationTypeEnum_NOTIFICATION_EMAIL_USER_REGISTER_OTP,
 	}); err != nil {
 		u.logger.Error("UserUseCase.SentOTP", zap.String("requestId", requestId), zap.Error(err))
 		return nil, status.Error(codes.Internal, err.Error())

@@ -57,7 +57,7 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 		kafkaHandlers = srv.RegisterKafkaHandlers()
 	)
 
-	if err := srv.kafkaInfrastructure.SetupTopics([]string{"source.mongo.outbox.event_envelopes"}); err != nil {
+	if err := srv.kafkaInfrastructure.SetupTopics([]string{config.Get().BrokerKafkaTopicConnectorSinkMongoEvent.SourceConnectorEventEnvelopes}); err != nil {
 		srv.logger.Error(fmt.Sprintf("failed to setup kafka topics: %v", err))
 		return err
 	}
@@ -80,11 +80,10 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 				continue
 			}
 
-			if msg.TopicPartition.Topic != nil {
+			if msg.TopicPartition.Topic != nil && *msg.TopicPartition.Topic == config.Get().BrokerKafkaTopicConnectorSinkMongoEvent.SourceConnectorEventEnvelopes {
 				var (
-					childCtx = context.WithoutCancel(mainCtx)
-					request  pbEvent.EventEnvelope
-					// First, check if the message is double-encoded (string containing JSON)
+					childCtx   = context.WithoutCancel(mainCtx)
+					request    pbEvent.EventEnvelope
 					jsonString string
 					requestId  = uuid.NewString()
 					token      string
@@ -94,22 +93,20 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 					// It was double-encoded, use the unescaped string
 					if err = protojson.Unmarshal([]byte(jsonString), &request); err != nil {
 						srv.logger.Error(fmt.Sprintf("Failed to deserialize after unescape: %v", err))
-						return err
+						continue
 					}
 				} else {
 					// It's normal JSON, unmarshal directly
 					if err = protojson.Unmarshal(msg.Value, &request); err != nil {
 						srv.logger.Error(fmt.Sprintf("Failed to deserialize: %v", err))
-						return err
+						continue
 					}
 				}
 
 				childCtx = pkgContext.SetCausationIdToContext(childCtx, request.XId)
-
 				if requestId, ok = request.Metadata[pkgContext.CtxKeyRequestID]; ok {
 					childCtx = pkgContext.SetRequestIDToContext(childCtx, requestId)
 				}
-
 				if token, ok = request.Metadata[pkgContext.CtxKeyAuthorization]; ok {
 					childCtx = pkgContext.SetTokenAuthorizationToContext(childCtx, token)
 				}
@@ -134,16 +131,13 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 						span.End()
 						return err
 					}
-					if err = srv.kafkaInfrastructure.CommitMessage(msg); err != nil {
-						srv.logger.Error(fmt.Sprintf("failed to commit message: %v", err))
-						span.RecordError(err)
-						span.End()
-						return err
-					}
 					span.End()
 					return nil
 				})
+				continue
 			}
+
+			srv.logger.Error(fmt.Sprintf("failed to handle message: %v , message should be inserted into outbox", err))
 		}
 	}
 
@@ -159,7 +153,7 @@ func (srv *Transport) RegisterKafkaHandlers() map[string]handler {
 
 	handlers[config.Get().BrokerKafkaTopicUsers.UserUserCreated] = srv.userKafkaConsumer.SnapshotUsersUserCreated
 
-	//handlers[config.Get().BrokerKafkaTopicUsers.UserUserUpdated] = srv.userKafkaConsumer.SnapshotUsersUserUpdated
+	//TODO: handlers[config.Get().BrokerKafkaTopicUsers.UserUserUpdated] = srv.userKafkaConsumer.SnapshotUsersUserUpdated
 
 	return handlers
 }

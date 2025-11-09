@@ -25,8 +25,8 @@ func (c *paymentConsumer) SnapshotPaymentsPaymentOrderCreated(ctx context.Contex
 		span.End()
 	}()
 
-	if err = util.Base64URLToProtobuf(message.Payload, &request); err != nil {
-		c.logger.Info(fmt.Sprintf("util.Base64URLToProtobuf: %v", err))
+	if err = util.JSONToProto(message.Payload, &request); err != nil {
+		c.logger.Info(fmt.Sprintf("util.JSONToProto: %v", err))
 		return err
 	}
 

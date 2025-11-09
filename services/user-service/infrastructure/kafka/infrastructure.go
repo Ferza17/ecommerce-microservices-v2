@@ -25,10 +25,7 @@ type (
 
 		SetupTopics(topics []string) error
 		ReadMessage(duration time.Duration) (*kafka.Message, error)
-
 		Close() error
-
-		CommitMessage(msg *kafka.Message) error
 	}
 
 	kafkaInfrastructure struct {
@@ -79,7 +76,7 @@ func NewKafkaInfrastructure(
 		"group.id":              config.Get().ConfigServiceUser.ServiceName,
 		"session.timeout.ms":    10000,
 		"heartbeat.interval.ms": 3000,
-		"enable.auto.commit":    false,
+		"enable.auto.commit":    true,
 	}
 
 	producer, err := kafka.NewProducer(configMap)

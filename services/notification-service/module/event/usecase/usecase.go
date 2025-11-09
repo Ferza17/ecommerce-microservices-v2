@@ -8,11 +8,12 @@ import (
 	pb "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
 	"github.com/google/wire"
+	"google.golang.org/protobuf/proto"
 )
 
 type (
 	IEventUseCase interface {
-		AppendEventEnvelope(ctx context.Context, request *pb.EventEnvelope) error
+		AppendEventEnvelope(ctx context.Context, request *pb.EventEnvelope, payload proto.Message) error
 	}
 
 	eventUseCase struct {

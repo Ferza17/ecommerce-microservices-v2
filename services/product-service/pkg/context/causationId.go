@@ -11,7 +11,7 @@ func SetCausationIdToContext(ctx context.Context, correlationId string) context.
 func GetCausationIdFromContext(ctx context.Context) string {
 	correlationId, ok := ctx.Value(ContextKeyCausationID).(string)
 	if !ok {
-		return ""
+		return "-"
 	}
 	return correlationId
 }

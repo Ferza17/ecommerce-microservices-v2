@@ -123,12 +123,6 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 		product.Stock = stock
 
 		// Send to topic product update for updating product stock, move with outbox
-		payload, err := util.ProtobufToBase64URL(product)
-		if err != nil {
-			u.logger.Error(fmt.Sprintf("failed to convert product to base64: %v", err))
-			return nil, fmt.Errorf("failed to convert product to base64: %w", err)
-		}
-
 		if err = u.eventUseCase.AppendEventEnvelope(ctx, &eventPb.EventEnvelope{
 			XId:           primitive.NewObjectID().Hex(),
 			EventType:     config.Get().BrokerKafkaTopicProducts.ProductUpdated,
@@ -138,8 +132,7 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 			OccurredAt:    timestamppb.New(now),
 			CorrelationId: requestId,
 			CausationId:   &causationId,
-			Payload:       payload,
-		}); err != nil {
+		}, product); err != nil {
 			u.logger.Error(fmt.Sprintf("failed to append event envelope: %v", err))
 			return nil, fmt.Errorf("failed to append event envelope: %w", err)
 		}
@@ -161,16 +154,6 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 	}
 
 	// Publish to Shipping Created, with outbox
-	payload, err := util.ProtobufToBase64URL(&shippingPb.CreateShippingRequest{
-		UserId:             user.Data.User.Id,
-		PaymentId:          payment.ID,
-		ShippingProviderId: request.ShippingProviderId,
-	})
-	if err != nil {
-		u.logger.Error(fmt.Sprintf("failed to convert shipping to base64: %v", err))
-		return nil, fmt.Errorf("failed to convert shipping to base64: %w", err)
-	}
-
 	if err = u.eventUseCase.AppendEventEnvelope(ctx, &eventPb.EventEnvelope{
 		XId:           primitive.NewObjectID().Hex(),
 		EventType:     config.Get().BrokerKafkaTopicShippings.ShippingCreated,
@@ -180,23 +163,16 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 		OccurredAt:    timestamppb.New(now),
 		CorrelationId: requestId,
 		CausationId:   &causationId,
-		Payload:       payload,
+	}, &shippingPb.CreateShippingRequest{
+		UserId:             user.Data.User.Id,
+		PaymentId:          payment.ID,
+		ShippingProviderId: request.ShippingProviderId,
 	}); err != nil {
 		u.logger.Error(fmt.Sprintf("failed to append event envelope: %v", err))
 		return nil, fmt.Errorf("failed to append event envelope: %w", err)
 	}
 
 	// Publish to Notification Payment Order Created, with outbox
-	payload, err = util.ProtobufToBase64URL(&notificationPb.SendEmailPaymentOrderCreateRequest{
-		Email:            user.Data.User.Email,
-		Payment:          payment.ToProto(),
-		PaymentProvider:  paymentProvider.ToProto(),
-		NotificationType: notificationPb.NotificationTypeEnum_NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED,
-	})
-	if err != nil {
-		u.logger.Error(fmt.Sprintf("Failed to publish SendEmailPaymentOrderCreateRequest request, requestId: %s, error: %v", requestId, err))
-		return nil, status.Error(codes.Internal, err.Error())
-	}
 	if err = u.eventUseCase.AppendEventEnvelope(ctx, &eventPb.EventEnvelope{
 		XId:           primitive.NewObjectID().Hex(),
 		EventType:     config.Get().BrokerKafkaTopicNotifications.EmailPaymentOrderCreated,
@@ -206,7 +182,11 @@ func (u *paymentUseCase) CreatePayment(ctx context.Context, requestId string, re
 		OccurredAt:    timestamppb.New(now),
 		CorrelationId: requestId,
 		CausationId:   &causationId,
-		Payload:       payload,
+	}, &notificationPb.SendEmailPaymentOrderCreateRequest{
+		Email:            user.Data.User.Email,
+		Payment:          payment.ToProto(),
+		PaymentProvider:  paymentProvider.ToProto(),
+		NotificationType: notificationPb.NotificationTypeEnum_NOTIFICATION_EMAIL_PAYMENT_ORDER_CREATED,
 	}); err != nil {
 		u.logger.Error(fmt.Sprintf("failed to append event envelope: %v", err))
 		return nil, fmt.Errorf("failed to append event envelope: %w", err)

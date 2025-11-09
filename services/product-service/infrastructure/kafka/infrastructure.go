@@ -23,8 +23,6 @@ type (
 		PublishWithSchema(ctx context.Context, topic string, key string, schemaType SchemaType, value interface{}) error
 		Publish(ctx context.Context, topic string, key string, schemaType SchemaType, value interface{}) error
 
-		CommitMessage(msg *kafka.Message) error
-
 		SetupTopics(topics []string) error
 		ReadMessage(duration time.Duration) (*kafka.Message, error)
 		Close() error
@@ -75,7 +73,7 @@ func NewKafkaInfrastructure(
 		"group.id":              config.Get().ConfigServiceProduct.ServiceName,
 		"session.timeout.ms":    10000,
 		"heartbeat.interval.ms": 3000,
-		"enable.auto.commit":    false,
+		"enable.auto.commit":    true,
 	}
 
 	producer, err := kafka.NewProducer(configMap)
