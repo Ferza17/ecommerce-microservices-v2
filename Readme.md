@@ -15,14 +15,16 @@
 - [X] Implement **Worker Pools**
 
 ### SERVICES
-- API-GATEWAY
 - USER-SERVICE
 - PRODUCT-SERVICE
 - PAYMENT-SERVICE
 - SHIPPING-SERVICE
 
 ### TODO
-- [ ] Rewrite commerce service in spring boot
+- [ ] Rewrite commerce service in Spring boot
+- [ ] Migrate API Gateway To KONG
+- [ ] Migrate Payment Service to Spring
+- [ ] Change Architecture to Event Driven Architecture with Outbox Pattern
 
 ### FLOW
 ```mermaid

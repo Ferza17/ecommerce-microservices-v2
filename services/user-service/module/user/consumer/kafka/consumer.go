@@ -3,9 +3,9 @@ package kafka
 import (
 	"context"
 
-	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/kafka"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/telemetry"
+	pbEvent "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event"
 	userUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/user/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/google/wire"
@@ -13,13 +13,8 @@ import (
 
 type (
 	IUserConsumer interface {
-		SnapshotUsersUserCreated(ctx context.Context, message *kafka.Message) error
-		ConfirmSnapshotUsersUserCreated(ctx context.Context, message *kafka.Message) error
-		CompensateSnapshotUsersUserCreated(ctx context.Context, message *kafka.Message) error
-
-		SnapshotUsersUserUpdated(ctx context.Context, message *kafka.Message) error
-
-		DlqSinkPgUsersUsers(ctx context.Context, message *kafka.Message) error
+		SnapshotUsersUserCreated(ctx context.Context, message *pbEvent.EventEnvelope) error
+		SnapshotUsersUserUpdated(ctx context.Context, message *pbEvent.EventEnvelope) error
 	}
 
 	userConsumer struct {

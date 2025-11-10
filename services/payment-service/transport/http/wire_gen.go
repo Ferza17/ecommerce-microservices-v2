@@ -8,13 +8,11 @@ package http
 
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/kafka"
-	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/mongodb"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/postgresql"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/product"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/shipping"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/user"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
-	mongodb2 "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/event/repository/mongodb"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/event/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/presenter"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/repository"
@@ -37,10 +35,8 @@ func Provide() *Transport {
 	iShippingService := shipping.NewShippingService(iZapLogger)
 	iUserService := user.NewUserService(iZapLogger)
 	iProductService := product.NewProductService(iZapLogger)
-	iMongoDBInfrastructure := mongodb.NewMongoDBInfrastructure(iZapLogger)
-	iEventMongoRepository := mongodb2.NewEventMongoDBRepository(iMongoDBInfrastructure, iTelemetryInfrastructure, iZapLogger)
-	iEventUseCase := usecase.NewEventUseCase(iEventMongoRepository, iKafkaInfrastructure, iTelemetryInfrastructure)
-	iPaymentUseCase := usecase2.NewPaymentUseCase(iPaymentRepository, iPaymentProviderRepository, iKafkaInfrastructure, iTelemetryInfrastructure, iZapLogger, postgresSQL, iShippingService, iUserService, iProductService, iEventMongoRepository, iEventUseCase)
+	iEventUseCase := usecase.NewEventUseCase(iKafkaInfrastructure, iTelemetryInfrastructure)
+	iPaymentUseCase := usecase2.NewPaymentUseCase(iPaymentRepository, iPaymentProviderRepository, iKafkaInfrastructure, iTelemetryInfrastructure, iZapLogger, postgresSQL, iShippingService, iUserService, iProductService, iEventUseCase)
 	iPaymentPresenter := presenter.NewPaymentPresenter(iPaymentUseCase, iTelemetryInfrastructure, iUserService, iZapLogger)
 	iPaymentProviderUseCase := usecase3.NewPaymentProviderUseCase(iPaymentProviderRepository, iKafkaInfrastructure, iTelemetryInfrastructure, postgresSQL, iZapLogger)
 	iPaymentProviderPresenter := presenter2.NewPaymentProviderPresenter(iPaymentProviderUseCase, iTelemetryInfrastructure, iUserService, iZapLogger)

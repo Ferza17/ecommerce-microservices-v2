@@ -2,8 +2,9 @@ package kafka
 
 import (
 	"context"
-	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
+
 	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/user-service/infrastructure/kafka"
+	pbEvent "github.com/ferza17/ecommerce-microservices-v2/user-service/model/rpc/gen/v1/event"
 	authUseCase "github.com/ferza17/ecommerce-microservices-v2/user-service/module/auth/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/user-service/pkg/logger"
 	"github.com/google/wire"
@@ -11,13 +12,8 @@ import (
 
 type (
 	IAuthConsumer interface {
-		SnapshotUsersUserLogin(ctx context.Context, message *kafka.Message) error
-		ConfirmSnapshotUsersUserLogin(ctx context.Context, message *kafka.Message) error
-		CompensateSnapshotUsersUserLogin(ctx context.Context, message *kafka.Message) error
-
-		SnapshotUsersUserLogout(ctx context.Context, message *kafka.Message) error
-		ConfirmSnapshotUsersUserLogout(ctx context.Context, message *kafka.Message) error
-		CompensateSnapshotUsersUserLogout(ctx context.Context, message *kafka.Message) error
+		SnapshotUsersUserLogin(ctx context.Context, message *pbEvent.EventEnvelope) error
+		SnapshotUsersUserLogout(ctx context.Context, message *pbEvent.EventEnvelope) error
 	}
 
 	authConsumer struct {

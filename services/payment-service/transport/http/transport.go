@@ -3,6 +3,9 @@ package http
 import (
 	"context"
 	"fmt"
+	"net/http"
+
+	"github.com/alitto/pond/v2"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
 	userService "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/user"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
@@ -16,7 +19,6 @@ import (
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/response"
-	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/worker"
 	"github.com/google/wire"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -24,13 +26,11 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/encoding/protojson"
-	"net/http"
 )
 
 type Transport struct {
 	address                  string
 	port                     string
-	workerPool               *pkgWorker.WorkerPool
 	paymentPresenter         paymentPresenter.IPaymentPresenter
 	paymentProviderPresenter paymentProviderPresenter.IPaymentProviderPresenter
 
@@ -51,12 +51,8 @@ func NewTransport(
 	userService userService.IUserService,
 ) *Transport {
 	return &Transport{
-		address: config.Get().ConfigServicePayment.HttpHost,
-		port:    config.Get().ConfigServicePayment.HttpPort,
-		workerPool: pkgWorker.NewWorkerPool(
-			fmt.Sprintf("HTTP SERVER ON %s:%s", config.Get().ConfigServicePayment.HttpHost, config.Get().ConfigServicePayment.HttpPort),
-			2,
-		),
+		address:                  config.Get().ConfigServicePayment.HttpHost,
+		port:                     config.Get().ConfigServicePayment.HttpPort,
 		paymentPresenter:         paymentPresenter,
 		paymentProviderPresenter: paymentProviderPresenter,
 		logger:                   logger,
@@ -66,8 +62,7 @@ func NewTransport(
 }
 
 func (s *Transport) Serve(ctx context.Context) error {
-	s.workerPool.Start()
-
+	pool := pond.NewPool(10, pond.WithContext(ctx), pond.WithQueueSize(1000), pond.WithNonBlocking(true))
 	router := mux.NewRouter()
 
 	// Create grpc-gateway mux for gRPC-HTTP gateway
@@ -142,13 +137,17 @@ func (s *Transport) Serve(ctx context.Context) error {
 		Handler: router,
 	}
 
-	// ListenAndServe returns http.ErrServerClosed when gracefully shutdown
-	if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		return fmt.Errorf("HTTP server failed to start: %w", err)
+	task := pool.SubmitErr(func() error {
+		// ListenAndServe returns http.ErrServerClosed when gracefully shutdown
+		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			return fmt.Errorf("HTTP server failed to start: %w", err)
+		}
+		return nil
+	})
+	if err := task.Wait(); err != nil {
+		s.logger.Error(fmt.Sprintf("failed to serve : %s", zap.Error(err).String))
+		return err
 	}
-
-	<-ctx.Done()
-	s.workerPool.Stop()
 	return nil
 }
 

@@ -1,0 +1,44 @@
+{
+  "name": "SOURCE_MONGO_EVENTS_EVENT_ENVELOPES",
+  "config": {
+    "connector.class": "com.mongodb.kafka.connect.MongoSourceConnector",
+    "tasks.max": "1",
+
+    "topic.prefix": "source.mongo",
+    "connection.uri": "mongodb://mongo:1234@mongo-local:27017/?authSource=admin",
+
+    "database": "outbox",
+    "collection": "event_envelopes",
+
+    "pipeline": "[{\"$match\":{\"operationType\":{\"$in\":[\"insert\",\"update\",\"replace\",\"delete\"]}}}]",
+
+    "change.stream.full.document": "updateLookup",
+    "publish.full.document.only": "true",
+
+    "poll.await.time.ms": "5000",
+    "poll.max.batch.size": "1000",
+    "batch.size": "1000",
+
+    "startup.mode": "latest",
+
+    "errors.tolerance": "all",
+    "errors.log.enable": "true",
+    "errors.log.include.messages": "true",
+    "errors.deadletterqueue.topic.name": "dlq-source-mongo-events-event_envelopes",
+    "errors.deadletterqueue.topic.replication.factor": "1",
+    "errors.deadletterqueue.context.headers.enable": "true",
+
+    "copy.existing": "true",
+    "copy.existing.max.threads": "1",
+    "copy.existing.queue.size": "16000",
+
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false",
+    "value.converter.schemas.enable": "false",
+
+    "output.format.key": "json",
+    "output.format.value": "json",
+    "output.json.formatter": "com.mongodb.kafka.connect.source.json.formatter.SimplifiedJson"
+  }
+}

@@ -36,7 +36,6 @@ type Config struct {
 
 	DatabasePostgres *DatabasePostgres
 	DatabaseRedis    *DatabaseRedis
-	DatabaseMongo    *DatabaseMongo
 
 	//  SERVICE
 	ConfigServiceUser *ConfigServiceUser
@@ -89,7 +88,6 @@ func SetConfig(path string) {
 		withBrokerKafkaTopicNotifications(consulClient.KV()).
 		withBrokerKafkaTopicConnectorSinkPgUser(consulClient.KV()).
 		withBrokerKafkaTopicConnectorSinkMongoEvent(consulClient.KV()).
-		withConfigDatabaseMongo(consulClient.KV()).
 		RegisterConsulService(); err != nil {
 		log.Fatalf("SetConfig | could not register consul service: %v", err)
 		return

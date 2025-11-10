@@ -3,6 +3,9 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"net"
+
+	"github.com/alitto/pond/v2"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/shipping"
 	userService "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/service/user"
@@ -15,21 +18,18 @@ import (
 	paymentPresenter "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/presenter"
 	paymentProviderPresenter "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/provider/presenter"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
-	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/worker"
 	"github.com/google/wire"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
-	"net"
 )
 
 type (
 	Transport struct {
 		address                  string
 		port                     string
-		workerPool               *pkgWorker.WorkerPool
 		paymentPresenter         paymentPresenter.IPaymentPresenter
 		paymentProviderPresenter paymentProviderPresenter.IPaymentProviderPresenter
 
@@ -50,12 +50,8 @@ func NewTransport(
 	userService userService.IUserService,
 ) *Transport {
 	return &Transport{
-		address: config.Get().ConfigServicePayment.RpcHost,
-		port:    config.Get().ConfigServicePayment.RpcPort,
-		workerPool: pkgWorker.NewWorkerPool(
-			fmt.Sprintf("GRPC SERVER ON %s:%s", config.Get().ConfigServicePayment.RpcHost, config.Get().ConfigServicePayment.RpcPort),
-			2,
-		),
+		address:                  config.Get().ConfigServicePayment.RpcHost,
+		port:                     config.Get().ConfigServicePayment.RpcPort,
 		paymentPresenter:         paymentPresenter,
 		paymentProviderPresenter: paymentProviderPresenter,
 		telemetryInfrastructure:  telemetryInfrastructure,
@@ -70,8 +66,7 @@ var Set = wire.NewSet(
 )
 
 func (s *Transport) Serve(ctx context.Context) error {
-	s.workerPool.Start()
-
+	pool := pond.NewPool(10, pond.WithContext(ctx), pond.WithQueueSize(1000), pond.WithNonBlocking(true))
 	listen, err := net.Listen("tcp", fmt.Sprintf(":%s", s.port))
 	if err != nil {
 		s.logger.Error(fmt.Sprintf("Err Listen : %v", err))
@@ -95,15 +90,26 @@ func (s *Transport) Serve(ctx context.Context) error {
 	grpc_health_v1.RegisterHealthServer(s.grpcServer, healthServer)
 	healthServer.SetServingStatus(config.Get().ConfigServicePayment.ServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
 
-	// Enable Reflection to Evans grpc client
+	// IMPORTANT: Register reflection AFTER all services are registered
+	//if config.Get().Env != enum.CONFIG_ENV_PROD {
 	reflection.Register(s.grpcServer)
+	//}
+
 	if err = s.grpcServer.Serve(listen); err != nil {
 		s.logger.Error(fmt.Sprintf("failed to serve : %s", zap.Error(err).String))
 	}
 
-	<-ctx.Done()
+	task := pool.SubmitErr(func() error {
+		if err = s.grpcServer.Serve(listen); err != nil {
+			s.logger.Error(fmt.Sprintf("failed to serve : %s", zap.Error(err).String))
+		}
+		return nil
+	})
+	if err = task.Wait(); err != nil {
+		s.logger.Error(fmt.Sprintf("failed to serve : %s", zap.Error(err).String))
+		return err
+	}
 	s.grpcServer.GracefulStop()
-	s.workerPool.Stop()
 	return nil
 }
 

@@ -2,30 +2,33 @@ package kafka
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
 
-	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
+	"github.com/alitto/pond/v2"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/config"
 	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/kafka"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/notification-service/infrastructure/telemetry"
+	pbEvent "github.com/ferza17/ecommerce-microservices-v2/notification-service/model/rpc/gen/v1/event"
 	notificationEmailConsumer "github.com/ferza17/ecommerce-microservices-v2/notification-service/module/email/consumer"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/logger"
-	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/notification-service/pkg/worker"
+	"github.com/google/uuid"
 	"github.com/google/wire"
 	"go.opentelemetry.io/otel/attribute"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 type (
 	Transport struct {
 		kafkaInfrastructure       kafkaInfrastructure.IKafkaInfrastructure
-		workerPool                *pkgWorker.WorkerPool
 		telemetryInfrastructure   telemetryInfrastructure.ITelemetryInfrastructure
 		logger                    logger.IZapLogger
 		notificationEmailConsumer notificationEmailConsumer.INotificationEmailConsumer
 	}
+
+	handler func(ctx context.Context, message *pbEvent.EventEnvelope) error
 )
 
 var Set = wire.NewSet(NewTransport)
@@ -38,7 +41,6 @@ func NewTransport(
 ) *Transport {
 	return &Transport{
 		kafkaInfrastructure:       kafkaInfrastructure,
-		workerPool:                pkgWorker.NewWorkerPoolKafkaTaskQueue("kafka-consumer", 10, 1000),
 		telemetryInfrastructure:   telemetryInfrastructure,
 		logger:                    logger,
 		notificationEmailConsumer: notificationEmailConsumer,
@@ -46,23 +48,22 @@ func NewTransport(
 }
 
 func (srv *Transport) Serve(mainCtx context.Context) error {
-	srv.workerPool.Start()
+	var (
+		pool          = pond.NewPool(10, pond.WithContext(mainCtx), pond.WithQueueSize(1000), pond.WithNonBlocking(true))
+		kafkaHandlers = srv.RegisterKafkaHandlers()
+	)
 
-	topics := []string{
-		config.Get().BrokerKafkaTopicNotifications.EmailPaymentOrderCreated,
-		config.Get().BrokerKafkaTopicNotifications.EmailOtpUserLogin,
-		config.Get().BrokerKafkaTopicNotifications.EmailOtpUserRegister,
-	}
-
-	if err := srv.kafkaInfrastructure.SetupTopics(topics); err != nil {
+	if err := srv.kafkaInfrastructure.SetupTopics([]string{config.Get().BrokerKafkaTopicConnectorSinkMongoEvent.SourceConnectorEventEnvelopes}); err != nil {
 		srv.logger.Error(fmt.Sprintf("failed to setup kafka topics: %v", err))
 		return err
 	}
+
 	run := true
 	for run {
 		select {
 		case <-mainCtx.Done():
-			srv.workerPool.Stop()
+			pool.StopAndWait()
+			srv.Close()
 			run = false
 		default:
 			msg, err := srv.kafkaInfrastructure.ReadMessage(time.Second * 2)
@@ -75,56 +76,77 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 				continue
 			}
 
-			var (
-				requestId   string
-				childCtx, _ = context.WithTimeout(mainCtx, 20*time.Second)
-			)
+			if msg.TopicPartition.Topic != nil && *msg.TopicPartition.Topic == config.Get().BrokerKafkaTopicConnectorSinkMongoEvent.SourceConnectorEventEnvelopes {
+				var (
+					childCtx   = context.WithoutCancel(mainCtx)
+					request    pbEvent.EventEnvelope
+					jsonString string
+					requestId  = uuid.NewString()
+					token      string
+					ok         bool
+				)
+				if err = json.Unmarshal(msg.Value, &jsonString); err == nil {
+					// It was double-encoded, use the unescaped string
+					if err = protojson.Unmarshal([]byte(jsonString), &request); err != nil {
+						srv.logger.Error(fmt.Sprintf("Failed to deserialize after unescape: %v", err))
+						continue
+					}
+				} else {
+					// It's normal JSON, unmarshal directly
+					if err = protojson.Unmarshal(msg.Value, &request); err != nil {
+						srv.logger.Error(fmt.Sprintf("Failed to deserialize: %v", err))
+						continue
+					}
+				}
 
-			for _, header := range msg.Headers {
-				if strings.ToLower(header.Key) == strings.ToLower(pkgContext.CtxKeyRequestID) {
-					requestId = string(header.Value)
+				childCtx = pkgContext.SetCausationIdToContext(childCtx, request.XId)
+				if requestId, ok = request.Metadata[pkgContext.CtxKeyRequestID]; ok {
 					childCtx = pkgContext.SetRequestIDToContext(childCtx, requestId)
 				}
-
-				if strings.ToLower(header.Key) == strings.ToLower(pkgContext.CtxKeyAuthorization) {
-					childCtx = pkgContext.SetTokenAuthorizationToContext(childCtx, string(header.Value))
+				if token, ok = request.Metadata[pkgContext.CtxKeyAuthorization]; ok {
+					childCtx = pkgContext.SetTokenAuthorizationToContext(childCtx, token)
 				}
-			}
-			childCtx, span := srv.telemetryInfrastructure.StartSpanFromKafkaHeader(childCtx, msg.Headers, "KafkaTransport")
-			task := pkgWorker.KafkaTaskQueue{
-				Message: msg,
-				Ctx:     childCtx,
-			}
 
-			if msg.TopicPartition.Topic != nil {
+				// TODO: Add tracing headers
+
+				childCtx, span := srv.telemetryInfrastructure.StartSpanFromKafkaHeader(childCtx, msg.Headers, "KafkaTransport")
 				span.SetAttributes(attribute.String("messaging.destination", *msg.TopicPartition.Topic))
 				span.SetAttributes(attribute.String(pkgContext.CtxKeyRequestID, requestId))
 
-				switch *msg.TopicPartition.Topic {
-				case config.Get().BrokerKafkaTopicNotifications.EmailOtpUserLogin:
-					task.Handler = func(ctx context.Context, message *kafka.Message) error {
-						return srv.notificationEmailConsumer.SnapshotNotificationsEmailOtpUserLogin(childCtx, message)
-					}
-				case config.Get().BrokerKafkaTopicNotifications.EmailOtpUserRegister:
-					task.Handler = func(ctx context.Context, message *kafka.Message) error {
-						return srv.notificationEmailConsumer.SnapshotNotificationsEmailOtpUserRegister(childCtx, message)
-					}
-				case config.Get().BrokerKafkaTopicNotifications.EmailPaymentOrderCreated:
-					task.Handler = func(ctx context.Context, message *kafka.Message) error {
-						return srv.notificationEmailConsumer.SnapshotNotificationsEmailPaymentOrderCreated(childCtx, message)
-					}
-				default:
-					srv.logger.Error(fmt.Sprintf("invalid topic %s", *msg.TopicPartition.Topic))
+				handler, ok := kafkaHandlers[request.EventType]
+				if !ok {
+					srv.logger.Error(fmt.Sprintf("unregistered event type  %s", request.EventType))
+					span.End()
 					continue
 				}
 
+				pool.SubmitErr(func() error {
+					if err = handler(childCtx, &request); err != nil {
+						srv.logger.Error(fmt.Sprintf("failed to handle message: %v", err))
+						span.RecordError(err)
+						span.End()
+						return err
+					}
+					span.End()
+					return nil
+				})
+				continue
 			}
 
-			srv.workerPool.AddKafkaTaskQueue(task)
-			span.End()
+			srv.logger.Error(fmt.Sprintf("failed to handle message: %v , message should be inserted into outbox", err))
 		}
 	}
+
 	return nil
+}
+
+func (srv *Transport) RegisterKafkaHandlers() map[string]handler {
+	var handlers = map[string]handler{}
+
+	handlers[config.Get().BrokerKafkaTopicNotifications.EmailPaymentOrderCreated] = srv.notificationEmailConsumer.SnapshotNotificationsEmailPaymentOrderCreated
+	handlers[config.Get().BrokerKafkaTopicNotifications.EmailOtpUserLogin] = srv.notificationEmailConsumer.SnapshotNotificationsEmailOtpUserLogin
+	handlers[config.Get().BrokerKafkaTopicNotifications.EmailOtpUserRegister] = srv.notificationEmailConsumer.SnapshotNotificationsEmailOtpUserRegister
+	return handlers
 }
 
 func (srv *Transport) Close() {

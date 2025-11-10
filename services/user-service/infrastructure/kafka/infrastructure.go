@@ -33,6 +33,7 @@ type (
 		consumer                *kafka.Consumer
 		jsonSerializer          *jsonschema.Serializer
 		protobufSerializer      *protobuf.Serializer
+		protobufDeserializer    *protobuf.Deserializer
 		avroSerializer          *avrov2.Serializer
 		registryClient          schemaregistry.Client
 		logger                  logger.IZapLogger
@@ -51,9 +52,11 @@ const (
 func (c *kafkaInfrastructure) Close() error {
 	c.producer.Close()
 	c.consumer.Close()
-	c.registryClient.Close()
 	c.jsonSerializer.Close()
+	c.protobufSerializer.Close()
+	c.protobufDeserializer.Close()
 	c.avroSerializer.Close()
+	c.registryClient.Close()
 	return nil
 }
 
@@ -73,6 +76,7 @@ func NewKafkaInfrastructure(
 		"group.id":              config.Get().ConfigServiceUser.ServiceName,
 		"session.timeout.ms":    10000,
 		"heartbeat.interval.ms": 3000,
+		"enable.auto.commit":    true,
 	}
 
 	producer, err := kafka.NewProducer(configMap)
@@ -105,6 +109,12 @@ func NewKafkaInfrastructure(
 		return nil
 	}
 
+	protobufDeserializer, err := protobuf.NewDeserializer(registryClient, serde.ValueSerde, protobuf.NewDeserializerConfig())
+	if err != nil {
+		logger.Error(fmt.Sprintf("failed to create protobuf deserializer: %v", err))
+		return nil
+	}
+
 	avroSerializer, err := avrov2.NewSerializer(registryClient, serde.ValueSerde, avrov2.NewSerializerConfig())
 	if err != nil {
 		logger.Error(fmt.Sprintf("failed to create kafka deserializer: %v", err))
@@ -116,6 +126,7 @@ func NewKafkaInfrastructure(
 		consumer:                consumer,
 		jsonSerializer:          jsonSerializer,
 		protobufSerializer:      protobufSerializer,
+		protobufDeserializer:    protobufDeserializer,
 		avroSerializer:          avroSerializer,
 		registryClient:          registryClient,
 		logger:                  logger,

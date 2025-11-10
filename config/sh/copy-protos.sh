@@ -22,10 +22,6 @@ echo "=================================================="
 echo ">>> copy file .proto to services/api-gateway/proto <<<"
 echo "=================================================="
 
-TARGET_DIR="services/api-gateway/proto";
-mkdir -p "$TARGET_DIR";
-rsync -av --include='*.proto' --include='*/' --exclude='*' "proto/" "$TARGET_DIR";
-
 echo "=================================================="
 echo ">>> Done. <<<"
 echo "=================================================="

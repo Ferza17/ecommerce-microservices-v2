@@ -66,13 +66,14 @@ func NewKafkaInfrastructure(
 
 	configMap := &kafka.ConfigMap{
 		"bootstrap.servers": config.Get().BrokerKafka.Broker1,
-		"client.id":         config.Get().ConfigServiceUser.ServiceName,
+		"client.id":         config.Get().ConfigServiceNotification.ServiceName,
 
 		// Consumer config
 		"auto.offset.reset":     "earliest",
-		"group.id":              config.Get().ConfigServiceUser.ServiceName,
+		"group.id":              config.Get().ConfigServiceNotification.ServiceName,
 		"session.timeout.ms":    10000,
 		"heartbeat.interval.ms": 3000,
+		"enable.auto.commit":    true,
 	}
 
 	producer, err := kafka.NewProducer(configMap)

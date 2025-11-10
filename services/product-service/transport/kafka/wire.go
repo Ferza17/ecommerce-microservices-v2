@@ -6,10 +6,8 @@ package kafka
 import (
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/elasticsearch"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/kafka"
-	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/mongodb"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/postgres"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/infrastructure/telemetry"
-	eventMongoDBRepository "github.com/ferza17/ecommerce-microservices-v2/product-service/module/event/repository/mongodb"
 	eventUseCase "github.com/ferza17/ecommerce-microservices-v2/product-service/module/event/usecase"
 	"github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/consumer"
 	productEsRepo "github.com/ferza17/ecommerce-microservices-v2/product-service/module/product/repository/elasticsearch"
@@ -28,11 +26,9 @@ func Provide() *Transport {
 		postgres.Set,
 		telemetry.Set,
 		kafka.Set,
-		mongodb.Set,
 
 		productEsRepo.Set,
 		productPgRepo.Set,
-		eventMongoDBRepository.Set,
 
 		productUseCase.Set,
 		eventUseCase.Set,

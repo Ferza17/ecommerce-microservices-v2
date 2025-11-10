@@ -29,6 +29,7 @@ func Provide() *Transport {
 		notificationEmailMongoDBRepository.Set,
 		notificationEmailUseCase.Set,
 		notificationEmailConsumer.Set,
+		//eventUseCase.Set,
 
 		Set,
 	)

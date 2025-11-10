@@ -67,6 +67,6 @@ impl DatabasePostgres {
         .parse()
         .unwrap_or_else(|_| "".to_string());
 
-        Ok((self.clone()))
+        Ok(self.clone())
     }
 }

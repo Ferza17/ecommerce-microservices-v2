@@ -1,3 +1,5 @@
+extern crate core;
+
 mod cmd;
 mod config;
 mod infrastructure;

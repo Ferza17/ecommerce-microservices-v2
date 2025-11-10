@@ -3,21 +3,22 @@ package consumer
 import (
 	"context"
 	"fmt"
-	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
+
+	pbEvent "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event"
 	pb "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/payment"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/context"
+	"github.com/ferza17/ecommerce-microservices-v2/payment-service/util"
 	"go.uber.org/zap"
-	"google.golang.org/protobuf/proto"
 )
 
-func (c *paymentConsumer) SnapshotPaymentsPaymentOrderCancelledDelayed(ctx context.Context, message *kafka.Message) error {
+func (c *paymentConsumer) SnapshotPaymentsPaymentOrderCancelledDelayed(ctx context.Context, message *pbEvent.EventEnvelope) error {
 	var (
 		request   pb.PaymentOrderDelayedCancelledRequest
 		requestId = pkgContext.GetRequestIDFromContext(ctx)
 	)
 
-	if err := proto.Unmarshal(message.Value, &request); err != nil {
-		c.logger.Info(fmt.Sprintf("proto.Unmarshal: %v", err))
+	if err := util.JSONToProto(message.Payload, &request); err != nil {
+		c.logger.Info(fmt.Sprintf("util.JSONToProto: %v", err))
 		return err
 	}
 

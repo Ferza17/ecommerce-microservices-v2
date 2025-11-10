@@ -4,21 +4,21 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
+	pbEvent "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/event"
 	pb "github.com/ferza17/ecommerce-microservices-v2/product-service/model/rpc/gen/v1/product"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/product-service/pkg/context"
+	"github.com/ferza17/ecommerce-microservices-v2/product-service/util"
 	"go.uber.org/zap"
-	"google.golang.org/protobuf/proto"
 )
 
-func (c *productConsumer) SnapshotProductsProductDeleted(ctx context.Context, message *kafka.Message) error {
+func (c *productConsumer) SnapshotProductsProductDeleted(ctx context.Context, message *pbEvent.EventEnvelope) error {
 	var (
 		request   pb.DeleteProductByIdRequest
 		requestId = pkgContext.GetRequestIDFromContext(ctx)
 	)
 
-	if err := proto.Unmarshal(message.Value, &request); err != nil {
-		c.logger.Info(fmt.Sprintf("proto.Unmarshal: %v", err))
+	if err := util.JSONToProto(message.Payload, &request); err != nil {
+		c.logger.Info(fmt.Sprintf("util.JSONToProto: %v", err))
 		return err
 	}
 
@@ -27,13 +27,5 @@ func (c *productConsumer) SnapshotProductsProductDeleted(ctx context.Context, me
 		return err
 	}
 
-	return nil
-}
-
-func (c *productConsumer) ConfirmSnapshotProductsProductDeleted(ctx context.Context, message *kafka.Message) error {
-	return nil
-}
-
-func (c *productConsumer) CompensateSnapshotProductsProductDeleted(ctx context.Context, message *kafka.Message) error {
 	return nil
 }

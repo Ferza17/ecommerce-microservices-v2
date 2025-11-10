@@ -3,13 +3,16 @@ use crate::infrastructure::database::async_postgres::get_connection;
 use crate::infrastructure::message_broker::kafka::KafkaInfrastructure;
 use crate::infrastructure::services::payment::PaymentServiceGrpcClient;
 use crate::infrastructure::services::user::UserServiceGrpcClient;
+use crate::model::rpc::event::EventEnvelope;
 use crate::module::shipping::repository_postgres::ShippingPostgresRepositoryImpl;
 use crate::module::shipping::usecase::ShippingUseCaseImpl;
 use crate::module::shipping_provider::repository_postgres::ShippingProviderPostgresRepositoryImpl;
 use crate::package::worker_pool::worker_pool::WorkerPool;
 use futures::StreamExt;
+use prost::Message as prostMessage;
 use rdkafka::Message;
 use std::sync::Arc;
+use tracing::{error, info};
 
 pub struct Transport {
     config: AppConfig,
@@ -79,62 +82,64 @@ impl Transport {
                         if topic
                             == self
                                 .config
-                                .message_broker_kafka_topic_shipping
-                                .snapshot_shippings_shipping_created
+                                .message_broker_kafka_topic_connector_mongo_event
+                                .source_connector_event_envelopes
                                 .as_str() =>
                     {
                         let consumer = shipping_consumer.clone();
-                        let msg = m.detach(); // detach to own the message
-                        match self
-                            .pool
-                            .spawn(move || async move {
-                                consumer
-                                    .consume_snapshot_shippings_shipping_created(msg)
-                                    .await
-                                    .unwrap();
-                            })
-                            .await
-                        {
-                            Ok(_) => {
-                                eprintln!("Kafka message consumed");
+                        match m.detach().payload() {
+                            None => {
+                                error!("no payload found");
+                                continue;
                             }
-                            Err(_) => continue,
-                        }
-                    }
-                    // CONFIRM SHIPPING CREATED
-                    
-                    // COMPENSATE SHIPPING CREATED
-                    
+                            Some(p) => {
+                                let mut request = EventEnvelope::default();
 
+                                // list topic
+                                let event_type_shipping_created = self
+                                    .config
+                                    .message_broker_kafka_topic_shipping
+                                    .snapshot_shippings_shipping_created
+                                    .as_str();
+                                let event_type_shipping_updated = self
+                                    .config
+                                    .message_broker_kafka_topic_shipping
+                                    .snapshot_shippings_shipping_updated
+                                    .as_str();
 
-                    topic
-                        if topic
-                            == self
-                                .config
-                                .message_broker_kafka_topic_shipping
-                                .snapshot_shippings_shipping_updated
-                                .as_str() =>
-                    {
-                        let consumer = shipping_consumer.clone();
-                        let msg = m.detach(); // detach to own the message
-                        match self
-                            .pool
-                            .spawn(move || async move {
-                                consumer
-                                    .consume_snapshot_shippings_shipping_updated(msg)
-                                    .await
-                                    .unwrap();
-                            })
-                            .await
-                        {
-                            Ok(_) => {
-                                eprintln!("Kafka message consumed");
+                                match EventEnvelope::decode(&*p) {
+                                    Ok(v) => match v.event_type {
+                                        event_type_shipping_created => {
+                                            // TODO: Handle Me
+                                            continue;
+                                        }
+                                        event_type_shipping_updated => {
+                                            //TODO: Handle Me
+                                            continue;
+                                        }
+                                        _ => {
+                                            error!(
+                                                "unregistered aggregate type : {}",
+                                                v.aggregate_type
+                                            );
+                                            continue;
+                                        }
+                                    },
+                                    Err(err) => {
+                                        error!(
+                                            "[consume_snapshot_shippings_shipping_created] consume_snapshot_shippings_shipping_created : {}",
+                                            err
+                                        );
+                                    }
+                                }
                             }
-                            Err(_) => continue,
                         }
                     }
                     _ => {
-                        eprintln!("Kafka unregistered topic ");
+                        eprintln!(
+                            "Kafka unregistered topic {} , topic should be inserted into outbox",
+                            m.topic()
+                        );
                     }
                 },
                 Err(e) => {

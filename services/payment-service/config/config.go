@@ -29,7 +29,6 @@ type Config struct {
 	DatabasePostgres *DatabasePostgres
 	// REDIS Config
 	DatabaseRedis *DatabaseRedis
-	DatabaseMongo *DatabaseMongo
 
 	// User Service Config
 	ConfigServiceUser *ConfigServiceUser
@@ -113,7 +112,6 @@ func SetConfig(path string) {
 		withServiceProduct(client.KV()).
 		withDatabasePostgres(client.KV()).
 		withDatabaseRedis(client.KV()).
-		withConfigDatabaseMongo(client.KV()).
 		withBrokerKafkaTopicConnectorSinkMongoEvent(client.KV()).
 		RegisterConsulService(); err != nil {
 		log.Fatalf("SetConfig | could not register service: %v", err)

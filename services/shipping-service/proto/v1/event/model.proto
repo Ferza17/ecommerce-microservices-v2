@@ -3,20 +3,17 @@ package event;
 option java_package = "com.ferza17.ecommercemicroservicesv2.proto.v1.event";
 
 import "google/protobuf/timestamp.proto";
+import "v1/event/enum.proto";
 
-message Event {
+message EventEnvelope {
   string _id = 1;
-  string aggregate_id = 2;
-  string aggregate_type = 3;
-  string event_type = 4;
-  int32 version = 5;
-  google.protobuf.Timestamp timestamp = 6;
-  string saga_id = 7;
-  map<string, string> metadata = 8;
-  bytes payload = 9;
-}
-
-message ReserveEvent {
-  string saga_id = 1;
-  string aggregate_type = 2;
+  string event_type = 2;         // e.g., "order.created"
+  event.AggregateType aggregate_type = 3;     // e.g., "order", "payment"
+  string aggregate_id = 4;       // Business entity ID
+  int32 version = 5;             // Event version for schema evolution
+  google.protobuf.Timestamp occurred_at = 6;
+  string correlation_id = 7;     // For tracing across services
+  optional string causation_id = 8;       // ID of the event that caused this one
+  string payload = 9;             // base64 serialize payload
+  map<string, string> metadata = 10; // Additional metadata
 }

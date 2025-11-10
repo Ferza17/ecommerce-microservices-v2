@@ -22,35 +22,36 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type Event struct {
+type EventEnvelope struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	XId           string                 `protobuf:"bytes,1,opt,name=_id,json=Id,proto3" json:"_id,omitempty"`
-	AggregateId   string                 `protobuf:"bytes,2,opt,name=aggregate_id,json=aggregateId,proto3" json:"aggregate_id,omitempty"`
-	AggregateType string                 `protobuf:"bytes,3,opt,name=aggregate_type,json=aggregateType,proto3" json:"aggregate_type,omitempty"`
-	EventType     string                 `protobuf:"bytes,4,opt,name=event_type,json=eventType,proto3" json:"event_type,omitempty"`
-	Version       int32                  `protobuf:"varint,5,opt,name=version,proto3" json:"version,omitempty"`
-	Timestamp     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	SagaId        string                 `protobuf:"bytes,7,opt,name=saga_id,json=sagaId,proto3" json:"saga_id,omitempty"`
-	Metadata      map[string]string      `protobuf:"bytes,8,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	Payload       []byte                 `protobuf:"bytes,9,opt,name=payload,proto3" json:"payload,omitempty"`
+	EventType     string                 `protobuf:"bytes,2,opt,name=event_type,json=eventType,proto3" json:"event_type,omitempty"`                                       // e.g., "order.created"
+	AggregateType AggregateType          `protobuf:"varint,3,opt,name=aggregate_type,json=aggregateType,proto3,enum=event.AggregateType" json:"aggregate_type,omitempty"` // e.g., "order", "payment"
+	AggregateId   string                 `protobuf:"bytes,4,opt,name=aggregate_id,json=aggregateId,proto3" json:"aggregate_id,omitempty"`                                 // Business entity ID
+	Version       int32                  `protobuf:"varint,5,opt,name=version,proto3" json:"version,omitempty"`                                                           // Event version for schema evolution
+	OccurredAt    *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=occurred_at,json=occurredAt,proto3" json:"occurred_at,omitempty"`
+	CorrelationId string                 `protobuf:"bytes,7,opt,name=correlation_id,json=correlationId,proto3" json:"correlation_id,omitempty"`                                             // For tracing across services
+	CausationId   *string                `protobuf:"bytes,8,opt,name=causation_id,json=causationId,proto3,oneof" json:"causation_id,omitempty"`                                             // ID of the event that caused this one
+	Payload       string                 `protobuf:"bytes,9,opt,name=payload,proto3" json:"payload,omitempty"`                                                                              // base64 serialize payload
+	Metadata      map[string]string      `protobuf:"bytes,10,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // Additional metadata
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *Event) Reset() {
-	*x = Event{}
+func (x *EventEnvelope) Reset() {
+	*x = EventEnvelope{}
 	mi := &file_v1_event_model_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *Event) String() string {
+func (x *EventEnvelope) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Event) ProtoMessage() {}
+func (*EventEnvelope) ProtoMessage() {}
 
-func (x *Event) ProtoReflect() protoreflect.Message {
+func (x *EventEnvelope) ProtoReflect() protoreflect.Message {
 	mi := &file_v1_event_model_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -62,148 +63,104 @@ func (x *Event) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Event.ProtoReflect.Descriptor instead.
-func (*Event) Descriptor() ([]byte, []int) {
+// Deprecated: Use EventEnvelope.ProtoReflect.Descriptor instead.
+func (*EventEnvelope) Descriptor() ([]byte, []int) {
 	return file_v1_event_model_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Event) GetXId() string {
+func (x *EventEnvelope) GetXId() string {
 	if x != nil {
 		return x.XId
 	}
 	return ""
 }
 
-func (x *Event) GetAggregateId() string {
-	if x != nil {
-		return x.AggregateId
-	}
-	return ""
-}
-
-func (x *Event) GetAggregateType() string {
-	if x != nil {
-		return x.AggregateType
-	}
-	return ""
-}
-
-func (x *Event) GetEventType() string {
+func (x *EventEnvelope) GetEventType() string {
 	if x != nil {
 		return x.EventType
 	}
 	return ""
 }
 
-func (x *Event) GetVersion() int32 {
+func (x *EventEnvelope) GetAggregateType() AggregateType {
+	if x != nil {
+		return x.AggregateType
+	}
+	return AggregateType_USER
+}
+
+func (x *EventEnvelope) GetAggregateId() string {
+	if x != nil {
+		return x.AggregateId
+	}
+	return ""
+}
+
+func (x *EventEnvelope) GetVersion() int32 {
 	if x != nil {
 		return x.Version
 	}
 	return 0
 }
 
-func (x *Event) GetTimestamp() *timestamppb.Timestamp {
+func (x *EventEnvelope) GetOccurredAt() *timestamppb.Timestamp {
 	if x != nil {
-		return x.Timestamp
+		return x.OccurredAt
 	}
 	return nil
 }
 
-func (x *Event) GetSagaId() string {
+func (x *EventEnvelope) GetCorrelationId() string {
 	if x != nil {
-		return x.SagaId
+		return x.CorrelationId
 	}
 	return ""
 }
 
-func (x *Event) GetMetadata() map[string]string {
+func (x *EventEnvelope) GetCausationId() string {
+	if x != nil && x.CausationId != nil {
+		return *x.CausationId
+	}
+	return ""
+}
+
+func (x *EventEnvelope) GetPayload() string {
+	if x != nil {
+		return x.Payload
+	}
+	return ""
+}
+
+func (x *EventEnvelope) GetMetadata() map[string]string {
 	if x != nil {
 		return x.Metadata
 	}
 	return nil
 }
 
-func (x *Event) GetPayload() []byte {
-	if x != nil {
-		return x.Payload
-	}
-	return nil
-}
-
-type ReserveEvent struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SagaId        string                 `protobuf:"bytes,1,opt,name=saga_id,json=sagaId,proto3" json:"saga_id,omitempty"`
-	AggregateType string                 `protobuf:"bytes,2,opt,name=aggregate_type,json=aggregateType,proto3" json:"aggregate_type,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ReserveEvent) Reset() {
-	*x = ReserveEvent{}
-	mi := &file_v1_event_model_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ReserveEvent) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ReserveEvent) ProtoMessage() {}
-
-func (x *ReserveEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_event_model_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ReserveEvent.ProtoReflect.Descriptor instead.
-func (*ReserveEvent) Descriptor() ([]byte, []int) {
-	return file_v1_event_model_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *ReserveEvent) GetSagaId() string {
-	if x != nil {
-		return x.SagaId
-	}
-	return ""
-}
-
-func (x *ReserveEvent) GetAggregateType() string {
-	if x != nil {
-		return x.AggregateType
-	}
-	return ""
-}
-
 var File_v1_event_model_proto protoreflect.FileDescriptor
 
 const file_v1_event_model_proto_rawDesc = "" +
 	"\n" +
-	"\x14v1/event/model.proto\x12\x05event\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfd\x02\n" +
-	"\x05Event\x12\x0f\n" +
-	"\x03_id\x18\x01 \x01(\tR\x02Id\x12!\n" +
-	"\faggregate_id\x18\x02 \x01(\tR\vaggregateId\x12%\n" +
-	"\x0eaggregate_type\x18\x03 \x01(\tR\raggregateType\x12\x1d\n" +
+	"\x14v1/event/model.proto\x12\x05event\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x13v1/event/enum.proto\"\xed\x03\n" +
+	"\rEventEnvelope\x12\x0f\n" +
+	"\x03_id\x18\x01 \x01(\tR\x02Id\x12\x1d\n" +
 	"\n" +
-	"event_type\x18\x04 \x01(\tR\teventType\x12\x18\n" +
-	"\aversion\x18\x05 \x01(\x05R\aversion\x128\n" +
-	"\ttimestamp\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\x12\x17\n" +
-	"\asaga_id\x18\a \x01(\tR\x06sagaId\x126\n" +
-	"\bmetadata\x18\b \x03(\v2\x1a.event.Event.MetadataEntryR\bmetadata\x12\x18\n" +
-	"\apayload\x18\t \x01(\fR\apayload\x1a;\n" +
+	"event_type\x18\x02 \x01(\tR\teventType\x12;\n" +
+	"\x0eaggregate_type\x18\x03 \x01(\x0e2\x14.event.AggregateTypeR\raggregateType\x12!\n" +
+	"\faggregate_id\x18\x04 \x01(\tR\vaggregateId\x12\x18\n" +
+	"\aversion\x18\x05 \x01(\x05R\aversion\x12;\n" +
+	"\voccurred_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"occurredAt\x12%\n" +
+	"\x0ecorrelation_id\x18\a \x01(\tR\rcorrelationId\x12&\n" +
+	"\fcausation_id\x18\b \x01(\tH\x00R\vcausationId\x88\x01\x01\x12\x18\n" +
+	"\apayload\x18\t \x01(\tR\apayload\x12>\n" +
+	"\bmetadata\x18\n" +
+	" \x03(\v2\".event.EventEnvelope.MetadataEntryR\bmetadata\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"N\n" +
-	"\fReserveEvent\x12\x17\n" +
-	"\asaga_id\x18\x01 \x01(\tR\x06sagaId\x12%\n" +
-	"\x0eaggregate_type\x18\x02 \x01(\tR\raggregateTypeBM\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x0f\n" +
+	"\r_causation_idBM\n" +
 	"\tcom.eventB\n" +
 	"ModelProtoH\x02P\x01\xa2\x02\x03EXX\xaa\x02\x05Event\xca\x02\x05Event\xe2\x02\x11Event\\GPBMetadata\xea\x02\x05Eventb\x06proto3"
 
@@ -219,21 +176,22 @@ func file_v1_event_model_proto_rawDescGZIP() []byte {
 	return file_v1_event_model_proto_rawDescData
 }
 
-var file_v1_event_model_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_v1_event_model_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_v1_event_model_proto_goTypes = []any{
-	(*Event)(nil),                 // 0: event.Event
-	(*ReserveEvent)(nil),          // 1: event.ReserveEvent
-	nil,                           // 2: event.Event.MetadataEntry
+	(*EventEnvelope)(nil),         // 0: event.EventEnvelope
+	nil,                           // 1: event.EventEnvelope.MetadataEntry
+	(AggregateType)(0),            // 2: event.AggregateType
 	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
 }
 var file_v1_event_model_proto_depIdxs = []int32{
-	3, // 0: event.Event.timestamp:type_name -> google.protobuf.Timestamp
-	2, // 1: event.Event.metadata:type_name -> event.Event.MetadataEntry
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	2, // 0: event.EventEnvelope.aggregate_type:type_name -> event.AggregateType
+	3, // 1: event.EventEnvelope.occurred_at:type_name -> google.protobuf.Timestamp
+	1, // 2: event.EventEnvelope.metadata:type_name -> event.EventEnvelope.MetadataEntry
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_v1_event_model_proto_init() }
@@ -241,13 +199,15 @@ func file_v1_event_model_proto_init() {
 	if File_v1_event_model_proto != nil {
 		return
 	}
+	file_v1_event_enum_proto_init()
+	file_v1_event_model_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_event_model_proto_rawDesc), len(file_v1_event_model_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

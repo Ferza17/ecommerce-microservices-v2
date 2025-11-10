@@ -83,10 +83,64 @@ func (r *productElasticsearchRepository) FindProductsWithPagination(ctx context.
 		return nil, 0, err
 	}
 
-	totalHits := int64(searchResponse["hits"].(map[string]interface{})["total"].(map[string]interface{})["value"].(float64))
+	// Check for Elasticsearch error response
+	if errResponse, ok := searchResponse["error"]; ok {
+		r.logger.Error(fmt.Sprintf("requestId: %s , elasticsearch error: %v", requestId, errResponse))
+		return nil, 0, fmt.Errorf("elasticsearch error: %v", errResponse)
+	}
+
+	// Safely extract hits with nil checks
+	hitsInterface, ok := searchResponse["hits"]
+	if !ok || hitsInterface == nil {
+		r.logger.Error(fmt.Sprintf("requestId: %s , missing hits in response", requestId))
+		return nil, 0, fmt.Errorf("invalid elasticsearch response: missing hits")
+	}
+
+	hitsMap, ok := hitsInterface.(map[string]interface{})
+	if !ok {
+		r.logger.Error(fmt.Sprintf("requestId: %s , hits is not a map", requestId))
+		return nil, 0, fmt.Errorf("invalid elasticsearch response: hits is not a map")
+	}
+
+	// Safely extract total hits
+	var totalHits int64
+	if totalInterface, ok := hitsMap["total"]; ok && totalInterface != nil {
+		if totalMap, ok := totalInterface.(map[string]interface{}); ok {
+			if valueInterface, ok := totalMap["value"]; ok && valueInterface != nil {
+				if value, ok := valueInterface.(float64); ok {
+					totalHits = int64(value)
+				}
+			}
+		}
+	}
+
+	// Safely extract hits array
 	var response []*orm.Product
-	for _, hit := range searchResponse["hits"].(map[string]interface{})["hits"].([]interface{}) {
-		productJSON, err := json.Marshal(hit.(map[string]interface{})["_source"])
+	hitsArrayInterface, ok := hitsMap["hits"]
+	if !ok || hitsArrayInterface == nil {
+		return response, totalHits, nil
+	}
+
+	hitsArray, ok := hitsArrayInterface.([]interface{})
+	if !ok {
+		r.logger.Error(fmt.Sprintf("requestId: %s , hits array is not an array", requestId))
+		return response, totalHits, nil
+	}
+
+	for _, hit := range hitsArray {
+		hitMap, ok := hit.(map[string]interface{})
+		if !ok {
+			r.logger.Error(fmt.Sprintf("requestId: %s , hit is not a map", requestId))
+			continue
+		}
+
+		sourceInterface, ok := hitMap["_source"]
+		if !ok || sourceInterface == nil {
+			r.logger.Error(fmt.Sprintf("requestId: %s , missing _source in hit", requestId))
+			continue
+		}
+
+		productJSON, err := json.Marshal(sourceInterface)
 		if err != nil {
 			r.logger.Error(fmt.Sprintf("requestId: %s , error while parse response: %v", requestId, err))
 			continue

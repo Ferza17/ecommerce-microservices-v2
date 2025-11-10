@@ -2,25 +2,26 @@ package kafka
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
 
-	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
+	"github.com/alitto/pond/v2"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/config"
 	kafkaInfrastructure "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/kafka"
 	telemetryInfrastructure "github.com/ferza17/ecommerce-microservices-v2/payment-service/infrastructure/telemetry"
+	pbEvent "github.com/ferza17/ecommerce-microservices-v2/payment-service/model/rpc/gen/v1/event"
 	paymentConsumer "github.com/ferza17/ecommerce-microservices-v2/payment-service/module/payment/consumer"
 	pkgContext "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/context"
 	"github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/logger"
-	pkgWorker "github.com/ferza17/ecommerce-microservices-v2/payment-service/pkg/worker"
+	"github.com/google/uuid"
 	"github.com/google/wire"
 	"go.opentelemetry.io/otel/attribute"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 type (
 	Transport struct {
-		workerPool              *pkgWorker.WorkerPool
 		paymentConsumer         paymentConsumer.IPaymentConsumer
 		kafkaInfrastructure     kafkaInfrastructure.IKafkaInfrastructure
 		telemetryInfrastructure telemetryInfrastructure.ITelemetryInfrastructure
@@ -28,7 +29,7 @@ type (
 		topics                  []string
 	}
 
-	handler func(ctx context.Context, message *kafka.Message) error
+	handler func(ctx context.Context, message *pbEvent.EventEnvelope) error
 )
 
 var Set = wire.NewSet(
@@ -42,8 +43,6 @@ func NewTransport(
 	logger logger.IZapLogger,
 ) *Transport {
 	return &Transport{
-		workerPool: pkgWorker.NewWorkerPoolKafkaTaskQueue(
-			"Kafka Consumer", 9, 1000),
 		paymentConsumer:         paymentConsumer,
 		kafkaInfrastructure:     kafkaInfrastructure,
 		telemetryInfrastructure: telemetryInfrastructure,
@@ -56,18 +55,12 @@ func NewTransport(
 }
 
 func (srv *Transport) Serve(mainCtx context.Context) error {
-	srv.workerPool.Start()
-
 	var (
-		topics        []string
+		pool          = pond.NewPool(10, pond.WithContext(mainCtx), pond.WithQueueSize(1000), pond.WithNonBlocking(true))
 		kafkaHandlers = srv.RegisterKafkaHandlers()
 	)
 
-	for s, _ := range kafkaHandlers {
-		topics = append(topics, s)
-	}
-
-	if err := srv.kafkaInfrastructure.SetupTopics(topics); err != nil {
+	if err := srv.kafkaInfrastructure.SetupTopics([]string{config.Get().BrokerKafkaTopicConnectorSinkMongoEvent.SourceConnectorEventEnvelopes}); err != nil {
 		srv.logger.Error(fmt.Sprintf("failed to setup kafka topics: %v", err))
 		return err
 	}
@@ -76,7 +69,8 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 	for run {
 		select {
 		case <-mainCtx.Done():
-			srv.workerPool.Stop()
+			pool.StopAndWait()
+			srv.Close()
 			run = false
 		default:
 			msg, err := srv.kafkaInfrastructure.ReadMessage(time.Second * 2)
@@ -89,43 +83,64 @@ func (srv *Transport) Serve(mainCtx context.Context) error {
 				continue
 			}
 
-			var (
-				requestId string
-				childCtx  = context.WithoutCancel(mainCtx)
-			)
+			if msg.TopicPartition.Topic != nil && *msg.TopicPartition.Topic == config.Get().BrokerKafkaTopicConnectorSinkMongoEvent.SourceConnectorEventEnvelopes {
+				var (
+					childCtx   = context.WithoutCancel(mainCtx)
+					request    pbEvent.EventEnvelope
+					jsonString string
+					requestId  = uuid.NewString()
+					token      string
+					ok         bool
+				)
+				if err = json.Unmarshal(msg.Value, &jsonString); err == nil {
+					// It was double-encoded, use the unescaped string
+					if err = protojson.Unmarshal([]byte(jsonString), &request); err != nil {
+						srv.logger.Error(fmt.Sprintf("Failed to deserialize after unescape: %v", err))
+						continue
+					}
+				} else {
+					// It's normal JSON, unmarshal directly
+					if err = protojson.Unmarshal(msg.Value, &request); err != nil {
+						srv.logger.Error(fmt.Sprintf("Failed to deserialize: %v", err))
+						continue
+					}
+				}
 
-			for _, header := range msg.Headers {
-				if strings.ToLower(header.Key) == strings.ToLower(pkgContext.CtxKeyRequestID) {
-					requestId = string(header.Value)
+				childCtx = pkgContext.SetCausationIdToContext(childCtx, request.XId)
+				if requestId, ok = request.Metadata[pkgContext.CtxKeyRequestID]; ok {
 					childCtx = pkgContext.SetRequestIDToContext(childCtx, requestId)
 				}
-
-				if strings.ToLower(header.Key) == strings.ToLower(pkgContext.CtxKeyAuthorization) {
-					childCtx = pkgContext.SetTokenAuthorizationToContext(childCtx, string(header.Value))
+				if token, ok = request.Metadata[pkgContext.CtxKeyAuthorization]; ok {
+					childCtx = pkgContext.SetTokenAuthorizationToContext(childCtx, token)
 				}
-			}
-			childCtx, span := srv.telemetryInfrastructure.StartSpanFromKafkaHeader(childCtx, msg.Headers, "KafkaTransport")
 
-			task := pkgWorker.KafkaTaskQueue{
-				Message: msg,
-				Ctx:     childCtx,
-			}
+				// TODO: Add tracing headers
 
-			if msg.TopicPartition.Topic != nil {
+				childCtx, span := srv.telemetryInfrastructure.StartSpanFromKafkaHeader(childCtx, msg.Headers, "KafkaTransport")
 				span.SetAttributes(attribute.String("messaging.destination", *msg.TopicPartition.Topic))
 				span.SetAttributes(attribute.String(pkgContext.CtxKeyRequestID, requestId))
 
-				h, ok := kafkaHandlers[*msg.TopicPartition.Topic]
+				handler, ok := kafkaHandlers[request.EventType]
 				if !ok {
-					srv.logger.Error(fmt.Sprintf("invalid topic %s", *msg.TopicPartition.Topic))
+					srv.logger.Error(fmt.Sprintf("unregistered event type  %s", request.EventType))
 					span.End()
 					continue
 				}
-				task.Handler = h
+
+				pool.SubmitErr(func() error {
+					if err = handler(childCtx, &request); err != nil {
+						srv.logger.Error(fmt.Sprintf("failed to handle message: %v", err))
+						span.RecordError(err)
+						span.End()
+						return err
+					}
+					span.End()
+					return nil
+				})
+				continue
 			}
 
-			srv.workerPool.AddKafkaTaskQueue(task)
-			span.End()
+			srv.logger.Error(fmt.Sprintf("failed to handle message: %v , message should be inserted into outbox", err))
 		}
 	}
 

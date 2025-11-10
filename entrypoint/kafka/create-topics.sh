@@ -65,6 +65,8 @@ SNAPSHOT_TOPICS=(
   "snapshot-shippings-shipping_updated:3:1"
   "confirm-snapshot-shippings-shipping_updated:3:1"
   "compensate-snapshot-shippings-shipping_updated:3:1"
+
+  "source.mongo.outbox.event_envelopes:1:1"
 )
 
 for t in "${SNAPSHOT_TOPICS[@]}"; do
